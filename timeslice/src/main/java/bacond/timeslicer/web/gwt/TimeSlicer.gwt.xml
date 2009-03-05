@@ -1,0 +1,8 @@
+<!-- 
+<!DOCTYPE module PUBLIC "gwt-module" "gwt-module.dtd">
+ -->
+
+<module>
+	<inherits name="com.google.gwt.user.User" />
+	<inherits name="com.google.gwt.user.theme.standard.Standard" />	
+</module>

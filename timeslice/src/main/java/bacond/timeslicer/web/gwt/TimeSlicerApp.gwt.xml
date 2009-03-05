@@ -1,0 +1,14 @@
+
+<!-- 
+ <!DOCTYPE module PUBLIC "gwt-module" "gwt-module.dtd">
+ -->
+
+<module>
+	<inherits name="bacond.timeslicer.web.gwt.TimeSlicer" />
+	
+	<!--  may need to go it TimeSlicer -->
+	<inherits name="org.restlet.GWT" />
+	
+	<entry-point class="bacond.timeslicer.web.gwt.client.entry.TimeSlicerApp" />
+</module>
+
