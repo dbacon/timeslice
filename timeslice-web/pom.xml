@@ -11,7 +11,9 @@
 			<artifactId>maven-googlewebtoolkit2-plugin</artifactId>
 			<version>2.0-beta26</version>
 			<configuration>
+<!--
 			    <gwtHome>C:\Documents and Settings\dbacon\Desktop\java\gwt-windows-1.5.3\gwt-windows-1.5.3</gwtHome>
+-->
 			    <compileTargets>
 			        <value>bacond.timeslicer.web.gwt.TimeSlicerApp</value>
 			    </compileTargets>
@@ -118,7 +120,8 @@
     	<groupId>com.google.gwt</groupId>
     	<artifactId>gwt-dev</artifactId>
     	<version>1.5.3</version>
-    	<classifier>windows</classifier>
+    	<!--<classifier>windows</classifier>-->
+    	<classifier>linux</classifier>
     </dependency>
     <dependency>
     	<groupId>com.google.gwt</groupId>
