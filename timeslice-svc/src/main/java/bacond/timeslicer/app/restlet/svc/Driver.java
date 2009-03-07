@@ -1,5 +1,13 @@
 package bacond.timeslicer.app.restlet.svc;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.restlet.Component;
 import org.restlet.data.Protocol;
 
@@ -7,22 +15,51 @@ import bacond.timeslicer.app.restlet.resource.MyApp;
 
 public class Driver
 {
-	public static final String DefaultLocalRoot = "file:///C:/Documents and Settings/dbacon/Desktop/java/eclipse-workspaces-SR1/ws-0/timeslice-web/target/timeslice-web-1.0.0-SNAPSHOT";
-
-	public static void main(String[] args)
+	public static class Args
 	{
-		if (args.length < 1)
+		public static final String Root = "root";
+		public static final String Port = "port";
+	}
+	
+	private static CommandLine hello(String[] args) throws ParseException
+	{
+		Options opts = new Options();
+		opts.addOption(null, Args.Port, true, "Listening port.");
+		opts.addOption(null, Args.Root, true, "Path of shared folder.");
+		
+		return new GnuParser().parse(opts, args);
+	}
+
+	public static void main(String[] args) throws ParseException, IOException
+	{
+		int port = 8082;
+		URI rootUri = URI.create("root");
+		
+		CommandLine commandLine = hello(args);
+		
+		if (commandLine.hasOption(Args.Port))
 		{
-			System.exit(-1);
+			port = Integer.valueOf(commandLine.getOptionValue(Args.Port));
 		}
 		
-		String localRootUri = args[0];
+		if (commandLine.hasOption(Args.Root))
+		{
+			rootUri = URI.create(commandLine.getOptionValue(Args.Root));
+		}
+		
+		if (!rootUri.isAbsolute())
+		{
+			rootUri = new File(".").getCanonicalFile().toURI().resolve(rootUri);
+		}
+		
+		System.out.println("Root: '" + rootUri.toString() + "'");
+		System.out.println("Port: '" + port + "'");
 		
 		Component component = new Component();
-		component.getServers().add(Protocol.HTTP, 8082);
+		component.getServers().add(Protocol.HTTP, port);
 		component.getClients().add(Protocol.FILE);
 		component.getDefaultHost()
-			.attach(new MyApp(component.getContext().createChildContext(), localRootUri));
+			.attach(new MyApp(component.getContext().createChildContext(), rootUri.toString()));
 
 		try
 		{
