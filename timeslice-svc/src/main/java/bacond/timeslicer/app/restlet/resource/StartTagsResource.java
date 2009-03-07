@@ -45,10 +45,7 @@ public class StartTagsResource extends Resource
 		.put(MediaType.TEXT_PLAIN, FormattedStringTextPlainRenderer.create(new TextPlainStartTagsFormatter()))
 		.put(MediaType.TEXT_HTML,
 				ToStringRepr.create(MediaType.TEXT_HTML,
-						HtmlPagifier.pagify(BulletedListTextHtmlRenderer.create(new ToString("<b>%s</b> <i>(%s)</i>")))))
-//				new BulletedListTextHtmlStartTagsRenderer(
-//				new TextHtmlStartTagRenderer("<b>%s</b> <i>(%s)</i>")
-////				"<a href=\"/items/%1$s\">%2$s</a>"))
+						HtmlPagifier.pagify(BulletedListTextHtmlRenderer.create(new ToString("[<small><a href=\"/items/%1$s\">%1$s</a></small>] %2$s")))))
 		.put(MediaType.APPLICATION_JSON, new JsonArrayRenderer<StartTag>())		
 		.getMap();
 
