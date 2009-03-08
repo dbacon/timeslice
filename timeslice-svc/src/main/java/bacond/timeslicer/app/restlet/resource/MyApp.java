@@ -38,7 +38,7 @@ public class MyApp extends Application
 			.extractQuery("mediatype", "mediatype", true)
 			;
 		
-		router.attach("/items/{itemId}", StartTagResource.class);
+		router.attach("/items/{when}", StartTagResource.class);
 		
 		
 		Directory directory = new Directory(getContext().createChildContext(), localRootUri);

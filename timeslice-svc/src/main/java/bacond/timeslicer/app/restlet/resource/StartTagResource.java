@@ -53,12 +53,9 @@ public class StartTagResource extends Resource
 		return (MyApp) getApplication();
 	}
 	
-	@Override
-	public Representation represent(Variant variant) throws ResourceException
+	private StartTag lookupStartTag()
 	{
-		log.info("represent");
-		
-		String key = (String) getRequest().getAttributes().get("itemId");
+		String key = (String) getRequest().getAttributes().get("when");
 		
 		if (null == key)
 		{
@@ -68,6 +65,17 @@ public class StartTagResource extends Resource
 		DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
 		
 		StartTag startTag = getMyApp().getStartTags().get(new Instant(fmt.parseMillis(key)));
+		
+		return startTag;
+
+	}
+	
+	@Override
+	public Representation represent(Variant variant) throws ResourceException
+	{
+		log.info("represent");
+		
+		StartTag startTag = lookupStartTag();
 		
 		if (null == startTag)
 		{
