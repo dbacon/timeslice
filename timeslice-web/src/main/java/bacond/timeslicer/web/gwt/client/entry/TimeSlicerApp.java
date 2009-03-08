@@ -1,30 +1,29 @@
 package bacond.timeslicer.web.gwt.client.entry;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import bacond.timeslicer.web.gwt.client.beans.StartTag;
 import bacond.timeslicer.web.gwt.client.controller.Controller;
 import bacond.timeslicer.web.gwt.client.controller.IControllerListener;
-import bacond.timeslicer.web.gwt.client.widget.TaskPanel;
-import bacond.timeslicer.web.gwt.client.widget.TaskPanel.ITaskPanelListener;
+import bacond.timeslicer.web.gwt.client.widget.HistoryPanel;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -38,25 +37,10 @@ public class TimeSlicerApp implements EntryPoint
 		public static final int MaxResults = 10;
 	}
 
-	private final class TriggerRefreshCommand implements Command
-	{
-		public void execute()
-		{
-			triggerRefresh();
-		}
-	}
-
-	public class TaskPanelListener implements ITaskPanelListener
-	{
-		public void resumeClicked(StartTag historicStartTag)
-		{
-			enterNewStartTag(historicStartTag.getDescription());
-		}
-	}
-
-	private final VerticalPanel itemsPanel = new VerticalPanel();
-	private final ScrollPanel scroller = new ScrollPanel(itemsPanel);
-	private final TextBox taskDescriptionEntry = new TextBox();
+	private final HistoryPanel historyPanel = new HistoryPanel();
+	private final MultiWordSuggestOracle suggestSource = new MultiWordSuggestOracle();
+	
+	private final SuggestBox taskDescriptionEntry = new SuggestBox(suggestSource);
 	
 	private final Controller controller = new Controller();
 	private final HorizontalPanel entryPanel = new HorizontalPanel();
@@ -64,6 +48,10 @@ public class TimeSlicerApp implements EntryPoint
 	private final TextBox maxSize = new TextBox();
 	private final TextBox baseUri = new TextBox();
 	private final DisclosurePanel optionsPanel = new DisclosurePanel("Options", false);
+	
+	private final DisclosurePanel manualTimeDisclosure = new DisclosurePanel("Manual Input", false);
+	private final TextBox manualTimeEntry = new TextBox();
+	private final Button updateButton = new Button("Update");
 	
 	public int getMaxSize()
 	{
@@ -74,7 +62,7 @@ public class TimeSlicerApp implements EntryPoint
 	{
 		if (description.trim().isEmpty())
 		{
-			triggerRefresh();
+			scheduleRefresh();
 		}
 		else
 		{
@@ -84,16 +72,34 @@ public class TimeSlicerApp implements EntryPoint
 
 	public void onModuleLoad()
 	{
+		HorizontalPanel hp1 = new HorizontalPanel();
+		hp1.add(new Label("When:"));
+		hp1.add(manualTimeEntry);
+		VerticalPanel vp1 = new VerticalPanel();
+		vp1.add(hp1);
+		manualTimeDisclosure.add(vp1);
+		manualTimeDisclosure.setAnimationEnabled(true);
+		
+		historyPanel.addHistoryPanelListener(new HistoryPanel.IHistoryPanelListener()
+		{
+			public void interestingThing(String p)
+			{
+				enterNewStartTag(p);
+			}
+		});
+		
+		taskDescriptionEntry.setWidth("30em");
 		taskDescriptionEntry.addKeyboardListener(new KeyboardListenerAdapter()
 		{
 			public void onKeyPress(Widget sender, char keyCode, int modifiers)
 			{
-				super.onKeyPress(sender, keyCode, modifiers);
-
-				if (KEY_ENTER == keyCode)
+				
+				if (0 != (modifiers & MODIFIER_CTRL))
 				{
 					enterNewStartTag(taskDescriptionEntry.getText());
 				}
+				
+				super.onKeyPress(sender, keyCode, modifiers);
 			}
 		});
 		
@@ -102,7 +108,7 @@ public class TimeSlicerApp implements EntryPoint
 		{
 			public void onChange(Widget sender)
 			{
-				triggerRefresh();
+				scheduleRefresh();
 			}
 		});
 		
@@ -113,6 +119,7 @@ public class TimeSlicerApp implements EntryPoint
 			public void onChange(Widget sender)
 			{
 				controller.setBaseSvcUri(baseUri.getText());
+				scheduleRefresh();
 			}
 		});
 
@@ -127,23 +134,21 @@ public class TimeSlicerApp implements EntryPoint
 
 		entryPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
 		entryPanel.setSpacing(5);
-		Hyperlink updateLink = new Hyperlink("[Update]", null);
-		updateLink.addClickListener(new ClickListener()
+		updateButton.addClickListener(new ClickListener()
 		{
 			public void onClick(Widget sender)
 			{
-				triggerRefresh();
+				scheduleRefresh();
 			}
 		});
-		entryPanel.add(updateLink);
+		entryPanel.add(updateButton);
 		entryPanel.add(new Label("Task: "));
 		entryPanel.add(taskDescriptionEntry);
 		
-		scroller.setSize("50em", "20em");
-
 		VerticalPanel vp = new VerticalPanel();
-		vp.add(scroller);
+		vp.add(historyPanel);
 		vp.add(entryPanel);
+		vp.add(manualTimeDisclosure);
 		vp.add(optionsPanel);
 		
 		DecoratedTabPanel tp = new DecoratedTabPanel();
@@ -164,51 +169,34 @@ public class TimeSlicerApp implements EntryPoint
 				}
 			});
 		
-		DeferredCommand.addCommand(new TriggerRefreshCommand());
+		scheduleRefresh();
 	}
 	
-	final TaskPanelListener listener = new TaskPanelListener();
-
 	private void handleRefreshItemsDone(AsyncResult<List<StartTag>> result)
 	{
 		if (!result.isError())
 		{
-			ArrayList<StartTag> items = new ArrayList<StartTag>(result.getReturned());
+			ArrayList<StartTag> items = new ArrayList<StartTag>(result.getReturned());			
 			
-			Collections.reverse(items);
+			historyPanel.clear(false);
+			historyPanel.addItems(items);
 			
-			itemsPanel.clear();
-			for (StartTag item: items) 
-			{
-				TaskPanel taskPanel = new TaskPanel(item);
-				taskPanel.addTaskPanelListener(listener);
-				itemsPanel.add(taskPanel);
-//				itemsPanel.add(new HTML(
-//						"<div>" + item.getInstantString() + "</div>" +
-//						"<div style=\"padding-left: 5em;\"><b>" + item.getDescription() + "</b>" +
-//						"    <i><small>" +
-//						"" + (null == item.getDurationMillis() ? "(on-going)": ("(" + (item.getDurationMillis() / 1000.0)) + " second(s))") +
-//						"    </small></i>" +
-//						"</div>" +
-//						" " +
-////						"<br/>" +
-////						"<small><i>(" + item.getInstantString() + " ~ " + Transforms.mapNullTo(item.getUntilString(), "$") + ")</i></small>" +
-////						" <large><b>" + item.getDescription() + "</b></large>" +
-////						" (" + (null == item.getDurationMillis() ? "?": (item.getDurationMillis() / 1000.0)) + " second(s))" +
-//						"", false));
-			}
-			
-//			itemsPanel.add(entryPanel);
-			
-			scroller.scrollToBottom();
-//			scroller.scrollToTop();
-			scroller.scrollToRight();
+			updateSuggestSource(items);
 		}
 		else
 		{
 			showError(result);
 			
 //			messagePanel.add(new AcknowledgableMessagePanel("No refresh happened: " + result.getThrown().getMessage()));
+		}
+	}
+
+	private void updateSuggestSource(ArrayList<StartTag> items)
+	{
+		suggestSource.clear();
+		for (StartTag tag: items)
+		{
+			suggestSource.add(tag.getDescription());
 		}
 	}
 
@@ -225,8 +213,8 @@ public class TimeSlicerApp implements EntryPoint
 		if (!result.isError())
 		{
 //			messagePanel.add(new AcknowledgableMessagePanel("Item added."));
-			triggerRefresh();
 			taskDescriptionEntry.setText("");
+			scheduleRefresh();
 		}
 		else
 		{
@@ -237,8 +225,14 @@ public class TimeSlicerApp implements EntryPoint
 //		newItemForm.setFormEnabled(true);
 	}
 
-	private void triggerRefresh()
+	private void scheduleRefresh()
 	{
-		controller.startRefreshItems(getMaxSize());
+		DeferredCommand.addCommand(new Command()
+		{
+			public void execute()
+			{
+				controller.startRefreshItems(getMaxSize());
+			}
+		});
 	}
 }
