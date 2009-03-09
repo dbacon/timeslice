@@ -27,18 +27,10 @@ import bacond.lib.restlet.FormattedStringTextPlainRenderer;
 import bacond.lib.util.ITransform;
 import bacond.lib.util.MapMaker;
 import bacond.timeslicer.app.dto.StartTag;
+import bacond.timeslicer.app.processing.Split;
 
 public class StartTagsResource extends Resource
 {
-	private final class CompareByTime implements Comparator<StartTag>
-	{
-		@Override
-		public int compare(StartTag o1, StartTag o2)
-		{
-			return o1.getWhen().compareTo(o2.getWhen());
-		}
-	}
-
 	private static final Logger log = Logger.getLogger(StartTagsResource.class.getCanonicalName());
 	
 	private final Map<MediaType, ITransform<Collection<StartTag>, Representation>> renderers = MapMaker.create(new LinkedHashMap<MediaType, ITransform<Collection<StartTag>, Representation>>())
@@ -95,7 +87,7 @@ public class StartTagsResource extends Resource
 
 		if (true)
 		{
-			tags = relate(tags, new Instant());
+			tags = new Split().split(tags, new Instant());
 		}
 		
 		Collections.sort(tags, cmp);
@@ -107,34 +99,6 @@ public class StartTagsResource extends Resource
 		}
 		
 		return renderers.get(mediaType).apply(tags);
-	}
-
-	private List<StartTag> relate(List<? extends StartTag> tags, Instant endInstantOfLastTasks)
-	{
-		List<StartTag> result = new LinkedList<StartTag>();
-		
-		Map<String, StartTag> lastStartTagForUser = new LinkedHashMap<String, StartTag>();
-
-		for (StartTag tag: tags)
-		{
-			StartTag lastStartTag = lastStartTagForUser.get(tag.getWho());
-			
-			if (null != lastStartTag)
-			{
-				StartTag enrichedLastStartTag = new StartTag(lastStartTag.getWho(), lastStartTag.getWhen(), lastStartTag.getWhat(), tag.getWhen());
-				
-				result.add(enrichedLastStartTag);
-			}
-
-			lastStartTagForUser.put(tag.getWho(), tag);
-		}
-		
-		for (StartTag tag: lastStartTagForUser.values())
-		{
-			result.add(new StartTag(tag.getWho(), tag.getWhen(), tag.getWhat(), endInstantOfLastTasks));
-		}
-
-		return result;
 	}
 
 	@Override

@@ -19,6 +19,12 @@ public class StartTag implements JSONString
 		this.what = what;
 		this.until = until;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return String.format("[%s, %s, %s, %s]", getWho(), getWhen(), getUntil(), getWhat());
+	}
 
 	public String getWho()
 	{

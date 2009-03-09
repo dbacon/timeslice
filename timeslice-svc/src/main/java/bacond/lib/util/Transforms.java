@@ -2,6 +2,43 @@ package bacond.lib.util;
 
 public class Transforms
 {
+	public static <C, M> ITransform<C, M> member(final Class<C> classClass, final Class<M> memberClass, final String memberName)
+	{
+		return new ITransform<C, M>()
+		{
+			@Override
+			public M apply(C r)
+			{
+				String methodName = "get" + memberName.substring(0, 1).toUpperCase() + memberName.substring(1); 
+				try
+				{
+					return Narrow.<M>castSingle(r.getClass().getMethod(methodName, new Class[0]).invoke(r, new Object[0]));
+				}
+				catch (Exception e)
+				{
+					throw new RuntimeException(
+							"Could not retrieve member " +
+							"'" + classClass.getName() + "'" +
+							" on class " +
+							"'" + classClass.getName() + "'" +
+							": " + e.getMessage(), e);
+				}
+			}
+		};
+	}
+	
+	public static <T> ITransform<T, T> identity()
+	{
+		return new ITransform<T, T>()
+		{
+			@Override
+			public T apply(T r)
+			{
+				return r;
+			}
+		};
+	}
+	
 	public static <R, D> ITransform<R, D> invalid()
 	{
 		return new ITransform<R, D>()
