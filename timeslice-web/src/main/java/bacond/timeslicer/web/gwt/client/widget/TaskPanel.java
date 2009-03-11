@@ -1,5 +1,7 @@
 package bacond.timeslicer.web.gwt.client.widget;
 
+import static bacond.timeslicer.web.gwt.client.widget.HumanReadableTimeHelper.formatDuration;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,14 +57,16 @@ public class TaskPanel extends Composite
 		HorizontalPanel hp1 = new HorizontalPanel();
 		hp1.setSpacing(5);
 		hp1.add(resumeLink);
-		hp1.add(new Label(startTag.getDescription()));
+		Label label = new Label(startTag.getDescription());
+		label.setWidth("20em");
+		hp1.add(label);
 		if (null != startTag.getUntilString())
 		{
-			hp1.add(new Label("" + (startTag.getDurationMillis() / 1000.0) + " second(s)"));
+			hp1.add(new Label(formatDuration(startTag.getDurationMillis().longValue())));
 		}
 		
 		VerticalPanel vp = new VerticalPanel();
-		vp.add(new Label(startTag.getInstantString()));
+//		vp.add(new Label(startTag.getInstantString()));
 		vp.add(hp1);
 		
 		initWidget(vp);
