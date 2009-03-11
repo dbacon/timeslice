@@ -14,6 +14,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -53,6 +54,8 @@ public class TimeSlicerApp implements EntryPoint
 	private final TextBox manualTimeEntry = new TextBox();
 	private final Button updateButton = new Button("Update");
 	
+	private final CheckBox controlSpaceSends = new CheckBox("Control-space also sends.");
+
 	public int getMaxSize()
 	{
 		return Integer.valueOf(maxSize.getText());
@@ -94,7 +97,8 @@ public class TimeSlicerApp implements EntryPoint
 			public void onKeyPress(Widget sender, char keyCode, int modifiers)
 			{
 				
-				if (0 != (modifiers & MODIFIER_CTRL))
+				if (0 != (modifiers & MODIFIER_CTRL)
+						&& (keyCode == KEY_ENTER || (keyCode == ' ' && controlSpaceSends.isChecked())))
 				{
 					enterNewStartTag(taskDescriptionEntry.getText());
 				}
@@ -128,6 +132,7 @@ public class TimeSlicerApp implements EntryPoint
 		optionsVp.setSpacing(5);
 		optionsVp.add(maxSize);
 		optionsVp.add(baseUri);
+		optionsVp.add(controlSpaceSends);
 		
 		optionsPanel.add(optionsVp);
 		optionsPanel.setAnimationEnabled(true);
