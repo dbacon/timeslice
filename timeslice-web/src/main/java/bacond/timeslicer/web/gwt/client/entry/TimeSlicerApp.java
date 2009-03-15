@@ -19,10 +19,12 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DisclosurePanel;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
+import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TextBox;
@@ -55,12 +57,20 @@ public class TimeSlicerApp implements EntryPoint
 	private final Button updateButton = new Button("Update");
 	
 	private final CheckBox controlSpaceSends = new CheckBox("Control-space also sends.");
+	
+	private final TextBox username = new TextBox();
+	private final PasswordTextBox password = new PasswordTextBox();
 
 	public int getMaxSize()
 	{
 		return Integer.valueOf(maxSize.getText());
 	}
 	
+	private void updateStartTag(StartTag editedStartTag)
+	{
+		controller.startEditDescription(editedStartTag);
+	}
+
 	private void enterNewStartTag(String description)
 	{
 		if (description.trim().isEmpty())
@@ -89,6 +99,11 @@ public class TimeSlicerApp implements EntryPoint
 			{
 				enterNewStartTag(p);
 			}
+
+			public void fireEdited(StartTag editedStartTag)
+			{
+				updateStartTag(editedStartTag);
+			}
 		});
 		
 		taskDescriptionEntry.setWidth("30em");
@@ -116,25 +131,50 @@ public class TimeSlicerApp implements EntryPoint
 			}
 		});
 		
-		baseUri.setText(Defaults.BaseUri);
-		controller.setBaseSvcUri(baseUri.getText());
+		baseUri.setText(calculateServiceRoot());
+		controller.getItemSvc().setBaseSvcUri(baseUri.getText());
 		baseUri.addChangeListener(new ChangeListener()
 		{
 			public void onChange(Widget sender)
 			{
-				controller.setBaseSvcUri(baseUri.getText());
+				controller.getItemSvc().setBaseSvcUri(baseUri.getText());
+				scheduleRefresh();
+			}
+		});
+		
+		username.setText(controller.getItemSvc().getUsername());
+		username.addChangeListener(new ChangeListener()
+		{
+			public void onChange(Widget arg0)
+			{
+				controller.getItemSvc().setUsername(username.getText());
+				scheduleRefresh();
+			}
+		});
+		
+		password.setText(controller.getItemSvc().getPassword());
+		password.addChangeListener(new ChangeListener()
+		{
+			public void onChange(Widget arg0)
+			{
+				controller.getItemSvc().setPassword(password.getText());
 				scheduleRefresh();
 			}
 		});
 
+		int row = 0;
+		FlexTable optionsTable = new FlexTable();
+		optionsTable.setText  (row,   0, "Base URI");
+		optionsTable.setWidget(row++, 1, baseUri);
+		optionsTable.setText  (row,   0, "Username");
+		optionsTable.setWidget(row++, 1, username);
+		optionsTable.setText  (row,   0, "Password");
+		optionsTable.setWidget(row++, 1, password);
+		optionsTable.setText  (row,   0, "Max results");
+		optionsTable.setWidget(row++, 1, maxSize);
+		optionsTable.setWidget(row++, 0, controlSpaceSends);
 		
-		VerticalPanel optionsVp = new VerticalPanel();
-		optionsVp.setSpacing(5);
-		optionsVp.add(maxSize);
-		optionsVp.add(baseUri);
-		optionsVp.add(controlSpaceSends);
-		
-		optionsPanel.add(optionsVp);
+		optionsPanel.add(optionsTable);
 		optionsPanel.setAnimationEnabled(true);
 
 		entryPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
@@ -176,6 +216,12 @@ public class TimeSlicerApp implements EntryPoint
 		
 		scheduleRefresh();
 	}
+
+	private String calculateServiceRoot()
+	{
+		String svcRoot = GWT.getHostPageBaseURL().substring(0, GWT.getHostPageBaseURL().indexOf("/" + GWT.getModuleName() + "/")); // + "/items/";
+		return svcRoot;
+	}
 	
 	private void handleRefreshItemsDone(AsyncResult<List<StartTag>> result)
 	{
@@ -207,9 +253,18 @@ public class TimeSlicerApp implements EntryPoint
 
 	private void showError(AsyncResult<?> result)
 	{
+		Label label = new Label(result.getThrown().getMessage());
+		
+		Label msgText = new Label(result.getStatus().toString());
+		
+		VerticalPanel vp = new VerticalPanel();
+		vp.add(label);
+		vp.add(msgText);
+
 		DialogBox msgBox = new DialogBox(true);
-		msgBox.setWidget(new Label(result.getThrown().getMessage()));
+		msgBox.setWidget(vp);
 		msgBox.show();
+		
 		GWT.log("showed message: " + result.getStatus(), null);
 	}
 

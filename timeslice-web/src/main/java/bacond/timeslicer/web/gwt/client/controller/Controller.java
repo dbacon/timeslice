@@ -46,14 +46,9 @@ public class Controller
 
 	private final ItemJsonSvc itemSvc = new ItemJsonSvc();
 	
-	public void setBaseSvcUri(String baseSvcUri)
+	public ItemJsonSvc getItemSvc()
 	{
-		itemSvc.setBaseSvcUri(baseSvcUri);
-	}
-	
-	public void getBaseSvcUri()
-	{
-		itemSvc.getBaseSvcUri();
+		return itemSvc;
 	}
 	
 	public void startRefreshItems(int maxSize)
@@ -78,5 +73,17 @@ public class Controller
 					fireAddItemDone(result);
 				}
 			});
+	}
+
+	public void startEditDescription(StartTag editedStartTag)
+	{
+		itemSvc.beginUpdate(editedStartTag,
+				new IRequestEnder<Void>()
+				{
+					public void end(AsyncResult<Void> result)
+					{
+						fireAddItemDone(result); // TODO: trigger a related update (more specific)
+					}
+				});
 	}
 }

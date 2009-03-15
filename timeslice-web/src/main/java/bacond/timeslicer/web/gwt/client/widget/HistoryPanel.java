@@ -21,6 +21,7 @@ public class HistoryPanel extends Composite
 	public static interface IHistoryPanelListener
 	{
 		void interestingThing(String p);
+		void fireEdited(StartTag startTag);
 	}
 	
 	private final List<IHistoryPanelListener> listeners = new ArrayList<IHistoryPanelListener>();
@@ -40,6 +41,14 @@ public class HistoryPanel extends Composite
 		for (IHistoryPanelListener listener: listeners)
 		{
 			listener.interestingThing(p);
+		}
+	}
+	
+	protected void fireEdited(StartTag startTag)
+	{
+		for (IHistoryPanelListener listener: listeners)
+		{
+			listener.fireEdited(startTag);
 		}
 	}
 	
@@ -85,6 +94,11 @@ public class HistoryPanel extends Composite
 		{
 			fireInterestingThing(historicStartTag.getDescription());
 		}
+
+		public void itemEdited(StartTag editedTag)
+		{
+			fireEdited(editedTag);
+		}
 	}
 
 	final TaskPanelListener listener = new TaskPanelListener();
@@ -99,25 +113,9 @@ public class HistoryPanel extends Composite
 			TaskPanel taskPanel = new TaskPanel(item);
 			taskPanel.addTaskPanelListener(listener);
 			itemsPanel.add(taskPanel);
-//			itemsPanel.add(new HTML(
-//					"<div>" + item.getInstantString() + "</div>" +
-//					"<div style=\"padding-left: 5em;\"><b>" + item.getDescription() + "</b>" +
-//					"    <i><small>" +
-//					"" + (null == item.getDurationMillis() ? "(on-going)": ("(" + (item.getDurationMillis() / 1000.0)) + " second(s))") +
-//					"    </small></i>" +
-//					"</div>" +
-//					" " +
-////					"<br/>" +
-////					"<small><i>(" + item.getInstantString() + " ~ " + Transforms.mapNullTo(item.getUntilString(), "$") + ")</i></small>" +
-////					" <large><b>" + item.getDescription() + "</b></large>" +
-////					" (" + (null == item.getDurationMillis() ? "?": (item.getDurationMillis() / 1000.0)) + " second(s))" +
-//					"", false));
 		}
 		
-//		itemsPanel.add(entryPanel);
-		
 		scroller.scrollToBottom();
-//		scroller.scrollToTop();
 		scroller.scrollToRight();
 	}
 }

@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.restlet.gwt.Callback;
 import org.restlet.gwt.Client;
+import org.restlet.gwt.data.ChallengeResponse;
+import org.restlet.gwt.data.ChallengeScheme;
 import org.restlet.gwt.data.MediaType;
 import org.restlet.gwt.data.Method;
 import org.restlet.gwt.data.Preference;
@@ -26,7 +28,9 @@ import com.google.gwt.json.client.JSONValue;
 
 public class ItemJsonSvc
 {
-	String baseSvcUri = "http://localhost:8082";
+	private String baseSvcUri = "http://localhost:8082";
+	private String username = "bacond";
+	private String password = "123";
 	
 	public String getBaseSvcUri()
 	{
@@ -38,10 +42,31 @@ public class ItemJsonSvc
 		this.baseSvcUri = baseSvcUri;
 	}
 
+	public String getUsername()
+	{
+		return username;
+	}
+
+	public void setUsername(String username)
+	{
+		this.username = username;
+	}
+
+	public String getPassword()
+	{
+		return password;
+	}
+
+	public void setPassword(String password)
+	{
+		this.password = password;
+	}
+
 	private Request createJsonWsRequest(Method method, String uri)
 	{
 		Request req = new Request(method, new Reference(uri));
 		req.getClientInfo().getAcceptedMediaTypes().add(new Preference<MediaType>(MediaType.APPLICATION_JSON));
+		req.setChallengeResponse(new ChallengeResponse(ChallengeScheme.HTTP_BASIC, getUsername(), getPassword()));
 		return req;
 	}
 
@@ -162,6 +187,31 @@ public class ItemJsonSvc
 				catch (Exception e)
 				{
 					ender.end(AsyncResult.<List<StartTag>>threw(response.getStatus(), e));
+				}
+			}
+		});
+	}
+
+	public void beginUpdate(StartTag editedStartTag, final IRequestEnder<Void> ender)
+	{
+		StringRepresentation entity = new StringRepresentation(
+				"key=" + editedStartTag.getInstantString() + "\n" +
+				"what=" + editedStartTag.getDescription() + "\n" +
+				"");
+		entity.setMediaType(MediaType.TEXT_PLAIN);
+		
+		Client client = new Client(Protocol.HTTP);
+		client.put(new Reference(baseSvcUri + "/items/" + editedStartTag.getInstantString()), entity, new Callback()
+		{
+			public void onEvent(Request request, Response response)
+			{
+				if (response.getStatus().isSuccess())
+				{
+					ender.end(AsyncResult.returnedVoid(response.getStatus()));
+				}
+				else
+				{
+					ender.end(AsyncResult.<Void>threw(response.getStatus(), new RuntimeException("HTTP code " + response.getStatus().getCode())));
 				}
 			}
 		});
