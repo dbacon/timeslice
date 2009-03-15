@@ -6,6 +6,8 @@ import bacond.timeslicer.app.dto.StartTag;
 
 public class CompareByTime implements Comparator<StartTag>
 {
+	public static final CompareByTime Instance = new CompareByTime();
+	
 	@Override
 	public int compare(StartTag o1, StartTag o2)
 	{
