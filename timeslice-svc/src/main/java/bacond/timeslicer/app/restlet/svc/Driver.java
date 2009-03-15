@@ -19,6 +19,7 @@ public class Driver
 	{
 		public static final String Root = "root";
 		public static final String Port = "port";
+		public static final String Acl = "acl";
 	}
 	
 	private static CommandLine hello(String[] args) throws ParseException
@@ -26,6 +27,7 @@ public class Driver
 		Options opts = new Options();
 		opts.addOption(null, Args.Port, true, "Listening port.");
 		opts.addOption(null, Args.Root, true, "Path of shared folder.");
+		opts.addOption(null, Args.Acl, true, "ACL filename.");
 		
 		return new GnuParser().parse(opts, args);
 	}
@@ -34,6 +36,7 @@ public class Driver
 	{
 		int port = 8082;
 		URI rootUri = URI.create("root");
+		String acl = "users.acl.txt";
 		
 		CommandLine commandLine = hello(args);
 		
@@ -47,6 +50,11 @@ public class Driver
 			rootUri = URI.create(commandLine.getOptionValue(Args.Root));
 		}
 		
+		if (commandLine.hasOption(Args.Acl))
+		{
+			acl = commandLine.getOptionValue(Args.Acl);
+		}
+		
 		if (!rootUri.isAbsolute())
 		{
 			rootUri = new File(".").getCanonicalFile().toURI().resolve(rootUri);
@@ -54,12 +62,13 @@ public class Driver
 		
 		System.out.println("Root: '" + rootUri.toString() + "'");
 		System.out.println("Port: '" + port + "'");
+		System.out.println("Acl : '" + acl + "'");
 		
 		Component component = new Component();
 		component.getServers().add(Protocol.HTTP, port);
 		component.getClients().add(Protocol.FILE);
 		component.getDefaultHost()
-			.attach(new MyApp(component.getContext().createChildContext(), rootUri.toString()));
+			.attach(new MyApp(component.getContext().createChildContext(), rootUri.toString(), acl));
 
 		try
 		{
