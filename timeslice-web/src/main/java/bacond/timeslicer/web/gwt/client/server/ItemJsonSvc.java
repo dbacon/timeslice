@@ -1,7 +1,10 @@
 package bacond.timeslicer.web.gwt.client.server;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.restlet.gwt.Callback;
 import org.restlet.gwt.Client;
@@ -62,11 +65,21 @@ public class ItemJsonSvc
 		this.password = password;
 	}
 
-	private Request createJsonWsRequest(Method method, String uri)
+	private Request createJsonWsRequest(Method method, String uri, Map<String, String> queryParams)
 	{
-		Request req = new Request(method, new Reference(uri));
+		Reference resourceRef = new Reference(uri);
+
+		for (Entry<String, String> pair: queryParams.entrySet())
+		{
+			resourceRef.addQueryParameter(pair.getKey(), pair.getValue());
+		}
+		
+		Request req = new Request(method, resourceRef);
+		
 		req.getClientInfo().getAcceptedMediaTypes().add(new Preference<MediaType>(MediaType.APPLICATION_JSON));
+
 		req.setChallengeResponse(new ChallengeResponse(ChallengeScheme.HTTP_BASIC, getUsername(), getPassword()));
+		
 		return req;
 	}
 
@@ -84,7 +97,7 @@ public class ItemJsonSvc
 		entity.setMediaType(MediaType.TEXT_PLAIN);
 		
 		Client client = new Client(Protocol.HTTP);
-		client.post(new Reference(baseSvcUri + "/items"), entity, new Callback()
+		client.post(new Reference(getBaseSvcUri() + "/items"), entity, new Callback()
 		{
 			public void onEvent(Request request, Response response)
 			{
@@ -108,7 +121,11 @@ public class ItemJsonSvc
 		int max = maxSize;
 		SortDir sortDir = SortDir.desc;
 		
-		new Client(Protocol.HTTP).handle(createJsonWsRequest(Method.GET, baseSvcUri + "/items?sortdir=" + sortDir.name() + "&max=" + max + ""), new Callback()
+		Map<String, String> params = new LinkedHashMap<String, String>();
+		params.put("sortdir", sortDir.name());
+		params.put("pagesize", "" + max);
+		
+		new Client(Protocol.HTTP).handle(createJsonWsRequest(Method.GET, getBaseSvcUri() + "/items", params), new Callback()
 		{
 			public void onEvent(Request request, Response response)
 			{
@@ -201,7 +218,7 @@ public class ItemJsonSvc
 		entity.setMediaType(MediaType.TEXT_PLAIN);
 		
 		Client client = new Client(Protocol.HTTP);
-		client.put(new Reference(baseSvcUri + "/items/" + editedStartTag.getInstantString()), entity, new Callback()
+		client.put(new Reference(getBaseSvcUri() + "/items/" + editedStartTag.getInstantString()), entity, new Callback()
 		{
 			public void onEvent(Request request, Response response)
 			{
