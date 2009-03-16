@@ -1,15 +1,14 @@
 package bacond.timeslicer.app.restlet.resource;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.joda.time.Instant;
+import org.joda.time.format.ISODateTimeFormat;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -23,8 +22,8 @@ import org.restlet.resource.Variant;
 import bacond.lib.restlet.FormattedStringTextPlainRenderer;
 import bacond.lib.util.ITransform;
 import bacond.lib.util.MapMaker;
+import bacond.lib.util.Transforms;
 import bacond.timeslicer.app.dto.StartTag;
-import bacond.timeslicer.app.processing.Split;
 
 /**
  * Resource for a collection of {@link StartTag}s.
@@ -43,8 +42,6 @@ import bacond.timeslicer.app.processing.Split;
  */
 public class StartTagsResource extends Resource
 {
-	private static final Logger log = Logger.getLogger(StartTagsResource.class.getCanonicalName());
-	
 	private final Map<MediaType, ITransform<Collection<StartTag>, Representation>> renderers = MapMaker.create(new LinkedHashMap<MediaType, ITransform<Collection<StartTag>, Representation>>())
 		.put(MediaType.TEXT_PLAIN, FormattedStringTextPlainRenderer.create(new TextPlainStartTagsFormatter()))
 		.put(MediaType.TEXT_HTML,
@@ -67,46 +64,92 @@ public class StartTagsResource extends Resource
 	{
 		return (MyApp) getApplication();
 	}
+
+	public static class QueryParamNames
+	{
+		/*
+		 *  web service ones
+		 */
+		
+		public static final String MediaTypeOverride = "mediatypeoverride";
+		
+		/*
+		 *  application ones
+		 */
+		public static final String MinTime = "mintime";
+		public static final String MaxTime = "maxtime";
+		public static final String SortDir = "sortdir";
+		public static final String PageSize = "pagesize";
+		public static final String PageIndex = "pageindex";
+
+		@Deprecated
+		public static final String Enrich = "enrich";
+	
+	}
+	
+	public static final List<String> QueryParamNameList = Arrays.asList(
+			QueryParamNames.SortDir,
+			QueryParamNames.PageSize,
+			QueryParamNames.PageIndex,
+			QueryParamNames.Enrich,
+			QueryParamNames.MediaTypeOverride,
+			QueryParamNames.MinTime,
+			QueryParamNames.MaxTime);
+	
+	public Instant parseInstantIfAvailable(String a)
+	{
+		if (null == a)
+		{
+			return null;
+		}
+		else
+		{
+			return ISODateTimeFormat.dateTime().parseDateTime(a).toInstant();
+		}
+	}
+
+	public Integer parseIntegerIfAvailable(String a)
+	{
+		if (null == a)
+		{
+			return null;
+		}
+		else
+		{
+			return Integer.valueOf(a);
+		}
+	}
+	
+	public MediaType parseMediaTypeIfAvailable(String a)
+	{
+		if (null == a)
+		{
+			return null;
+		}
+		else
+		{
+			return MediaType.valueOf(a);
+		}
+	}
 	
 	@Override
 	public Representation represent(Variant variant) throws ResourceException
 	{
-		MediaType mediaType = variant.getMediaType();
-
-		{
-			String requestedMediaType = (String) getRequest().getAttributes().get("mediatype");
-			if (null != requestedMediaType)
-			{
-				mediaType = MediaType.valueOf(requestedMediaType);
-			}
-			
-			log.info("rendering items for " + variant.getMediaType());
-		}
+		MediaType mediaType = Transforms.mapNullTo(parseMediaTypeIfAvailable((String) getRequest().getAttributes().get(QueryParamNames.MediaTypeOverride)), variant.getMediaType());
 		
-		List<StartTag> tags = new LinkedList<StartTag>(getMyApp().getStartTags().values());
-
-		tags = new Split().split(tags, new Instant());
+		Boolean sortReverse = "desc".equals((String) getRequest().getAttributes().get(QueryParamNames.SortDir));
+		Instant minDate = Transforms.mapNullTo(parseInstantIfAvailable((String) getRequest().getAttributes().get(QueryParamNames.MinTime)), new Instant(0));
+		Instant maxDate = Transforms.mapNullTo(parseInstantIfAvailable((String) getRequest().getAttributes().get(QueryParamNames.MaxTime)), new Instant(Long.MAX_VALUE));
+		Integer pageSize = Transforms.mapNullTo(parseIntegerIfAvailable((String) getRequest().getAttributes().get(QueryParamNames.PageSize)), Integer.MAX_VALUE);
+		Integer pageIndex = Transforms.mapNullTo(parseIntegerIfAvailable((String) getRequest().getAttributes().get(QueryParamNames.PageIndex)), 0);
 		
-		{
-			Comparator<StartTag> cmp = CompareByTime.Instance;
-			
-			String sortColumn = (String) getRequest().getAttributes().get("sortdir");
-			if (null != sortColumn && "desc".equals(sortColumn))
-			{
-				cmp = Collections.reverseOrder(cmp);
-			}
-			
-			Collections.sort(tags, cmp);
-		}
+		List<StartTag> tags = new LinkedList<StartTag>(getMyApp().getMeSomeTags(
+				minDate,
+				maxDate,
+				sortReverse,
+				pageSize,
+				pageIndex));
 
-		{
-			String max = (String) getRequest().getAttributes().get("max");
-			if (null != max)
-			{
-				tags = tags.subList(0, Math.min(tags.size(), Integer.valueOf(max)));
-			}
-		}
-		
 		return renderers.get(mediaType).apply(tags);
 	}
 
