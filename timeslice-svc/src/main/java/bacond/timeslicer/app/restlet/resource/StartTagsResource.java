@@ -96,7 +96,7 @@ public class StartTagsResource extends Resource
 			QueryParamNames.MinTime,
 			QueryParamNames.MaxTime);
 	
-	public Instant parseInstantIfAvailable(String a)
+	public static Instant parseInstantIfAvailable(String a)
 	{
 		if (null == a)
 		{
@@ -162,23 +162,33 @@ public class StartTagsResource extends Resource
 	@Override
 	public void acceptRepresentation(Representation entity) throws ResourceException
 	{
-		StartTag startTag = new StartTagHelper().parseEntity(entity, getResponse());
+		List<StartTag> startTags = new StartTagHelper().parseEntity(entity, getResponse());
+		boolean rollback = false;
 		
-		if (null != startTag)
+		for (StartTag startTag: startTags)
 		{
 			if (getMyApp().getStartTags().containsKey(startTag.getWhen()))
 			{
-				getResponse().setStatus(Status.CLIENT_ERROR_PRECONDITION_FAILED);
+				rollback = true;
+				break;
 			}
 			else
 			{
 				// TODO: better integration/validation support upon adding startTag to list.
 				//  for example collisions, missing untils if in past, etc.
-				getMyApp().getStartTags().put(startTag.getWhen(), startTag);
 				
-				getResponse().setStatus(Status.SUCCESS_CREATED, "created.");
-				getResponse().redirectSeeOther("/items");
+				getMyApp().getStartTags().put(startTag.getWhen(), startTag);
 			}
+		}
+
+		if (rollback)
+		{
+			getResponse().setStatus(Status.CLIENT_ERROR_PRECONDITION_FAILED);
+		}
+		else
+		{
+			getResponse().setStatus(Status.SUCCESS_CREATED, "created.");
+			getResponse().redirectSeeOther("/items");
 		}
 	}
 

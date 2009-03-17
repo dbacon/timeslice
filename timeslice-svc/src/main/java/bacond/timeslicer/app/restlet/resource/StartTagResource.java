@@ -1,6 +1,7 @@
 package bacond.timeslicer.app.restlet.resource;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -156,7 +157,11 @@ public class StartTagResource extends Resource
 		}
 		else
 		{
-			updateStartTag(localTag.getWhen(), new StartTagHelper().parseEntity(entity, getResponse()));
+			List<StartTag> newTags = new StartTagHelper().parseEntity(entity, getResponse());
+			for (StartTag newTag: newTags)
+			{
+				updateStartTag(localTag.getWhen(), newTag);
+			}
 		}
 	}
 

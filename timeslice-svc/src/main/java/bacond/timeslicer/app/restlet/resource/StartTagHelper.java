@@ -1,18 +1,17 @@
 package bacond.timeslicer.app.restlet.resource;
 
-import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.joda.time.Instant;
-import org.joda.time.format.ISODateTimeFormat;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 
+import bacond.lib.util.Transforms;
 import bacond.timeslicer.app.dto.StartTag;
 
 public class StartTagHelper
@@ -25,109 +24,76 @@ public class StartTagHelper
 	 * @param entity
 	 * @return <code>null</code> if <code>entity</code> could not be parsed into a {@link StartTag}.
 	 */
-	public StartTag parseEntity(Representation entity, Response response)
+	public List<StartTag> parseEntity(Representation entity, Response response)
 	{
-		String who = null;
-		String when = null;
-		String until = null;
-		String what = null;
-		
-		if (entity.getMediaType().equals(MediaType.TEXT_PLAIN))
+		List<StartTag> result = new ArrayList<StartTag>();
+
+		if (MediaType.MULTIPART_FORM_DATA.equals(entity.getMediaType(), true))
 		{
-			log.info("accepting text-plain post");
-			
-			// Supports format:
-			// attr1=val1
-			// attr2=val2
-			//  ...
-			
-			Map<String, String> attrs = new LinkedHashMap<String, String>();
-
-			String reprText = null;
-			
-			try
-			{
-				reprText = entity.getText();
-			}
-			catch (IOException e)
-			{
-				reprText = "";
-				log.info("Couldn't read representation: " + e.getMessage());
-			}
-				
-			log.info("reprText: '" + reprText + "'");
-			
-			String[] pairs = reprText.split("\n", -1);
-			
-			for (String pair: pairs)
-			{
-				int barrier = pair.indexOf('=');
-				
-				if (barrier >= 0)
-				{
-					String name = pair.substring(0, barrier);
-					String value = pair.substring(barrier + 1);
-					attrs.put(name, value);
-				}
-			}
-			
-			who = attrs.get("who");
-			when = attrs.get("when");
-			until = attrs.get("until");
-			what = attrs.get("what");
-		}
-		else if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM))
-		{
-			log.info("accepting form post");
-
-			Form form = new Form(entity);
-
-			who = form.getFirstValue("who");
-			when = form.getFirstValue("when");
-			until = form.getFirstValue("until");
-			what = form.getFirstValue("what");
+			log.info("accepting multi-part form-data post");
+			result.add(new BulkText(entity).handleBulk(response));
 		}
 		else
 		{
-			log.info("not accepting post; only form and text-plain is acceptable.");
-			response.setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, "Only form and text-plain is acceptable.");
-			return null;
+			if (MediaType.TEXT_PLAIN.equals(entity.getMediaType()))
+			{
+				log.info("accepting text-plain post");
+				
+				TextRepr textRepr = new TextRepr(entity);
+				
+				result.add(deal(textRepr.get("who"), textRepr.get("when"), textRepr.get("until"), textRepr.get("what"), response));
+			}
+			else if (MediaType.APPLICATION_WWW_FORM.equals(entity.getMediaType()))
+			{
+				log.info("accepting form post");
+				
+				Form form = new Form(entity);
+
+				result.add(deal(form.getFirstValue("who"), form.getFirstValue("when"), form.getFirstValue("until"), form.getFirstValue("what"), response));
+			}
+			else
+			{
+				log.info("not accepting post; only form and text-plain is acceptable.");
+				response.setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, "Only form and text-plain is acceptable.");
+			}
 		}
 		
-		if (null != who)
+		return result;
+	}
+	
+	public static class BulkText
+	{
+		private final Representation entity;
+		
+		public BulkText(Representation entity)
 		{
-			// TODO: if who is provided, perhaps try to authenticate it and use it ?
+			this.entity = entity;
+			
+			// TODO: LEFTOFF: parse uploaded data.
 		}
-		
-		if (null == who)
+
+		public StartTag handleBulk(Response response)
 		{
-			// TODO: get who from HTTP session / authenticated.
-			who = "bacond";
+			return new StartTag("bacond", new Instant(), "FROM UPLOAD: " + entity.getSize() + " bytes", null);
 		}
+	}
+	
+
+	private StartTag deal(String who, String when, String until, String what, Response response)
+	{
+		Instant whenInstant = Transforms.mapNullTo(StartTagsResource.parseInstantIfAvailable(when), new Instant());
+		Instant untilInstant = Transforms.mapNullTo(StartTagsResource.parseInstantIfAvailable(until), new Instant());
+		who = Transforms.mapNullTo(who, "anonymous");
+		// TODO authenticate 'who' ?
 		
-		if (null == what || null == who)
+		StartTag newStartTag = new StartTag(who, whenInstant, what, untilInstant);
+		
+		if (null == newStartTag.getWhat())
 		{
 			response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 			return null;
 		}
 
-		Instant whenInstant = null;
-		if (null != when)
-		{
-			whenInstant = ISODateTimeFormat.dateTime().parseDateTime(when).toInstant();
-		}
-		else
-		{
-			whenInstant = new Instant();
-		}
-		
-		Instant untilInstant = null;
-		if (null != until)
-		{
-			untilInstant = ISODateTimeFormat.dateTime().parseDateTime(until).toInstant();
-		}
-		
-		return new StartTag(who, whenInstant, what, untilInstant);
+		return newStartTag;
 	}
-	
 }
