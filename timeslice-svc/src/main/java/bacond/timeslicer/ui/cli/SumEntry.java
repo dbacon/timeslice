@@ -50,7 +50,7 @@ public class SumEntry
 		return result;
 	}
 
-	private static StartTag fromLine(String line)
+	public static StartTag fromLine(String line)
 	{
 		StartTag result = null;
 	

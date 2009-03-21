@@ -1,5 +1,8 @@
 package bacond.timeslicer.app.restlet.resource;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -13,6 +16,7 @@ import org.restlet.resource.Representation;
 
 import bacond.lib.util.Transforms;
 import bacond.timeslicer.app.dto.StartTag;
+import bacond.timeslicer.ui.cli.SumEntry;
 
 public class StartTagHelper
 {
@@ -49,7 +53,20 @@ public class StartTagHelper
 				
 				Form form = new Form(entity);
 
-				result.add(deal(form.getFirstValue("who"), form.getFirstValue("when"), form.getFirstValue("until"), form.getFirstValue("what"), response));
+				String bulkContent = form.getFirstValue("bulkcontent");
+				if (null != bulkContent)
+				{
+					result.addAll(handleBulkFromString(bulkContent));
+				}
+				else
+				{
+					StartTag deal = deal(form.getFirstValue("who"), form.getFirstValue("when"), form.getFirstValue("until"), form.getFirstValue("what"), response);
+					
+					if (null != deal)
+					{
+						result.add(deal);
+					}
+				}
 			}
 			else
 			{
@@ -61,6 +78,40 @@ public class StartTagHelper
 		return result;
 	}
 	
+	private List<StartTag> handleBulkFromString(String data)
+	{
+		BufferedReader reader = new BufferedReader(new StringReader(data));
+
+		List<StartTag> result = new ArrayList<StartTag>();
+		try
+		{
+			while (true)
+			{
+				String line = reader.readLine();
+				
+				if (null == line)
+				{
+					break;
+				}
+				else
+				{
+					StartTag tag = SumEntry.fromLine(line);
+
+					if (null != tag)
+					{
+						result.add(tag);
+					}
+				}
+			}
+		}
+		catch (IOException e)
+		{
+			throw new RuntimeException("I/O exception during reading bulk content: " + e.getMessage(), e);
+		}
+		
+		return result;
+	}
+
 	public static class BulkText
 	{
 		private final Representation entity;
@@ -74,7 +125,7 @@ public class StartTagHelper
 
 		public StartTag handleBulk(Response response)
 		{
-			return new StartTag("bacond", new Instant(), "FROM UPLOAD: " + entity.getSize() + " bytes", null);
+			return new StartTag("bacond", new Instant(), "FROM UPLOAD: " + entity.getSize() + " bytes", new Instant());
 		}
 	}
 	
