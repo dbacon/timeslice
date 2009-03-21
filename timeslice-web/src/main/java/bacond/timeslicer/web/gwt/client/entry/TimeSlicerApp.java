@@ -12,6 +12,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -21,6 +22,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
@@ -33,6 +35,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class TimeSlicerApp implements EntryPoint
 {
+	public static final String IssuesUrl = "http://code.google.com/p/timeslice/issues/list";
 
 	public static final class Defaults
 	{
@@ -199,7 +202,21 @@ public class TimeSlicerApp implements EntryPoint
 		DecoratedTabPanel tp = new DecoratedTabPanel();
 		tp.add(vp, "Items");
 		tp.selectTab(0);
-		RootPanel.get().add(tp);
+		VerticalPanel mainVp = new VerticalPanel();
+		mainVp.setSpacing(5);
+		mainVp.add(tp);
+		HorizontalPanel buildLabelBox = new HorizontalPanel();
+		Hyperlink feedbackLink = new Hyperlink("Feedback/RFEs/Bugs", null);
+		feedbackLink.addClickListener(new ClickListener()
+		{
+			public void onClick(Widget arg0)
+			{
+				Window.open(IssuesUrl, "_blank", "");
+			}
+		});
+		buildLabelBox.add(feedbackLink);
+		mainVp.add(buildLabelBox);
+		RootPanel.get().add(mainVp);
 		
 		controller.addControllerListener(new IControllerListener()
 			{
