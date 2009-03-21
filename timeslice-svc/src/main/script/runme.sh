@@ -4,9 +4,8 @@
 
 set -e
 
-# TODO: get these bits into tokens.
-SVCVERSION="1.0.3-SNAPSHOT"
-WEBVERSION="1.0.3-SNAPSHOT"
+SVCVERSION="${pom.version}"
+WEBVERSION="${pom.version}"
 
 WEBROOT="timeslice-web-${WEBVERSION}"
 
@@ -57,9 +56,10 @@ trap restoreecho EXIT
 
 if [ ! -r "users.acl.txt" ]
 then
-	printf "Create a user: username: "
+	printf "Create a user:\n"
+	printf "  username: "
 	read username
-	printf "Password: "
+	printf "  password: "
 	stty -echo
 	read password
 	stty echo

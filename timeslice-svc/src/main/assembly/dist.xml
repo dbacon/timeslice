@@ -32,7 +32,7 @@
 	<files>
 		<file>
 			<!-- TODO: tuck these bits away in properties -->
-			<source>../timeslice-web/target/timeslice-web-1.0.3-SNAPSHOT-static-web-root.zip</source>
+			<source>../timeslice-web/target/timeslice-web-${pom.version}-static-web-root.zip</source>
 			<outputDirectory>/var/lib/webroot</outputDirectory>
 		</file>
 	</files>
