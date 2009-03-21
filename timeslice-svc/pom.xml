@@ -17,12 +17,31 @@
 		</plugin>
 		<plugin>
 			<artifactId>maven-assembly-plugin</artifactId>
-			<configuration>
-				<descriptorRefs><descriptorRef>jar-with-dependencies</descriptorRef></descriptorRefs>
-					<archive>
-						<manifest><mainClass>bacond.timeslicer.app.restlet.svc.Driver</mainClass></manifest>
-					</archive>
-			</configuration>
+  			<executions>
+  				<execution>
+  					<id>make-assembly-0</id>
+  					<phase>package</phase>
+  					<goals><goal>single</goal></goals>
+					<configuration>
+						<descriptorRefs>
+							<descriptorRef>jar-with-dependencies</descriptorRef>
+						</descriptorRefs>
+						<archive>
+							<manifest><mainClass>bacond.timeslicer.app.restlet.svc.Driver</mainClass></manifest>
+						</archive>
+					</configuration>
+  				</execution>
+  				<execution>
+  					<id>make-assembly-1</id>
+  					<phase>package</phase>
+  					<goals><goal>single</goal></goals>
+					<configuration>
+		  				<descriptors>
+		  					<descriptor>src/main/assembly/dist.xml</descriptor>
+						</descriptors>
+					</configuration>
+  				</execution>
+  			</executions>
 		</plugin>
 	</plugins>
   </build>
