@@ -3,7 +3,7 @@
   <groupId>bacond</groupId>
   <artifactId>timeslice-web</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.3-SNAPSHOT</version>
+  <version>1.0.3</version>
   <build>
   	<plugins>
   		<plugin>
