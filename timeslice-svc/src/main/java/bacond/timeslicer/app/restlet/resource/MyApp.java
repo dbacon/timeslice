@@ -17,6 +17,7 @@ import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Router;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.util.Variable;
 
 import bacond.lib.util.Check;
 import bacond.timeslicer.app.auth.AclFile;
@@ -69,6 +70,9 @@ public class MyApp extends Application
 		}
 
 		router.attach("/items/{when}", guard1);
+		
+		Route resRoute = router.attach("/resources/{resPath}", ResourceResource.class);
+		resRoute.getTemplate().getVariables().put("resPath", new Variable(Variable.TYPE_ALL));
 		
 		Directory directory = new Directory(getContext().createChildContext(), localRootUri);
 		directory.setListingAllowed(true);
