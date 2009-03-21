@@ -16,7 +16,7 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>target/timeslice-web-1.0.3-SNAPSHOT</directory>
+			<directory>target/timeslice-web-${pom.version}</directory>
 			<excludes><exclude>**/.gwt-tmp/**</exclude></excludes>
 			<outputDirectory>/</outputDirectory>
 		</fileSet>
