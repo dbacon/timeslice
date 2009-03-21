@@ -39,7 +39,7 @@ then
 	rm -rf "$WEBROOT"
 fi
 
-unzip "$WEBROOTARCH"
+unzip -q "$WEBROOTARCH"
 
 cd -
 
