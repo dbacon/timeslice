@@ -55,6 +55,7 @@ public class StartTagsResource extends Resource
 	
 	private final Map<MediaType, ITransform<Collection<TaskTotal>, Representation>> taskTotalRenderers = MapMaker.create(new LinkedHashMap<MediaType, ITransform<Collection<TaskTotal>, Representation>>())
 		.put(MediaType.TEXT_PLAIN, FormattedStringTextPlainRenderer.create(new TextPlainTaskTotalsFormatter()))
+		.put(MediaType.APPLICATION_JSON, new JsonArrayRenderer<TaskTotal>())
 		.getMap();
 
 	protected Map<MediaType, ITransform<Collection<StartTag>, Representation>> getStartTagRenderers()

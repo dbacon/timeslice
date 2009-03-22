@@ -6,7 +6,7 @@ import java.util.List;
 
 import bacond.timeslicer.web.gwt.client.util.IReadableValue;
 import bacond.timeslicer.web.gwt.client.util.IWritableValue;
-import bacond.timeslicer.web.gwt.client.util.Transforms;
+import bacond.timeslicer.web.gwt.client.util.Checks;
 import bacond.timeslicer.web.gwt.client.util.ValueUtil;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -135,8 +135,8 @@ public class ParamPanel extends Composite
 	public boolean hasError()
 	{
 		return false
-			|| (!Transforms.mapNullTo(getStartingTimeError().getText(), "").trim().isEmpty())
-			|| (!Transforms.mapNullTo(getEndingTimeError().getText(), "").trim().isEmpty());
+			|| (!Checks.mapNullTo(getStartingTimeError().getText(), "").trim().isEmpty())
+			|| (!Checks.mapNullTo(getEndingTimeError().getText(), "").trim().isEmpty());
 	}
 	
 	protected void update()

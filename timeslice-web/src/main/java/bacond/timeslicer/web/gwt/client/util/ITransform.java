@@ -1,6 +1,6 @@
 package bacond.timeslicer.web.gwt.client.util;
 
-public interface IReadableValue<T>
+public interface ITransform<R, D>
 {
-	T getValue();
+	D apply(R r);
 }

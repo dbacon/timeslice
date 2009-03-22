@@ -1,6 +1,6 @@
 package bacond.timeslicer.web.gwt.client.util;
 
-public class Transforms
+public class Checks
 {
 	public static <T> T mapNullTo(T t, T altT)
 	{

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package bacond.timeslicer.web.gwt.client.util;
 
 import com.google.gwt.user.client.ui.HasText;

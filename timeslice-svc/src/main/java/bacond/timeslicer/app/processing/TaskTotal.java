@@ -1,6 +1,9 @@
 package bacond.timeslicer.app.processing;
 
-public class TaskTotal
+import org.json.JSONString;
+import org.json.JSONStringer;
+
+public class TaskTotal implements JSONString
 {
 	private final String who;
 	private final int millis;
@@ -32,5 +35,32 @@ public class TaskTotal
 	public String getWhat()
 	{
 		return what;
+	}
+
+	@Override
+	public String toJSONString()
+	{
+		try
+		{
+			return new JSONStringer()
+				.object()
+
+					.key("who")
+					.value(getWho())
+					
+					.key("durationms")
+					.value(getMillis())
+					
+					.key("what")
+					.value(getWhat())
+					
+				.endObject()
+				.toString();
+
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException("JSON representation failed: " + e.getMessage(), e);
+		}
 	}
 }

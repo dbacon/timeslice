@@ -21,12 +21,11 @@ import org.restlet.gwt.resource.JsonRepresentation;
 import org.restlet.gwt.resource.StringRepresentation;
 
 import bacond.timeslicer.web.gwt.client.beans.StartTag;
+import bacond.timeslicer.web.gwt.client.beans.TaskTotal;
 import bacond.timeslicer.web.gwt.client.entry.AsyncResult;
+import bacond.timeslicer.web.gwt.client.util.ITransform;
 
 import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONNumber;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
 
 public class ItemJsonSvc
@@ -113,15 +112,15 @@ public class ItemJsonSvc
 		});
 	}
 	
+	/**
+	 * Kept for compatibility -- see called method.
+	 * 
+	 * @param maxSize
+	 * @param ender
+	 */
 	public void beginRefreshItems(int maxSize, final IRequestEnder<List<StartTag>> ender)
 	{
-		beginRefreshItems(maxSize, SortDir.desc, null, null, null, ender);
-	}
-	
-	public static enum ProcType
-	{
-		none,
-		sumbydesc,
+		beginRefreshItems(maxSize, SortDir.desc, null, null, null, new StartTagFromJson(), ender);
 	}
 	
 	private static void installIfNotNull(Map<String, String> map, String key, String value)
@@ -131,11 +130,15 @@ public class ItemJsonSvc
 			map.put(key, value);
 		}
 	}
-
+	
+	public void beginRefreshSummed(int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, final IRequestEnder<List<TaskTotal>> ender)
+	{
+	}
+	
 	/**
 	 * TODO: export only the JSON conversion bits and factor the rest to a base class.
 	 */
-	public void beginRefreshItems(int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, final IRequestEnder<List<StartTag>> ender)
+	public <T> void beginRefreshItems(int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, final ITransform<JSONValue, T> itemFromJson, final IRequestEnder<List<T>> ender)
 	{
 		String procTypeString = null;
 		if (null != procType)
@@ -150,85 +153,50 @@ public class ItemJsonSvc
 		installIfNotNull(params, "mintime", startingInstant);
 		installIfNotNull(params, "maxtime", endingInstant);
 		
+//		final StartTagFromJson startTagFromJson = new StartTagFromJson();
+		
 		new Client(Protocol.HTTP).handle(createJsonWsRequest(Method.GET, getBaseSvcUri() + "/items", params), new Callback()
 		{
 			public void onEvent(Request request, Response response)
 			{
 				try
 				{
-					if (response.getStatus().isSuccess())
-					{
-						JsonRepresentation jsonEntity = response.getEntityAsJson();
-						JSONValue jsonValue = jsonEntity.getValue();
-						JSONArray jsonArray = jsonValue.isArray();
-						
-						List<StartTag> result = new ArrayList<StartTag>();
-						if (null != jsonArray)
-						{
-							for (int i = 0; i < jsonArray.size(); ++i)
-							{
-								JSONValue value = jsonArray.get(i);
-								JSONObject object = value.isObject();
-								
-								if (null != object && object.containsKey("what") && object.containsKey("when"))
-								{
-									JSONString whatString = object.get("what").isString();
-									JSONString whenString = object.get("when").isString();
-									Double durationMs = null;
-									String until = null;
-									
-									if (null != object && object.containsKey("until"))
-									{
-										JSONValue untilValue = object.get("until");
-										
-										JSONString untilString = untilValue.isString();
-										if (null != untilString)
-										{
-											until = untilString.stringValue();
-										}
-									}
-									
-									if (null != object && object.containsKey("durationms"))
-									{
-										JSONValue durationValue = object.get("durationms");
-										
-										JSONNumber jsonNumber = durationValue.isNumber();
-										if (null != jsonNumber)
-										{
-											durationMs = jsonNumber.doubleValue();
-										}
-									}
-									
-									if (null != whenString && null != whatString)
-									{
-										result.add(new StartTag(whenString.stringValue(), until, durationMs, whatString.stringValue()));
-									}
-									else
-									{
-										throw new RuntimeException("Attribute 'when' or 'what' (or both) was not a JSONString value.");
-									}
-								}
-								else
-								{
-									throw new RuntimeException("Member of JSONArray was not an object with both 'when' and 'what' set.");
-								}
-							}
-
-							ender.end(AsyncResult.returned(response.getStatus(), result));
-						}
-						else
-						{
-							throw new RuntimeException("Representation was not a JSONArray");
-						}
-					}
-					else
+					if (!response.getStatus().isSuccess())
 					{
 						throw new RuntimeException("HTTP response was not a success status");
 					}
+
+					JsonRepresentation jsonEntity = response.getEntityAsJson();
+					
+					if (null == jsonEntity)
+					{
+						throw new RuntimeException("No representation was available.");
+					}
+
+					JSONArray jsonArray = jsonEntity.getValue().isArray();
+
+					if (null == jsonArray)
+					{
+						throw new RuntimeException("Representation was not a JSONArray");
+					}
+					
+					List<T> result = new ArrayList<T>();
+
+					for (int i = 0; i < jsonArray.size(); ++i)
+					{
+						T item = itemFromJson.apply(jsonArray.get(i));
+
+						if (null != item)
+						{
+							result.add(item);
+						}
+					}
+
+					ender.end(AsyncResult.returned(response.getStatus(), result));
 				}
 				catch (Exception e)
 				{
-					ender.end(AsyncResult.<List<StartTag>>threw(response.getStatus(), e));
+					ender.end(AsyncResult.<List<T>>threw(response.getStatus(), e));
 				}
 			}
 		});
@@ -258,4 +226,5 @@ public class ItemJsonSvc
 			}
 		});
 	}
+
 }
