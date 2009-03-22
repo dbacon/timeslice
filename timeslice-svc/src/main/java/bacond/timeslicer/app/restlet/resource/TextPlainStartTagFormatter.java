@@ -18,7 +18,6 @@ public final class TextPlainStartTagFormatter implements ITransform<StartTag, St
 			.append("#")
 			.append(startTag.getWhat())
 			.append("]")
-			.append("\n")
 			.toString();
 	}
 }
