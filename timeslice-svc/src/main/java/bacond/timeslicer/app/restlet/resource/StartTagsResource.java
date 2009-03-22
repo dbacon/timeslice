@@ -172,13 +172,26 @@ public class StartTagsResource extends Resource
 
 		if ("sumbydesc".equals(processing))
 		{
-			List<StartTag> independentTags = new Split().split(tags, new Instant());
-			Map<String, TaskTotal> sums = new Aggregate().sumThem(new Aggregate().aggregate(independentTags));
-			return getTaskTotalRenderers().get(mediaType).apply(sums.values()); 
+			return render(mediaType, getTaskTotalRenderers(), new Aggregate().sumThem(new Aggregate().aggregate(new Split().split(tags, new Instant()))).values());
 		}
 		else
 		{
-			return getStartTagRenderers().get(mediaType).apply(tags);
+			return render(mediaType, getStartTagRenderers(), tags);
+		}
+	}
+
+	private <T> Representation render(MediaType mediaType, Map<MediaType, ITransform<T, Representation>> rendererMap, T tags)
+	{
+		ITransform<T, Representation> renderer = rendererMap.get(mediaType);
+		
+		if (null != renderer)
+		{
+			return renderer.apply(tags);
+		}
+		else
+		{
+			getResponse().setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
+			return null;
 		}
 	}
 
