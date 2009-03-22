@@ -113,17 +113,42 @@ public class ItemJsonSvc
 		});
 	}
 	
+	public void beginRefreshItems(int maxSize, final IRequestEnder<List<StartTag>> ender)
+	{
+		beginRefreshItems(maxSize, SortDir.desc, null, null, null, ender);
+	}
+	
+	public static enum ProcType
+	{
+		none,
+		sumbydesc,
+	}
+	
+	private static void installIfNotNull(Map<String, String> map, String key, String value)
+	{
+		if (null != value)
+		{
+			map.put(key, value);
+		}
+	}
+
 	/**
 	 * TODO: export only the JSON conversion bits and factor the rest to a base class.
 	 */
-	public void beginRefreshItems(int maxSize, final IRequestEnder<List<StartTag>> ender)
+	public void beginRefreshItems(int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, final IRequestEnder<List<StartTag>> ender)
 	{
-		int max = maxSize;
-		SortDir sortDir = SortDir.desc;
+		String procTypeString = null;
+		if (null != procType)
+		{
+			procTypeString = procType.name();
+		}
 		
 		Map<String, String> params = new LinkedHashMap<String, String>();
-		params.put("sortdir", sortDir.name());
-		params.put("pagesize", "" + max);
+		installIfNotNull(params, "sortdir", sortDir.name());
+		installIfNotNull(params, "pagesize", "" + maxSize);
+		installIfNotNull(params, "proctype", procTypeString);
+		installIfNotNull(params, "mintime", startingInstant);
+		installIfNotNull(params, "maxtime", endingInstant);
 		
 		new Client(Protocol.HTTP).handle(createJsonWsRequest(Method.GET, getBaseSvcUri() + "/items", params), new Callback()
 		{

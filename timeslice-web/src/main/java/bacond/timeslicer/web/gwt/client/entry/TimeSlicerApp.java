@@ -7,6 +7,7 @@ import bacond.timeslicer.web.gwt.client.beans.StartTag;
 import bacond.timeslicer.web.gwt.client.controller.Controller;
 import bacond.timeslicer.web.gwt.client.controller.IControllerListener;
 import bacond.timeslicer.web.gwt.client.widget.HistoryPanel;
+import bacond.timeslicer.web.gwt.client.widget.ReportPanel;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -199,8 +200,12 @@ public class TimeSlicerApp implements EntryPoint
 		vp.add(manualTimeDisclosure);
 		vp.add(optionsPanel);
 		
+		ReportPanel p2 = new ReportPanel();
+		p2.setController(controller);
+		
 		DecoratedTabPanel tp = new DecoratedTabPanel();
-		tp.add(vp, "Items");
+		tp.add(vp, "Input");
+		tp.add(p2, "Reports");
 		tp.selectTab(0);
 		VerticalPanel mainVp = new VerticalPanel();
 		mainVp.setSpacing(5);
