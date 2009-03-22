@@ -24,6 +24,9 @@ import bacond.lib.util.ITransform;
 import bacond.lib.util.MapMaker;
 import bacond.lib.util.Transforms;
 import bacond.timeslicer.app.dto.StartTag;
+import bacond.timeslicer.app.processing.Aggregate;
+import bacond.timeslicer.app.processing.Split;
+import bacond.timeslicer.app.processing.TaskTotal;
 
 /**
  * Resource for a collection of {@link StartTag}s.
@@ -42,19 +45,33 @@ import bacond.timeslicer.app.dto.StartTag;
  */
 public class StartTagsResource extends Resource
 {
-	private final Map<MediaType, ITransform<Collection<StartTag>, Representation>> renderers = MapMaker.create(new LinkedHashMap<MediaType, ITransform<Collection<StartTag>, Representation>>())
+	private final Map<MediaType, ITransform<Collection<StartTag>, Representation>> startTagRenderers = MapMaker.create(new LinkedHashMap<MediaType, ITransform<Collection<StartTag>, Representation>>())
 		.put(MediaType.TEXT_PLAIN, FormattedStringTextPlainRenderer.create(new TextPlainStartTagsFormatter()))
 		.put(MediaType.TEXT_HTML,
 				ToStringRepr.create(MediaType.TEXT_HTML,
 						HtmlPagifier.pagify(BulletedListTextHtmlRenderer.create(new ToString("[<small><a href=\"/items/%1$s\">%1$s</a></small>] %2$s")))))
 		.put(MediaType.APPLICATION_JSON, new JsonArrayRenderer<StartTag>())		
 		.getMap();
+	
+	private final Map<MediaType, ITransform<Collection<TaskTotal>, Representation>> taskTotalRenderers = MapMaker.create(new LinkedHashMap<MediaType, ITransform<Collection<TaskTotal>, Representation>>())
+		.put(MediaType.TEXT_PLAIN, FormattedStringTextPlainRenderer.create(new TextPlainTaskTotalsFormatter()))
+		.getMap();
+
+	protected Map<MediaType, ITransform<Collection<StartTag>, Representation>> getStartTagRenderers()
+	{
+		return startTagRenderers;
+	}
+
+	protected Map<MediaType, ITransform<Collection<TaskTotal>, Representation>> getTaskTotalRenderers()
+	{
+		return taskTotalRenderers;
+	}
 
 	public StartTagsResource(Context context, Request request, Response response)
 	{
 		super(context, request, response);
 		
-		for (MediaType mediaType: renderers.keySet())
+		for (MediaType mediaType: getStartTagRenderers().keySet())
 		{
 			getVariants().add(new Variant(mediaType));
 		}
@@ -81,6 +98,7 @@ public class StartTagsResource extends Resource
 		public static final String SortDir = "sortdir";
 		public static final String PageSize = "pagesize";
 		public static final String PageIndex = "pageindex";
+		public static final String Processing = "proctype";
 
 		@Deprecated
 		public static final String Enrich = "enrich";
@@ -94,7 +112,8 @@ public class StartTagsResource extends Resource
 			QueryParamNames.Enrich,
 			QueryParamNames.MediaTypeOverride,
 			QueryParamNames.MinTime,
-			QueryParamNames.MaxTime);
+			QueryParamNames.MaxTime,
+			QueryParamNames.Processing);
 	
 	public static Instant parseInstantIfAvailable(String a)
 	{
@@ -142,6 +161,7 @@ public class StartTagsResource extends Resource
 		Instant maxDate = Transforms.mapNullTo(parseInstantIfAvailable((String) getRequest().getAttributes().get(QueryParamNames.MaxTime)), new Instant(Long.MAX_VALUE));
 		Integer pageSize = Transforms.mapNullTo(parseIntegerIfAvailable((String) getRequest().getAttributes().get(QueryParamNames.PageSize)), Integer.MAX_VALUE);
 		Integer pageIndex = Transforms.mapNullTo(parseIntegerIfAvailable((String) getRequest().getAttributes().get(QueryParamNames.PageIndex)), 0);
+		String processing = Transforms.mapNullTo((String) getRequest().getAttributes().get(QueryParamNames.Processing), "none");
 		
 		List<StartTag> tags = new LinkedList<StartTag>(getMyApp().getMeSomeTags(
 				minDate,
@@ -150,7 +170,16 @@ public class StartTagsResource extends Resource
 				pageSize,
 				pageIndex));
 
-		return renderers.get(mediaType).apply(tags);
+		if ("sumbydesc".equals(processing))
+		{
+			List<StartTag> independentTags = new Split().split(tags, new Instant());
+			Map<String, TaskTotal> sums = new Aggregate().sumThem(new Aggregate().aggregate(independentTags));
+			return getTaskTotalRenderers().get(mediaType).apply(sums.values()); 
+		}
+		else
+		{
+			return getStartTagRenderers().get(mediaType).apply(tags);
+		}
 	}
 
 	@Override
