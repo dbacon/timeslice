@@ -84,7 +84,7 @@ public class ReportPanel extends Composite
 			}
 			
 			dataPointsString.append(item.getDurationMillis() / total);
-			labelsString.append(item.getWhat());
+			labelsString.append(item.getWhat().hashCode());
 			
 			notTheFirst = true;
 		}
@@ -123,6 +123,8 @@ public class ReportPanel extends Composite
 				.append(item.getDurationMillis())
 				.append("#")
 				.append(item.getWhat())
+				.append("#")
+				.append(item.getWhat().hashCode())
 				.append("\n");
 		}
 		
