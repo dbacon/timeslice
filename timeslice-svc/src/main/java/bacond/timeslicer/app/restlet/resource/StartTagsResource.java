@@ -231,7 +231,7 @@ public class StartTagsResource extends Resource
 		else
 		{
 			getResponse().setStatus(Status.SUCCESS_CREATED, "created.");
-			getResponse().redirectSeeOther("/items");
+			getResponse().redirectSeeOther(Transforms.mapNullTo((String) getResponse().getAttributes().get("redirect"), ""));
 		}
 	}
 

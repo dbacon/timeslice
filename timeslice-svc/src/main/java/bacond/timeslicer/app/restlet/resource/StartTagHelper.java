@@ -52,6 +52,8 @@ public class StartTagHelper
 				log.info("accepting form post");
 				
 				Form form = new Form(entity);
+				
+				response.getAttributes().put("redirect", form.getFirstValue("redirect", ""));
 
 				String bulkContent = form.getFirstValue("bulkcontent");
 				if (null != bulkContent)
