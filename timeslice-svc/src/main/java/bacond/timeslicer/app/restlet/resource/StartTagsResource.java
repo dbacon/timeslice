@@ -118,7 +118,7 @@ public class StartTagsResource extends Resource
 	
 	public static Instant parseInstantIfAvailable(String a)
 	{
-		if (null == a)
+		if (null == a || a.trim().isEmpty())
 		{
 			return null;
 		}
