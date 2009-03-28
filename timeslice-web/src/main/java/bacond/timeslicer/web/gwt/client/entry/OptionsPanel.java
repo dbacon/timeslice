@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bacond.timeslicer.web.gwt.client.controller.Controller;
-import bacond.timeslicer.web.gwt.client.entry.TimeSlicerApp.Defaults;
+import bacond.timeslicer.web.gwt.client.entry.TimesliceApp.Defaults;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.ChangeListener;

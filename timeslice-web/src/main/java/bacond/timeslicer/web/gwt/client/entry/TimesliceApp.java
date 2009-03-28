@@ -27,7 +27,7 @@ import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class TimeSlicerApp implements EntryPoint
+public class TimesliceApp implements EntryPoint
 {
 	public static final String IssuesUrl = "http://code.google.com/p/timeslice/issues/list";
 	private static final String FormsUrl = "forms/items-new.html";

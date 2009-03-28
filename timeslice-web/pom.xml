@@ -29,10 +29,8 @@
 <!--
 			    <gwtHome>C:\Documents and Settings\dbacon\Desktop\java\gwt-windows-1.5.3\gwt-windows-1.5.3</gwtHome>
 -->
-			    <compileTargets>
-			        <value>bacond.timeslicer.web.gwt.TimeSlicerApp</value>
-			    </compileTargets>
-			    <runTarget>bacond.timeslicer.web.gwt.TimeSlicer/TimeSlicer.html</runTarget>
+			    <compileTargets><value>timeslice.App</value></compileTargets>
+			    <runTarget>timeslice.web.gwt.TimeSlicer/TimeSlicer.html</runTarget>
 			    <extraJvmArgs>-Xmx512m</extraJvmArgs>
 			    <gwtVersion>${gwtVersion}</gwtVersion>                  
 			</configuration>
