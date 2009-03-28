@@ -14,7 +14,7 @@ public final class TextPlainStartTagsFormatter implements ITransform<Collection<
 		
 		for (StartTag startTag: r)
 		{
-			sb.append(new TextPlainStartTagFormatter().apply(startTag)).append("\n");
+			sb.append(new ToString("[%1$s#%2$s#%3$s]", 9).apply(startTag)).append("\n");
 		}
 		
 		return sb.append("]").toString();

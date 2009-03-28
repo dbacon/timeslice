@@ -45,13 +45,13 @@ public class StartTagResource extends Resource
 	
 	private final Map<MediaType, ITransform<StartTag, Representation>> renderers = MapMaker.create(new LinkedHashMap<MediaType, ITransform<StartTag, Representation>>())
 			.put(MediaType.APPLICATION_JSON, new JsonObjectRenderer<StartTag>())
-			.put(MediaType.TEXT_PLAIN, new FormattedStringTextPlainRenderer<StartTag>(TextPlainStartTagFormatter.Instance))
+			.put(MediaType.TEXT_PLAIN, new FormattedStringTextPlainRenderer<StartTag>(new ToString("[%1$s#%2$s#%3$s]", 9)))
 			.put(MediaType.TEXT_HTML, Transforms.compose(
 					new ToString(
 						"<table>" +
 						"<tr><td>when</td><td>:</td><td><b>%1$s</b></td></tr>" +
 						"<tr><td>what</td><td>:</td><td><b>%2$s</b></td></tr>" +
-						"</table>"),
+						"</table>", 9),
 					new ToStringRepr(MediaType.TEXT_HTML)))
 			.getMap();
 	

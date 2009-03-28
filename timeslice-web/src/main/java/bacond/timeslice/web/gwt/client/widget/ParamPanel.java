@@ -22,9 +22,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class ParamPanel extends Composite
 {
-	// ISOXXXX format used by Joda Time
-	// 2009-03-21T13:30:42.626Z
-	private static final DateTimeFormat MachineFormat = DateTimeFormat.getFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+	// 2009-03-21T13:30:42.626 -- assume +9
+	private static final DateTimeFormat MachineFormat = DateTimeFormat.getFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'+09:00'");
 
 	private static final DateTimeFormat HumanFormat = DateTimeFormat.getFormat("yyyy/MM/dd HH:mm:ss");	
 

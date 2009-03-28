@@ -1,7 +1,10 @@
 package bacond.timeslicer.app.dto;
 
+import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.json.JSONString;
 import org.json.JSONStringer;
 
@@ -49,16 +52,20 @@ public class StartTag implements JSONString
 	@Override
 	public String toJSONString()
 	{
+		int tzOffsetInHours = 9; // TODO: figure out how to expose/delegate/workaround this.
+		
+		DateTimeFormatter withZone = ISODateTimeFormat.dateTime().withZone(DateTimeZone.forOffsetHours(tzOffsetInHours));
+		
 		try
 		{
 			return new JSONStringer()
 				.object()
 					.key("when")
-					.value(getWhen())
+					.value(withZone.print(getWhen()))
 					.key("what")
 					.value(getWhat())
 					.key("until")
-					.value(getUntil())
+					.value(null != getUntil() ? withZone.print(getUntil()) : null)
 					.key("durationms")
 					.value(null != getUntil() ? new Interval(getWhen(), getUntil()).toDurationMillis() : null)
 				.endObject()

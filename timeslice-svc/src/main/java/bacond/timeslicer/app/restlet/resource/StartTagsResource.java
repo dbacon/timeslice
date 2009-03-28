@@ -49,7 +49,7 @@ public class StartTagsResource extends Resource
 		.put(MediaType.TEXT_PLAIN, FormattedStringTextPlainRenderer.create(new TextPlainStartTagsFormatter()))
 		.put(MediaType.TEXT_HTML,
 				ToStringRepr.create(MediaType.TEXT_HTML,
-						HtmlPagifier.pagify(BulletedListTextHtmlRenderer.create(new ToString("[<small><a href=\"/items/%1$s\">%1$s</a></small>] %2$s")))))
+						HtmlPagifier.pagify(BulletedListTextHtmlRenderer.create(new ToString("[<small><a href=\"/items/%2$s\">%2$s</a></small>] %3$s", 9)))))
 		.put(MediaType.APPLICATION_JSON, new JsonArrayRenderer<StartTag>())		
 		.getMap();
 	
