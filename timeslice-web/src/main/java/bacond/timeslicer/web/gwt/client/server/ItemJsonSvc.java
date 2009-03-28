@@ -92,7 +92,11 @@ public class ItemJsonSvc
 	public void beginAddItem(String instantString, String taskDescription, final IRequestEnder<Void> ender)
 	{
 		StringRepresentation entity = new StringRepresentation(
-				/*"key=" + key + "\n" + "project=" + project + "\n" + */"what=" + taskDescription);
+				"what=" + taskDescription + "\n" +
+				"when=" + instantString + "\n");
+//				"key=" + key + "\n" +
+//				"project=" + project + "\n"
+				
 		entity.setMediaType(MediaType.TEXT_PLAIN);
 		
 		Client client = new Client(Protocol.HTTP);

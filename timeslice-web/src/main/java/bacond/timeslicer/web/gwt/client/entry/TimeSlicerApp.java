@@ -13,30 +13,24 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.DisclosurePanel;
-import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
-import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class TimeSlicerApp implements EntryPoint
 {
 	public static final String IssuesUrl = "http://code.google.com/p/timeslice/issues/list";
+	private static final String FormsUrl = "forms/items-new.html";
 
 	public static final class Defaults
 	{
@@ -44,38 +38,25 @@ public class TimeSlicerApp implements EntryPoint
 		public static final int MaxResults = 10;
 	}
 
+	private final Controller controller = new Controller();
+	
+	private final OptionsPanel optionsPanel = new OptionsPanel(controller);
+
 	private final HistoryPanel historyPanel = new HistoryPanel();
 	private final MultiWordSuggestOracle suggestSource = new MultiWordSuggestOracle();
 	
 	private final SuggestBox taskDescriptionEntry = new SuggestBox(suggestSource);
 	
-	private final Controller controller = new Controller();
 	private final HorizontalPanel entryPanel = new HorizontalPanel();
 	
-	private final TextBox maxSize = new TextBox();
-	private final TextBox baseUri = new TextBox();
-	private final DisclosurePanel optionsPanel = new DisclosurePanel("Options", false);
-	
-	private final DisclosurePanel manualTimeDisclosure = new DisclosurePanel("Manual Input", false);
-	private final TextBox manualTimeEntry = new TextBox();
 	private final Button updateButton = new Button("Update");
-	
-	private final CheckBox controlSpaceSends = new CheckBox("Control-space also sends.");
-	
-	private final TextBox username = new TextBox();
-	private final PasswordTextBox password = new PasswordTextBox();
-
-	public int getMaxSize()
-	{
-		return Integer.valueOf(maxSize.getText());
-	}
 	
 	private void updateStartTag(StartTag editedStartTag)
 	{
 		controller.startEditDescription(editedStartTag);
 	}
 
-	private void enterNewStartTag(String description)
+	private void enterNewStartTag(String instantString, String description)
 	{
 		if (description.trim().isEmpty())
 		{
@@ -83,30 +64,35 @@ public class TimeSlicerApp implements EntryPoint
 		}
 		else
 		{
-			controller.startAddItem("", description);
+			controller.startAddItem(instantString, description);
 		}
 	}
 
 	public void onModuleLoad()
 	{
-		HorizontalPanel hp1 = new HorizontalPanel();
-		hp1.add(new Label("When:"));
-		hp1.add(manualTimeEntry);
-		VerticalPanel vp1 = new VerticalPanel();
-		vp1.add(hp1);
-		manualTimeDisclosure.add(vp1);
-		manualTimeDisclosure.setAnimationEnabled(true);
+		optionsPanel.addOptionsListener(new OptionsPanel.IOptionsListener()
+		{
+			public void optionsChanged(OptionsPanel source)
+			{
+				scheduleRefresh();
+			}
+		});
 		
 		historyPanel.addHistoryPanelListener(new HistoryPanel.IHistoryPanelListener()
 		{
 			public void interestingThing(String p)
 			{
-				enterNewStartTag(p);
+				enterNewStartTag("", p);
 			}
 
 			public void fireEdited(StartTag editedStartTag)
 			{
 				updateStartTag(editedStartTag);
+			}
+
+			public void fireTimeEdited(StartTag startTag)
+			{
+				enterNewStartTag(startTag.getInstantString(), startTag.getDescription());
 			}
 		});
 		
@@ -117,70 +103,15 @@ public class TimeSlicerApp implements EntryPoint
 			{
 				
 				if (0 != (modifiers & MODIFIER_CTRL)
-						&& (keyCode == KEY_ENTER || (keyCode == ' ' && controlSpaceSends.isChecked())))
+						&& (keyCode == KEY_ENTER || (keyCode == ' ' && optionsPanel.isControlSpaceSends())))
 				{
-					enterNewStartTag(taskDescriptionEntry.getText());
+					enterNewStartTag("", taskDescriptionEntry.getText());
 				}
 				
 				super.onKeyPress(sender, keyCode, modifiers);
 			}
 		});
 		
-		maxSize.setText("" + Defaults.MaxResults);
-		maxSize.addChangeListener(new ChangeListener()
-		{
-			public void onChange(Widget sender)
-			{
-				scheduleRefresh();
-			}
-		});
-		
-		baseUri.setText(calculateServiceRoot());
-		controller.getItemSvc().setBaseSvcUri(baseUri.getText());
-		baseUri.addChangeListener(new ChangeListener()
-		{
-			public void onChange(Widget sender)
-			{
-				controller.getItemSvc().setBaseSvcUri(baseUri.getText());
-				scheduleRefresh();
-			}
-		});
-		
-		username.setText(controller.getItemSvc().getUsername());
-		username.addChangeListener(new ChangeListener()
-		{
-			public void onChange(Widget arg0)
-			{
-				controller.getItemSvc().setUsername(username.getText());
-				scheduleRefresh();
-			}
-		});
-		
-		password.setText(controller.getItemSvc().getPassword());
-		password.addChangeListener(new ChangeListener()
-		{
-			public void onChange(Widget arg0)
-			{
-				controller.getItemSvc().setPassword(password.getText());
-				scheduleRefresh();
-			}
-		});
-
-		int row = 0;
-		FlexTable optionsTable = new FlexTable();
-		optionsTable.setText  (row,   0, "Base URI");
-		optionsTable.setWidget(row++, 1, baseUri);
-		optionsTable.setText  (row,   0, "Username");
-		optionsTable.setWidget(row++, 1, username);
-		optionsTable.setText  (row,   0, "Password");
-		optionsTable.setWidget(row++, 1, password);
-		optionsTable.setText  (row,   0, "Max results");
-		optionsTable.setWidget(row++, 1, maxSize);
-		optionsTable.setWidget(row++, 0, controlSpaceSends);
-		
-		optionsPanel.add(optionsTable);
-		optionsPanel.setAnimationEnabled(true);
-
 		entryPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
 		entryPanel.setSpacing(5);
 		updateButton.addClickListener(new ClickListener()
@@ -197,29 +128,21 @@ public class TimeSlicerApp implements EntryPoint
 		VerticalPanel vp = new VerticalPanel();
 		vp.add(historyPanel);
 		vp.add(entryPanel);
-		vp.add(manualTimeDisclosure);
-		vp.add(optionsPanel);
 		
-		ReportPanel p2 = new ReportPanel();
-		p2.setController(controller);
+		ReportPanel p2 = new ReportPanel(controller);
 		
 		DecoratedTabPanel tp = new DecoratedTabPanel();
 		tp.add(vp, "Input");
 		tp.add(p2, "Reports");
+		tp.add(optionsPanel, "Options");
 		tp.selectTab(0);
 		VerticalPanel mainVp = new VerticalPanel();
 		mainVp.setSpacing(5);
 		mainVp.add(tp);
 		HorizontalPanel buildLabelBox = new HorizontalPanel();
-		Hyperlink feedbackLink = new Hyperlink("Feedback/RFEs/Bugs", null);
-		feedbackLink.addClickListener(new ClickListener()
-		{
-			public void onClick(Widget arg0)
-			{
-				Window.open(IssuesUrl, "_blank", "");
-			}
-		});
-		buildLabelBox.add(feedbackLink);
+		buildLabelBox.setSpacing(15);
+		buildLabelBox.add(new HTML("<a href=\"" + IssuesUrl + "\" target=\"_blank\">Feedback / RFEs / Bugs</a>"));
+		buildLabelBox.add(new HTML("<a href=\"" + FormsUrl + "\" target=\"_blank\">Input Forms</a>"));
 		mainVp.add(buildLabelBox);
 		RootPanel.get().add(mainVp);
 		
@@ -239,12 +162,6 @@ public class TimeSlicerApp implements EntryPoint
 		scheduleRefresh();
 	}
 
-	private String calculateServiceRoot()
-	{
-		String svcRoot = GWT.getHostPageBaseURL().substring(0, GWT.getHostPageBaseURL().indexOf("/" + GWT.getModuleName() + "/")); // + "/items/";
-		return svcRoot;
-	}
-	
 	private void handleRefreshItemsDone(AsyncResult<List<StartTag>> result)
 	{
 		if (!result.isError())
@@ -313,7 +230,7 @@ public class TimeSlicerApp implements EntryPoint
 		{
 			public void execute()
 			{
-				controller.startRefreshItems(getMaxSize());
+				controller.startRefreshItems(optionsPanel.getMaxSize());
 			}
 		});
 	}

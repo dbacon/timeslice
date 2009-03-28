@@ -24,13 +24,18 @@ public class TaskPanel extends Composite
 	{
 		void resumeClicked(StartTag historicStartTag);
 		void itemEdited(StartTag editedTag);
+		void timeEdited(StartTag newTag);
 	}
 	
 	private final List<ITaskPanelListener> listeners = new ArrayList<ITaskPanelListener>();
 	private final HorizontalPanel descriptionContainer= new HorizontalPanel();
 	private final Label label = new Label();
 	private final TextBox descriptionEditor = new TextBox();
-	
+	private final HorizontalPanel timeContainer = new HorizontalPanel();
+	private final Label timeLabel = new Label();
+	private final TextBox timeEditor = new TextBox();
+	private boolean losingFocusAccepts = false;
+
 	public void addTaskPanelListener(ITaskPanelListener listener)
 	{
 		listeners.add(listener);
@@ -57,6 +62,14 @@ public class TaskPanel extends Composite
 		}
 	}
 	
+	protected void fireTimeEdited(StartTag startTag)
+	{
+		for (ITaskPanelListener listener: listeners)
+		{
+			listener.timeEdited(startTag);
+		}
+	}
+	
 	private void editModeOn(final StartTag startTag)
 	{
 		label.setVisible(false);
@@ -66,19 +79,48 @@ public class TaskPanel extends Composite
 		descriptionEditor.setFocus(true);
 	}
 
-	private void editModeOff(final StartTag startTag)
+	private void editModeOn2(final StartTag startTag)
+	{
+		timeLabel.setVisible(false);
+		timeEditor.setText(startTag.getInstantString());
+		timeEditor.setVisible(true);
+		timeEditor.selectAll();
+		timeEditor.setFocus(true);
+	}
+
+	private void editModeOff(final StartTag startTag, boolean accepted)
 	{
 		descriptionEditor.setVisible(false);
-		label.setText(descriptionEditor.getText());
+		label.setText(startTag.getDescription());
 		label.setVisible(true);
 		
-		if (null != startTag)
+		if (accepted)
 		{
+			startTag.setDescription(descriptionEditor.getText());
+			label.setText(descriptionEditor.getText());
 			fireEdited(new StartTag(
 					startTag.getInstantString(),
 					startTag.getUntilString(),
 					startTag.getDurationMillis(),
 					descriptionEditor.getText().trim()));
+		}
+	}
+
+	private void editModeOff2(final StartTag startTag, boolean accepted)
+	{
+		timeEditor.setVisible(false);
+		timeLabel.setText(formatDuration(startTag.getDurationMillis().longValue()));
+		timeLabel.setVisible(true);
+		
+		if (accepted)
+		{
+			startTag.setInstantString(timeEditor.getText());
+			timeLabel.setText(formatDuration(startTag.getDurationMillis().longValue()));
+			fireTimeEdited(new StartTag(
+				timeEditor.getText(),
+				startTag.getUntilString(),
+				startTag.getDurationMillis(),
+				startTag.getDescription()));
 		}
 	}
 
@@ -98,12 +140,18 @@ public class TaskPanel extends Composite
 		{
 			public void onKeyPress(Widget sender, char keyCode, int modifiers)
 			{
-				if ((modifiers & MODIFIER_CTRL) != 0 && keyCode == KEY_ENTER)
+				if (keyCode == KEY_ENTER)
 				{
-					editModeOff(startTag);
+					editModeOff(startTag, true);
 				}
-
-				super.onKeyPress(sender, keyCode, modifiers);
+				else if (keyCode == KEY_ESCAPE)
+				{
+					editModeOff(startTag, false);
+				}
+				else
+				{
+					super.onKeyPress(sender, keyCode, modifiers);
+				}
 			}
 
 		});
@@ -121,6 +169,7 @@ public class TaskPanel extends Composite
 		});
 		
 		String descWidth = "30em";
+		String timeWidth = "15em";
 		
 		label.setWidth(descWidth);
 		descriptionContainer.add(label);
@@ -131,14 +180,63 @@ public class TaskPanel extends Composite
 		{
 			public void onLostFocus(Widget sender)
 			{
-				editModeOff(null);
+				if (descriptionEditor.isVisible())
+				{
+					editModeOff(startTag, losingFocusAccepts);
+				}
 				super.onLostFocus(sender);
 			}
 		});
 		hp1.add(descriptionContainer);
+		
+		timeLabel.setWidth("10em");
+		timeLabel.addClickListener(new ClickListener()
+		{
+			public void onClick(Widget arg0)
+			{
+				editModeOn2(startTag);
+			}
+		});
+		timeContainer.add(timeLabel);
+		timeContainer.add(timeEditor);
+		timeEditor.setVisible(false);
+		timeEditor.setWidth(timeWidth);
+		timeEditor.addFocusListener(new FocusListenerAdapter()
+		{
+			public void onLostFocus(Widget sender)
+			{
+				if (timeEditor.isVisible())
+				{
+					editModeOff2(startTag, losingFocusAccepts);
+				}
+			
+				super.onLostFocus(sender);
+			}
+		});
+		timeEditor.addKeyboardListener(new KeyboardListenerAdapter()
+		{
+			public void onKeyPress(Widget sender, char keyCode, int modifiers)
+			{
+				if (keyCode == KEY_ENTER)
+				{
+					editModeOff2(startTag, true);
+				}
+				else if (keyCode == KEY_ESCAPE)
+				{
+					editModeOff2(startTag, false);
+				}
+				else
+				{
+					super.onKeyPress(sender, keyCode, modifiers);
+				}
+			}
+
+		});
 		if (null != startTag.getUntilString())
 		{
-			hp1.add(new Label(formatDuration(startTag.getDurationMillis().longValue())));
+			timeLabel.setText(formatDuration(startTag.getDurationMillis().longValue()));
+			// new Label()
+			hp1.add(timeContainer); 
 		}
 		
 		VerticalPanel vp = new VerticalPanel();

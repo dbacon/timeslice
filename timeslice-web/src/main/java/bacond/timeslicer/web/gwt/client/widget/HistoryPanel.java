@@ -22,6 +22,7 @@ public class HistoryPanel extends Composite
 	{
 		void interestingThing(String p);
 		void fireEdited(StartTag startTag);
+		void fireTimeEdited(StartTag startTag);
 	}
 	
 	private final List<IHistoryPanelListener> listeners = new ArrayList<IHistoryPanelListener>();
@@ -49,6 +50,14 @@ public class HistoryPanel extends Composite
 		for (IHistoryPanelListener listener: listeners)
 		{
 			listener.fireEdited(startTag);
+		}
+	}
+	
+	protected void fireTimeEdited(StartTag startTag)
+	{
+		for (IHistoryPanelListener listener: listeners)
+		{
+			listener.fireTimeEdited(startTag);
 		}
 	}
 	
@@ -98,6 +107,11 @@ public class HistoryPanel extends Composite
 		public void itemEdited(StartTag editedTag)
 		{
 			fireEdited(editedTag);
+		}
+
+		public void timeEdited(StartTag newTag)
+		{
+			fireTimeEdited(newTag);
 		}
 	}
 

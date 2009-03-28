@@ -29,10 +29,12 @@ public class ReportPanel extends Composite
 	private final Button refreshButton = new Button("Refresh");
 	private final VerticalPanel chartBit = new VerticalPanel();
 	
-	private Controller controller = null;
+	private final Controller controller;
 	
-	public ReportPanel()
+	public ReportPanel(Controller controller)
 	{
+		this.controller = controller;
+		
 		params.addParamChangedListener(new IParamChangedListener()
 		{
 			public void paramChanged(ParamPanel source)
@@ -106,11 +108,6 @@ public class ReportPanel extends Composite
 		return controller;
 	}
 
-	public void setController(Controller controller)
-	{
-		this.controller = controller;
-	}
-	
 	protected void updateResults(List<TaskTotal> items)
 	{
 		StringBuilder sb = new StringBuilder();
