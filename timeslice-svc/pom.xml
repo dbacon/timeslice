@@ -3,7 +3,7 @@
   <groupId>bacond</groupId>
   <artifactId>timeslice-svc</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.5-SNAPSHOT</version>
+  <version>1.0.5</version>
   <build>
   	<resources>
   		<resource>
