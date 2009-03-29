@@ -14,6 +14,7 @@ import bacond.timeslice.web.gwt.client.widget.ParamPanel.IParamChangedListener;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
@@ -114,7 +115,7 @@ public class ReportPanel extends Composite
 		int col = 0;
 
 		ft.setWidget(row, col++, new HTML("<b><u>Who</u></b>", false));
-		ft.setWidget(row, col++, new HTML("<b><u>Duration</u></b>", false));
+		ft.setWidget(row, col++, new HTML("<b><u>Hours</u></b>", false));
 		ft.setWidget(row, col++, new HTML("<b><u>What</u></b>", false));
 		ft.setWidget(row, col++, new HTML("<b><u>Code</u></b>", false));
 		
@@ -125,7 +126,7 @@ public class ReportPanel extends Composite
 			col = 0;
 			
 			ft.setText(row, col++, item.getWho());
-			ft.setText(row, col++, "" + item.getDurationMillis());
+			ft.setText(row, col++, NumberFormat.getDecimalFormat().format(item.getDurationMillis() / 1000. / 60. / 60.));
 			ft.setText(row, col++, item.getWhat());
 			ft.setText(row, col++, "" + item.getWhat().hashCode());
 			
@@ -134,8 +135,6 @@ public class ReportPanel extends Composite
 		
 		resultPanel.clear();
 		resultPanel.add(ft);
-
-		updateChart(items);
 	}
 	
 	protected void reselectData()
@@ -163,6 +162,7 @@ public class ReportPanel extends Composite
 							else
 							{
 								updateResults(result.getReturned());
+								updateChart(result.getReturned());
 							}
 						}
 					});
