@@ -17,16 +17,16 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ReportPanel extends Composite
 {
 	private final ParamPanel params = new ParamPanel();
-	private final TextArea resultArea = new TextArea();
+	private final VerticalPanel resultPanel = new VerticalPanel();
 	private final Button refreshButton = new Button("Refresh");
 	private final VerticalPanel chartBit = new VerticalPanel();
 	
@@ -52,11 +52,9 @@ public class ReportPanel extends Composite
 			}
 		});
 
-		resultArea.setSize("30em", "16em");
-		
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.setSpacing(5);
-		hp.add(resultArea);
+		hp.add(resultPanel);
 		hp.add(chartBit);
 		
 		VerticalPanel vp = new VerticalPanel();
@@ -111,22 +109,32 @@ public class ReportPanel extends Composite
 
 	protected void updateResults(List<TaskTotal> items)
 	{
-		StringBuilder sb = new StringBuilder();
+		FlexTable ft = new FlexTable();
+		int row = 0;
+		int col = 0;
+
+		ft.setWidget(row, col++, new HTML("<b><u>Who</u></b>", false));
+		ft.setWidget(row, col++, new HTML("<b><u>Duration</u></b>", false));
+		ft.setWidget(row, col++, new HTML("<b><u>What</u></b>", false));
+		ft.setWidget(row, col++, new HTML("<b><u>Code</u></b>", false));
+		
+		row++;
 		
 		for (TaskTotal item: items)
 		{
-			sb
-				.append(item.getWho())
-				.append("#")
-				.append(item.getDurationMillis())
-				.append("#")
-				.append(item.getWhat())
-				.append("#")
-				.append(item.getWhat().hashCode())
-				.append("\n");
+			col = 0;
+			
+			ft.setText(row, col++, item.getWho());
+			ft.setText(row, col++, "" + item.getDurationMillis());
+			ft.setText(row, col++, item.getWhat());
+			ft.setText(row, col++, "" + item.getWhat().hashCode());
+			
+			row++;
 		}
 		
-		resultArea.setText(sb.toString());
+		resultPanel.clear();
+		resultPanel.add(ft);
+
 		updateChart(items);
 	}
 	
