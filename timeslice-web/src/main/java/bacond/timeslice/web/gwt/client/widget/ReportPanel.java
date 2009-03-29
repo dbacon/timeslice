@@ -13,6 +13,7 @@ import bacond.timeslice.web.gwt.client.server.TaskTotalFromJson;
 import bacond.timeslice.web.gwt.client.widget.ParamPanel.IParamChangedListener;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
@@ -140,8 +141,8 @@ public class ReportPanel extends Composite
 					1000,
 					SortDir.desc,
 					ProcType.sumbydesc, //ProcType.valueOf(params.getSelectedProcessingType()),
-					params.getStartingTimeRendered().getText(),
-					params.getEndingTimeRendered().getText(),
+					URL.encodeComponent(params.getStartingTimeRendered().getText()),
+					URL.encodeComponent(params.getEndingTimeRendered().getText()),
 					new TaskTotalFromJson(),
 					new IRequestEnder<List<TaskTotal>>()
 					{

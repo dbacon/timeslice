@@ -1,5 +1,7 @@
 package bacond.timeslicer.app.restlet.resource;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -152,14 +154,33 @@ public class StartTagsResource extends Resource
 		}
 	}
 	
+	public static String decode(String p)
+	{
+		if (null == p)
+		{
+			return null;
+		}
+		else
+		{
+			try
+			{
+				return URLDecoder.decode(p, "UTF-8");
+			}
+			catch (UnsupportedEncodingException e)
+			{
+				throw new RuntimeException("Could not decode: " + e.getMessage(), e);
+			}
+		}
+	}
+	
 	@Override
 	public Representation represent(Variant variant) throws ResourceException
 	{
 		MediaType mediaType = Transforms.mapNullTo(parseMediaTypeIfAvailable((String) getRequest().getAttributes().get(QueryParamNames.MediaTypeOverride)), variant.getMediaType());
 		
 		Boolean sortReverse = "desc".equals((String) getRequest().getAttributes().get(QueryParamNames.SortDir));
-		Instant minDate = Transforms.mapNullTo(parseInstantIfAvailable((String) getRequest().getAttributes().get(QueryParamNames.MinTime)), new Instant(0));
-		Instant maxDate = Transforms.mapNullTo(parseInstantIfAvailable((String) getRequest().getAttributes().get(QueryParamNames.MaxTime)), new Instant(Long.MAX_VALUE));
+		Instant minDate = Transforms.mapNullTo(parseInstantIfAvailable(decode((String) getRequest().getAttributes().get(QueryParamNames.MinTime))), new Instant(0));
+		Instant maxDate = Transforms.mapNullTo(parseInstantIfAvailable(decode((String) getRequest().getAttributes().get(QueryParamNames.MaxTime))), new Instant(Long.MAX_VALUE));
 		Integer pageSize = Transforms.mapNullTo(parseIntegerIfAvailable((String) getRequest().getAttributes().get(QueryParamNames.PageSize)), Integer.MAX_VALUE);
 		Integer pageIndex = Transforms.mapNullTo(parseIntegerIfAvailable((String) getRequest().getAttributes().get(QueryParamNames.PageIndex)), 0);
 		String processing = Transforms.mapNullTo((String) getRequest().getAttributes().get(QueryParamNames.Processing), "none");
