@@ -16,7 +16,7 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.google.gwt.dev.GWTShell"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-noserver&#10;http://localhost:8099/bacond.timeslicer.web.gwt.TimeSlicerApp/TimeSlicer.html"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-noserver&#10;http://localhost:8099/timeslice.App/Timeslice.html"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="timeslice-web"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx512M"/>
 </launchConfiguration>
