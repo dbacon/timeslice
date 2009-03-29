@@ -168,7 +168,7 @@ public class TaskPanel extends Composite
 			}
 		});
 		
-		String descWidth = "30em";
+		String descWidth = "25em";
 		String timeWidth = "15em";
 		
 		label.setWidth(descWidth);
@@ -189,7 +189,7 @@ public class TaskPanel extends Composite
 		});
 		hp1.add(descriptionContainer);
 		
-		timeLabel.setWidth("10em");
+		timeLabel.setWidth(timeWidth);
 		timeLabel.addClickListener(new ClickListener()
 		{
 			public void onClick(Widget arg0)

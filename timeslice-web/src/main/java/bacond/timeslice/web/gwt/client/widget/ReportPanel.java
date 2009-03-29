@@ -111,6 +111,7 @@ public class ReportPanel extends Composite
 	protected void updateResults(List<TaskTotal> items)
 	{
 		FlexTable ft = new FlexTable();
+		ft.setCellSpacing(5);
 		int row = 0;
 		int col = 0;
 

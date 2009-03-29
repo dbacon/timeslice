@@ -63,7 +63,6 @@ public class HistoryPanel extends Composite
 	
 	public HistoryPanel()
 	{
-		scroller.setSize("50em", "20em");
 		initWidget(scroller);
 	}
 	

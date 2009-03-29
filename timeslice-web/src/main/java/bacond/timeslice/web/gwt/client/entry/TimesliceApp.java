@@ -17,6 +17,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
@@ -129,22 +130,29 @@ public class TimesliceApp implements EntryPoint
 		vp.add(historyPanel);
 		vp.add(entryPanel);
 		
+		historyPanel.setHeight("20em");
+		historyPanel.setWidth("45em");
+		
 		ReportPanel p2 = new ReportPanel(controller);
 		
-		DecoratedTabPanel tp = new DecoratedTabPanel();
+		final DecoratedTabPanel tp = new DecoratedTabPanel();
 		tp.add(vp, "Input");
 		tp.add(p2, "Reports");
 		tp.add(optionsPanel, "Options");
 		tp.selectTab(0);
-		VerticalPanel mainVp = new VerticalPanel();
-		mainVp.setSpacing(5);
-		mainVp.add(tp);
+		tp.setAnimationEnabled(true);
+		
 		HorizontalPanel buildLabelBox = new HorizontalPanel();
 		buildLabelBox.setSpacing(15);
 		buildLabelBox.add(new HTML("<a href=\"" + IssuesUrl + "\" target=\"_blank\">Feedback / RFEs / Bugs</a>"));
 		buildLabelBox.add(new HTML("<a href=\"" + FormsUrl + "\" target=\"_blank\">Input Forms</a>"));
-		mainVp.add(buildLabelBox);
-		RootPanel.get().add(mainVp);
+
+		final DockPanel dockPanel = new DockPanel();
+		dockPanel.setSpacing(5);
+		dockPanel.add(tp, DockPanel.CENTER);
+		dockPanel.add(buildLabelBox, DockPanel.SOUTH);
+		
+		RootPanel.get().add(dockPanel);
 		
 		controller.addControllerListener(new IControllerListener()
 			{
