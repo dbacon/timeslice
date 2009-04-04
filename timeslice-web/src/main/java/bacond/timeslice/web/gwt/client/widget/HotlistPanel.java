@@ -28,6 +28,7 @@ public class HotlistPanel extends Composite
 	public static interface IHotlistPanelListener
 	{
 		void hotlistItemClicked(String description);
+		void hotlistChanged();
 	}
 	
 	private final List<IHotlistPanelListener> listeners = new ArrayList<IHotlistPanelListener>();
@@ -50,6 +51,14 @@ public class HotlistPanel extends Composite
 		for (IHotlistPanelListener listener: listeners)
 		{
 			listener.hotlistItemClicked(description);
+		}
+	}
+
+	protected void fireHotlistChanged()
+	{
+		for (IHotlistPanelListener listener: listeners)
+		{
+			listener.hotlistChanged();
 		}
 	}
 
@@ -110,6 +119,8 @@ public class HotlistPanel extends Composite
 							Cookies.removeCookie(name);
 
 							repopulate();
+							
+							fireHotlistChanged();
 						}
 					}
 				});
@@ -125,10 +136,16 @@ public class HotlistPanel extends Composite
 			mode.setText(Mode.Hotlist);
 		}
 	}
+	
+	public int getHotlistItemCount()
+	{
+		return vp.getWidgetCount() - 1;
+	}
 
 	public void addAsHotlistItem(String name, String description)
 	{
 		Cookies.setCookie(CookieNamePrefix  + name.hashCode(), description);
 		repopulate();
+		fireHotlistChanged();
 	}
 }

@@ -22,6 +22,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
@@ -56,6 +57,7 @@ public class TimesliceApp implements EntryPoint
 	private final Button updateButton = new Button("Update");
 	
 	private final HotlistPanel hotlistPanel = new HotlistPanel();
+	private final Hyperlink addHotlink = new Hyperlink("Add to hotlist", "");
 
 	private void updateStartTag(StartTag editedStartTag)
 	{
@@ -72,6 +74,28 @@ public class TimesliceApp implements EntryPoint
 		{
 			controller.startAddItem(instantString, description);
 		}
+	}
+
+	private void scheduleHotlinkValidation()
+	{
+		DeferredCommand.addCommand(new Command()
+		{
+			public void execute()
+			{
+				addHotlink.setVisible(!taskDescriptionEntry.getText().trim().isEmpty());
+			}
+		});
+	}
+	
+	private void scheduleHotlistValidation()
+	{
+		DeferredCommand.addCommand(new Command()
+		{
+			public void execute()
+			{
+				hotlistPanel.setVisible(0 < hotlistPanel.getHotlistItemCount());
+			}
+		});
 	}
 
 	public void onModuleLoad()
@@ -107,11 +131,28 @@ public class TimesliceApp implements EntryPoint
 			}
 		});
 		
+		addHotlink.addClickListener(new ClickListener()
+		{
+			public void onClick(Widget arg0)
+			{
+				if (!taskDescriptionEntry.getText().trim().isEmpty())
+				{
+					hotlistPanel.addAsHotlistItem(taskDescriptionEntry.getText(), taskDescriptionEntry.getText());
+					taskDescriptionEntry.setText("");
+					scheduleHotlistValidation();
+					scheduleHotlinkValidation();
+				}
+			}
+		});
+		
 		taskDescriptionEntry.setWidth("30em");
+		scheduleHotlinkValidation();
 		taskDescriptionEntry.addKeyboardListener(new KeyboardListenerAdapter()
 		{
 			public void onKeyPress(Widget sender, char keyCode, int modifiers)
 			{
+				scheduleHotlinkValidation();
+
 				if (KEY_ESCAPE == keyCode)
 				{
 					taskDescriptionEntry.setText("");
@@ -121,13 +162,13 @@ public class TimesliceApp implements EntryPoint
 				{
 					enterNewStartTag("", taskDescriptionEntry.getText());
 				}
-				
-				super.onKeyPress(sender, keyCode, modifiers);
+				else
+				{
+					super.onKeyPress(sender, keyCode, modifiers);
+				}
 			}
 		});
 		
-		entryPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
-		entryPanel.setSpacing(5);
 		updateButton.addClickListener(new ClickListener()
 		{
 			public void onClick(Widget sender)
@@ -135,15 +176,25 @@ public class TimesliceApp implements EntryPoint
 				scheduleRefresh();
 			}
 		});
+
+		entryPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
+		entryPanel.setSpacing(5);
 		entryPanel.add(updateButton);
 		entryPanel.add(new Label("Task: "));
 		entryPanel.add(taskDescriptionEntry);
+		entryPanel.add(addHotlink);
 		
+		scheduleHotlistValidation();
 		hotlistPanel.addHotlistPanelListener(new IHotlistPanelListener()
 		{
 			public void hotlistItemClicked(String description)
 			{
 				enterNewStartTag("", description);
+			}
+
+			public void hotlistChanged()
+			{
+				scheduleHotlistValidation();
 			}
 		});
 		
