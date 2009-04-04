@@ -19,6 +19,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Cookies;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
@@ -97,6 +98,8 @@ public class ReportPanel extends Composite
 		vp.add(params);
 		vp.add(refreshButton);
 		vp.add(hp);
+		
+		vp.add(new Anchor("Raw-data download", true, "/items?download=timeslice-raw.dat&mediatypeoverride=text/plain")); // TODO: use svc root, not hard-coded.
 		
 		readPrefs();
 		

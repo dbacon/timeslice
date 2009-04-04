@@ -105,6 +105,8 @@ public class StartTagsResource extends Resource
 
 		@Deprecated
 		public static final String Enrich = "enrich";
+
+		public static final String Download = "download";
 	
 	}
 	
@@ -116,7 +118,8 @@ public class StartTagsResource extends Resource
 			QueryParamNames.MediaTypeOverride,
 			QueryParamNames.MinTime,
 			QueryParamNames.MaxTime,
-			QueryParamNames.Processing);
+			QueryParamNames.Processing,
+			QueryParamNames.Download);
 	
 	public static Instant parseInstantIfAvailable(String a)
 	{
@@ -184,6 +187,7 @@ public class StartTagsResource extends Resource
 		Integer pageSize = Transforms.mapNullTo(parseIntegerIfAvailable((String) getRequest().getAttributes().get(QueryParamNames.PageSize)), Integer.MAX_VALUE);
 		Integer pageIndex = Transforms.mapNullTo(parseIntegerIfAvailable((String) getRequest().getAttributes().get(QueryParamNames.PageIndex)), 0);
 		String processing = Transforms.mapNullTo((String) getRequest().getAttributes().get(QueryParamNames.Processing), "none");
+		String downloadName = (String) getRequest().getAttributes().get(QueryParamNames.Download);
 		
 		List<StartTag> tags = new LinkedList<StartTag>(getMyApp().getMeSomeTags(
 				minDate,
@@ -194,21 +198,29 @@ public class StartTagsResource extends Resource
 
 		if ("sumbydesc".equals(processing))
 		{
-			return render(mediaType, getTaskTotalRenderers(), new Aggregate().sumThem(new Aggregate().aggregate(new Split().split(tags, new Instant()))).values());
+			return render(mediaType, getTaskTotalRenderers(), new Aggregate().sumThem(new Aggregate().aggregate(new Split().split(tags, new Instant()))).values(), downloadName);
 		}
 		else
 		{
-			return render(mediaType, getStartTagRenderers(), tags);
+			return render(mediaType, getStartTagRenderers(), tags, downloadName);
 		}
 	}
 
-	private <T> Representation render(MediaType mediaType, Map<MediaType, ITransform<T, Representation>> rendererMap, T tags)
+	private <T> Representation render(MediaType mediaType, Map<MediaType, ITransform<T, Representation>> rendererMap, T tags, String downloadName)
 	{
 		ITransform<T, Representation> renderer = rendererMap.get(mediaType);
 		
 		if (null != renderer)
 		{
-			return renderer.apply(tags);
+			Representation repr = renderer.apply(tags);
+
+			if (null != downloadName)
+			{
+				repr.setDownloadable(true);
+				repr.setDownloadName(downloadName);
+			}
+			
+			return repr;
 		}
 		else
 		{
