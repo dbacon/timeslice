@@ -180,10 +180,10 @@ public class TaskPanel extends Composite
 		{
 			public void onLostFocus(Widget sender)
 			{
-//				if (descriptionEditor.isVisible())
-//				{
-//					editModeOff(startTag, losingFocusAccepts);
-//				}
+				if (descriptionEditor.isVisible())
+				{
+					editModeOff(startTag, losingFocusAccepts);
+				}
 				super.onLostFocus(sender);
 			}
 		});
