@@ -57,6 +57,8 @@ public class ReportPanel extends Composite
 		{
 			params.getStartingTime().setText(ParamPanel.HumanFormat.format(new Date()));
 		}
+		
+		params.update();
 	}
 	
 	private void writePrefs()

@@ -138,7 +138,7 @@ public class ParamPanel extends Composite
 			|| (!Checks.mapNullTo(getEndingTimeError().getText(), "").trim().isEmpty());
 	}
 	
-	protected void update()
+	public void update()
 	{
 		lastUpdatedLabel.setText("" + new Date().toString());
 
