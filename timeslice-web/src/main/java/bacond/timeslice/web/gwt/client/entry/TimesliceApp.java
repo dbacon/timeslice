@@ -15,7 +15,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -54,7 +54,7 @@ public class TimesliceApp implements EntryPoint
 	
 	private final HorizontalPanel entryPanel = new HorizontalPanel();
 	
-	private final Button updateButton = new Button("Update");
+	private final Anchor updateLink = new Anchor("[u]");
 	
 	private final HotlistPanel hotlistPanel = new HotlistPanel();
 	private final Hyperlink addHotlink = new Hyperlink("Add to hotlist", "");
@@ -170,7 +170,9 @@ public class TimesliceApp implements EntryPoint
 			}
 		});
 		
-		updateButton.addClickListener(new ClickListener()
+		updateLink.setAccessKey('u');
+		updateLink.setHref("#");
+		updateLink.addClickListener(new ClickListener()
 		{
 			public void onClick(Widget sender)
 			{
@@ -180,8 +182,8 @@ public class TimesliceApp implements EntryPoint
 
 		entryPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
 		entryPanel.setSpacing(5);
-		entryPanel.add(updateButton);
-		entryPanel.add(new Label("Task: "));
+		entryPanel.add(updateLink);
+		entryPanel.add(new HTML("<u>T</u>ask:", false));
 		entryPanel.add(taskDescriptionEntry);
 		entryPanel.add(addHotlink);
 		
@@ -209,9 +211,15 @@ public class TimesliceApp implements EntryPoint
 		ReportPanel p2 = new ReportPanel(controller);
 		
 		final DecoratedTabPanel tp = new DecoratedTabPanel();
-		tp.add(mainEntryPanel, "Input");
-		tp.add(p2, "Reports");
-		tp.add(optionsPanel, "Options");
+		Anchor inputlink = new Anchor("<u>I</u>nput", true, "#");
+		inputlink.setAccessKey('i');
+		tp.add(mainEntryPanel, inputlink);
+		Anchor reportslink = new Anchor("<u>R</u>eports", true, "#");
+		reportslink.setAccessKey('r');
+		tp.add(p2, reportslink);
+		Anchor optionslink = new Anchor("<u>O</u>ptions", true, "#");
+		optionslink.setAccessKey('o');
+		tp.add(optionsPanel, optionslink);
 		tp.selectTab(0);
 		tp.setAnimationEnabled(true);
 		

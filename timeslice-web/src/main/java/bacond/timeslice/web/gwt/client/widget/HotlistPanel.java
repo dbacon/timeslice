@@ -1,6 +1,7 @@
 package bacond.timeslice.web.gwt.client.widget;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.google.gwt.user.client.Cookies;
@@ -125,6 +126,13 @@ public class HotlistPanel extends Composite
 					}
 				});
 				
+				if (added < 10)
+				{
+					char digitChar = Character.forDigit((1 + added) % 10, 10);
+					button.setAccessKey(digitChar);
+					button.setHTML("<u>" + digitChar + "</u> " + button.getText());
+				}
+				
 				vp.add(button);
 				
 				++added;
@@ -144,8 +152,14 @@ public class HotlistPanel extends Composite
 
 	public void addAsHotlistItem(String name, String description)
 	{
-		Cookies.setCookie(CookieNamePrefix  + name.hashCode(), description);
+		Cookies.setCookie(CookieNamePrefix  + name.hashCode(), description, createDateSufficientlyInTheFuture());
 		repopulate();
 		fireHotlistChanged();
+	}
+
+	@SuppressWarnings("deprecation")
+	private Date createDateSufficientlyInTheFuture()
+	{
+		return new Date(2099, 0, 1);
 	}
 }
