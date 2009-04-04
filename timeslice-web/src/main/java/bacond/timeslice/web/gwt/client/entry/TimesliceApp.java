@@ -294,6 +294,7 @@ public class TimesliceApp implements EntryPoint
 //			messagePanel.add(new AcknowledgableMessagePanel("Item added."));
 			taskDescriptionEntry.setText("");
 			scheduleRefresh();
+			scheduleHotlinkValidation();
 		}
 		else
 		{
