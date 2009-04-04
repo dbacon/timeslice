@@ -112,8 +112,11 @@ public class TimesliceApp implements EntryPoint
 		{
 			public void onKeyPress(Widget sender, char keyCode, int modifiers)
 			{
-				
-				if (0 != (modifiers & MODIFIER_CTRL)
+				if (KEY_ESCAPE == keyCode)
+				{
+					taskDescriptionEntry.setText("");
+				}
+				else if (0 != (modifiers & MODIFIER_CTRL)
 						&& (keyCode == KEY_ENTER || (keyCode == ' ' && optionsPanel.isControlSpaceSends())))
 				{
 					enterNewStartTag("", taskDescriptionEntry.getText());
