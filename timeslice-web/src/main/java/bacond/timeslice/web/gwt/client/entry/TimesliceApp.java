@@ -146,6 +146,7 @@ public class TimesliceApp implements EntryPoint
 		});
 		
 		taskDescriptionEntry.setWidth("30em");
+		taskDescriptionEntry.setAccessKey('t');
 		scheduleHotlinkValidation();
 		taskDescriptionEntry.addKeyboardListener(new KeyboardListenerAdapter()
 		{
