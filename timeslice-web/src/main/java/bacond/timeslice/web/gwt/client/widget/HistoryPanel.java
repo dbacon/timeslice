@@ -23,6 +23,7 @@ public class HistoryPanel extends Composite
 		void interestingThing(String p);
 		void fireEdited(StartTag startTag);
 		void fireTimeEdited(StartTag startTag);
+		void hotlisted(String name, String description);
 	}
 	
 	private final List<IHistoryPanelListener> listeners = new ArrayList<IHistoryPanelListener>();
@@ -37,6 +38,14 @@ public class HistoryPanel extends Composite
 		listeners.remove(listener);
 	}
 	
+	protected void fireHotlisted(String name, String description)
+	{
+		for (IHistoryPanelListener listener: listeners)
+		{
+			listener.hotlisted(name, description);
+		}
+	}
+
 	protected void fireInterestingThing(String p)
 	{
 		for (IHistoryPanelListener listener: listeners)
@@ -112,6 +121,12 @@ public class HistoryPanel extends Composite
 		{
 			fireTimeEdited(newTag);
 		}
+
+		public void itemHotlisted(String name, String description)
+		{
+			fireHotlisted(name, description);
+		}
+
 	}
 
 	final TaskPanelListener listener = new TaskPanelListener();

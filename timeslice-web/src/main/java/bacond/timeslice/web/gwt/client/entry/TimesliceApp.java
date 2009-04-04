@@ -7,7 +7,9 @@ import bacond.timeslice.web.gwt.client.beans.StartTag;
 import bacond.timeslice.web.gwt.client.controller.Controller;
 import bacond.timeslice.web.gwt.client.controller.IControllerListener;
 import bacond.timeslice.web.gwt.client.widget.HistoryPanel;
+import bacond.timeslice.web.gwt.client.widget.HotlistPanel;
 import bacond.timeslice.web.gwt.client.widget.ReportPanel;
+import bacond.timeslice.web.gwt.client.widget.HotlistPanel.IHotlistPanelListener;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -43,6 +45,7 @@ public class TimesliceApp implements EntryPoint
 	
 	private final OptionsPanel optionsPanel = new OptionsPanel(controller);
 
+	private final VerticalPanel mainEntryPanel = new VerticalPanel();
 	private final HistoryPanel historyPanel = new HistoryPanel();
 	private final MultiWordSuggestOracle suggestSource = new MultiWordSuggestOracle();
 	
@@ -52,6 +55,8 @@ public class TimesliceApp implements EntryPoint
 	
 	private final Button updateButton = new Button("Update");
 	
+	private final HotlistPanel hotlistPanel = new HotlistPanel();
+
 	private void updateStartTag(StartTag editedStartTag)
 	{
 		controller.startEditDescription(editedStartTag);
@@ -95,6 +100,11 @@ public class TimesliceApp implements EntryPoint
 			{
 				enterNewStartTag(startTag.getInstantString(), startTag.getDescription());
 			}
+
+			public void hotlisted(String name, String description)
+			{
+				hotlistPanel.addAsHotlistItem(name, description);
+			}
 		});
 		
 		taskDescriptionEntry.setWidth("30em");
@@ -126,9 +136,17 @@ public class TimesliceApp implements EntryPoint
 		entryPanel.add(new Label("Task: "));
 		entryPanel.add(taskDescriptionEntry);
 		
-		VerticalPanel vp = new VerticalPanel();
-		vp.add(historyPanel);
-		vp.add(entryPanel);
+		hotlistPanel.addHotlistPanelListener(new IHotlistPanelListener()
+		{
+			public void hotlistItemClicked(String description)
+			{
+				enterNewStartTag("", description);
+			}
+		});
+		
+		mainEntryPanel.add(historyPanel);
+		mainEntryPanel.add(entryPanel);
+		mainEntryPanel.add(hotlistPanel);
 		
 		historyPanel.setHeight("20em");
 		historyPanel.setWidth("50em");
@@ -136,7 +154,7 @@ public class TimesliceApp implements EntryPoint
 		ReportPanel p2 = new ReportPanel(controller);
 		
 		final DecoratedTabPanel tp = new DecoratedTabPanel();
-		tp.add(vp, "Input");
+		tp.add(mainEntryPanel, "Input");
 		tp.add(p2, "Reports");
 		tp.add(optionsPanel, "Options");
 		tp.selectTab(0);

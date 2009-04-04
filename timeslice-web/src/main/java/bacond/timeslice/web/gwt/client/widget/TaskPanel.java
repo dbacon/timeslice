@@ -24,6 +24,7 @@ public class TaskPanel extends Composite
 	{
 		void resumeClicked(StartTag historicStartTag);
 		void itemEdited(StartTag editedTag);
+		void itemHotlisted(String name, String description);
 		void timeEdited(StartTag newTag);
 	}
 	
@@ -31,6 +32,7 @@ public class TaskPanel extends Composite
 	private final HorizontalPanel descriptionContainer= new HorizontalPanel();
 	private final Label label = new Label();
 	private final TextBox descriptionEditor = new TextBox();
+	private final VerticalPanel descriptionEditorPanel = new VerticalPanel();
 	private final HorizontalPanel timeContainer = new HorizontalPanel();
 	private final Label timeLabel = new Label();
 	private final TextBox timeEditor = new TextBox();
@@ -62,6 +64,14 @@ public class TaskPanel extends Composite
 		}
 	}
 	
+	protected void fireHotlisted(String name, String description)
+	{
+		for (ITaskPanelListener listener: listeners)
+		{
+			listener.itemHotlisted(name, description);
+		}
+	}
+	
 	protected void fireTimeEdited(StartTag startTag)
 	{
 		for (ITaskPanelListener listener: listeners)
@@ -74,7 +84,7 @@ public class TaskPanel extends Composite
 	{
 		label.setVisible(false);
 		descriptionEditor.setText(startTag.getDescription());
-		descriptionEditor.setVisible(true);
+		descriptionEditorPanel.setVisible(true);
 		descriptionEditor.selectAll();
 		descriptionEditor.setFocus(true);
 	}
@@ -90,7 +100,7 @@ public class TaskPanel extends Composite
 
 	private void editModeOff(final StartTag startTag, boolean accepted)
 	{
-		descriptionEditor.setVisible(false);
+		descriptionEditorPanel.setVisible(false);
 		label.setText(startTag.getDescription());
 		label.setVisible(true);
 		
@@ -168,22 +178,34 @@ public class TaskPanel extends Composite
 			}
 		});
 		
+		descriptionEditorPanel.add(descriptionEditor);
+		Hyperlink hotlistAdder = new Hyperlink("Add to Hotlist", null);
+		hotlistAdder.addClickListener(new ClickListener()
+		{
+			public void onClick(Widget arg0)
+			{
+				fireHotlisted(startTag.getDescription(), startTag.getDescription());
+				editModeOff(startTag, losingFocusAccepts);
+			}
+		});
+		descriptionEditorPanel.add(hotlistAdder);
+		
 		String descWidth = "25em";
 		String timeWidth = "15em";
 		
 		label.setWidth(descWidth);
 		descriptionContainer.add(label);
-		descriptionContainer.add(descriptionEditor);
-		descriptionEditor.setVisible(false);
+		descriptionContainer.add(descriptionEditorPanel);
+		descriptionEditorPanel.setVisible(false);
 		descriptionEditor.setWidth(descWidth);
 		descriptionEditor.addFocusListener(new FocusListenerAdapter()
 		{
 			public void onLostFocus(Widget sender)
 			{
-				if (descriptionEditor.isVisible())
-				{
-					editModeOff(startTag, losingFocusAccepts);
-				}
+//				if (descriptionEditor.isVisible())
+//				{
+//					editModeOff(startTag, losingFocusAccepts);
+//				}
 				super.onLostFocus(sender);
 			}
 		});
@@ -235,12 +257,11 @@ public class TaskPanel extends Composite
 		if (null != startTag.getUntilString())
 		{
 			timeLabel.setText(formatDuration(startTag.getDurationMillis().longValue()));
-			// new Label()
 			hp1.add(timeContainer); 
 		}
 		
 		VerticalPanel vp = new VerticalPanel();
-//		vp.add(new Label(startTag.getInstantString()));
+		vp.setTitle(startTag.getInstantString());
 		vp.add(hp1);
 		
 		initWidget(vp);
