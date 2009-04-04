@@ -31,8 +31,8 @@ import com.google.gwt.json.client.JSONValue;
 public class ItemJsonSvc
 {
 	private String baseSvcUri = "http://localhost:8082";
-	private String username = "bacond";
-	private String password = "123";
+	private String username = "";
+	private String password = "";
 	
 	public String getBaseSvcUri()
 	{
@@ -62,6 +62,11 @@ public class ItemJsonSvc
 	public void setPassword(String password)
 	{
 		this.password = password;
+	}
+	
+	public boolean dontBother()
+	{
+		return getUsername().isEmpty();
 	}
 
 	private Request createJsonWsRequest(Method method, String uri, Map<String, String> queryParams)
@@ -144,6 +149,11 @@ public class ItemJsonSvc
 	 */
 	public <T> void beginRefreshItems(int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, final ITransform<JSONValue, T> itemFromJson, final IRequestEnder<List<T>> ender)
 	{
+		if (dontBother())
+		{
+			return;
+		}
+		
 		String procTypeString = null;
 		if (null != procType)
 		{

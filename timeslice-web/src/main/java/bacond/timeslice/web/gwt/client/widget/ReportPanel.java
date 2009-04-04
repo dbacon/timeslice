@@ -143,7 +143,7 @@ public class ReportPanel extends Composite
 		// re-request a list, and set the items on a display panel.
 		ItemJsonSvc itemSvc = controller.getItemSvc();
 		
-		if (null != itemSvc)
+		if (null != itemSvc && !itemSvc.dontBother())
 		{
 			itemSvc.beginRefreshItems(
 					1000,
