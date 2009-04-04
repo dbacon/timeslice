@@ -1,5 +1,7 @@
 package bacond.timeslice.web.gwt.client.widget;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -144,6 +146,15 @@ public class ReportPanel extends Composite
 
 	protected void updateResults(List<TaskTotal> items)
 	{
+		Collections.sort(items, Collections.reverseOrder(new Comparator<TaskTotal>()
+				{
+					public int compare(TaskTotal o1, TaskTotal o2)
+					{
+						return o1.getDurationMillis().compareTo(o2.getDurationMillis());
+					}
+				}));
+
+		
 		FlexTable ft = new FlexTable();
 		ft.setCellSpacing(5);
 		int row = 0;
