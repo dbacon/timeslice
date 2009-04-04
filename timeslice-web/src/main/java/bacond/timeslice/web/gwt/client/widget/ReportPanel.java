@@ -108,11 +108,7 @@ public class ReportPanel extends Composite
 		StringBuilder dataPointsString = new StringBuilder();
 		StringBuilder labelsString = new StringBuilder();
 
-		Double total = 0.;
-		for (TaskTotal item: items)
-		{
-			total += item.getDurationMillis().intValue();
-		}
+		Double total = calcTotal(items);
 
 		boolean notTheFirst = false;
 		for (TaskTotal item: items)
@@ -141,6 +137,16 @@ public class ReportPanel extends Composite
 		//chartBit.add(new Label(chartImageUrl));
 	}
 
+	private Double calcTotal(List<TaskTotal> items)
+	{
+		Double total = 0.;
+		for (TaskTotal item: items)
+		{
+			total += item.getDurationMillis().intValue();
+		}
+		return total;
+	}
+
 	public Controller getController()
 	{
 		return controller;
@@ -164,10 +170,13 @@ public class ReportPanel extends Composite
 
 		ft.setWidget(row, col++, new HTML("<b><u>Who</u></b>", false));
 		ft.setWidget(row, col++, new HTML("<b><u>Hours</u></b>", false));
+		ft.setWidget(row, col++, new HTML("<b><u>%</u></b>", false));
 		ft.setWidget(row, col++, new HTML("<b><u>What</u></b>", false));
 		ft.setWidget(row, col++, new HTML("<b><u>Code</u></b>", false));
 		
 		row++;
+		
+		Double total = calcTotal(items);
 		
 		for (TaskTotal item: items)
 		{
@@ -175,6 +184,7 @@ public class ReportPanel extends Composite
 			
 			ft.setText(row, col++, item.getWho());
 			ft.setText(row, col++, NumberFormat.getDecimalFormat().format(item.getDurationMillis() / 1000. / 60. / 60.));
+			ft.setText(row, col++, NumberFormat.getPercentFormat().format(item.getDurationMillis() / total));
 			ft.setText(row, col++, item.getWhat());
 			ft.setText(row, col++, "" + item.getWhat().hashCode());
 			
