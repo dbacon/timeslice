@@ -45,8 +45,8 @@ public class ReportPanel extends Composite
 	
 	private void readPrefs()
 	{
-		params.getEndingTime().setText(Cookies.getCookie(PrefKey.Starting));
-		params.getStartingTime().setText(Cookies.getCookie(PrefKey.Ending));
+		params.getStartingTime().setText(Cookies.getCookie(PrefKey.Starting));
+		params.getEndingTime().setText(Cookies.getCookie(PrefKey.Ending));
 		
 		if (params.getEndingTime().getText().trim().isEmpty())
 		{
