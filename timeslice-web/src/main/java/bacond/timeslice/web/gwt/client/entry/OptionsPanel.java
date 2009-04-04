@@ -7,8 +7,10 @@ import bacond.timeslice.web.gwt.client.controller.Controller;
 import bacond.timeslice.web.gwt.client.entry.TimesliceApp.Defaults;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
@@ -18,6 +20,13 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class OptionsPanel extends Composite
 {
+	public static class PrefKeys
+	{
+		public static final String PageSize = "timeslice.options.pagesize";
+		public static final String User = "timeslice.options.user";
+		public static final String CtrlSpaceSends = "timeslice.options.controlspacesends";
+	}
+
 	private final TextBox maxSize = new TextBox();
 	private final TextBox baseUri = new TextBox();
 	
@@ -86,13 +95,22 @@ public class OptionsPanel extends Composite
 		optionsTable.setWidget(row,   0, createTitledLabel("Max results", "Number of items to show in history and include in word-completion."));
 		optionsTable.setWidget(row++, 1, maxSize);
 		optionsTable.setWidget(row++, 0, controlSpaceSends);
+		
+		readPrefs();
+		
+		addOptionsListener(new IOptionsListener()
+		{
+			public void optionsChanged(OptionsPanel source)
+			{
+				writePrefs();
+			}
+		});
 
 		initWidget(optionsTable);
 	}
 
 	private void localWidgetsInit()
 	{
-		maxSize.setText("" + Defaults.MaxResults);
 		maxSize.addChangeListener(new ChangeListener()
 		{
 			public void onChange(Widget sender)
@@ -101,8 +119,6 @@ public class OptionsPanel extends Composite
 			}
 		});
 		
-		baseUri.setText(calculateServiceRoot());
-		controller.getItemSvc().setBaseSvcUri(baseUri.getText());
 		baseUri.addChangeListener(new ChangeListener()
 		{
 			public void onChange(Widget sender)
@@ -112,7 +128,6 @@ public class OptionsPanel extends Composite
 			}
 		});
 		
-		username.setText(controller.getItemSvc().getUsername());
 		username.addChangeListener(new ChangeListener()
 		{
 			public void onChange(Widget arg0)
@@ -122,7 +137,6 @@ public class OptionsPanel extends Composite
 			}
 		});
 		
-		password.setText(controller.getItemSvc().getPassword());
 		password.addChangeListener(new ChangeListener()
 		{
 			public void onChange(Widget arg0)
@@ -131,15 +145,61 @@ public class OptionsPanel extends Composite
 				fireChanged();
 			}
 		});
+		
+		controlSpaceSends.addClickListener(new ClickListener()
+		{
+			public void onClick(Widget arg0)
+			{
+				fireChanged();
+			}
+		});
+		
+		initValues();
 	}
 	
 	public int getMaxSize()
 	{
-		return Integer.valueOf(maxSize.getText());
+		try
+		{
+			return Integer.valueOf(maxSize.getText());
+		}
+		catch (Exception e)
+		{
+			return 10;
+		}
 	}
 	
 	public boolean isControlSpaceSends()
 	{
 		return controlSpaceSends.isChecked();
+	}
+	
+	private void readPrefs()
+	{
+		username.setText(Cookies.getCookie(PrefKeys.User));
+		maxSize.setText(Cookies.getCookie(PrefKeys.PageSize));
+		controlSpaceSends.setChecked("true".equals(Cookies.getCookie(PrefKeys.CtrlSpaceSends)));
+	}
+	
+	private void initValues()
+	{
+		controller.getItemSvc().setBaseSvcUri(calculateServiceRoot());
+
+		maxSize.setText("" + Defaults.MaxResults);
+		baseUri.setText(controller.getItemSvc().getBaseSvcUri());
+		username.setText(controller.getItemSvc().getUsername());
+		password.setText(controller.getItemSvc().getPassword());
+		
+		readPrefs();
+		
+		controller.getItemSvc().setUsername(username.getText());
+		controller.getItemSvc().setPassword(password.getText());
+	}
+
+	private void writePrefs()
+	{
+		Cookies.setCookie(PrefKeys.User, username.getText());
+		Cookies.setCookie(PrefKeys.PageSize, maxSize.getText());
+		Cookies.setCookie(PrefKeys.CtrlSpaceSends, (controlSpaceSends.isChecked() ? "true" : "false"));
 	}
 }

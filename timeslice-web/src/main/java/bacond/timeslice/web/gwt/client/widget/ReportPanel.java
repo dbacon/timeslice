@@ -1,5 +1,6 @@
 package bacond.timeslice.web.gwt.client.widget;
 
+import java.util.Date;
 import java.util.List;
 
 import bacond.timeslice.web.gwt.client.beans.TaskTotal;
@@ -15,6 +16,7 @@ import bacond.timeslice.web.gwt.client.widget.ParamPanel.IParamChangedListener;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
@@ -33,6 +35,34 @@ public class ReportPanel extends Composite
 	
 	private final Controller controller;
 	
+	private static class PrefKey
+	{
+		public static final String Starting = "timeslice.report.params.starting";
+		public static final String Ending = "timeslice.report.params.ending";
+	}
+	
+	private void readPrefs()
+	{
+		params.getEndingTime().setText(Cookies.getCookie(PrefKey.Starting));
+		params.getStartingTime().setText(Cookies.getCookie(PrefKey.Ending));
+		
+		if (params.getEndingTime().getText().trim().isEmpty())
+		{
+			params.getEndingTime().setText(ParamPanel.HumanFormat.format(new Date()));
+		}
+		
+		if (params.getStartingTime().getText().trim().isEmpty())
+		{
+			params.getStartingTime().setText(ParamPanel.HumanFormat.format(new Date()));
+		}
+	}
+	
+	private void writePrefs()
+	{
+		Cookies.setCookie(PrefKey.Starting, params.getSelectedStartingTime());
+		Cookies.setCookie(PrefKey.Ending, params.getSelectedEndingTime());
+	}
+	
 	public ReportPanel(Controller controller)
 	{
 		this.controller = controller;
@@ -41,6 +71,7 @@ public class ReportPanel extends Composite
 		{
 			public void paramChanged(ParamPanel source)
 			{
+				writePrefs();
 				reselectData();
 			}
 		});
@@ -62,6 +93,9 @@ public class ReportPanel extends Composite
 		vp.add(params);
 		vp.add(refreshButton);
 		vp.add(hp);
+		
+		readPrefs();
+		
 		initWidget(vp);
 	}
 	
