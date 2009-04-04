@@ -60,7 +60,7 @@ public class Split
 		
 		for (StartTag tag: lastStartTagForUser.values())
 		{
-			result.add(new StartTag(tag.getWho(), tag.getWhen(), tag.getWhat(), endInstantOfLastTasks));
+			result.add(new StartTag(tag.getWho(), tag.getWhen(), tag.getWhat(), max(tag.getWhen(), endInstantOfLastTasks)));
 		}
 		
 		// we want to return items in the same order as the input.
@@ -79,4 +79,17 @@ public class Split
 
 		return orderedResult;
 	}
+	
+	public static Instant max(Instant a, Instant b)
+	{
+		if (a.isAfter(b))
+		{
+			return a;
+		}
+		else
+		{
+			return b;
+		}
+	}
+
 }
