@@ -58,6 +58,8 @@ public class TimesliceApp implements EntryPoint
 	
 	private final HotlistPanel hotlistPanel = new HotlistPanel();
 	private final Hyperlink addHotlink = new Hyperlink("Add to hotlist", "");
+	private final Hyperlink enterLink = new Hyperlink("Enter", "");
+	private final VerticalPanel actionPanel = new VerticalPanel();
 
 	private void updateStartTag(StartTag editedStartTag)
 	{
@@ -82,7 +84,7 @@ public class TimesliceApp implements EntryPoint
 		{
 			public void execute()
 			{
-				addHotlink.setVisible(!taskDescriptionEntry.getText().trim().isEmpty());
+				actionPanel.setVisible(!taskDescriptionEntry.getText().trim().isEmpty());
 			}
 		});
 	}
@@ -180,12 +182,24 @@ public class TimesliceApp implements EntryPoint
 			}
 		});
 
+		enterLink.addClickListener(new ClickListener()
+		{
+			public void onClick(Widget arg0)
+			{
+				enterNewStartTag("", taskDescriptionEntry.getText());
+			}
+		});
+
+		actionPanel.add(enterLink);
+		actionPanel.add(addHotlink);
+		actionPanel.setStyleName("ts-actionPanel");
+
 		entryPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
 		entryPanel.setSpacing(5);
 		entryPanel.add(updateLink);
 		entryPanel.add(new HTML("<u>T</u>ask:", false));
 		entryPanel.add(taskDescriptionEntry);
-		entryPanel.add(addHotlink);
+		entryPanel.add(actionPanel);
 		
 		scheduleHotlistValidation();
 		hotlistPanel.addHotlistPanelListener(new IHotlistPanelListener()
