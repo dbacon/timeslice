@@ -1,13 +1,16 @@
 package bacond.timeslice.web.gwt.client.entry;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import bacond.timeslice.web.gwt.client.beans.StartTag;
 import bacond.timeslice.web.gwt.client.controller.Controller;
 import bacond.timeslice.web.gwt.client.controller.IControllerListener;
+import bacond.timeslice.web.gwt.client.util.Checks;
 import bacond.timeslice.web.gwt.client.widget.HistoryPanel;
 import bacond.timeslice.web.gwt.client.widget.HotlistPanel;
+import bacond.timeslice.web.gwt.client.widget.ParamPanel;
 import bacond.timeslice.web.gwt.client.widget.ReportPanel;
 import bacond.timeslice.web.gwt.client.widget.HotlistPanel.IHotlistPanelListener;
 
@@ -15,6 +18,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
@@ -275,6 +279,8 @@ public class TimesliceApp implements EntryPoint
 			historyPanel.addItems(items);
 			
 			updateSuggestSource(items);
+
+			Window.setTitle(Checks.mapNullTo(findCurrentStartTag(items), UnknownTag).getDescription());
 		}
 		else
 		{
@@ -282,6 +288,23 @@ public class TimesliceApp implements EntryPoint
 			
 //			messagePanel.add(new AcknowledgableMessagePanel("No refresh happened: " + result.getThrown().getMessage()));
 		}
+	}
+
+	private static final StartTag UnknownTag = new StartTag(null, null, null, "-unknown-");
+
+	private StartTag findCurrentStartTag(ArrayList<StartTag> items)
+	{
+		String now = ParamPanel.MachineFormat.format(new Date());
+
+		for (int i = 0; i < items.size(); ++i)
+		{
+			if (now.compareTo(items.get(i).getInstantString()) >= 0)
+			{
+				return items.get(i);
+			}
+		}
+
+		return null;
 	}
 
 	private void updateSuggestSource(ArrayList<StartTag> items)
