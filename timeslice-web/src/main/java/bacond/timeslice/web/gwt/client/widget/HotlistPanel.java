@@ -8,7 +8,6 @@ import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Widget;
@@ -87,10 +86,7 @@ public class HotlistPanel extends Composite
 		
 		repopulate();
 		
-		DecoratorPanel dp = new DecoratorPanel();
-		dp.setWidget(vp);
-		dp.setTitle(Mode.Hotlist);
-		initWidget(dp);
+		initWidget(vp);
 	}
 	
 	public void repopulate()

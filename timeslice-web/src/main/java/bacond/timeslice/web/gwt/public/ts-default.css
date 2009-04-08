@@ -1,0 +1,11 @@
+
+.ts-actionPanel .gwt-Hyperlink 
+{
+	font-size: 50%;
+}
+
+.gwt-Button
+{
+	margin: 0.05em;
+	padding: 0.05em;
+}
