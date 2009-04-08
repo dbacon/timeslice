@@ -82,6 +82,7 @@ public class ReportPanel extends Composite
 			}
 		});
 		
+		refreshButton.setAccessKey('r');
 		refreshButton.addClickListener(new ClickListener()
 		{
 			public void onClick(Widget arg0)
