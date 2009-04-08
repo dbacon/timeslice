@@ -16,7 +16,8 @@ public class HotlistPanel extends Composite
 {
 	public static final class Mode
 	{
-		public static final String Edit = "Hotlist [delete-mode]";
+		public static final String EditSingle = "Hotlist [delete-single]";
+		public static final String EditMulti = "Hotlist [delete-multi]";
 		public static final String Hotlist = "Hotlist";
 	}
 
@@ -71,9 +72,13 @@ public class HotlistPanel extends Composite
 			{
 				if (Mode.Hotlist.equals(mode.getText()) && 1 < vp.getWidgetCount())
 				{
-					mode.setText(Mode.Edit);
+					mode.setText(Mode.EditSingle);
 				}
-				else if (Mode.Edit.equals(mode.getText()))
+				else if (Mode.EditSingle.equals(mode.getText()))
+				{
+					mode.setText(Mode.EditMulti);
+				}
+				else if (Mode.EditMulti.equals(mode.getText()))
 				{
 					mode.setText(Mode.Hotlist);
 				}
@@ -111,9 +116,14 @@ public class HotlistPanel extends Composite
 						{
 							fireHotlistItemClicked(description);
 						}
-						else if (Mode.Edit.equals(mode.getText()))
+						else
 						{
 							Cookies.removeCookie(name);
+
+							if (Mode.EditSingle.equals(mode.getText()))
+							{
+								mode.setText(Mode.Hotlist);
+							}
 
 							repopulate();
 							
