@@ -219,7 +219,7 @@ public class TimesliceApp implements EntryPoint
 		mainEntryPanel.add(entryPanel);
 		mainEntryPanel.add(hotlistPanel);
 		
-		historyPanel.setHeight("20em");
+		historyPanel.setHeight("30em");
 		historyPanel.setWidth("50em");
 		
 		ReportPanel p2 = new ReportPanel(controller);

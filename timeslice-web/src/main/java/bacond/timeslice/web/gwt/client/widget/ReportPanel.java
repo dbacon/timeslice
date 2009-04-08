@@ -26,6 +26,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -89,9 +90,13 @@ public class ReportPanel extends Composite
 			}
 		});
 
+		ScrollPanel sp = new ScrollPanel(resultPanel);
+		sp.setHeight("20em");
+		sp.setWidth("40em");
+
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.setSpacing(5);
-		hp.add(resultPanel);
+		hp.add(sp);
 		hp.add(chartBit);
 		
 		VerticalPanel vp = new VerticalPanel();
