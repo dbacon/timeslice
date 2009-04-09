@@ -26,7 +26,9 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -36,6 +38,7 @@ public class ReportPanel extends Composite
 	private final VerticalPanel resultPanel = new VerticalPanel();
 	private final Button refreshButton = new Button("Refresh");
 	private final VerticalPanel chartBit = new VerticalPanel();
+	private final TextBox ignoreWords = new TextBox();
 	
 	private final Controller controller;
 	
@@ -43,12 +46,14 @@ public class ReportPanel extends Composite
 	{
 		public static final String Starting = "timeslice.report.params.starting";
 		public static final String Ending = "timeslice.report.params.ending";
+		public static final String IgnoreStrings = "timeslice.report.ignorestrings";
 	}
 	
 	private void readPrefs()
 	{
 		params.getStartingTime().setText(Cookies.getCookie(PrefKey.Starting));
 		params.getEndingTime().setText(Cookies.getCookie(PrefKey.Ending));
+		ignoreWords.setText(Cookies.getCookie(PrefKey.IgnoreStrings));
 		
 		if (params.getEndingTime().getText().trim().isEmpty())
 		{
@@ -67,6 +72,7 @@ public class ReportPanel extends Composite
 	{
 		Cookies.setCookie(PrefKey.Starting, params.getSelectedStartingTime());
 		Cookies.setCookie(PrefKey.Ending, params.getSelectedEndingTime());
+		Cookies.setCookie(PrefKey.IgnoreStrings, ignoreWords.getText());
 	}
 	
 	public ReportPanel(Controller controller)
@@ -100,8 +106,15 @@ public class ReportPanel extends Composite
 		hp.add(sp);
 		hp.add(chartBit);
 		
+		HorizontalPanel ignoreHp = new HorizontalPanel();
+		ignoreHp.setTitle("Comma-separated list of strings, items \ncontaining any of which will be ignored.");
+		ignoreHp.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
+		ignoreHp.add(new Label("Ignore items containing:"));
+		ignoreHp.add(ignoreWords);
+
 		VerticalPanel vp = new VerticalPanel();
 		vp.add(params);
+		vp.add(ignoreHp);
 		vp.add(refreshButton);
 		vp.add(hp);
 		
@@ -151,7 +164,20 @@ public class ReportPanel extends Composite
 		Double total = 0.;
 		for (TaskTotal item: items)
 		{
-			total += item.getDurationMillis().intValue();
+			boolean shouldIgnore = false;
+			for (String ignoreWord: ignoreWords.getText().split(","))
+			{
+				if (!ignoreWord.isEmpty() && item.getWhat().contains(ignoreWord))
+				{
+					shouldIgnore = true;
+					break;
+				}
+			}
+
+			if (!shouldIgnore)
+			{
+				total += item.getDurationMillis().intValue();
+			}
 		}
 		return total;
 	}
@@ -189,15 +215,28 @@ public class ReportPanel extends Composite
 		
 		for (TaskTotal item: items)
 		{
-			col = 0;
+			boolean shouldIgnore = false;
+			for (String ignoreWord: ignoreWords.getText().split(","))
+			{
+				if (!ignoreWord.isEmpty() && item.getWhat().contains(ignoreWord))
+				{
+					shouldIgnore = true;
+					break;
+				}
+			}
 			
-			ft.setText(row, col++, item.getWho());
-			ft.setText(row, col++, NumberFormat.getDecimalFormat().format(item.getDurationMillis() / 1000. / 60. / 60.));
-			ft.setText(row, col++, NumberFormat.getPercentFormat().format(item.getDurationMillis() / total));
-			ft.setText(row, col++, item.getWhat());
-			ft.setText(row, col++, "" + item.getWhat().hashCode());
-			
-			row++;
+			if (!shouldIgnore)
+			{
+				col = 0;
+
+				ft.setText(row, col++, item.getWho());
+				ft.setText(row, col++, NumberFormat.getDecimalFormat().format(item.getDurationMillis() / 1000. / 60. / 60.));
+				ft.setText(row, col++, NumberFormat.getPercentFormat().format(item.getDurationMillis() / total));
+				ft.setText(row, col++, item.getWhat());
+				ft.setText(row, col++, "" + item.getWhat().hashCode());
+
+				row++;
+			}
 		}
 		
 		resultPanel.clear();
