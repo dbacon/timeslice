@@ -25,6 +25,7 @@ public class OptionsPanel extends Composite
 		public static final String PageSize = "timeslice.options.pagesize";
 		public static final String User = "timeslice.options.user";
 		public static final String CtrlSpaceSends = "timeslice.options.controlspacesends";
+		public static final String CurrentTaskInTitlebar = "timeslice.options.currenttaskintitlebar";
 	}
 
 	private final TextBox maxSize = new TextBox();
@@ -34,6 +35,7 @@ public class OptionsPanel extends Composite
 	private final PasswordTextBox password = new PasswordTextBox();
 
 	private final CheckBox controlSpaceSends = new CheckBox("Control-space also sends.");
+	private final CheckBox currentTaskInTitlebar = new CheckBox("Show current task in page title.");
 	
 	private final Controller controller;
 	
@@ -95,6 +97,7 @@ public class OptionsPanel extends Composite
 		optionsTable.setWidget(row,   0, createTitledLabel("Max results", "Number of items to show in history and include in word-completion."));
 		optionsTable.setWidget(row++, 1, maxSize);
 		optionsTable.setWidget(row++, 0, controlSpaceSends);
+		optionsTable.setWidget(row++, 0, currentTaskInTitlebar);
 		
 		readPrefs();
 		
@@ -109,15 +112,24 @@ public class OptionsPanel extends Composite
 		initWidget(optionsTable);
 	}
 
+	private ClickListener CommonClickFireChanged = new ClickListener()
+	{
+		public void onClick(Widget arg0)
+		{
+		}
+	};
+
+	private ChangeListener CommonChangeFireChanged = new ChangeListener()
+	{
+		public void onChange(Widget sender)
+		{
+			fireChanged();
+		}
+	};
+
 	private void localWidgetsInit()
 	{
-		maxSize.addChangeListener(new ChangeListener()
-		{
-			public void onChange(Widget sender)
-			{
-				fireChanged();
-			}
-		});
+		maxSize.addChangeListener(CommonChangeFireChanged);
 		
 		baseUri.addChangeListener(new ChangeListener()
 		{
@@ -146,14 +158,10 @@ public class OptionsPanel extends Composite
 			}
 		});
 		
-		controlSpaceSends.addClickListener(new ClickListener()
-		{
-			public void onClick(Widget arg0)
-			{
-				fireChanged();
-			}
-		});
-		
+		controlSpaceSends.addClickListener(CommonClickFireChanged);
+
+		currentTaskInTitlebar.addClickListener(CommonClickFireChanged);
+
 		initValues();
 	}
 	
@@ -173,12 +181,18 @@ public class OptionsPanel extends Composite
 	{
 		return controlSpaceSends.isChecked();
 	}
+
+	public boolean isCurrentTaskInTitlebar()
+	{
+		return currentTaskInTitlebar.isChecked();
+	}
 	
 	private void readPrefs()
 	{
 		username.setText(Cookies.getCookie(PrefKeys.User));
 		maxSize.setText(Cookies.getCookie(PrefKeys.PageSize));
 		controlSpaceSends.setChecked("true".equals(Cookies.getCookie(PrefKeys.CtrlSpaceSends)));
+		currentTaskInTitlebar.setChecked("true".equals(Cookies.getCookie(PrefKeys.CurrentTaskInTitlebar)));
 	}
 	
 	private void initValues()
@@ -201,5 +215,6 @@ public class OptionsPanel extends Composite
 		Cookies.setCookie(PrefKeys.User, username.getText());
 		Cookies.setCookie(PrefKeys.PageSize, maxSize.getText());
 		Cookies.setCookie(PrefKeys.CtrlSpaceSends, (controlSpaceSends.isChecked() ? "true" : "false"));
+		Cookies.setCookie(PrefKeys.CurrentTaskInTitlebar, (currentTaskInTitlebar.isChecked() ? "true" : "false"));
 	}
 }

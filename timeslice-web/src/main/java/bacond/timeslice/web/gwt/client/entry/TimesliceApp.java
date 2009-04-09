@@ -280,7 +280,10 @@ public class TimesliceApp implements EntryPoint
 			
 			updateSuggestSource(items);
 
-			Window.setTitle(Checks.mapNullTo(findCurrentStartTag(items), UnknownTag).getDescription());
+			if (optionsPanel.isCurrentTaskInTitlebar())
+			{
+				Window.setTitle(Checks.mapNullTo(findCurrentStartTag(items), UnknownTag).getDescription());
+			}
 		}
 		else
 		{
