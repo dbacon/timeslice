@@ -5,7 +5,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -14,12 +17,22 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
-import org.joda.time.Instant;
 import org.joda.time.format.ISODateTimeFormat;
 
 public class Upgrader
 {
+	private String url;
 	private String safeDir;
+
+	public String getUrl()
+	{
+		return url;
+	}
+
+	public void setUrl(String url)
+	{
+		this.url = url;
+	}
 
 	public String getSafeDir()
 	{
@@ -31,8 +44,9 @@ public class Upgrader
 		this.safeDir = safeDir;
 	}
 
-	public Upgrader(String safeDir)
+	public Upgrader(String url, String safeDir)
 	{
+		this.url = url;
 		this.safeDir = safeDir;
 	}
 
@@ -104,15 +118,10 @@ public class Upgrader
 		return rootDir;
 	}
 
-	public UpgradeInfo getLatestUpgradeInfo() throws Exception
+	public List<UpgradeInfo> getLatestUpgradeInfo() throws Exception
 	{
-		Instant newest = new Instant(0);
-		String newestUri = "";
-
-		String inputUrlString = "http://timeslice.googlecode.com/svn/wiki/LatestRelease.wiki";
-//			String inputUrlString = "file:test-input/remote/releases.txt";
-
-		BufferedReader reader = new BufferedReader(new InputStreamReader(new URL(inputUrlString).openStream()));
+		List<UpgradeInfo> upgrades = new ArrayList<UpgradeInfo>();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new URL(getUrl()).openStream()));
 
 		while (true)
 		{
@@ -123,24 +132,49 @@ public class Upgrader
 				break;
 			}
 
-
 			String[] pieces = line.split(Pattern.quote("||"));
-			if (pieces.length >= 2)
+			if (pieces.length > 2)
 			{
 				DateTime when = ISODateTimeFormat.dateTime().parseDateTime(pieces[1]);
 				String url = pieces[2];
 
-				if (when.isAfter(newest))
+				UpgradeInfo info = new UpgradeInfo(when.toInstant(), new URL(url));
+
+				if (pieces.length > 3)
 				{
-					newest = when.toInstant();
-					newestUri = url;
+					info.getTags().addAll(Arrays.asList(pieces[3].split(",")));
+				}
+
+				upgrades.add(info);
+			}
+		}
+
+		return upgrades;
+	}
+
+	public UpgradeInfo findLatestAcceptable(List<String> requiredTags, List<UpgradeInfo> versions)
+	{
+		UpgradeInfo newestAcceptable = null;
+
+		for (UpgradeInfo info: versions)
+		{
+			if (null == requiredTags || info.getTags().containsAll(requiredTags))
+			{
+				if (null == newestAcceptable)
+				{
+					newestAcceptable = info;
+				}
+				else
+				{
+					if (info.getReleaseTime().isAfter(newestAcceptable.getReleaseTime()))
+					{
+						newestAcceptable = info;
+					}
 				}
 			}
 		}
 
-		URL url = new URL(newestUri);
-		System.out.printf("newest is at %s: %s\n", newest, url.toString());
-
-		return new UpgradeInfo(newest, url);
+		return newestAcceptable;
 	}
+
 }

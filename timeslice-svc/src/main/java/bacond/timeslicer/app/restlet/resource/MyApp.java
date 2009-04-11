@@ -38,16 +38,23 @@ public class MyApp extends Application
 	private final String localRootUri;
 	private final String aclFileName;
 	private final String safeDir;
+	private final String updateUrl;
 
-	public MyApp(Context context, String localRootUri, String aclFileName, String safeDir)
+	public MyApp(Context context, String localRootUri, String aclFileName, String safeDir, String updateUrl)
 	{
 		super(context);
 		
 		this.localRootUri = localRootUri;
 		this.aclFileName = aclFileName;
 		this.safeDir = safeDir;
+		this.updateUrl = updateUrl;
 	}
 	
+	public String getUpdateUrl()
+	{
+		return updateUrl;
+	}
+
 	public Map<Instant, StartTag> getStartTags()
 	{
 		return startTags;
@@ -128,6 +135,7 @@ public class MyApp extends Application
 		
 		Route versionRoute = router.attach("/version", UpgradeInfoResources.class);
 		versionRoute.extractQuery("action", "action", true);
+		versionRoute.extractQuery("filter", "filter", true);
 
 		return router;
 	}

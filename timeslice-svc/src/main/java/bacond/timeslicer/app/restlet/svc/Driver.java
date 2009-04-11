@@ -18,6 +18,7 @@ public class Driver
 	private URI rootUri = URI.create("root");
 	private String safeDir = null;
 	private boolean doPreload = false;
+	private String updateUrl = "file:/dev/null";
 
 	public static class Args
 	{
@@ -26,6 +27,7 @@ public class Driver
 		public static final String Acl = "acl";
 		public static final String SafeDir = "safedir";
 		public static final String PreLoad = "preload";
+		public static final String UpdateUrl = "update-url";
 	}
 	
 	private Driver configureFromCommandline(String[] args)
@@ -71,8 +73,13 @@ public class Driver
 			}
 
 			doPreload = commandLine.hasOption(Args.PreLoad);
+
+			if (commandLine.hasOption(Args.UpdateUrl))
+			{
+				updateUrl = commandLine.getOptionValue(Args.UpdateUrl);
+			}
 		}
-		
+
 		return this;
 	}
 
@@ -84,6 +91,7 @@ public class Driver
 		acl = settings.getProperty("timeslice." + Args.Acl, acl);
 		rootUri = URI.create(settings.getProperty("timeslice." + Args.Root, "root"));
 		safeDir = settings.getProperty("timeslice." + Args.SafeDir, safeDir);
+		updateUrl = settings.getProperty("timeslice." + Args.UpdateUrl, updateUrl);
 
 		return this;
 	}
@@ -101,18 +109,19 @@ public class Driver
 	public Driver printInfo(PrintStream out)
 	{
 		out.println("Service settings:");
-		out.println("  Root: '" + rootUri.toString() + "'");
-		out.println("  Port: '" + port + "'");
-		out.println("  Acl : '" + acl + "'");
-		out.println("  Safe: '" + safeDir + "'");
-		out.println("  Seed: '" + (doPreload ? "true" : "false") + "'");
+		out.println("  Root    : '" + rootUri.toString() + "'");
+		out.println("  Port    : '" + port + "'");
+		out.println("  Acl     : '" + acl + "'");
+		out.println("  Safe    : '" + safeDir + "'");
+		out.println("  Preload : '" + (doPreload ? "true" : "false") + "'");
+		out.println("  Update  : '" + updateUrl + "'");
 
 		return this;
 	}
 
 	public void runProgram()
 	{
-		new Program(port, rootUri, acl, safeDir).run(doPreload);
+		new Program(port, rootUri, acl, safeDir, updateUrl).run(doPreload);
 	}
 
 	public static void main(String[] args) throws ParseException, IOException

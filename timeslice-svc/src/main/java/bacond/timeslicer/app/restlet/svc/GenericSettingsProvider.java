@@ -6,8 +6,6 @@ import java.util.Properties;
 
 import org.apache.commons.io.FilenameUtils;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 public class GenericSettingsProvider
 {
 	public Properties readSettings()
@@ -35,6 +33,6 @@ public class GenericSettingsProvider
 
 	public void writeSettings(Properties settings)
 	{
-		throw new NotImplementedException();
+		throw new RuntimeException("Not implemented.");
 	}
 }

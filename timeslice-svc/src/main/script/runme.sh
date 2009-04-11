@@ -15,6 +15,7 @@ ROOT="var/lib/webroot/$WEBROOT"
 PORT="9080"
 # $(($((12000 + $(($RANDOM % 10000))))))
 UPGRADEARG="/dev/null"
+UPDATEURL="http://timeslice.googlecode.com/svn/wiki/LatestRelease.wiki"
 
 #----------------------------------------------------------
 # Check command-line switches
@@ -96,7 +97,7 @@ then
 timeslice.port = $PORT
 timeslice.acl = $ACLFILE
 timeslice.safedir = $safedir
-
+timeslice.update-url = $UPDATEURL
 EOF
 
 else

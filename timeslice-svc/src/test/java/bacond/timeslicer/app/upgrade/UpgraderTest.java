@@ -1,12 +1,10 @@
 package bacond.timeslicer.app.upgrade;
 
 import java.io.File;
+import java.util.Collections;
 
 import org.junit.Ignore;
 import org.junit.Test;
-
-import bacond.timeslicer.app.upgrade.UpgradeInfo;
-import bacond.timeslicer.app.upgrade.Upgrader;
 
 @Ignore
 public class UpgraderTest
@@ -14,9 +12,12 @@ public class UpgraderTest
 	@Test
 	public void test0() throws Exception
 	{
-		Upgrader upgrader = new Upgrader("/tmp/");
+		//String url = "http://timeslice.googlecode.com/svn/wiki/LatestRelease.wiki";
+		String url = "file:test-input/remote/releases.txt";
 
-		UpgradeInfo latestUpgradeInfo = upgrader.getLatestUpgradeInfo();
+		Upgrader upgrader = new Upgrader(url, "/tmp/");
+
+		UpgradeInfo latestUpgradeInfo = upgrader.findLatestAcceptable(Collections.<String>emptyList(), upgrader.getLatestUpgradeInfo());
 
 		//
 		// Avoid downloading every time during testing.

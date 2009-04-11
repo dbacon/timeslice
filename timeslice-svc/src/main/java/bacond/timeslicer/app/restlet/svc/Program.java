@@ -13,13 +13,15 @@ public class Program
 	private final URI rootUri;
 	private final String acl;
 	private final String safeDir;
+	private final String updateUrl;
 
-	public Program(int port, URI rootUri, String acl, String safeDir)
+	public Program(int port, URI rootUri, String acl, String safeDir, String updateUrl)
 	{
 		this.port = port;
 		this.rootUri = rootUri;
 		this.acl = acl;
 		this.safeDir = safeDir;
+		this.updateUrl = updateUrl;
 	}
 
 	void run(boolean doPreload)
@@ -33,7 +35,8 @@ public class Program
 						component.getContext().createChildContext(),
 						rootUri.toString(),
 						acl,
-						safeDir)
+						safeDir,
+						updateUrl)
 					.preLoadFromFile(doPreload));
 
 		try

@@ -1,6 +1,8 @@
 package bacond.timeslicer.app.restlet.resource;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -35,74 +37,97 @@ public class UpgradeInfoResources extends Resource
 		UpgradeInfo latestUpgradeInfo = null;
 		String msg = "-uninitialized-";
 
-		Upgrader upgrader = new Upgrader(getMyApp().getSafeDir());
+		Upgrader upgrader = new Upgrader(getMyApp().getUpdateUrl(), getMyApp().getSafeDir());
 
 		try
 		{
-			latestUpgradeInfo = upgrader.getLatestUpgradeInfo();
+			String filter = (String) getRequest().getAttributes().get("filter");
+
+			List<String> filters = Arrays.asList("prod");
+
+			if (null != filter)
+			{
+				if ("none".equals(filter))
+				{
+					filters = null;
+				}
+				else
+				{
+					filters = Arrays.asList(filter.split(","));
+				}
+			}
+
+			latestUpgradeInfo = upgrader.findLatestAcceptable(filters, upgrader.getLatestUpgradeInfo());
 		}
 		catch (Exception e)
 		{
 			msg = "Could not get upgrade information: " + e.getMessage();
 		}
 
-		String action = (String) getRequest().getAttributes().get("action");
+		if (null != latestUpgradeInfo)
+		{
+			String action = (String) getRequest().getAttributes().get("action");
 
-		if (false)
-		{
-		}
-		else if ("download".equals(action))
-		{
-			try
+			if (false)
 			{
-				upgrader.download(latestUpgradeInfo);
-				msg = "downloaded.";
 			}
-			catch (Exception e)
+			else if ("download".equals(action))
 			{
-				throw new ResourceException(e);
+				try
+				{
+					upgrader.download(latestUpgradeInfo);
+					msg = "downloaded.";
+				}
+				catch (Exception e)
+				{
+					throw new ResourceException(e);
+				}
 			}
-		}
-		else if ("extract".equals(action))
-		{
-			try
+			else if ("extract".equals(action))
 			{
-				File downloadedFile = upgrader.download(latestUpgradeInfo);
-				upgrader.extract(downloadedFile);
-				msg = "downloaded, extracted.";
+				try
+				{
+					File downloadedFile = upgrader.download(latestUpgradeInfo);
+					upgrader.extract(downloadedFile);
+					msg = "downloaded, extracted.";
+				}
+				catch (Exception e)
+				{
+					throw new ResourceException(e);
+				}
 			}
-			catch (Exception e)
+			else if ("restart".equals(action))
 			{
-				throw new ResourceException(e);
+				try
+				{
+					File downloadedFile = upgrader.download(latestUpgradeInfo);
+					File extractedFolder = upgrader.extract(downloadedFile);
+					getMyApp().restart(extractedFolder.getName());
+					msg = "downloaded, extracted.restarting.";
+				}
+				catch (Exception e)
+				{
+					throw new ResourceException(e);
+				}
 			}
-		}
-		else if ("restart".equals(action))
-		{
-			try
+			else
 			{
-				File downloadedFile = upgrader.download(latestUpgradeInfo);
-				File extractedFolder = upgrader.extract(downloadedFile);
-				getMyApp().restart(extractedFolder.getName());
-				msg = "downloaded, extracted.restarting.";
-			}
-			catch (Exception e)
-			{
-				throw new ResourceException(e);
+				msg = String.format(
+						"%2$s released at %1$s<br/>" +
+						"<ul>" +
+						"  <li><a href=\"?action=download\">Download only</a></li>" +
+						"  <li><a href=\"?action=restart\">Upgrade now</a></li>" +
+						"  <li><a href=\"%2$s\">Download locally</a></li>" +
+						"</ul>" +
+						"<p>safe-dir is <tt>%3$s</tt></p>",
+						latestUpgradeInfo.getReleaseTime(),
+						latestUpgradeInfo.getDownloadUrl(),
+						upgrader.getSafeDir());
 			}
 		}
 		else
 		{
-			msg = String.format(
-					"%2$s released at %1$s<br/>" +
-					"<ul>" +
-					"  <li><a href=\"?action=download\">Download only</a></li>" +
-					"  <li><a href=\"?action=upgrade\">Upgrade now</a></li>" +
-					"  <li><a href=\"%2$s\">Download locally</a></li>" +
-					"</ul>" +
-					"<p>safe-dir is <tt>%3$s</tt></p>",
-					latestUpgradeInfo.getReleaseTime(),
-					latestUpgradeInfo.getDownloadUrl(),
-					upgrader.getSafeDir());
+			msg = "No update information available.";
 		}
 
 		return new StringRepresentation(msg, MediaType.TEXT_HTML);
