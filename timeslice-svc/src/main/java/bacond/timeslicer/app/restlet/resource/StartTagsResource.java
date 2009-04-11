@@ -107,6 +107,7 @@ public class StartTagsResource extends Resource
 		public static final String Enrich = "enrich";
 
 		public static final String Download = "download";
+		public static final String Snapshot = "snapshot";
 	
 	}
 	
@@ -119,6 +120,7 @@ public class StartTagsResource extends Resource
 			QueryParamNames.MinTime,
 			QueryParamNames.MaxTime,
 			QueryParamNames.Processing,
+			QueryParamNames.Snapshot,
 			QueryParamNames.Download);
 	
 	public static Instant parseInstantIfAvailable(String a)
@@ -188,6 +190,9 @@ public class StartTagsResource extends Resource
 		Integer pageIndex = Transforms.mapNullTo(parseIntegerIfAvailable((String) getRequest().getAttributes().get(QueryParamNames.PageIndex)), 0);
 		String processing = Transforms.mapNullTo((String) getRequest().getAttributes().get(QueryParamNames.Processing), "none");
 		String downloadName = (String) getRequest().getAttributes().get(QueryParamNames.Download);
+		String snapshot = (String) getRequest().getAttributes().get(QueryParamNames.Snapshot);
+
+		processSnapshotRequest(snapshot);
 
 		List<StartTag> tags = new LinkedList<StartTag>(getMyApp().getMeSomeTags(
 				minDate,
@@ -203,6 +208,21 @@ public class StartTagsResource extends Resource
 		else
 		{
 			return render(mediaType, getStartTagRenderers(), tags, downloadName);
+		}
+	}
+
+	private void processSnapshotRequest(String snapshot)
+	{
+		if (null != snapshot)
+		{
+			try
+			{
+				getMyApp().snapshot(snapshot);
+			}
+			catch (Exception e)
+			{
+				System.err.println("Could not write snapshot: " + e.getMessage());
+			}
 		}
 	}
 

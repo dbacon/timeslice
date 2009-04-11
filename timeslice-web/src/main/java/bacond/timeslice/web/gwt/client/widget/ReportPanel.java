@@ -21,6 +21,7 @@ import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -112,13 +113,35 @@ public class ReportPanel extends Composite
 		ignoreHp.add(new Label("Ignore items containing:"));
 		ignoreHp.add(ignoreWords);
 
+		// TODO: use svc root, not hard-coded.
+		final String fun = "/items?download=timeslice-raw.dat&mediatypeoverride=text/plain";
+		final Anchor downloadLink = new Anchor("Raw-data download", true, fun);
+		final CheckBox remote = new CheckBox("Remote drop also.", true);
+		remote.addClickListener(new ClickListener()
+		{
+			public void onClick(Widget arg0)
+			{
+				if (remote.isChecked())
+				{
+					downloadLink.setHref(fun + "&snapshot=from-web");
+				}
+				else
+				{
+					downloadLink.setHref(fun);
+				}
+			}
+		});
+
+		HorizontalPanel downloadPanel = new HorizontalPanel();
+		downloadPanel.add(downloadLink);
+		downloadPanel.add(remote);
+
 		VerticalPanel vp = new VerticalPanel();
 		vp.add(params);
 		vp.add(ignoreHp);
 		vp.add(refreshButton);
 		vp.add(hp);
-		
-		vp.add(new Anchor("Raw-data download", true, "/items?download=timeslice-raw.dat&mediatypeoverride=text/plain")); // TODO: use svc root, not hard-coded.
+		vp.add(downloadPanel);
 		
 		readPrefs();
 		

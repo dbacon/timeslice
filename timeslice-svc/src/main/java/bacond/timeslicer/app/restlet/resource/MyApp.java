@@ -14,6 +14,7 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.joda.time.Instant;
+import org.joda.time.format.ISODateTimeFormat;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Directory;
@@ -70,22 +71,22 @@ public class MyApp extends Application
 		return safeDir;
 	}
 
-	private File findBackupFile()
+	private File findBackupFile(String key)
 	{
-		return new File(FilenameUtils.concat(getSafeDir(), "backup.dat"));
+		return new File(FilenameUtils.concat(getSafeDir(), "backup-" + key + ".dat"));
+	}
+
+	public void snapshot(String key) throws IOException
+	{
+		writeBackup("snapshot-" + ISODateTimeFormat.dateTime().print(new Instant()) + "-" + key);
 	}
 
 	public void restart(String rebootTo)
 	{
-		List<String> lines = new ArrayList<String>(getStartTags().values().size());
-		for (StartTag tag: getStartTags().values())
-		{
-			lines.add(SumEntry.toLine(tag));
-		}
 
 		try
 		{
-			FileUtils.writeLines(findBackupFile(), lines);
+			writeBackup("update");
 
 			if (rebootTo.contains(File.separator))
 			{
@@ -100,6 +101,18 @@ public class MyApp extends Application
 		{
 			System.err.println("Could not write root, to restart: " + e.getMessage());
 		}
+	}
+
+	private void writeBackup(String key) throws IOException
+	{
+		List<String> lines = new ArrayList<String>(getStartTags().values().size());
+
+		for (StartTag tag: getStartTags().values())
+		{
+			lines.add(SumEntry.toLine(tag));
+		}
+
+		FileUtils.writeLines(findBackupFile(key), lines);
 	}
 
 	@Override
@@ -191,7 +204,7 @@ public class MyApp extends Application
 	{
 		if (doPreload)
 		{
-			File backupFile = findBackupFile();
+			File backupFile = findBackupFile("upgrade");
 			try
 			{
 				List<StartTag> preloadItems = SumEntry.readItems(new FileInputStream(backupFile));
