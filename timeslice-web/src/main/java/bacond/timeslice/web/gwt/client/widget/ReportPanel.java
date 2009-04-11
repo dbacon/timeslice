@@ -133,6 +133,7 @@ public class ReportPanel extends Composite
 		});
 
 		HorizontalPanel downloadPanel = new HorizontalPanel();
+		downloadPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
 		downloadPanel.add(downloadLink);
 		downloadPanel.add(remote);
 
