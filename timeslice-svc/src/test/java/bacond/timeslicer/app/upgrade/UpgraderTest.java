@@ -2,17 +2,19 @@ package bacond.timeslicer.app.upgrade;
 
 import java.io.File;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import bacond.timeslicer.app.upgrade.UpgradeInfo;
 import bacond.timeslicer.app.upgrade.Upgrader;
 
+@Ignore
 public class UpgraderTest
 {
 	@Test
 	public void test0() throws Exception
 	{
-		Upgrader upgrader = new Upgrader("/tmp/whoot");
+		Upgrader upgrader = new Upgrader("/tmp/");
 
 		UpgradeInfo latestUpgradeInfo = upgrader.getLatestUpgradeInfo();
 
