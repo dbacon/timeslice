@@ -1,12 +1,18 @@
 package bacond.timeslicer.app.restlet.resource;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.joda.time.Instant;
 import org.restlet.Application;
 import org.restlet.Context;
@@ -23,6 +29,7 @@ import bacond.lib.util.Check;
 import bacond.timeslicer.app.auth.AclFile;
 import bacond.timeslicer.app.dto.StartTag;
 import bacond.timeslicer.app.processing.Split;
+import bacond.timeslicer.ui.cli.SumEntry;
 
 public class MyApp extends Application
 {
@@ -30,13 +37,15 @@ public class MyApp extends Application
 	private final Map<String, String> users = new LinkedHashMap<String, String>();
 	private final String localRootUri;
 	private final String aclFileName;
+	private final String safeDir;
 
-	public MyApp(Context context, String localRootUri, String aclFileName)
+	public MyApp(Context context, String localRootUri, String aclFileName, String safeDir)
 	{
 		super(context);
 		
 		this.localRootUri = localRootUri;
 		this.aclFileName = aclFileName;
+		this.safeDir = safeDir;
 	}
 	
 	public Map<Instant, StartTag> getStartTags()
@@ -47,6 +56,43 @@ public class MyApp extends Application
 	public Map<String, String> getUsers()
 	{
 		return users;
+	}
+
+	public String getSafeDir()
+	{
+		return safeDir;
+	}
+
+	private File findBackupFile()
+	{
+		return new File(FilenameUtils.concat(getSafeDir(), "backup.dat"));
+	}
+
+	public void restart(String rebootTo)
+	{
+		List<String> lines = new ArrayList<String>(getStartTags().values().size());
+		for (StartTag tag: getStartTags().values())
+		{
+			lines.add(SumEntry.toLine(tag));
+		}
+
+		try
+		{
+			FileUtils.writeLines(findBackupFile(), lines);
+
+			if (rebootTo.contains(File.separator))
+			{
+				throw new RuntimeException("Restart location name cannot contain a '" + File.separator + "'.");
+			}
+
+			String newRoot = FilenameUtils.concat(safeDir, rebootTo);
+			FileUtils.writeStringToFile(new File("/home/dbacon/.timeslice.nextroot"), newRoot);
+			System.exit(42);
+		}
+		catch (Exception e)
+		{
+			System.err.println("Could not write root, to restart: " + e.getMessage());
+		}
 	}
 
 	@Override
@@ -80,6 +126,9 @@ public class MyApp extends Application
 		
 		router.attach("/", directory);
 		
+		Route versionRoute = router.attach("/version", UpgradeInfoResources.class);
+		versionRoute.extractQuery("action", "action", true);
+
 		return router;
 	}
 	
@@ -128,5 +177,39 @@ public class MyApp extends Application
 		List<StartTag> independentItems = new Split().split(itemsInRange, new Instant());
 
 		return independentItems;
+	}
+
+	public MyApp preLoadFromFile(boolean doPreload)
+	{
+		if (doPreload)
+		{
+			File backupFile = findBackupFile();
+			try
+			{
+				List<StartTag> preloadItems = SumEntry.readItems(new FileInputStream(backupFile));
+
+				enterAllTags(preloadItems);
+
+				System.out.println("Pre-loaded " + preloadItems.size() + " item(s) from '" + backupFile + "'.");
+			}
+			catch (IOException e)
+			{
+				System.err.println("Could not pre-load file '" + backupFile + "': " + e.getMessage());
+			}
+		}
+		return this;
+	}
+
+	public void enterTag(StartTag startTag)
+	{
+		getStartTags().put(startTag.getWhen(), startTag);
+	}
+
+	public void enterAllTags(Collection<? extends StartTag> all)
+	{
+		for (StartTag tag: all)
+		{
+			enterTag(tag);
+		}
 	}
 }

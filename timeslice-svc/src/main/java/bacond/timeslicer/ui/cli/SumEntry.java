@@ -22,10 +22,10 @@ public class SumEntry
 	public static void main(String[] args) throws IOException
 	{
 		List<StartTag> items = readItems(new FileInputStream(args[0]));
-		
+
 		List<StartTag> items2 = new Split().split(items, new Instant());
 		Map<String, TaskTotal> sums = new Aggregate().sumThem(new Aggregate().aggregate(items2));
-	
+
 		System.out.println("totals:");
 		for (TaskTotal total: sums.values())
 		{
@@ -33,10 +33,10 @@ public class SumEntry
 		}
 	}
 
-	private static List<StartTag> readItems(InputStream in) throws IOException
+	public static List<StartTag> readItems(InputStream in) throws IOException
 	{
 		List<String> lines = Narrow.<String>fromList(IOUtils.readLines(in, "UTF8"));
-		
+
 		List<StartTag> result = new ArrayList<StartTag>(lines.size());
 		for (String line: lines)
 		{
@@ -46,20 +46,28 @@ public class SumEntry
 				result.add(tag);
 			}
 		}
-		
+
 		return result;
+	}
+
+	public static String toLine(StartTag tag)
+	{
+		return String.format("[%s#%s#%s]",
+				tag.getWho(),
+				ISODateTimeFormat.dateTime().print(tag.getWhen()),
+				tag.getWhat());
 	}
 
 	public static StartTag fromLine(String line)
 	{
 		StartTag result = null;
-	
+
 		if (line.startsWith("[") && line.endsWith("]"))
 		{
 			line = line.substring(1, line.length() - 1);
 
 			String[] fields = line.split("#");
-			
+
 			if (fields.length == 3)
 			{
 				String who = fields[0];
@@ -70,7 +78,7 @@ public class SumEntry
 				result = new StartTag(who, when, what, until);
 			}
 		}
-		
+
 		return result;
 	}
 }

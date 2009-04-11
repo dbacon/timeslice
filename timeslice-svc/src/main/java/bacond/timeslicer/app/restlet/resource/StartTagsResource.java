@@ -188,7 +188,7 @@ public class StartTagsResource extends Resource
 		Integer pageIndex = Transforms.mapNullTo(parseIntegerIfAvailable((String) getRequest().getAttributes().get(QueryParamNames.PageIndex)), 0);
 		String processing = Transforms.mapNullTo((String) getRequest().getAttributes().get(QueryParamNames.Processing), "none");
 		String downloadName = (String) getRequest().getAttributes().get(QueryParamNames.Download);
-		
+
 		List<StartTag> tags = new LinkedList<StartTag>(getMyApp().getMeSomeTags(
 				minDate,
 				maxDate,
@@ -253,7 +253,7 @@ public class StartTagsResource extends Resource
 				// TODO: better integration/validation support upon adding startTag to list.
 				//  for example collisions, missing untils if in past, etc.
 				
-				getMyApp().getStartTags().put(startTag.getWhen(), startTag);
+				getMyApp().enterTag(startTag);
 			}
 		}
 
