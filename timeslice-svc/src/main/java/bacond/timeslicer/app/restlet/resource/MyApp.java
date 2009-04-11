@@ -34,6 +34,7 @@ import bacond.timeslicer.ui.cli.SumEntry;
 
 public class MyApp extends Application
 {
+	private static final String Key_Upgrade = "upgrade";
 	private final Map<Instant, StartTag> startTags = new LinkedHashMap<Instant, StartTag>();
 	private final Map<String, String> users = new LinkedHashMap<String, String>();
 	private final String localRootUri;
@@ -86,7 +87,7 @@ public class MyApp extends Application
 
 		try
 		{
-			writeBackup("update");
+			writeBackup(Key_Upgrade);
 
 			if (rebootTo.contains(File.separator))
 			{
@@ -146,9 +147,13 @@ public class MyApp extends Application
 		
 		router.attach("/", directory);
 		
-		Route versionRoute = router.attach("/version", UpgradeInfoResources.class);
+		Route versionsRoute = router.attach("/version", UpgradeInfosResource.class);
+		versionsRoute.extractQuery("action", "action", true);
+		versionsRoute.extractQuery("filter", "filter", true);
+
+		Route versionRoute = router.attach("/version/{versionId}", UpgradeInfoResource.class);
+		versionRoute.getTemplate().getVariables().put("versionId", new Variable(Variable.TYPE_URI_PATH));
 		versionRoute.extractQuery("action", "action", true);
-		versionRoute.extractQuery("filter", "filter", true);
 
 		return router;
 	}
@@ -204,7 +209,7 @@ public class MyApp extends Application
 	{
 		if (doPreload)
 		{
-			File backupFile = findBackupFile("upgrade");
+			File backupFile = findBackupFile(Key_Upgrade);
 			try
 			{
 				List<StartTag> preloadItems = SumEntry.readItems(new FileInputStream(backupFile));
