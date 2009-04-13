@@ -12,7 +12,7 @@ WEBROOT="timeslice-web-${WEBVERSION}"
 WEBROOTARCH="$WEBROOT-static-web-root.zip"
 
 ROOT="var/lib/webroot/$WEBROOT"
-PORT="9080"
+PORT=""
 # $(($((12000 + $(($RANDOM % 10000))))))
 UPGRADEARG="/dev/null"
 UPDATEURL="http://timeslice.googlecode.com/svn/wiki/LatestRelease.wiki"
@@ -61,6 +61,12 @@ ACLFILE="$HOME/.timeslice.acl"
 
 if [ ! -r "$ACLFILE" ]
 then
+	if [ -z "$PORT" ]
+	then
+		printf "  You must specify -p <port> if running for the 1st time.\n"
+		exit 1
+	fi
+
 	printf "Create a user:\n"
 	printf "  username: "
 	read username
@@ -108,14 +114,20 @@ fi
 #----------------------------------------------------------
 # Run web service
 
+PORTARG=""
+if [ -n "$PORT" ]
+then
+	PORTARG="--port $PORT"
+fi
+
 set +e
 
 java \
 	-jar lib/timeslice-svc-${SVCVERSION}-jar-with-dependencies.jar \
 	bacond.timeslicer.app.restlet.svc.Driver \
-		--port "$PORT" \
 		--root "$ROOT" \
 		--acl "$ACLFILE" \
+		$PORTARG \
 		$UPGRADEARG
 
 # support relaunching a new version
