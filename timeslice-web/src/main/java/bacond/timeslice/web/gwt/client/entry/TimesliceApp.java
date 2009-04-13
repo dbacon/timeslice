@@ -64,6 +64,7 @@ public class TimesliceApp implements EntryPoint
 	private final Hyperlink addHotlink = new Hyperlink("Add to hotlist", "");
 	private final Hyperlink enterLink = new Hyperlink("Enter", "");
 	private final VerticalPanel actionPanel = new VerticalPanel();
+	private String originalWindowTitle;
 
 	private void updateStartTag(StartTag editedStartTag)
 	{
@@ -106,6 +107,8 @@ public class TimesliceApp implements EntryPoint
 
 	public void onModuleLoad()
 	{
+		originalWindowTitle = Window.getTitle();
+
 		optionsPanel.addOptionsListener(new OptionsPanel.IOptionsListener()
 		{
 			public void optionsChanged(OptionsPanel source)
@@ -280,10 +283,10 @@ public class TimesliceApp implements EntryPoint
 			
 			updateSuggestSource(items);
 
-			if (optionsPanel.isCurrentTaskInTitlebar())
-			{
-				Window.setTitle(Checks.mapNullTo(findCurrentStartTag(items), UnknownTag).getDescription());
-			}
+			Window.setTitle(
+				optionsPanel.isCurrentTaskInTitlebar()
+					? optionsPanel.renderTitlebar(Checks.mapNullTo(findCurrentStartTag(items), UnknownTag).getDescription())
+					: originalWindowTitle);
 		}
 		else
 		{

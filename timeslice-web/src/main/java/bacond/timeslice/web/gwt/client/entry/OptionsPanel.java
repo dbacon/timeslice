@@ -26,7 +26,15 @@ public class OptionsPanel extends Composite
 		public static final String User = "timeslice.options.user";
 		public static final String CtrlSpaceSends = "timeslice.options.controlspacesends";
 		public static final String CurrentTaskInTitlebar = "timeslice.options.currenttaskintitlebar";
+		public static final String TitlebarTemplate= "timeslice.options.titlebartemplate";
 	}
+
+	public static class Token
+	{
+		public static String CurrentTask = "@current.task@";
+	}
+
+	public static final String DefaultTitlebarTemplate = "[TS] " + Token.CurrentTask;
 
 	private final TextBox maxSize = new TextBox();
 	private final TextBox baseUri = new TextBox();
@@ -36,6 +44,7 @@ public class OptionsPanel extends Composite
 
 	private final CheckBox controlSpaceSends = new CheckBox("Control-space also sends.");
 	private final CheckBox currentTaskInTitlebar = new CheckBox("Show current task in page title.");
+	private final TextBox titleBarTemplate = new TextBox();
 	
 	private final Controller controller;
 	
@@ -97,9 +106,8 @@ public class OptionsPanel extends Composite
 		optionsTable.setWidget(row,   0, createTitledLabel("Max results", "Number of items to show in history and include in word-completion."));
 		optionsTable.setWidget(row++, 1, maxSize);
 		optionsTable.setWidget(row++, 0, controlSpaceSends);
-		optionsTable.setWidget(row++, 0, currentTaskInTitlebar);
-		
-		readPrefs();
+		optionsTable.setWidget(row,   0, currentTaskInTitlebar);
+		optionsTable.setWidget(row++, 1, titleBarTemplate);
 		
 		addOptionsListener(new IOptionsListener()
 		{
@@ -116,6 +124,7 @@ public class OptionsPanel extends Composite
 	{
 		public void onClick(Widget arg0)
 		{
+			fireChanged();
 		}
 	};
 
@@ -160,11 +169,27 @@ public class OptionsPanel extends Composite
 		
 		controlSpaceSends.addClickListener(CommonClickFireChanged);
 
+		titleBarTemplate.addChangeListener(CommonChangeFireChanged);
+
 		currentTaskInTitlebar.addClickListener(CommonClickFireChanged);
+		currentTaskInTitlebar.addClickListener(new ClickListener()
+		{
+			public void onClick(Widget arg0)
+			{
+				consistentize();
+			}
+		});
 
 		initValues();
+
+		consistentize();
 	}
-	
+
+	private void consistentize()
+	{
+		titleBarTemplate.setEnabled(currentTaskInTitlebar.isChecked());
+	}
+
 	public int getMaxSize()
 	{
 		try
@@ -187,19 +212,24 @@ public class OptionsPanel extends Composite
 		return currentTaskInTitlebar.isChecked();
 	}
 	
+	public String renderTitlebar(String currentTaskDescription)
+	{
+		return titleBarTemplate.getText().replaceAll(OptionsPanel.Token.CurrentTask, currentTaskDescription);
+	}
+
 	private void readPrefs()
 	{
 		username.setText(Cookies.getCookie(PrefKeys.User));
 		maxSize.setText(Cookies.getCookie(PrefKeys.PageSize));
 		controlSpaceSends.setChecked("true".equals(Cookies.getCookie(PrefKeys.CtrlSpaceSends)));
 		currentTaskInTitlebar.setChecked("true".equals(Cookies.getCookie(PrefKeys.CurrentTaskInTitlebar)));
+		titleBarTemplate.setText(Cookies.getCookie(PrefKeys.TitlebarTemplate));
 	}
 	
 	private void initValues()
 	{
 		controller.getItemSvc().setBaseSvcUri(calculateServiceRoot());
 
-		maxSize.setText("" + Defaults.MaxResults);
 		baseUri.setText(controller.getItemSvc().getBaseSvcUri());
 		username.setText(controller.getItemSvc().getUsername());
 		password.setText(controller.getItemSvc().getPassword());
@@ -208,6 +238,16 @@ public class OptionsPanel extends Composite
 		
 		controller.getItemSvc().setUsername(username.getText());
 		controller.getItemSvc().setPassword(password.getText());
+
+		if (maxSize.getText().trim().isEmpty())
+		{
+			maxSize.setText("" + Defaults.MaxResults);
+		}
+
+		if (titleBarTemplate.getText().trim().isEmpty())
+		{
+			titleBarTemplate.setText(DefaultTitlebarTemplate);
+		}
 	}
 
 	private void writePrefs()
@@ -216,5 +256,6 @@ public class OptionsPanel extends Composite
 		Cookies.setCookie(PrefKeys.PageSize, maxSize.getText());
 		Cookies.setCookie(PrefKeys.CtrlSpaceSends, (controlSpaceSends.isChecked() ? "true" : "false"));
 		Cookies.setCookie(PrefKeys.CurrentTaskInTitlebar, (currentTaskInTitlebar.isChecked() ? "true" : "false"));
+		Cookies.setCookie(PrefKeys.TitlebarTemplate, titleBarTemplate.getText());
 	}
 }
