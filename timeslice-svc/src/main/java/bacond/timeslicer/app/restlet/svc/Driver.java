@@ -93,7 +93,19 @@ public class Driver
 		safeDir = settings.getProperty("timeslice." + Args.SafeDir, safeDir);
 		updateUrl = settings.getProperty("timeslice." + Args.UpdateUrl, updateUrl);
 
+		importSystemProperty(settings, "http.proxyHost");
+		importSystemProperty(settings, "http.proxyPort");
+		importSystemProperty(settings, "http.nonProxyHosts");
+
 		return this;
+	}
+
+	private void importSystemProperty(Properties props, String key)
+	{
+		if (props.containsKey(key))
+		{
+			System.setProperty(key, props.getProperty(key));
+		}
 	}
 
 	public Driver fixRootUri() throws IOException
