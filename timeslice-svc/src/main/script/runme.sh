@@ -75,6 +75,19 @@ then
 	read password
 	stty echo
 	printf "\n"
+
+	printf "Do you need an HTTP proxy ? "
+	read ans
+	case "$ans" in
+		[Yy])
+			printf "  proxy host       (proxhost.mydomain.com)   : "
+			read HTTP_PROXY_HOST
+			printf "  proxy port       (88)                      : "
+			read HTTP_PROXY_PORT
+			printf "  proxy exceptions (*.mydomain.com)          : "
+			read HTTP_PROXY_EXCEPT
+		;;
+	esac
 	
 	printf "%s:%s\n" "$username" "$password" >> "$ACLFILE"
 	chmod go-rwx "$ACLFILE"
@@ -104,7 +117,14 @@ timeslice.port = $PORT
 timeslice.acl = $ACLFILE
 timeslice.safedir = $safedir
 timeslice.update-url = $UPDATEURL
+
 EOF
+
+	[ "$HTTP_PROXY_HOST" ] && printf "http.proxyHost = %s\n" "$HTTP_PROXY_HOST" >> "$RCFILE"
+	[ "$HTTP_PROXY_PORT" ] && printf "http.proxyPort = %s\n" "$HTTP_PROXY_PORT" >> "$RCFILE"
+	[ "$HTTP_PROXY_EXCEPT" ] && printf "http.nonProxyHosts = %s\n" "$HTTP_PROXY_EXCEPT" >> "$RCFILE"
+
+	printf "\n" >> "$RCFILE"
 
 else
 	printf "Found existing RC file.\n";
