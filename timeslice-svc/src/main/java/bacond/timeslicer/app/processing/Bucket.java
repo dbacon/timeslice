@@ -13,7 +13,7 @@ public class Bucket<T, K, V>
 {
 	private final ITransform<T, K> keyMaker;
 	private final ITransform<T, V> valueMaker;
-	
+
 	private final Map<K, List<V>> buckets = new LinkedHashMap<K, List<V>>();
 
 	public static <T1, K1> Bucket<T1, K1, T1> create(ITransform<T1, K1> keyMaker)
@@ -41,7 +41,7 @@ public class Bucket<T, K, V>
 	{
 		return valueMaker;
 	}
-	
+
 	public Map<K, List<V>> getBuckets()
 	{
 		return buckets;
@@ -53,16 +53,16 @@ public class Bucket<T, K, V>
 		{
 			K key = getKeyMaker().apply(item);
 			List<V> bucket = getBuckets().get(key);
-			
+
 			if (null == bucket)
 			{
 				bucket = new LinkedList<V>();
 				getBuckets().put(key, bucket);
 			}
-			
+
 			bucket.add(getValueMaker().apply(item));
 		}
-		
+
 		return this;
 	}
 }

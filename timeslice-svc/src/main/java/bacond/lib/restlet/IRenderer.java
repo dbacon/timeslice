@@ -1,6 +1,6 @@
 package bacond.lib.restlet;
 
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 import bacond.lib.util.ITransform;
 

@@ -10,7 +10,7 @@ public class Narrow
 	{
 		return (T) o;
 	}
-	
+
 	public static <T> List<T> fromList(List<?> list)
 	{
 		ArrayList<T> result = new ArrayList<T>(list.size());
@@ -19,7 +19,7 @@ public class Narrow
 		{
 			result.add(Narrow.<T>castSingle(o));
 		}
-		
+
 		return result;
 	}
 }

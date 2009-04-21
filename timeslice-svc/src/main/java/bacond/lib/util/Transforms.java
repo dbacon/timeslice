@@ -9,7 +9,7 @@ public class Transforms
 			@Override
 			public M apply(C r)
 			{
-				String methodName = "get" + memberName.substring(0, 1).toUpperCase() + memberName.substring(1); 
+				String methodName = "get" + memberName.substring(0, 1).toUpperCase() + memberName.substring(1);
 				try
 				{
 					return Narrow.<M>castSingle(r.getClass().getMethod(methodName, new Class[0]).invoke(r, new Object[0]));
@@ -26,7 +26,7 @@ public class Transforms
 			}
 		};
 	}
-	
+
 	public static <T> ITransform<T, T> identity()
 	{
 		return new ITransform<T, T>()
@@ -38,7 +38,7 @@ public class Transforms
 			}
 		};
 	}
-	
+
 	public static <R, D> ITransform<R, D> invalid()
 	{
 		return new ITransform<R, D>()
@@ -50,7 +50,7 @@ public class Transforms
 			}
 		};
 	}
-	
+
 	public static <T> T mapNullTo(T t, T altT)
 	{
 		if (null == t)
@@ -62,7 +62,7 @@ public class Transforms
 			return t;
 		}
 	}
-	
+
 	public static <R, I, D> ITransform<R, D> compose(final ITransform<R, I> t1, final ITransform<I, D> t2)
 	{
 		return new ITransform<R, D>()

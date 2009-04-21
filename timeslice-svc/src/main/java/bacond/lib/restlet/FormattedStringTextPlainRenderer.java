@@ -1,7 +1,7 @@
 package bacond.lib.restlet;
 
-import org.restlet.resource.Representation;
-import org.restlet.resource.StringRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 
 import bacond.lib.util.ITransform;
 
@@ -13,12 +13,12 @@ public class FormattedStringTextPlainRenderer<T> implements IRenderer<T>
 	{
 		return new FormattedStringTextPlainRenderer<T>(formatter);
 	}
-	
+
 	public FormattedStringTextPlainRenderer(ITransform<T, String> formatter)
 	{
 		this.formatter = formatter;
 	}
-	
+
 	@Override
 	public Representation apply(T t)
 	{

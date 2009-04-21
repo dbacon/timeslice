@@ -1,6 +1,6 @@
 package bacond.timeslicer.app.auth;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
 
 import org.junit.Test;
 

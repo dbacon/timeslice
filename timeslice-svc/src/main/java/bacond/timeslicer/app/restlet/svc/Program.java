@@ -5,7 +5,6 @@ import java.net.URI;
 import org.restlet.Component;
 import org.restlet.data.Protocol;
 
-import bacond.timeslicer.app.restlet.resource.MyApp;
 
 public class Program
 {

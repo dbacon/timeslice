@@ -29,7 +29,7 @@ public class Driver
 		public static final String PreLoad = "preload";
 		public static final String UpdateUrl = "update-url";
 	}
-	
+
 	private Driver configureFromCommandline(String[] args)
 	{
 		Options opts = new Options();
@@ -38,9 +38,9 @@ public class Driver
 		opts.addOption(null, Args.Acl, true, "ACL filename.");
 		opts.addOption(null, Args.SafeDir, true, "Safe dir in which updates can be installed an run.");
 		opts.addOption(null, Args.PreLoad, false, "Pre-load entries.");
-		
+
 		CommandLine commandLine = null;
-		
+
 		try
 		{
 			commandLine = new GnuParser().parse(opts, args);
@@ -49,7 +49,7 @@ public class Driver
 		{
 			System.err.println("Command-line parsing failed: " + e.getMessage());
 		}
-		
+
 		if (null != commandLine)
 		{
 			if (commandLine.hasOption(Args.Port))

@@ -2,7 +2,8 @@ package bacond.timeslicer.app.processing;
 
 import java.util.List;
 
-import bacond.timeslicer.app.dto.StartTag;
+import bacond.timeslicer.app.task.api.StartTag;
+import bacond.timeslicer.app.tasktotal.api.TaskTotal;
 
 public class Sum
 {
@@ -11,7 +12,7 @@ public class Sum
 		String who = null;
 		int millis = 0;
 		String what = null;
-		
+
 		for (StartTag tag: items)
 		{
 			if (null == who)
@@ -49,7 +50,7 @@ public class Sum
 
 			millis += new org.joda.time.Duration(tag.getWhen(), tag.getUntil()).getMillis();
 		}
-		
+
 		return new TaskTotal(who, millis, what);
 	}
 }

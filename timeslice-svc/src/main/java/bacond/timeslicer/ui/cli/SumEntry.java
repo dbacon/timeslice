@@ -12,10 +12,10 @@ import org.joda.time.Instant;
 import org.joda.time.format.ISODateTimeFormat;
 
 import bacond.lib.util.Narrow;
-import bacond.timeslicer.app.dto.StartTag;
 import bacond.timeslicer.app.processing.Aggregate;
 import bacond.timeslicer.app.processing.Split;
-import bacond.timeslicer.app.processing.TaskTotal;
+import bacond.timeslicer.app.task.api.StartTag;
+import bacond.timeslicer.app.tasktotal.api.TaskTotal;
 
 public class SumEntry
 {
@@ -74,7 +74,7 @@ public class SumEntry
 				Instant when = ISODateTimeFormat.dateTime().parseDateTime(fields[1]).toInstant();
 				String what = fields[2];
 				Instant until = null; //ISODateTimeFormat.dateTime().parseDateTime(fields[3]).toInstant();
-				
+
 				result = new StartTag(who, when, what, until);
 			}
 		}
