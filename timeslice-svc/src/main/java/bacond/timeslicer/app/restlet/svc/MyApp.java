@@ -126,49 +126,88 @@ public class MyApp extends Application implements ITodoItemStoreProvider
 		FileUtils.writeLines(findBackupFile(key), lines);
 	}
 
+	private Restlet aclProtectedFinder(Class<?> targetClass)
+	{
+		Guard guard = new Guard(
+				getContext(),
+				ChallengeScheme.HTTP_BASIC,
+				"Items managing.");
+
+		guard.setSecretResolver(new AclFile(aclFileName));
+
+		guard.setNext(new Finder(getContext(), targetClass));
+
+		return guard;
+	}
+
 	@Override
 	public Restlet createRoot()
 	{
-		Router router = new Router(getContext().createChildContext());
+		Router router = new Router(getContext());
 
-		Guard guard0 = new Guard(getContext().createChildContext(), ChallengeScheme.HTTP_BASIC, "Hello.");
-		guard0.setSecretResolver(new AclFile(aclFileName));
-		guard0.setNext(new Finder(router.getContext(), StartTagsResource.class));
+		addItemsRoute(router);
+		addItemRoute(router);
 
-		Guard guard1 = new Guard(getContext().createChildContext(), ChallengeScheme.HTTP_BASIC, "Hello.");
-		guard1.setSecretResolver(new AclFile(aclFileName));
-		guard1.setNext(new Finder(router.getContext(), StartTagResource.class));
+		addResourcesRoute(router);
 
-		Route route = router.attach("/items", guard0);
+		addStaticFilesRoute(router);
 
-		for (String queryParam: StartTagsResource.QueryParamNameList)
-		{
-			route.extractQuery(queryParam, queryParam, true);
-		}
+		addVersionsRoute(router);
+		addVersionRoute(router);
 
-		router.attach("/items/{when}", guard1);
+		addTodoRoute(router);
 
-		Route resRoute = router.attach("/resources/{resPath}", JavaResourceResource.class);
-		resRoute.getTemplate().getVariables().put("resPath", new Variable(Variable.TYPE_ALL));
+		return router;
+	}
 
+	private void addTodoRoute(Router router)
+	{
+		Route todoRoute = router.attach("/todo", TodoItemListingResource.class);
+		todoRoute.extractQuery("hello", "hello", true);
+	}
+
+	private void addVersionRoute(Router router)
+	{
+		Route versionRoute = router.attach("/version/{versionId}", UpgradeInfoResource.class);
+		versionRoute.getTemplate().getVariables().put("versionId", new Variable(Variable.TYPE_URI_PATH));
+		versionRoute.extractQuery("action", "action", true);
+	}
+
+	private void addVersionsRoute(Router router)
+	{
+		Route versionsRoute = router.attach("/version", UpgradeInfosResource.class);
+		versionsRoute.extractQuery("action", "action", true);
+		versionsRoute.extractQuery("filter", "filter", true);
+	}
+
+	private void addStaticFilesRoute(Router router)
+	{
 		Directory directory = new Directory(getContext().createChildContext(), localRootUri);
 		directory.setListingAllowed(true);
 		directory.setIndexName("index.html");
 
 		router.attach("/", directory);
+	}
 
-		Route versionsRoute = router.attach("/version", UpgradeInfosResource.class);
-		versionsRoute.extractQuery("action", "action", true);
-		versionsRoute.extractQuery("filter", "filter", true);
+	private void addResourcesRoute(Router router)
+	{
+		Route resRoute = router.attach("/resources/{resPath}", JavaResourceResource.class);
+		resRoute.getTemplate().getVariables().put("resPath", new Variable(Variable.TYPE_ALL));
+	}
 
-		Route versionRoute = router.attach("/version/{versionId}", UpgradeInfoResource.class);
-		versionRoute.getTemplate().getVariables().put("versionId", new Variable(Variable.TYPE_URI_PATH));
-		versionRoute.extractQuery("action", "action", true);
+	private void addItemRoute(Router router)
+	{
+		router.attach("/items/{when}", aclProtectedFinder(StartTagResource.class));
+	}
 
-		Route todoRoute = router.attach("/todo", TodoItemListingResource.class);
-		todoRoute.extractQuery("hello", "hello", true);
+	private void addItemsRoute(Router router)
+	{
+		Route route = router.attach("/items", aclProtectedFinder(StartTagsResource.class));
 
-		return router;
+		for (String queryParam: StartTagsResource.QueryParamNameList)
+		{
+			route.extractQuery(queryParam, queryParam, true);
+		}
 	}
 
 	public MyApp preLoadFromFile(boolean doPreload)
