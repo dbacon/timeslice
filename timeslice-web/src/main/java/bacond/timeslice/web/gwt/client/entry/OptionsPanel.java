@@ -78,8 +78,7 @@ public class OptionsPanel extends Composite
 	
 	private String calculateServiceRoot()
 	{
-		String svcRoot = GWT.getHostPageBaseURL().substring(0, GWT.getHostPageBaseURL().indexOf("/" + GWT.getModuleName() + "/")); // + "/items/";
-		return svcRoot;
+		return GWT.getHostPageBaseURL() + "items";
 	}
 	
 	private Label createTitledLabel(String text, String title)

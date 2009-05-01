@@ -5,5 +5,7 @@
 <module>
 	<inherits name="com.google.gwt.user.User" />
 	<inherits name="com.google.gwt.user.theme.standard.Standard" />
+	<inherits name="org.restlet.GWT" />
+
 	<stylesheet src="ts-default.css" />
 </module>

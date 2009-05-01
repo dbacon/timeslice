@@ -1,152 +1,165 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>bacond</groupId>
-  <artifactId>timeslice-web</artifactId>
-  <packaging>jar</packaging>
-  <version>1.0.8-SNAPSHOT</version>
-  <build>
-  	<plugins>
-  		<plugin>
-  			<artifactId>maven-assembly-plugin</artifactId>
-  			<configuration>
-  				<descriptors><descriptor>src/main/assembly/static-web-root.xml</descriptor></descriptors>
-  			</configuration>
-  			
-  			<executions>
-  				<execution>
-  					<id>make-assembly</id>
-  					<phase>package</phase>
-  					<goals><goal>single</goal></goals>
-  				</execution>
-  			</executions>
-  		</plugin>
-  		
-        <plugin>
-			<groupId>com.totsp.gwt</groupId>
-			<artifactId>maven-googlewebtoolkit2-plugin</artifactId>
-			<version>2.0-beta26</version>
-			<configuration>
-<!--
-			    <gwtHome>C:\Documents and Settings\dbacon\Desktop\java\gwt-windows-1.5.3\gwt-windows-1.5.3</gwtHome>
--->
-			    <compileTargets><value>timeslice.App</value></compileTargets>
-			    <runTarget>timeslice.web.gwt.TimeSlicer/TimeSlicer.html</runTarget>
-			    <extraJvmArgs>-Xmx512m</extraJvmArgs>
-			    <gwtVersion>${gwtVersion}</gwtVersion>                  
-			</configuration>
-			<executions>
-			    <execution>
-			        <goals>
-			            <!-- <goal>mergewebxml</goal> -->
-			            <!-- <goal>i18n</goal> -->
-			            <!-- 
-			             -->
-			            <goal>compile</goal>                            
-			        </goals>
-			    </execution>
-			</executions>
-        </plugin>
-		<plugin>
-		   <groupId>org.apache.maven.plugins</groupId>
-		   <artifactId>maven-compiler-plugin</artifactId>
-		   <version>2.0.2</version>
-		   <configuration>
-		     <source>1.5</source>
-		     <target>1.5</target>
-		  </configuration>
-		</plugin>
-	</plugins>
-  </build>
-  <repositories>
-  	<repository>
-  		<id>restlet</id>
-  		<name>Restlet libs</name>
-  		<url>http://maven.restlet.org</url>
-  		<releases>
-  			<updatePolicy>daily</updatePolicy>
-  			<checksumPolicy>ignore</checksumPolicy>
-  		</releases>
-  		<snapshots>
-  			<updatePolicy>daily</updatePolicy>
-  			<checksumPolicy>ignore</checksumPolicy>
-  		</snapshots>
-  	</repository>
-  	<repository>
-  		<id>gwt-maven</id>
-  		<name>gwt-maven</name>
-  		<url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo</url>
-  		<releases>
-  			<updatePolicy>daily</updatePolicy>
-  			<checksumPolicy>ignore</checksumPolicy>
-  		</releases>
-  		<snapshots>
-  			<updatePolicy>daily</updatePolicy>
-  			<checksumPolicy>ignore</checksumPolicy>
-  		</snapshots>
-  	</repository>
-  </repositories>
-  <pluginRepositories>
-  	<pluginRepository>
-  		<id>gwt-maven</id>
-  		<name>gwt-maven</name>
-  		<url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo</url>
-  		<releases>
-  			<updatePolicy>daily</updatePolicy>
-  			<checksumPolicy>ignore</checksumPolicy>
-  		</releases>
-  		<snapshots>
-  			<updatePolicy>daily</updatePolicy>
-  			<checksumPolicy>ignore</checksumPolicy>
-  		</snapshots>
-  	</pluginRepository>
-  </pluginRepositories>
-  <dependencies>
-    <dependency>
-    
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.15</version>
-      <exclusions>
-      	<exclusion>
-      		<artifactId>mail</artifactId>
-      		<groupId>javax.mail</groupId>
-      	</exclusion>
-      	<exclusion>
-      		<artifactId>jms</artifactId>
-      		<groupId>javax.jms</groupId>
-      	</exclusion>
-      	<exclusion>
-      		<artifactId>jmxri</artifactId>
-      		<groupId>com.sun.jmx</groupId>
-      	</exclusion>
-      	<exclusion>
-      		<artifactId>jmxtools</artifactId>
-      		<groupId>com.sun.jdmk</groupId>
-      	</exclusion>
-      </exclusions>
-    </dependency>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <dependency>
-    	<groupId>com.google.gwt</groupId>
-    	<artifactId>gwt-user</artifactId>
-    	<version>1.5.3</version>
-    </dependency>
-    <dependency>
-    	<groupId>com.google.gwt</groupId>
-    	<artifactId>gwt-dev</artifactId>
-    	<version>1.5.3</version>
-    	<!--<classifier>windows</classifier>-->
-    	<classifier>linux</classifier>
-    </dependency>
-    <dependency>
-    	<groupId>com.google.gwt</groupId>
-    	<artifactId>gwt-servlet</artifactId>
-    	<version>1.5.3</version>
-    </dependency>
-    <dependency>
-    	<groupId>org.restlet</groupId>
-    	<artifactId>org.restlet.gwt</artifactId>
-    	<version>1.1.3</version>
-    </dependency>
-  </dependencies>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>bacond</groupId>
+	<artifactId>timeslice-web</artifactId>
+	<packaging>jar</packaging>
+	<version>1.0.8-SNAPSHOT</version>
+
+	<properties>
+		<gwt.version>1.6.4</gwt.version>
+	</properties>
+
+	<build>
+		<outputDirectory>war/WEB-INF/classes</outputDirectory>
+		<plugins>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>gwt-maven-plugin</artifactId>
+				<version>1.1-SNAPSHOT</version>
+				<executions>
+					<execution>
+						<goals><goal>compile</goal></goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>src/main/assembly/static-web-root.xml</descriptor>
+					</descriptors>
+				</configuration>
+
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals><goal>single</goal></goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+<!--q
+				<version>2.0.2</version>
+  -->
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<repositories>
+		<repository>
+			<id>restlet</id>
+			<name>Restlet libs</name>
+			<url>http://maven.restlet.org</url>
+			<releases>
+				<updatePolicy>daily</updatePolicy>
+				<checksumPolicy>ignore</checksumPolicy>
+			</releases>
+			<snapshots>
+				<updatePolicy>daily</updatePolicy>
+				<checksumPolicy>ignore</checksumPolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>codehaus</id>
+			<name>codehaus</name>
+			<url>http://repository.codehaus.org/</url>
+			<snapshots><enabled>false</enabled></snapshots>
+			<releases><enabled>true</enabled></releases>
+		</pluginRepository>
+		<pluginRepository>
+			<id>codehaus-snapshots</id>
+			<name>codehaus-snapshots</name>
+			<url>http://snapshots.repository.codehaus.org/</url>
+			<snapshots><enabled>true</enabled></snapshots>
+			<releases><enabled>false</enabled></releases>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.15</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>mail</artifactId>
+					<groupId>javax.mail</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jms</artifactId>
+					<groupId>javax.jms</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jmxri</artifactId>
+					<groupId>com.sun.jmx</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jmxtools</artifactId>
+					<groupId>com.sun.jdmk</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-user</artifactId>
+			<version>${gwt.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<!--
+			<dependency> <groupId>com.google.gwt</groupId>
+			<artifactId>gwt-dev</artifactId> <version>${gwt.version}</version>
+			<classifier>${gwt.variant}</classifier> </dependency>
+		-->
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.gwt</artifactId>
+			<version>1.1.3</version>
+		</dependency>
+	</dependencies>
+
+
+	<profiles>
+		<profile>
+			<id>mac</id>
+			<activation>
+				<os><family>mac</family></os>
+			</activation>
+			<properties>
+				<gwt.variant>mac</gwt.variant>
+			</properties>
+		</profile>
+		<profile>
+			<id>linux</id>
+			<activation>
+				<os><family>unix</family></os>
+			</activation>
+			<properties>
+				<gwt.variant>linux</gwt.variant>
+			</properties>
+		</profile>
+		<profile>
+			<id>windows</id>
+			<activation>
+				<os><family>windows</family></os>
+			</activation>
+			<properties>
+				<gwt.variant>windows</gwt.variant>
+			</properties>
+		</profile>
+	</profiles>
+
 </project>
