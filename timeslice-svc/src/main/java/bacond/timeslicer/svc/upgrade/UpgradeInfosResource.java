@@ -22,6 +22,7 @@ import bacond.lib.util.MapMaker;
 import bacond.timeslicer.app.upgrade.UpgradeInfo;
 import bacond.timeslicer.app.upgrade.Upgrader;
 import bacond.timeslicer.restletservice.MyApp;
+import bacond.timeslicer.timeslice.TimesliceApp;
 
 public class UpgradeInfosResource extends Resource
 {
@@ -75,10 +76,15 @@ public class UpgradeInfosResource extends Resource
 		return (MyApp) getApplication();
 	}
 
+	protected TimesliceApp getTimesliceApp()
+	{
+		return getMyApp().getTimesliceApp();
+	}
+
 	@Override
 	public Representation represent(Variant variant) throws ResourceException
 	{
-		Upgrader upgrader = new Upgrader(getMyApp().getUpdateUrl(), getMyApp().getSafeDir());
+		Upgrader upgrader = new Upgrader(getTimesliceApp().getUpdateUrl(), getTimesliceApp().getSafeDir());
 
 		try
 		{

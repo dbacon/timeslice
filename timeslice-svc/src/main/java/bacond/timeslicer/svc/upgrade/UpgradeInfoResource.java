@@ -24,6 +24,7 @@ import bacond.timeslicer.app.upgrade.UpgradeInfo;
 import bacond.timeslicer.app.upgrade.Upgrader;
 import bacond.timeslicer.restletservice.MyApp;
 import bacond.timeslicer.svc.task.StartTagsResource;
+import bacond.timeslicer.timeslice.TimesliceApp;
 
 public class UpgradeInfoResource extends Resource
 {
@@ -64,10 +65,15 @@ public class UpgradeInfoResource extends Resource
 		return (MyApp) getApplication();
 	}
 
+	protected TimesliceApp getTimesliceApp()
+	{
+		return getMyApp().getTimesliceApp();
+	}
+
 	@Override
 	public Representation represent(Variant variant) throws ResourceException
 	{
-		Upgrader upgrader = new Upgrader(getMyApp().getUpdateUrl(), getMyApp().getSafeDir());
+		Upgrader upgrader = new Upgrader(getTimesliceApp().getUpdateUrl(), getTimesliceApp().getSafeDir());
 
 		List<UpgradeInfo> versions = Collections.emptyList();
 		try

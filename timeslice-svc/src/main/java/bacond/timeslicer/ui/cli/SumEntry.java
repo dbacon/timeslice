@@ -10,8 +10,8 @@ import org.joda.time.Instant;
 import bacond.timeslicer.app.processing.Aggregate;
 import bacond.timeslicer.app.processing.Split;
 import bacond.timeslicer.app.task.StartTag;
+import bacond.timeslicer.app.task.StartTagIo;
 import bacond.timeslicer.app.tasktotal.TaskTotal;
-import bacond.timeslicer.svc.task.StartTagIo;
 
 public class SumEntry
 {

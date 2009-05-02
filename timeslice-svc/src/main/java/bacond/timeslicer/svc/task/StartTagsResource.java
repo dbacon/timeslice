@@ -34,6 +34,7 @@ import bacond.timeslicer.app.task.StartTag;
 import bacond.timeslicer.app.tasktotal.TaskTotal;
 import bacond.timeslicer.restletservice.MyApp;
 import bacond.timeslicer.svc.tasktotal.TextPlainTaskTotalsFormatter;
+import bacond.timeslicer.timeslice.TimesliceApp;
 
 /**
  * Resource for a collection of {@link StartTag}s.
@@ -88,6 +89,11 @@ public class StartTagsResource extends Resource
 	protected MyApp getMyApp()
 	{
 		return (MyApp) getApplication();
+	}
+
+	protected TimesliceApp getTimesliceApp()
+	{
+		return getMyApp().getTimesliceApp();
 	}
 
 	public static class QueryParamNames
@@ -200,7 +206,7 @@ public class StartTagsResource extends Resource
 		processSnapshotRequest(snapshot);
 
 		List<StartTag> tags = new Split().split(
-				getMyApp().getStartTagStore().getItemsConstrained(
+				getTimesliceApp().getStartTagStore().getItemsConstrained(
 					minDate,
 					maxDate,
 					sortReverse,
@@ -224,7 +230,7 @@ public class StartTagsResource extends Resource
 		{
 			try
 			{
-				getMyApp().snapshot(snapshot);
+				getTimesliceApp().snapshot(snapshot);
 			}
 			catch (Exception e)
 			{
@@ -270,7 +276,7 @@ public class StartTagsResource extends Resource
 
 		for (StartTag startTag: startTags)
 		{
-			if (getMyApp().getStartTagStore().contains(startTag.getWhen()))
+			if (getTimesliceApp().getStartTagStore().contains(startTag.getWhen()))
 			{
 				rollback = true;
 				break;
@@ -280,7 +286,7 @@ public class StartTagsResource extends Resource
 				// TODO: better integration/validation support upon adding startTag to list.
 				//  for example collisions, missing untils if in past, etc.
 
-				getMyApp().getStartTagStore().enterTag(startTag);
+				getTimesliceApp().getStartTagStore().enterTag(startTag);
 			}
 		}
 

@@ -5,6 +5,8 @@ import java.net.URI;
 import org.restlet.Component;
 import org.restlet.data.Protocol;
 
+import bacond.timeslicer.timeslice.TimesliceApp;
+
 
 public class Program
 {
@@ -33,10 +35,8 @@ public class Program
 				new MyApp(
 						component.getContext().createChildContext(),
 						rootUri.toString(),
-						acl,
-						safeDir,
-						updateUrl)
-					.preLoadFromFile(doPreload));
+						new TimesliceApp(acl, safeDir, updateUrl)
+							.preload(doPreload)));
 
 		try
 		{

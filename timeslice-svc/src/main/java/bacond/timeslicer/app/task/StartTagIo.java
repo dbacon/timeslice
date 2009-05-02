@@ -1,4 +1,4 @@
-package bacond.timeslicer.svc.task;
+package bacond.timeslicer.app.task;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +10,6 @@ import org.joda.time.Instant;
 import org.joda.time.format.ISODateTimeFormat;
 
 import bacond.lib.util.Narrow;
-import bacond.timeslicer.app.task.StartTag;
 
 public class StartTagIo
 {

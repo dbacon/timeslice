@@ -26,6 +26,7 @@ import bacond.lib.util.MapMaker;
 import bacond.lib.util.Transforms;
 import bacond.timeslicer.app.task.StartTag;
 import bacond.timeslicer.restletservice.MyApp;
+import bacond.timeslicer.timeslice.TimesliceApp;
 
 /**
  * Resource for a {@link StartTag}.
@@ -75,6 +76,11 @@ public class StartTagResource extends Resource
 		return (MyApp) getApplication();
 	}
 
+	protected TimesliceApp getTimesliceApp()
+	{
+		return getMyApp().getTimesliceApp();
+	}
+
 	private StartTag lookupStartTag()
 	{
 		String key = (String) getRequest().getAttributes().get("when");
@@ -86,7 +92,7 @@ public class StartTagResource extends Resource
 
 		DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
 
-		StartTag startTag = getMyApp().getStartTagStore().find(new Instant(fmt.parseMillis(key)));
+		StartTag startTag = getTimesliceApp().getStartTagStore().find(new Instant(fmt.parseMillis(key)));
 
 		return startTag;
 	}
@@ -95,9 +101,9 @@ public class StartTagResource extends Resource
 	{
 		StartTag removedTag = null;
 
-		if (getMyApp().getStartTagStore().contains(startTag.getWhen()))
+		if (getTimesliceApp().getStartTagStore().contains(startTag.getWhen()))
 		{
-			removedTag = getMyApp().getStartTagStore().remove(startTag.getWhen());
+			removedTag = getTimesliceApp().getStartTagStore().remove(startTag.getWhen());
 		}
 
 		return removedTag;
@@ -105,16 +111,16 @@ public class StartTagResource extends Resource
 
 	private StartTag updateStartTag(Instant instant, StartTag updateTag)
 	{
-		if (getMyApp().getStartTagStore().contains(instant))
+		if (getTimesliceApp().getStartTagStore().contains(instant))
 		{
-			/* StartTag oldTag = */getMyApp().getStartTagStore().enterTag(new StartTag(updateTag.getWho(), instant, updateTag.getWhat(), updateTag.getUntil()));
+			/* StartTag oldTag = */getTimesliceApp().getStartTagStore().enterTag(new StartTag(updateTag.getWho(), instant, updateTag.getWhat(), updateTag.getUntil()));
 		}
 		else
 		{
 			throw new RuntimeException("Internal error, expected to find starttag, but wasnt found.");
 		}
 
-		return getMyApp().getStartTagStore().find(updateTag.getWhen());
+		return getTimesliceApp().getStartTagStore().find(updateTag.getWhen());
 	}
 
 	@Override
