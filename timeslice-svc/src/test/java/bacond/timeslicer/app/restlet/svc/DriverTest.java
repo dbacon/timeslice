@@ -5,7 +5,9 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import bacond.timeslicer.app.restlet.svc.DriverParameters.Default;
+import bacond.timeslicer.restletservice.Driver;
+import bacond.timeslicer.restletservice.DriverParameters;
+import bacond.timeslicer.restletservice.DriverParameters.Default;
 
 
 public class DriverTest

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<stringAttribute key="bad_container_name" value="/timeslice-svc/id"/>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/timeslice-svc/src/main/java/bacond/timeslicer/restletservice/Driver.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="bacond.timeslicer.restletservice.Driver"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--no-rc&#10;--port 9099&#10;--root ../timeslice-web/target/timeslice-web-1.0.8-SNAPSHOT"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="timeslice-svc"/>
+</launchConfiguration>

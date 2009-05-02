@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import bacond.lib.util.Transforms;
-import bacond.timeslicer.app.task.api.StartTag;
-import bacond.timeslicer.app.tasktotal.api.TaskTotal;
+import bacond.timeslicer.app.task.StartTag;
+import bacond.timeslicer.app.tasktotal.TaskTotal;
 
 public class Aggregate
 {

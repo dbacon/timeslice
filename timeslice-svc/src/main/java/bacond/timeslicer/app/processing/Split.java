@@ -10,7 +10,7 @@ import java.util.Map;
 import org.joda.time.Instant;
 
 import bacond.timeslicer.app.generic.CompareByTime;
-import bacond.timeslicer.app.task.api.StartTag;
+import bacond.timeslicer.app.task.StartTag;
 
 /**
  * Responsible for enriching {@link StartTag}s to contain

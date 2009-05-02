@@ -2,8 +2,8 @@ package bacond.timeslicer.app.processing;
 
 import java.util.List;
 
-import bacond.timeslicer.app.task.api.StartTag;
-import bacond.timeslicer.app.tasktotal.api.TaskTotal;
+import bacond.timeslicer.app.task.StartTag;
+import bacond.timeslicer.app.tasktotal.TaskTotal;
 
 public class Sum
 {

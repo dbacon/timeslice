@@ -6,8 +6,6 @@ import java.util.Collections;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import bacond.timeslicer.app.upgrade.api.UpgradeInfo;
-import bacond.timeslicer.app.upgrade.api.Upgrader;
 
 @Ignore
 public class UpgraderTest

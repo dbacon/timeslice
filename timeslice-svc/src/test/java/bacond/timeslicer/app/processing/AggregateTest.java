@@ -12,8 +12,8 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
 
-import bacond.timeslicer.app.task.api.StartTag;
-import bacond.timeslicer.app.tasktotal.api.TaskTotal;
+import bacond.timeslicer.app.task.StartTag;
+import bacond.timeslicer.app.tasktotal.TaskTotal;
 
 
 public class AggregateTest
