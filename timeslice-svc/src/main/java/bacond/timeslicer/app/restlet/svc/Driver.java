@@ -6,19 +6,13 @@ import java.io.PrintStream;
 import java.net.URI;
 import java.util.Properties;
 
-import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 public class Driver
 {
-	private Integer port = 8082;
-	private String acl = "users.acl.txt";
-	private URI rootUri = URI.create("root");
-	private String safeDir = null;
-	private boolean doPreload = false;
-	private String updateUrl = "file:/dev/null";
+	private final DriverParameters driverParams = new DriverParameters();
 
 	public static class Args
 	{
@@ -28,9 +22,16 @@ public class Driver
 		public static final String SafeDir = "safedir";
 		public static final String PreLoad = "preload";
 		public static final String UpdateUrl = "update-url";
+		public static final String NoRc = "no-rc";
+		public static final String RcFile = "rc";
 	}
 
-	private Driver configureFromCommandline(String[] args)
+	public DriverParameters getDriverParams()
+	{
+		return driverParams;
+	}
+
+	private Driver readCommandLineArgs(String[] args)
 	{
 		Options opts = new Options();
 		opts.addOption(null, Args.Port, true, "Listening port.");
@@ -38,81 +39,102 @@ public class Driver
 		opts.addOption(null, Args.Acl, true, "ACL filename.");
 		opts.addOption(null, Args.SafeDir, true, "Safe dir in which updates can be installed an run.");
 		opts.addOption(null, Args.PreLoad, false, "Pre-load entries.");
-
-		CommandLine commandLine = null;
+		opts.addOption(null, Args.NoRc, false, "Do not load any rc file.");
+		opts.addOption(null, Args.RcFile, true, "Load specified rc file instead of default.");
 
 		try
 		{
-			commandLine = new GnuParser().parse(opts, args);
+			getDriverParams().setCommandLine(new GnuParser().parse(opts, args));
 		}
 		catch (ParseException e)
 		{
 			System.err.println("Command-line parsing failed: " + e.getMessage());
 		}
 
-		if (null != commandLine)
+		return this;
+	}
+
+	private Driver configureFromCommandlineBootItems()
+	{
+		if (null != getDriverParams().getCommandLine())
 		{
-			if (commandLine.hasOption(Args.Port))
+			if (getDriverParams().getCommandLine().hasOption(Args.RcFile))
 			{
-				port = Integer.valueOf(commandLine.getOptionValue(Args.Port));
-			}
-
-			if (commandLine.hasOption(Args.Root))
-			{
-				rootUri = URI.create(commandLine.getOptionValue(Args.Root));
-			}
-
-			if (commandLine.hasOption(Args.Acl))
-			{
-				acl = commandLine.getOptionValue(Args.Acl);
-			}
-
-			if (commandLine.hasOption(Args.SafeDir))
-			{
-				safeDir = commandLine.getOptionValue(Args.SafeDir);
-			}
-
-			doPreload = commandLine.hasOption(Args.PreLoad);
-
-			if (commandLine.hasOption(Args.UpdateUrl))
-			{
-				updateUrl = commandLine.getOptionValue(Args.UpdateUrl);
+				getDriverParams().setRcFilename(getDriverParams().getCommandLine().getOptionValue(Args.RcFile));
 			}
 		}
 
 		return this;
 	}
 
-	private Driver configureFromSettingsProvider()
+	private Driver configureFromCommandline()
 	{
-		Properties settings = new GenericSettingsProvider().readSettings();
+		if (null != getDriverParams().getCommandLine())
+		{
+			if (getDriverParams().getCommandLine().hasOption(Args.Port))
+			{
+				getDriverParams().setPort(Integer.valueOf(getDriverParams().getCommandLine().getOptionValue(Args.Port)));
+			}
 
-		port = Integer.valueOf(settings.getProperty("timeslice." + Args.Port, "" + port));
-		acl = settings.getProperty("timeslice." + Args.Acl, acl);
-		rootUri = URI.create(settings.getProperty("timeslice." + Args.Root, "root"));
-		safeDir = settings.getProperty("timeslice." + Args.SafeDir, safeDir);
-		updateUrl = settings.getProperty("timeslice." + Args.UpdateUrl, updateUrl);
+			if (getDriverParams().getCommandLine().hasOption(Args.Root))
+			{
+				getDriverParams().setRootUri(URI.create(getDriverParams().getCommandLine().getOptionValue(Args.Root)));
+			}
 
-		importSystemProperty(settings, "http.proxyHost");
-		importSystemProperty(settings, "http.proxyPort");
-		importSystemProperty(settings, "http.nonProxyHosts");
+			if (getDriverParams().getCommandLine().hasOption(Args.Acl))
+			{
+				getDriverParams().setAcl(getDriverParams().getCommandLine().getOptionValue(Args.Acl));
+			}
+
+			if (getDriverParams().getCommandLine().hasOption(Args.SafeDir))
+			{
+				getDriverParams().setSafeDir(getDriverParams().getCommandLine().getOptionValue(Args.SafeDir));
+			}
+
+			getDriverParams().setDoPreload(getDriverParams().getCommandLine().hasOption(Args.PreLoad));
+
+			if (getDriverParams().getCommandLine().hasOption(Args.UpdateUrl))
+			{
+				getDriverParams().setUpdateUrl(getDriverParams().getCommandLine().getOptionValue(Args.UpdateUrl));
+			}
+		}
 
 		return this;
 	}
 
-	private void importSystemProperty(Properties props, String key)
+	private Driver configureFromRc()
 	{
-		if (props.containsKey(key))
+		if (!getDriverParams().getCommandLine().hasOption(Args.NoRc))
 		{
-			System.setProperty(key, props.getProperty(key));
+			configureFromSettingsProvider(createFileSettingsProvider(getDriverParams().getRcFilename()));
 		}
+
+		return this;
+	}
+
+	public ISettingsProvider createFileSettingsProvider(String rcFilename)
+	{
+		return new GenericSettingsProvider(rcFilename);
+	}
+
+	private void configureFromSettingsProvider(ISettingsProvider settingsProvider)
+	{
+		Properties settings = new Properties();
+
+		settingsProvider.readSettings(settings);
+
+		getDriverParams().setPort(Integer.valueOf(settings.getProperty("timeslice." + Args.Port, "" + getDriverParams().getPort())));
+		getDriverParams().setAcl(settings.getProperty("timeslice." + Args.Acl, getDriverParams().getAcl()));
+		getDriverParams().setRootUri(URI.create(settings.getProperty("timeslice." + Args.Root, "root")));
+		getDriverParams().setSafeDir(settings.getProperty("timeslice." + Args.SafeDir, getDriverParams().getSafeDir()));
+		getDriverParams().setUpdateUrl(settings.getProperty("timeslice." + Args.UpdateUrl, getDriverParams().getUpdateUrl()));
 	}
 
 	public Driver fixRootUri() throws IOException
 	{
-		if (!rootUri.isAbsolute())
+		if (!getDriverParams().getRootUri().isAbsolute())
 		{
-			rootUri = new File(".").getCanonicalFile().toURI().resolve(rootUri);
+			getDriverParams().setRootUri(new File(".").getCanonicalFile().toURI().resolve(getDriverParams().getRootUri()));
 		}
 
 		return this;
@@ -121,28 +143,59 @@ public class Driver
 	public Driver printInfo(PrintStream out)
 	{
 		out.println("Service settings:");
-		out.println("  Root    : '" + rootUri.toString() + "'");
-		out.println("  Port    : '" + port + "'");
-		out.println("  Acl     : '" + acl + "'");
-		out.println("  Safe    : '" + safeDir + "'");
-		out.println("  Preload : '" + (doPreload ? "true" : "false") + "'");
-		out.println("  Update  : '" + updateUrl + "'");
+		out.println("  Root    : '" + getDriverParams().getRootUri().toString() + "'");
+		out.println("  Port    : '" + getDriverParams().getPort() + "'");
+		out.println("  Acl     : '" + getDriverParams().getAcl() + "'");
+		out.println("  Safe    : '" + getDriverParams().getSafeDir() + "'");
+		out.println("  Preload : '" + (getDriverParams().isDoPreload() ? "true" : "false") + "'");
+		out.println("  Update  : '" + getDriverParams().getUpdateUrl() + "'");
+
+		return this;
+	}
+
+	private static void importSystemProperty(String key, String value)
+	{
+		if (null != value)
+		{
+			System.setProperty(key, value);
+		}
+	}
+
+	public Driver applyProxySettingsToSystem()
+	{
+		importSystemProperty("http.proxyHost", getDriverParams().getProxyHost());
+		importSystemProperty("http.proxyPort", getDriverParams().getProxyPort());
+		importSystemProperty("http.nonProxyHosts", getDriverParams().getNonProxyHosts());
 
 		return this;
 	}
 
 	public void runProgram()
 	{
-		new Program(port, rootUri, acl, safeDir, updateUrl).run(doPreload);
+		new Program(
+				getDriverParams().getPort(),
+				getDriverParams().getRootUri(),
+				getDriverParams().getAcl(),
+				getDriverParams().getSafeDir(),
+				getDriverParams().getUpdateUrl())
+			.run(getDriverParams().isDoPreload());
+	}
+
+	public static void main(Driver driver, String[] args) throws ParseException, IOException
+	{
+		driver
+			.readCommandLineArgs(args)
+			.configureFromCommandlineBootItems()
+			.configureFromRc()
+			.configureFromCommandline()
+			.applyProxySettingsToSystem()
+			.fixRootUri()
+			.printInfo(System.out)
+			.runProgram();
 	}
 
 	public static void main(String[] args) throws ParseException, IOException
 	{
-		new Driver()
-			.configureFromSettingsProvider()
-			.configureFromCommandline(args)
-			.fixRootUri()
-			.printInfo(System.out)
-			.runProgram();
+		main(new Driver(), args);
 	}
 }

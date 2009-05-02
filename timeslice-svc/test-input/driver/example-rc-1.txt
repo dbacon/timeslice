@@ -1,0 +1,6 @@
+
+timeslice.port = 9988
+timeslice.acl = test-acl.acl
+timeslice.root = test-root
+timeslice.safedir = test-safedir
+timeslice.update-url = test://url/
