@@ -90,7 +90,17 @@ public class MyApp extends Application implements ITodoItemStoreProvider
 
 	public void snapshot(String key) throws IOException
 	{
+		if (!canSaveLoad())
+		{
+			throw new RuntimeException("Cannot save/load as no safe-dir is available.");
+		}
+
 		writeBackup("snapshot-" + ISODateTimeFormat.dateTime().print(new Instant()) + "-" + key);
+	}
+
+	public boolean canSaveLoad()
+	{
+		return null != getSafeDir();
 	}
 
 	public void restart(String rebootTo)
@@ -214,6 +224,11 @@ public class MyApp extends Application implements ITodoItemStoreProvider
 	{
 		if (doPreload)
 		{
+			if (!canSaveLoad())
+			{
+				throw new RuntimeException("Pre-load requested, but no safe-dir available to save/load.");
+			}
+
 			File backupFile = findBackupFile(Key_Upgrade);
 			try
 			{
