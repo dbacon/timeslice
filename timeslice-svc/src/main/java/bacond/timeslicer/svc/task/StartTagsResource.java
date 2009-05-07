@@ -29,7 +29,6 @@ import bacond.lib.util.ITransform;
 import bacond.lib.util.MapMaker;
 import bacond.lib.util.Transforms;
 import bacond.timeslicer.app.processing.Aggregate;
-import bacond.timeslicer.app.processing.Split;
 import bacond.timeslicer.app.task.StartTag;
 import bacond.timeslicer.app.tasktotal.TaskTotal;
 import bacond.timeslicer.restletservice.MyApp;
@@ -205,14 +204,7 @@ public class StartTagsResource extends Resource
 
 		processSnapshotRequest(snapshot);
 
-		List<StartTag> tags = new Split().split(
-				getTimesliceApp().getStartTagStore().getItemsConstrained(
-					minDate,
-					maxDate,
-					sortReverse,
-					pageSize,
-					pageIndex),
-				new Instant());
+		List<StartTag> tags = getTimesliceApp().queryForTags(sortReverse, minDate, maxDate, pageSize, pageIndex);
 
 		if ("sumbydesc".equals(processing))
 		{

@@ -12,6 +12,7 @@ import org.joda.time.Instant;
 import org.joda.time.format.ISODateTimeFormat;
 
 import bacond.timeslicer.app.generic.GenericStore;
+import bacond.timeslicer.app.processing.Split;
 import bacond.timeslicer.app.task.StartTag;
 import bacond.timeslicer.app.task.StartTagIo;
 import bacond.timeslicer.app.todo.TodoItem;
@@ -132,4 +133,17 @@ public class TimesliceApp
 
 		return this;
 	}
+
+	public List<StartTag> queryForTags(Boolean sortReverse, Instant minDate, Instant maxDate, Integer pageSize, Integer pageIndex)
+	{
+		return new Split().split(
+				getStartTagStore().getItemsConstrained(
+					minDate,
+					maxDate,
+					sortReverse,
+					pageSize,
+					pageIndex),
+				new Instant());
+	}
+
 }
