@@ -12,20 +12,16 @@ public class Program
 {
 	private final int port;
 	private final URI rootUri;
-	private final String acl;
-	private final String safeDir;
-	private final String updateUrl;
+	private final TimesliceApp timesliceApp;
 
-	public Program(int port, URI rootUri, String acl, String safeDir, String updateUrl)
+	public Program(int port, URI rootUri, TimesliceApp timesliceApp)
 	{
 		this.port = port;
 		this.rootUri = rootUri;
-		this.acl = acl;
-		this.safeDir = safeDir;
-		this.updateUrl = updateUrl;
+		this.timesliceApp = timesliceApp;
 	}
 
-	void run(boolean doPreload)
+	void run()
 	{
 		Component component = new Component();
 		component.getServers().add(Protocol.HTTP, port);
@@ -35,8 +31,7 @@ public class Program
 				new MyApp(
 						component.getContext().createChildContext(),
 						rootUri.toString(),
-						new TimesliceApp(acl, safeDir, updateUrl)
-							.preload(doPreload)));
+						timesliceApp));
 
 		try
 		{

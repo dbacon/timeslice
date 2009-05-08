@@ -10,6 +10,8 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import bacond.timeslicer.timeslice.TimesliceApp;
+
 public class Driver
 {
 	private final DriverParameters driverParams = new DriverParameters();
@@ -175,10 +177,12 @@ public class Driver
 		new Program(
 				getDriverParams().getPort(),
 				getDriverParams().getRootUri(),
-				getDriverParams().getAcl(),
-				getDriverParams().getSafeDir(),
-				getDriverParams().getUpdateUrl())
-			.run(getDriverParams().isDoPreload());
+				new TimesliceApp(
+						getDriverParams().getAcl(),
+						getDriverParams().getSafeDir(),
+						getDriverParams().getUpdateUrl())
+					.preload(getDriverParams().isDoPreload()))
+			.run();
 	}
 
 	public static void main(Driver driver, String[] args) throws ParseException, IOException
