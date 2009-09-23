@@ -18,12 +18,12 @@ public class StartTagFromJson implements ITransform<JSONValue, StartTag>
 		{
 			throw new RuntimeException("JSON value for StartTag was not an object as expected.");
 		}
-		
+
 		String when = stringMemberOrThrow(object, "when");
 		String until = stringMemberOrThrow(object, "until");
 		Double duration = doubleMemberOrThrow(object, "durationms"); // used to be optional -- needs support in typing utils.
 		String what = stringMemberOrThrow(object, "what"); // used to be optional -- needs support in typing utils.
-		
+
 		// validation -- check required fields.
 		if (null != when && null != what)
 		{
@@ -32,7 +32,7 @@ public class StartTagFromJson implements ITransform<JSONValue, StartTag>
 		{
 			throw new RuntimeException("Attribute 'when' or 'what' (or both) was not a JSONString value.");
 		}
-		
+
 		return new StartTag(when, until, duration, what);
 	}
 }

@@ -47,19 +47,19 @@ public class TimesliceApp implements EntryPoint
 	}
 
 	private final Controller controller = new Controller();
-	
+
 	private final OptionsPanel optionsPanel = new OptionsPanel(controller);
 
 	private final VerticalPanel mainEntryPanel = new VerticalPanel();
 	private final HistoryPanel historyPanel = new HistoryPanel();
 	private final MultiWordSuggestOracle suggestSource = new MultiWordSuggestOracle();
-	
+
 	private final SuggestBox taskDescriptionEntry = new SuggestBox(suggestSource);
-	
+
 	private final HorizontalPanel entryPanel = new HorizontalPanel();
-	
+
 	private final Anchor updateLink = new Anchor("[u]");
-	
+
 	private final HotlistPanel hotlistPanel = new HotlistPanel();
 	private final Hyperlink addHotlink = new Hyperlink("Add to hotlist", "");
 	private final Hyperlink enterLink = new Hyperlink("Enter", "");
@@ -93,7 +93,7 @@ public class TimesliceApp implements EntryPoint
 			}
 		});
 	}
-	
+
 	private void scheduleHotlistValidation()
 	{
 		DeferredCommand.addCommand(new Command()
@@ -116,7 +116,7 @@ public class TimesliceApp implements EntryPoint
 				scheduleRefresh();
 			}
 		});
-		
+
 		historyPanel.addHistoryPanelListener(new HistoryPanel.IHistoryPanelListener()
 		{
 			public void interestingThing(String p)
@@ -139,7 +139,7 @@ public class TimesliceApp implements EntryPoint
 				hotlistPanel.addAsHotlistItem(name, description);
 			}
 		});
-		
+
 		addHotlink.addClickListener(new ClickListener()
 		{
 			public void onClick(Widget arg0)
@@ -153,7 +153,7 @@ public class TimesliceApp implements EntryPoint
 				}
 			}
 		});
-		
+
 		taskDescriptionEntry.setWidth("30em");
 		taskDescriptionEntry.setAccessKey('t');
 		scheduleHotlinkValidation();
@@ -178,7 +178,7 @@ public class TimesliceApp implements EntryPoint
 				}
 			}
 		});
-		
+
 		updateLink.setAccessKey('u');
 		updateLink.setHref("#");
 		updateLink.addClickListener(new ClickListener()
@@ -207,7 +207,7 @@ public class TimesliceApp implements EntryPoint
 		entryPanel.add(new HTML("<u>T</u>ask:", false));
 		entryPanel.add(taskDescriptionEntry);
 		entryPanel.add(actionPanel);
-		
+
 		scheduleHotlistValidation();
 		hotlistPanel.addHotlistPanelListener(new IHotlistPanelListener()
 		{
@@ -221,16 +221,16 @@ public class TimesliceApp implements EntryPoint
 				scheduleHotlistValidation();
 			}
 		});
-		
+
 		mainEntryPanel.add(historyPanel);
 		mainEntryPanel.add(entryPanel);
 		mainEntryPanel.add(hotlistPanel);
-		
+
 		historyPanel.setHeight("30em");
 		historyPanel.setWidth("50em");
-		
+
 		ReportPanel p2 = new ReportPanel(controller);
-		
+
 		final DecoratedTabPanel tp = new DecoratedTabPanel();
 		Anchor inputlink = new Anchor("<u>I</u>nput", true, "#");
 		inputlink.setAccessKey('i');
@@ -243,7 +243,7 @@ public class TimesliceApp implements EntryPoint
 		tp.add(optionsPanel, optionslink);
 		tp.selectTab(0);
 		tp.setAnimationEnabled(true);
-		
+
 		HorizontalPanel buildLabelBox = new HorizontalPanel();
 		buildLabelBox.setSpacing(15);
 		buildLabelBox.add(new HTML("<a href=\"" + IssuesUrl + "\" target=\"_blank\">Feedback / RFEs / Bugs</a>"));
@@ -253,22 +253,22 @@ public class TimesliceApp implements EntryPoint
 		dockPanel.setSpacing(5);
 		dockPanel.add(tp, DockPanel.CENTER);
 		dockPanel.add(buildLabelBox, DockPanel.SOUTH);
-		
+
 		RootPanel.get().add(dockPanel);
-		
+
 		controller.addControllerListener(new IControllerListener()
 			{
 				public void onAddItemDone(AsyncResult<Void> result)
 				{
 					handleAddItemDone(result);
 				}
-	
+
 				public void onRefreshItemsDone(AsyncResult<List<StartTag>> result)
 				{
 					handleRefreshItemsDone(result);
 				}
 			});
-		
+
 		scheduleRefresh();
 	}
 
@@ -276,11 +276,11 @@ public class TimesliceApp implements EntryPoint
 	{
 		if (!result.isError())
 		{
-			ArrayList<StartTag> items = new ArrayList<StartTag>(result.getReturned());			
-			
+			ArrayList<StartTag> items = new ArrayList<StartTag>(result.getReturned());
+
 			historyPanel.clear(false);
 			historyPanel.addItems(items);
-			
+
 			updateSuggestSource(items);
 
 			Window.setTitle(
@@ -291,7 +291,7 @@ public class TimesliceApp implements EntryPoint
 		else
 		{
 			showError(result);
-			
+
 //			messagePanel.add(new AcknowledgableMessagePanel("No refresh happened: " + result.getThrown().getMessage()));
 		}
 	}
@@ -325,9 +325,9 @@ public class TimesliceApp implements EntryPoint
 	private void showError(AsyncResult<?> result)
 	{
 		Label label = new Label(result.getThrown().getMessage());
-		
+
 		Label msgText = new Label(result.getStatus().toString());
-		
+
 		VerticalPanel vp = new VerticalPanel();
 		vp.add(label);
 		vp.add(msgText);
@@ -335,7 +335,7 @@ public class TimesliceApp implements EntryPoint
 		DialogBox msgBox = new DialogBox(true);
 		msgBox.setWidget(vp);
 		msgBox.show();
-		
+
 		GWT.log("showed message: " + result.getStatus(), null);
 	}
 
@@ -353,7 +353,7 @@ public class TimesliceApp implements EntryPoint
 			showError(result);
 //			messagePanel.add(new AcknowledgableMessagePanel("No item added."));
 		}
-		
+
 //		newItemForm.setFormEnabled(true);
 	}
 

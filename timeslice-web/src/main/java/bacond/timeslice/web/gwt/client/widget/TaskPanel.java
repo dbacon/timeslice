@@ -26,7 +26,7 @@ public class TaskPanel extends Composite
 		void itemEdited(StartTag editedTag);
 		void timeEdited(StartTag newTag);
 	}
-	
+
 	private final List<ITaskPanelListener> listeners = new ArrayList<ITaskPanelListener>();
 	private final HorizontalPanel descriptionContainer= new HorizontalPanel();
 	private final Label label = new Label();
@@ -40,12 +40,12 @@ public class TaskPanel extends Composite
 	{
 		listeners.add(listener);
 	}
-	
+
 	public void removeTaskPanelListener(ITaskPanelListener listener)
 	{
 		listeners.remove(listener);
 	}
-	
+
 	protected void fireResumeClicked(StartTag startTag)
 	{
 		for (ITaskPanelListener listener: listeners)
@@ -53,7 +53,7 @@ public class TaskPanel extends Composite
 			listener.resumeClicked(startTag);
 		}
 	}
-	
+
 	protected void fireEdited(StartTag startTag)
 	{
 		for (ITaskPanelListener listener: listeners)
@@ -61,7 +61,7 @@ public class TaskPanel extends Composite
 			listener.itemEdited(startTag);
 		}
 	}
-	
+
 	protected void fireTimeEdited(StartTag startTag)
 	{
 		for (ITaskPanelListener listener: listeners)
@@ -69,7 +69,7 @@ public class TaskPanel extends Composite
 			listener.timeEdited(startTag);
 		}
 	}
-	
+
 	private void editModeOn(final StartTag startTag)
 	{
 		label.setVisible(false);
@@ -93,7 +93,7 @@ public class TaskPanel extends Composite
 		descriptionEditor.setVisible(false);
 		label.setText(startTag.getDescription());
 		label.setVisible(true);
-		
+
 		if (accepted)
 		{
 			startTag.setDescription(descriptionEditor.getText());
@@ -111,7 +111,7 @@ public class TaskPanel extends Composite
 		timeEditor.setVisible(false);
 		timeLabel.setText(formatDuration(startTag.getDurationMillis().longValue()));
 		timeLabel.setVisible(true);
-		
+
 		if (accepted)
 		{
 			startTag.setInstantString(timeEditor.getText());
@@ -135,7 +135,7 @@ public class TaskPanel extends Composite
 				fireResumeClicked(startTag);
 			}
 		});
-		
+
 		descriptionEditor.addKeyboardListener(new KeyboardListenerAdapter()
 		{
 			public void onKeyPress(Widget sender, char keyCode, int modifiers)
@@ -155,7 +155,7 @@ public class TaskPanel extends Composite
 			}
 
 		});
-		
+
 		HorizontalPanel hp1 = new HorizontalPanel();
 		hp1.setSpacing(5);
 		hp1.add(resumeLink);
@@ -167,10 +167,10 @@ public class TaskPanel extends Composite
 				editModeOn(startTag);
 			}
 		});
-		
+
 		String descWidth = "25em";
 		String timeWidth = "15em";
-		
+
 		label.setWidth(descWidth);
 		descriptionContainer.add(label);
 		descriptionContainer.add(descriptionEditor);
@@ -188,7 +188,7 @@ public class TaskPanel extends Composite
 			}
 		});
 		hp1.add(descriptionContainer);
-		
+
 		timeLabel.setWidth(timeWidth);
 		timeLabel.addClickListener(new ClickListener()
 		{
@@ -209,7 +209,7 @@ public class TaskPanel extends Composite
 				{
 					editModeOff2(startTag, losingFocusAccepts);
 				}
-			
+
 				super.onLostFocus(sender);
 			}
 		});
@@ -235,13 +235,13 @@ public class TaskPanel extends Composite
 		if (null != startTag.getUntilString())
 		{
 			timeLabel.setText(formatDuration(startTag.getDurationMillis().longValue()));
-			hp1.add(timeContainer); 
+			hp1.add(timeContainer);
 		}
-		
+
 		VerticalPanel vp = new VerticalPanel();
 		vp.setTitle(startTag.getInstantString());
 		vp.add(hp1);
-		
+
 		initWidget(vp);
 	}
 }

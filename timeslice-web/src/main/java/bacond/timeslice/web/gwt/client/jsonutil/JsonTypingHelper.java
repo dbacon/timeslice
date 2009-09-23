@@ -11,16 +11,16 @@ public class JsonTypingHelper
 	{
 		return typedMemberOrThrow(jsonObj, memberName, StringTyper.Instance);
 	}
-	
+
 	public static Double doubleMemberOrThrow(JSONObject jsonObj, String memberName)
 	{
 		return typedMemberOrThrow(jsonObj, memberName, DoubleTyper.Instance);
 	}
-	
+
 	public static <T> T typedMemberOrThrow(JSONObject jsonObj, String memberName, ITransform<JSONValue, T> typer)
 	{
 		JSONValue jsonValue = jsonObj.get(memberName);
-		
+
 		if (null != jsonValue)
 		{
 			return typer.apply(jsonValue);

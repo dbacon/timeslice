@@ -11,20 +11,20 @@ public class HumanReadableTimeHelper
 		long minutes = seconds / 60;
 		long minutesRem = minutes % 60;
 		long hours = minutes / 60;
-		
+
 		NumberFormat fmt = NumberFormat.getFormat("00");
 		NumberFormat hfmt = NumberFormat.getFormat("##0");
-		
+
 		String hhmm = "" + hfmt.format(hours) + ":" + fmt.format(minutesRem);
 		String ss = ":" + fmt.format(secondsRem);
-		
+
 		String msg = hhmm;
-		
+
 		if (seconds < 60)
 		{
 			msg = msg + ss;
 		}
-		
+
 		return  msg;
 	}
 }

@@ -6,12 +6,12 @@ public class StartTag
 	private String untilString;
 	private Double durationMillis;
 	private String description;
-	
+
 	public StartTag()
 	{
 		this(null, null, null, null);
 	}
-	
+
 	public StartTag(String instantString, String untilString, Double durationMillis, String description)
 	{
 		this.instantString = instantString;

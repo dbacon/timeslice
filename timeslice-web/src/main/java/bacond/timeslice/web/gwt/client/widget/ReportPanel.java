@@ -40,46 +40,46 @@ public class ReportPanel extends Composite
 	private final Button refreshButton = new Button("Refresh");
 	private final VerticalPanel chartBit = new VerticalPanel();
 	private final TextBox ignoreWords = new TextBox();
-	
+
 	private final Controller controller;
-	
+
 	private static class PrefKey
 	{
 		public static final String Starting = "timeslice.report.params.starting";
 		public static final String Ending = "timeslice.report.params.ending";
 		public static final String IgnoreStrings = "timeslice.report.ignorestrings";
 	}
-	
+
 	private void readPrefs()
 	{
 		params.getStartingTime().setText(Cookies.getCookie(PrefKey.Starting));
 		params.getEndingTime().setText(Cookies.getCookie(PrefKey.Ending));
 		ignoreWords.setText(Cookies.getCookie(PrefKey.IgnoreStrings));
-		
+
 		if (params.getEndingTime().getText().trim().isEmpty())
 		{
 			params.getEndingTime().setText(ParamPanel.HumanFormat.format(new Date()));
 		}
-		
+
 		if (params.getStartingTime().getText().trim().isEmpty())
 		{
 			params.getStartingTime().setText(ParamPanel.HumanFormat.format(new Date()));
 		}
-		
+
 		params.update();
 	}
-	
+
 	private void writePrefs()
 	{
 		Cookies.setCookie(PrefKey.Starting, params.getSelectedStartingTime());
 		Cookies.setCookie(PrefKey.Ending, params.getSelectedEndingTime());
 		Cookies.setCookie(PrefKey.IgnoreStrings, ignoreWords.getText());
 	}
-	
+
 	public ReportPanel(Controller controller)
 	{
 		this.controller = controller;
-		
+
 		params.addParamChangedListener(new IParamChangedListener()
 		{
 			public void paramChanged(ParamPanel source)
@@ -88,7 +88,7 @@ public class ReportPanel extends Composite
 				reselectData();
 			}
 		});
-		
+
 		refreshButton.setAccessKey('r');
 		refreshButton.addClickListener(new ClickListener()
 		{
@@ -106,7 +106,7 @@ public class ReportPanel extends Composite
 		hp.setSpacing(5);
 		hp.add(sp);
 		hp.add(chartBit);
-		
+
 		HorizontalPanel ignoreHp = new HorizontalPanel();
 		ignoreHp.setTitle("Comma-separated list of strings, items \ncontaining any of which will be ignored.");
 		ignoreHp.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
@@ -143,12 +143,12 @@ public class ReportPanel extends Composite
 		vp.add(refreshButton);
 		vp.add(hp);
 		vp.add(downloadPanel);
-		
+
 		readPrefs();
-		
+
 		initWidget(vp);
 	}
-	
+
 	public void updateChart(List<TaskTotal> items)
 	{
 		StringBuilder dataPointsString = new StringBuilder();
@@ -164,13 +164,13 @@ public class ReportPanel extends Composite
 				dataPointsString.append(",");
 				labelsString.append("|");
 			}
-			
+
 			dataPointsString.append(item.getDurationMillis() / total);
 			labelsString.append(item.getWhat().hashCode());
-			
+
 			notTheFirst = true;
 		}
-		
+
 		String chartImageUrl = new StringBuilder()
 			.append("http://chart.apis.google.com/chart?cht=p3&chd=t:")
 			.append(dataPointsString.toString())
@@ -221,7 +221,7 @@ public class ReportPanel extends Composite
 					}
 				}));
 
-		
+
 		FlexTable ft = new FlexTable();
 		ft.setCellSpacing(5);
 		int row = 0;
@@ -232,11 +232,11 @@ public class ReportPanel extends Composite
 		ft.setWidget(row, col++, new HTML("<b><u>%</u></b>", false));
 		ft.setWidget(row, col++, new HTML("<b><u>What</u></b>", false));
 		ft.setWidget(row, col++, new HTML("<b><u>Code</u></b>", false));
-		
+
 		row++;
-		
+
 		Double total = calcTotal(items);
-		
+
 		for (TaskTotal item: items)
 		{
 			boolean shouldIgnore = false;
@@ -248,7 +248,7 @@ public class ReportPanel extends Composite
 					break;
 				}
 			}
-			
+
 			if (!shouldIgnore)
 			{
 				col = 0;
@@ -262,16 +262,16 @@ public class ReportPanel extends Composite
 				row++;
 			}
 		}
-		
+
 		resultPanel.clear();
 		resultPanel.add(ft);
 	}
-	
+
 	protected void reselectData()
 	{
 		// re-request a list, and set the items on a display panel.
 		ItemJsonSvc itemSvc = controller.getItemSvc();
-		
+
 		if (null != itemSvc && !itemSvc.dontBother())
 		{
 			itemSvc.beginRefreshItems(
