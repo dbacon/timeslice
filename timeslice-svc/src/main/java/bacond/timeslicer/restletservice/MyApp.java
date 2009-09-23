@@ -19,6 +19,7 @@ import org.restlet.util.Variable;
 
 import bacond.timeslicer.app.auth.AclFile;
 import bacond.timeslicer.svc.javaresource.JavaResourceResource;
+import bacond.timeslicer.svc.rolodex.RolodexResource;
 import bacond.timeslicer.svc.task.StartTagResource;
 import bacond.timeslicer.svc.task.StartTagsResource;
 import bacond.timeslicer.svc.todo.TodoItemListingResource;
@@ -102,7 +103,14 @@ public class MyApp extends Application
 
 		addTodoRoute(router);
 
+		addRolodexesRoute(router);
+
 		return router;
+	}
+
+	private void addRolodexesRoute(Router router)
+	{
+		router.attach("/rolodex", RolodexResource.class);
 	}
 
 	private void addTodoRoute(Router router)

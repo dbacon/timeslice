@@ -13,6 +13,8 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import bacond.timeslicer.app.generic.GenericStore;
 import bacond.timeslicer.app.processing.Split;
+import bacond.timeslicer.app.rolodex.FileRolodex;
+import bacond.timeslicer.app.rolodex.IRolodex;
 import bacond.timeslicer.app.task.StartTag;
 import bacond.timeslicer.app.task.StartTagIo;
 import bacond.timeslicer.app.todo.TodoItem;
@@ -23,6 +25,8 @@ public class TimesliceApp
 
 	private final GenericStore<StartTag> startTagStore = new GenericStore<StartTag>();
 	private final GenericStore<TodoItem> todoStore = new GenericStore<TodoItem>();
+
+	private final IRolodex rolodex = new FileRolodex(new File("rolodex.dat"));
 
 	private String aclFileName;
 	private String safeDir;
@@ -73,6 +77,11 @@ public class TimesliceApp
 	public void setUpdateUrl(String updateUrl)
 	{
 		this.updateUrl = updateUrl;
+	}
+
+	public IRolodex getRolodex()
+	{
+		return rolodex;
 	}
 
 	public void snapshot(String key) throws IOException
