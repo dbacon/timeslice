@@ -33,7 +33,7 @@ public class ItemJsonSvc
 	private String baseSvcUri = "http://localhost:8082";
 	private String username = "";
 	private String password = "";
-	
+
 	public String getBaseSvcUri()
 	{
 		return baseSvcUri;
@@ -63,7 +63,7 @@ public class ItemJsonSvc
 	{
 		this.password = password;
 	}
-	
+
 	public boolean dontBother()
 	{
 		return getUsername().isEmpty();
@@ -77,19 +77,19 @@ public class ItemJsonSvc
 		{
 			resourceRef.addQueryParameter(pair.getKey(), pair.getValue());
 		}
-		
+
 		Request req = new Request(method, resourceRef);
-		
+
 		req.getClientInfo().getAcceptedMediaTypes().add(new Preference<MediaType>(MediaType.APPLICATION_JSON));
 
 		req.setChallengeResponse(new ChallengeResponse(ChallengeScheme.HTTP_BASIC, getUsername(), getPassword()));
-		
+
 		return req;
 	}
 
 	/**
 	 * TODO: implement and use JSON repr POST instead of custom text format.
-	 * 
+	 *
 	 * @param key
 	 * @param taskDescription
 	 * @param ender
@@ -101,9 +101,9 @@ public class ItemJsonSvc
 				"when=" + instantString + "\n");
 //				"key=" + key + "\n" +
 //				"project=" + project + "\n"
-				
+
 		entity.setMediaType(MediaType.TEXT_PLAIN);
-		
+
 		Client client = new Client(Protocol.HTTP);
 		client.post(new Reference(getBaseSvcUri() + "/items"), entity, new Callback()
 		{
@@ -120,10 +120,10 @@ public class ItemJsonSvc
 			}
 		});
 	}
-	
+
 	/**
 	 * Kept for compatibility -- see called method.
-	 * 
+	 *
 	 * @param maxSize
 	 * @param ender
 	 */
@@ -131,7 +131,7 @@ public class ItemJsonSvc
 	{
 		beginRefreshItems(maxSize, SortDir.desc, null, null, null, new StartTagFromJson(), ender);
 	}
-	
+
 	private static void installIfNotNull(Map<String, String> map, String key, String value)
 	{
 		if (null != value)
@@ -139,11 +139,11 @@ public class ItemJsonSvc
 			map.put(key, value);
 		}
 	}
-	
+
 	public void beginRefreshSummed(int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, final IRequestEnder<List<TaskTotal>> ender)
 	{
 	}
-	
+
 	/**
 	 * TODO: export only the JSON conversion bits and factor the rest to a base class.
 	 */
@@ -153,22 +153,22 @@ public class ItemJsonSvc
 		{
 			return;
 		}
-		
+
 		String procTypeString = null;
 		if (null != procType)
 		{
 			procTypeString = procType.name();
 		}
-		
+
 		Map<String, String> params = new LinkedHashMap<String, String>();
 		installIfNotNull(params, "sortdir", sortDir.name());
 		installIfNotNull(params, "pagesize", "" + maxSize);
 		installIfNotNull(params, "proctype", procTypeString);
 		installIfNotNull(params, "mintime", startingInstant);
 		installIfNotNull(params, "maxtime", endingInstant);
-		
+
 //		final StartTagFromJson startTagFromJson = new StartTagFromJson();
-		
+
 		new Client(Protocol.HTTP).handle(createJsonWsRequest(Method.GET, getBaseSvcUri() + "/items", params), new Callback()
 		{
 			public void onEvent(Request request, Response response)
@@ -181,7 +181,7 @@ public class ItemJsonSvc
 					}
 
 					JsonRepresentation jsonEntity = response.getEntityAsJson();
-					
+
 					if (null == jsonEntity)
 					{
 						throw new RuntimeException("No representation was available.");
@@ -193,7 +193,7 @@ public class ItemJsonSvc
 					{
 						throw new RuntimeException("Representation was not a JSONArray");
 					}
-					
+
 					List<T> result = new ArrayList<T>();
 
 					for (int i = 0; i < jsonArray.size(); ++i)
@@ -223,7 +223,7 @@ public class ItemJsonSvc
 				"what=" + editedStartTag.getDescription() + "\n" +
 				"");
 		entity.setMediaType(MediaType.TEXT_PLAIN);
-		
+
 		Client client = new Client(Protocol.HTTP);
 		client.put(new Reference(getBaseSvcUri() + "/items/" + editedStartTag.getInstantString()), entity, new Callback()
 		{

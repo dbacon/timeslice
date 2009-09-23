@@ -25,7 +25,7 @@ public class ParamPanel extends Composite
 	// 2009-03-21T13:30:42.626 -- assume +9
 	public static final DateTimeFormat MachineFormat = DateTimeFormat.getFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'+09:00'");
 
-	public static final DateTimeFormat HumanFormat = DateTimeFormat.getFormat("yyyy/MM/dd HH:mm:ss");	
+	public static final DateTimeFormat HumanFormat = DateTimeFormat.getFormat("yyyy/MM/dd HH:mm:ss");
 
 	private final ListBox mediaTypeSelector = new ListBox(false);
 	private final TextBox startingTime = new TextBox();
@@ -36,14 +36,14 @@ public class ParamPanel extends Composite
 	private final Label endingTimeError = new Label("", false);
 	private final ListBox processingTypeSelector = new ListBox(false);
 	private final Label lastUpdatedLabel = new Label("never");
-	
+
 	public static interface IParamChangedListener
 	{
 		void paramChanged(ParamPanel source);
 	}
-	
+
 	private final List<IParamChangedListener> listeners = new ArrayList<IParamChangedListener>();
-	
+
 	public void addParamChangedListener(IParamChangedListener listener)
 	{
 		if (null != listener)
@@ -51,12 +51,12 @@ public class ParamPanel extends Composite
 			listeners.add(listener);
 		}
 	}
-	
+
 	public void removeParamChangedListener(IParamChangedListener listener)
 	{
 		listeners.remove(listener);
 	}
-	
+
 	protected void fireParamChanged()
 	{
 		for (IParamChangedListener listener: listeners)
@@ -64,7 +64,7 @@ public class ParamPanel extends Composite
 			listener.paramChanged(this);
 		}
 	}
-	
+
 	public Label getStartingTimeError()
 	{
 		return startingTimeError;
@@ -89,22 +89,22 @@ public class ParamPanel extends Composite
 	{
 		return getProcessingTypeSelector().getValue(getProcessingTypeSelector().getSelectedIndex());
 	}
-	
+
 	public String getSelectedMediaType()
 	{
 		return getMediaTypeSelector().getValue(getMediaTypeSelector().getSelectedIndex());
 	}
-	
+
 	public String getSelectedStartingTime()
 	{
 		return getStartingTime().getText();
 	}
-	
+
 	public String getSelectedEndingTime()
 	{
 		return getEndingTime().getText();
 	}
-	
+
 
 	public Label getLastUpdatedLabel()
 	{
@@ -130,21 +130,21 @@ public class ParamPanel extends Composite
 	{
 		return processingTypeSelector;
 	}
-	
+
 	public boolean hasError()
 	{
 		return false
 			|| (!Checks.mapNullTo(getStartingTimeError().getText(), "").trim().isEmpty())
 			|| (!Checks.mapNullTo(getEndingTimeError().getText(), "").trim().isEmpty());
 	}
-	
+
 	public void update()
 	{
 		lastUpdatedLabel.setText("" + new Date().toString());
 
 		tryParseTimeWithWidgets(endingTime, endingTimeRendered, endingTimeError);
 		tryParseTimeWithWidgets(startingTime, startingTimeRendered, startingTimeError);
-		
+
 		if (!hasError())
 		{
 			fireParamChanged();
@@ -158,7 +158,7 @@ public class ParamPanel extends Composite
 				ValueUtil.asReadableWritable(result),
 				ValueUtil.asReadableWritable(errorMsg));
 	}
-	
+
 	private void tryParseTime(IReadableValue<String> readable, IWritableValue<String> result, IWritableValue<String> errorMessage)
 	{
 		try
@@ -180,7 +180,7 @@ public class ParamPanel extends Composite
 			update();
 		}
 	};
-	
+
 	public ParamPanel()
 	{
 		processingTypeSelector.addItem("None", "none");
@@ -190,7 +190,7 @@ public class ParamPanel extends Composite
 		mediaTypeSelector.addItem("Plain text", "text/plain");
 		mediaTypeSelector.addItem("JSON", "application/json");
 		mediaTypeSelector.addChangeListener(commonChangeListener);
-		
+
 		startingTime.addChangeListener(commonChangeListener);
 
 		endingTime.addChangeListener(commonChangeListener);
@@ -198,7 +198,7 @@ public class ParamPanel extends Composite
 		FlexTable table = new FlexTable();
 		table.setCellSpacing(3);
 		int row = 0;
-		
+
 		table.setWidget(row,   0, new Label("Starting"));
 		table.setWidget(row,   1, getStartingTime());
 		table.setWidget(row,   2, getStartingTimeRendered());
@@ -211,16 +211,16 @@ public class ParamPanel extends Composite
 		table.setWidget(row++, 1, processingTypeSelector);
 		table.setWidget(row,   0, new Label("Output:"));
 		table.setWidget(row++, 1, mediaTypeSelector);
-		
+
 		HorizontalPanel lastUpdatedPanel = new HorizontalPanel();
 		lastUpdatedPanel.setSpacing(3);
 		lastUpdatedPanel.add(new Label("Last updated:"));
 		lastUpdatedPanel.add(lastUpdatedLabel);
-	
+
 		VerticalPanel vp = new VerticalPanel();
 		vp.add(table);
 		vp.add(lastUpdatedPanel);
-		
+
 		initWidget(vp);
 
 		startingTime.setText(HumanFormat.format(new Date()));

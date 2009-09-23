@@ -13,7 +13,7 @@ public class TaskTotalFromJson implements ITransform<JSONValue, TaskTotal>
 	public TaskTotal apply(JSONValue value)
 	{
 		JSONObject object = value.isObject();
-		
+
 		if (null == object)
 		{
 			throw new RuntimeException("JSON value for TaskTotal was not an object as expected.");

@@ -11,7 +11,7 @@ import bacond.timeslice.web.gwt.client.server.ItemJsonSvc;
 public class Controller
 {
 	private List<IControllerListener> listeners = new ArrayList<IControllerListener>();
-	
+
 	public void addControllerListener(IControllerListener listener)
 	{
 		if (listener != null)
@@ -19,7 +19,7 @@ public class Controller
 			listeners.add(listener);
 		}
 	}
-	
+
 	public void removeControllerListener(IControllerListener listener)
 	{
 		if (listener != null)
@@ -27,7 +27,7 @@ public class Controller
 			listeners.remove(listener);
 		}
 	}
-	
+
 	protected void fireRefreshItemsDone(AsyncResult<List<StartTag>> result)
 	{
 		for (IControllerListener listener: listeners)
@@ -35,7 +35,7 @@ public class Controller
 			listener.onRefreshItemsDone(result);
 		}
 	}
-	
+
 	protected void fireAddItemDone(AsyncResult<Void> result)
 	{
 		for (IControllerListener listener: listeners)
@@ -45,12 +45,12 @@ public class Controller
 	}
 
 	private final ItemJsonSvc itemSvc = new ItemJsonSvc();
-	
+
 	public ItemJsonSvc getItemSvc()
 	{
 		return itemSvc;
 	}
-	
+
 	public void startRefreshItems(int maxSize)
 	{
 		itemSvc.beginRefreshItems(maxSize,
@@ -62,7 +62,7 @@ public class Controller
 				}
 			});
 	}
-	
+
 	public void startAddItem(String instantString, String taskDescription)
 	{
 		itemSvc.beginAddItem(instantString, taskDescription,

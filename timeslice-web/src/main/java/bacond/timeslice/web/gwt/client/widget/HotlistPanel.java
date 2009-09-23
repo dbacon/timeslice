@@ -22,18 +22,18 @@ public class HotlistPanel extends Composite
 	}
 
 	private static final String CookieNamePrefix = "timeslice.hotlist.";
-	
+
 	private final FlowPanel vp = new FlowPanel();
 	private final Hyperlink mode = new Hyperlink(Mode.Hotlist, "");
-	
+
 	public static interface IHotlistPanelListener
 	{
 		void hotlistItemClicked(String description);
 		void hotlistChanged();
 	}
-	
+
 	private final List<IHotlistPanelListener> listeners = new ArrayList<IHotlistPanelListener>();
-	
+
 	public void addHotlistPanelListener(IHotlistPanelListener listener)
 	{
 		if (null != listener)
@@ -41,12 +41,12 @@ public class HotlistPanel extends Composite
 			listeners.add(listener);
 		}
 	}
-	
+
 	public void removeHotlistPanelListener(IHotlistPanelListener listener)
 	{
 		listeners.remove(listener);
 	}
-	
+
 	protected void fireHotlistItemClicked(String description)
 	{
 		for (IHotlistPanelListener listener: listeners)
@@ -88,26 +88,26 @@ public class HotlistPanel extends Composite
 				}
 			}
 		});
-		
+
 		repopulate();
-		
+
 		initWidget(vp);
 	}
-	
+
 	public void repopulate()
 	{
 		vp.clear();
-		
+
 		vp.add(mode);
-		
+
 		int added = 0;
-		
+
 		for (final String name: Cookies.getCookieNames())
 		{
 			if (name.startsWith(CookieNamePrefix))
 			{
 				final String description = Cookies.getCookie(name);
-		
+
 				Button button = new Button(description, new ClickListener()
 				{
 					public void onClick(Widget arg0)
@@ -126,31 +126,31 @@ public class HotlistPanel extends Composite
 							}
 
 							repopulate();
-							
+
 							fireHotlistChanged();
 						}
 					}
 				});
-				
+
 				if (added < 10)
 				{
 					char digitChar = Character.forDigit((1 + added) % 10, 10);
 					button.setAccessKey(digitChar);
 					button.setHTML("<u>" + digitChar + "</u> " + button.getText());
 				}
-				
+
 				vp.add(button);
-				
+
 				++added;
 			}
 		}
-		
+
 		if (added <= 0)
 		{
 			mode.setText(Mode.Hotlist);
 		}
 	}
-	
+
 	public int getHotlistItemCount()
 	{
 		return vp.getWidgetCount() - 1;

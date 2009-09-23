@@ -19,14 +19,14 @@ public class ItemNew extends Composite
 	private final TextBox projectNameTextBox = new TextBox();
 	private final Button submitButton = new Button("Add");
 	private final HTML resultsHTML = new HTML();
-	
+
 	public static interface ItemNewListener
 	{
 		public void onSubmitted();
 	}
-	
+
 	private final List<ItemNewListener> listeners = new ArrayList<ItemNewListener>();
-	
+
 	protected void fireOnSubmitted()
 	{
 		for (ItemNewListener listener: listeners)
@@ -34,17 +34,17 @@ public class ItemNew extends Composite
 			listener.onSubmitted();
 		}
 	}
-	
+
 	public String getKeyText()
 	{
 		return keyTextBox.getText();
 	}
-	
+
 	public String getProjectText()
 	{
 		return projectNameTextBox.getText();
 	}
-	
+
 	public void addItemNewListener(ItemNewListener listener)
 	{
 		if (null != listener)
@@ -67,7 +67,7 @@ public class ItemNew extends Composite
 		projectNameTextBox.setEnabled(enabled);
 		submitButton.setEnabled(enabled);
 	}
-	
+
 	public ItemNew()
 	{
 		FlexTable table = new FlexTable();
@@ -87,17 +87,17 @@ public class ItemNew extends Composite
 				fireOnSubmitted();
 			}
 		});
-		
+
 		resultsHTML.setHTML("");
-		
+
 		VerticalPanel vp = new VerticalPanel();
 		vp.add(table);
 		vp.add(submitButton);
 		vp.add(resultsHTML);
-		
+
 		DecoratorPanel p = new DecoratorPanel();
 		p.add(vp);
-	
+
 		initWidget(p);
 	}
 }

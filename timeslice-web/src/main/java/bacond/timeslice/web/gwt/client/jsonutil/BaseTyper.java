@@ -8,7 +8,7 @@ public class BaseTyper<T>
 		{
 			throw new RuntimeException("");
 		}
-		
+
 		return t;
 	}
 }

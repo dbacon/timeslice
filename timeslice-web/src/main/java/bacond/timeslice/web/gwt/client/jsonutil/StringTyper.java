@@ -8,7 +8,7 @@ import com.google.gwt.json.client.JSONValue;
 public class StringTyper extends BaseTyper<JSONString> implements ITransform<JSONValue, String>
 {
 	public static final StringTyper Instance = new StringTyper();
-	
+
 	public String apply(JSONValue jsonValue)
 	{
 		return throwIfNull(jsonValue.isString()).stringValue();

@@ -5,12 +5,12 @@ public class TaskTotal
 	private String who;
 	private Double durationMillis;
 	private String what;
-	
+
 	public TaskTotal()
 	{
 		this(null, null, null);
 	}
-	
+
 	public TaskTotal(String who, Double durationMillis, String what)
 	{
 		this.who = who;

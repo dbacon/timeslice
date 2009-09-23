@@ -11,13 +11,13 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class HistoryPanel extends Composite 
+public class HistoryPanel extends Composite
 {
 	private final VerticalPanel itemsPanel = new VerticalPanel();
 	private final ScrollPanel scroller = new ScrollPanel(itemsPanel);
-	
+
 	private final List<StartTag> items = new ArrayList<StartTag>();
-	
+
 	public static interface IHistoryPanelListener
 	{
 		void interestingThing(String p);
@@ -25,19 +25,19 @@ public class HistoryPanel extends Composite
 		void fireTimeEdited(StartTag startTag);
 		void hotlisted(String name, String description);
 	}
-	
+
 	private final List<IHistoryPanelListener> listeners = new ArrayList<IHistoryPanelListener>();
-	
+
 	public void addHistoryPanelListener(IHistoryPanelListener listener)
 	{
 		listeners.add(listener);
 	}
-	
+
 	public void removeHistoryPanelListener(IHistoryPanelListener listener)
 	{
 		listeners.remove(listener);
 	}
-	
+
 	protected void fireHotlisted(String name, String description)
 	{
 		for (IHistoryPanelListener listener: listeners)
@@ -53,7 +53,7 @@ public class HistoryPanel extends Composite
 			listener.interestingThing(p);
 		}
 	}
-	
+
 	protected void fireEdited(StartTag startTag)
 	{
 		for (IHistoryPanelListener listener: listeners)
@@ -61,7 +61,7 @@ public class HistoryPanel extends Composite
 			listener.fireEdited(startTag);
 		}
 	}
-	
+
 	protected void fireTimeEdited(StartTag startTag)
 	{
 		for (IHistoryPanelListener listener: listeners)
@@ -69,16 +69,16 @@ public class HistoryPanel extends Composite
 			listener.fireTimeEdited(startTag);
 		}
 	}
-	
+
 	public HistoryPanel()
 	{
 		initWidget(scroller);
 	}
-	
+
 	public void clear(boolean shouldUpdate)
 	{
 		items.clear();
-		
+
 		if (shouldUpdate)
 		{
 			update();
@@ -89,7 +89,7 @@ public class HistoryPanel extends Composite
 	{
 		clear(true);
 	}
-	
+
 	public void addItems(List<StartTag> items)
 	{
 		addItems(items, true);
@@ -98,13 +98,13 @@ public class HistoryPanel extends Composite
 	public void addItems(List<StartTag> items, boolean shouldUpdate)
 	{
 		this.items.addAll(items);
-	
+
 		if (shouldUpdate)
 		{
 			update();
 		}
 	}
-	
+
 	public class TaskPanelListener implements ITaskPanelListener
 	{
 		public void resumeClicked(StartTag historicStartTag)
@@ -134,15 +134,15 @@ public class HistoryPanel extends Composite
 	protected void update()
 	{
 		Collections.reverse(items);
-		
+
 		itemsPanel.clear();
-		for (StartTag item: items) 
+		for (StartTag item: items)
 		{
 			TaskPanel taskPanel = new TaskPanel(item);
 			taskPanel.addTaskPanelListener(listener);
 			itemsPanel.add(taskPanel);
 		}
-		
+
 		scroller.scrollToBottom();
 		scroller.scrollToRight();
 	}

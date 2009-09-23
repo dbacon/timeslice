@@ -38,23 +38,23 @@ public class OptionsPanel extends Composite
 
 	private final TextBox maxSize = new TextBox();
 	private final TextBox baseUri = new TextBox();
-	
+
 	private final TextBox username = new TextBox();
 	private final PasswordTextBox password = new PasswordTextBox();
 
 	private final CheckBox controlSpaceSends = new CheckBox("Control-space also sends.");
 	private final CheckBox currentTaskInTitlebar = new CheckBox("Show current task in page title.");
 	private final TextBox titleBarTemplate = new TextBox();
-	
+
 	private final Controller controller;
-	
+
 	public static interface IOptionsListener
 	{
 		void optionsChanged(OptionsPanel source);
 	}
-	
+
 	private final List<IOptionsListener> listeners = new ArrayList<IOptionsListener>();
-	
+
 	public void addOptionsListener(IOptionsListener listener)
 	{
 		if (null != listener)
@@ -62,12 +62,12 @@ public class OptionsPanel extends Composite
 			listeners.add(listener);
 		}
 	}
-	
+
 	public void removeOptionsListener(IOptionsListener listener)
 	{
 		listeners.remove(listener);
 	}
-	
+
 	protected void fireChanged()
 	{
 		for (IOptionsListener listener: listeners)
@@ -75,23 +75,23 @@ public class OptionsPanel extends Composite
 			listener.optionsChanged(this);
 		}
 	}
-	
+
 	private String calculateServiceRoot()
 	{
 		return GWT.getHostPageBaseURL() + "items";
 	}
-	
+
 	private Label createTitledLabel(String text, String title)
 	{
 		Label l1 = new Label(text, false);
 		l1.setTitle(title);
 		return l1;
 	}
-	
+
 	public OptionsPanel(final Controller controllerp)
 	{
 		this.controller = controllerp;
-		
+
 		localWidgetsInit();
 
 		int row = 0;
@@ -107,7 +107,7 @@ public class OptionsPanel extends Composite
 		optionsTable.setWidget(row++, 0, controlSpaceSends);
 		optionsTable.setWidget(row,   0, currentTaskInTitlebar);
 		optionsTable.setWidget(row++, 1, titleBarTemplate);
-		
+
 		addOptionsListener(new IOptionsListener()
 		{
 			public void optionsChanged(OptionsPanel source)
@@ -138,7 +138,7 @@ public class OptionsPanel extends Composite
 	private void localWidgetsInit()
 	{
 		maxSize.addChangeListener(CommonChangeFireChanged);
-		
+
 		baseUri.addChangeListener(new ChangeListener()
 		{
 			public void onChange(Widget sender)
@@ -147,7 +147,7 @@ public class OptionsPanel extends Composite
 				fireChanged();
 			}
 		});
-		
+
 		username.addChangeListener(new ChangeListener()
 		{
 			public void onChange(Widget arg0)
@@ -156,7 +156,7 @@ public class OptionsPanel extends Composite
 				fireChanged();
 			}
 		});
-		
+
 		password.addChangeListener(new ChangeListener()
 		{
 			public void onChange(Widget arg0)
@@ -165,7 +165,7 @@ public class OptionsPanel extends Composite
 				fireChanged();
 			}
 		});
-		
+
 		controlSpaceSends.addClickListener(CommonClickFireChanged);
 
 		titleBarTemplate.addChangeListener(CommonChangeFireChanged);
@@ -200,7 +200,7 @@ public class OptionsPanel extends Composite
 			return 10;
 		}
 	}
-	
+
 	public boolean isControlSpaceSends()
 	{
 		return controlSpaceSends.isChecked();
@@ -210,7 +210,7 @@ public class OptionsPanel extends Composite
 	{
 		return currentTaskInTitlebar.isChecked();
 	}
-	
+
 	public String renderTitlebar(String currentTaskDescription)
 	{
 		return titleBarTemplate.getText().replaceAll(OptionsPanel.Token.CurrentTask, currentTaskDescription);
@@ -224,7 +224,7 @@ public class OptionsPanel extends Composite
 		currentTaskInTitlebar.setChecked("true".equals(Cookies.getCookie(PrefKeys.CurrentTaskInTitlebar)));
 		titleBarTemplate.setText(Cookies.getCookie(PrefKeys.TitlebarTemplate));
 	}
-	
+
 	private void initValues()
 	{
 		controller.getItemSvc().setBaseSvcUri(calculateServiceRoot());
@@ -232,9 +232,9 @@ public class OptionsPanel extends Composite
 		baseUri.setText(controller.getItemSvc().getBaseSvcUri());
 		username.setText(controller.getItemSvc().getUsername());
 		password.setText(controller.getItemSvc().getPassword());
-		
+
 		readPrefs();
-		
+
 		controller.getItemSvc().setUsername(username.getText());
 		controller.getItemSvc().setPassword(password.getText());
 

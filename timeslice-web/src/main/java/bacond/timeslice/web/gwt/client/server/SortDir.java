@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package bacond.timeslice.web.gwt.client.server;
 
