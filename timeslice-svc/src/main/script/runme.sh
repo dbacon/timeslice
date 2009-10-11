@@ -88,7 +88,7 @@ then
 			read HTTP_PROXY_EXCEPT
 		;;
 	esac
-	
+
 	printf "%s:%s\n" "$username" "$password" >> "$ACLFILE"
 	chmod go-rwx "$ACLFILE"
 else

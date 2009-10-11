@@ -26,7 +26,7 @@
 			<outputDirectory>/bin</outputDirectory>
 		</fileSet>
 	</fileSets>
-	
+
 	<files>
 		<file>
 			<!-- TODO: tuck these bits away in properties -->
