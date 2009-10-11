@@ -22,7 +22,7 @@
 			<directory>src/main/webapp</directory>
 			<outputDirectory>/</outputDirectory>
 		</fileSet>
-<!-- 
+<!--
 		<fileSet>
 			<directory>target/${project.build.directory}</directory>
 			<directory>${project.build.directory}</directory>

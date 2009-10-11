@@ -1,11 +1,11 @@
 
-<!-- 
+<!--
  <!DOCTYPE module PUBLIC "gwt-module" "gwt-module.dtd">
  -->
 
 <module>
 	<inherits name="bacond.timeslice.web.gwt.Timeslice" />
-	
+
 	<entry-point class="bacond.timeslice.web.gwt.client.entry.TimesliceApp" />
 
 	<!-- 202 seconds down to 57 seconds
