@@ -3,7 +3,9 @@
  */
 package bacond.timeslice.web.gwt.client.server;
 
-public enum ProcType
+import java.io.Serializable;
+
+public enum ProcType implements Serializable
 {
 	none,
 	sumbydesc,

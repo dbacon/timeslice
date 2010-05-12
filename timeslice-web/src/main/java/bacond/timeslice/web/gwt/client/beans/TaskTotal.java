@@ -1,7 +1,11 @@
 package bacond.timeslice.web.gwt.client.beans;
 
-public class TaskTotal
+import java.io.Serializable;
+
+public class TaskTotal implements Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	private String who;
 	private Double durationMillis;
 	private String what;

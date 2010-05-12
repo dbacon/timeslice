@@ -4,3 +4,10 @@
 target
 .gwt-tmp
 tomcat
+datadir
+
+war/WEB-INF/classes
+war/WEB-INF/lib
+war/bacond.timeslice.web.gwt.Timeslice
+war/timeslice.App
+

@@ -5,12 +5,17 @@
 
 <module>
 	<inherits name="bacond.timeslice.web.gwt.Timeslice" />
+<!--
+	<inherits name="com.google.gwt.user.theme.dark.Dark" />
+	<inherits name="com.google.gwt.user.theme.chrome.Chrome" />
+ -->
+	<inherits name="com.google.gwt.user.theme.standard.Standard" />
 
 	<entry-point class="bacond.timeslice.web.gwt.client.entry.TimesliceApp" />
 
 	<!-- 202 seconds down to 57 seconds
-	 -->
 	<set-property name="user.agent" value="gecko" />
+	 -->
 
 </module>
 

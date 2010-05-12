@@ -3,7 +3,9 @@
  */
 package bacond.timeslice.web.gwt.client.server;
 
-public enum SortDir
+import java.io.Serializable;
+
+public enum SortDir implements Serializable
 {
 	desc,
 	asc

@@ -7,13 +7,13 @@ import java.util.List;
 import bacond.timeslice.web.gwt.client.beans.StartTag;
 import bacond.timeslice.web.gwt.client.widget.TaskPanel.ITaskPanelListener;
 
-import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class HistoryPanel extends Composite
+public class HistoryPanel extends ResizeComposite
 {
-	private final VerticalPanel itemsPanel = new VerticalPanel();
+	private final FlowPanel itemsPanel = new FlowPanel();
 	private final ScrollPanel scroller = new ScrollPanel(itemsPanel);
 
 	private final List<StartTag> items = new ArrayList<StartTag>();
@@ -24,6 +24,8 @@ public class HistoryPanel extends Composite
 		void fireEdited(StartTag startTag);
 		void fireTimeEdited(StartTag startTag);
 		void hotlisted(String name, String description);
+        void editModeEntered();
+        void editModeLeft();
 	}
 
 	private final List<IHistoryPanelListener> listeners = new ArrayList<IHistoryPanelListener>();
@@ -38,13 +40,29 @@ public class HistoryPanel extends Composite
 		listeners.remove(listener);
 	}
 
-	protected void fireHotlisted(String name, String description)
-	{
-		for (IHistoryPanelListener listener: listeners)
-		{
-			listener.hotlisted(name, description);
-		}
-	}
+    protected void fireEditModeEntered()
+    {
+        for (IHistoryPanelListener listener: listeners)
+        {
+            listener.editModeEntered();
+        }
+    }
+
+    protected void fireEditModeLeft()
+    {
+        for (IHistoryPanelListener listener: listeners)
+        {
+            listener.editModeLeft();
+        }
+    }
+
+    protected void fireHotlisted(String name, String description)
+    {
+        for (IHistoryPanelListener listener: listeners)
+        {
+            listener.hotlisted(name, description);
+        }
+    }
 
 	protected void fireInterestingThing(String p)
 	{
@@ -126,6 +144,18 @@ public class HistoryPanel extends Composite
 		{
 			fireHotlisted(name, description);
 		}
+
+        @Override
+        public void editModeEntered(StartTag tag)
+        {
+            fireEditModeEntered();
+        }
+
+        @Override
+        public void editModeLeft(StartTag tag)
+        {
+            fireEditModeLeft();
+        }
 
 	}
 

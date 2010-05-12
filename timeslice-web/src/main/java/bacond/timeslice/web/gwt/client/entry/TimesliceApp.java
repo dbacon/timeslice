@@ -5,35 +5,45 @@ import java.util.Date;
 import java.util.List;
 
 import bacond.timeslice.web.gwt.client.beans.StartTag;
-import bacond.timeslice.web.gwt.client.controller.Controller;
+import bacond.timeslice.web.gwt.client.beans.TaskTotal;
+import bacond.timeslice.web.gwt.client.controller.GwtRpcController;
+import bacond.timeslice.web.gwt.client.controller.IController;
 import bacond.timeslice.web.gwt.client.controller.IControllerListener;
+import bacond.timeslice.web.gwt.client.server.ProcType;
+import bacond.timeslice.web.gwt.client.server.SortDir;
 import bacond.timeslice.web.gwt.client.util.Checks;
+import bacond.timeslice.web.gwt.client.widget.EmptyOptionsProvider;
 import bacond.timeslice.web.gwt.client.widget.HistoryPanel;
 import bacond.timeslice.web.gwt.client.widget.HotlistPanel;
+import bacond.timeslice.web.gwt.client.widget.IOptionsProvider;
+import bacond.timeslice.web.gwt.client.widget.OptionsPanel;
 import bacond.timeslice.web.gwt.client.widget.ParamPanel;
 import bacond.timeslice.web.gwt.client.widget.ReportPanel;
 import bacond.timeslice.web.gwt.client.widget.HotlistPanel.IHotlistPanelListener;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
-import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 public class TimesliceApp implements EntryPoint
 {
@@ -44,13 +54,11 @@ public class TimesliceApp implements EntryPoint
 	{
 		public static final String BaseUri = "http://localhost:8082";
 		public static final int MaxResults = 10;
+		public static final int AutoRefreshMs = 500;
 	}
 
-	private final Controller controller = new Controller();
+	private final IController controller = new GwtRpcController(); // new Controller();
 
-	private final OptionsPanel optionsPanel = new OptionsPanel(controller);
-
-	private final VerticalPanel mainEntryPanel = new VerticalPanel();
 	private final HistoryPanel historyPanel = new HistoryPanel();
 	private final MultiWordSuggestOracle suggestSource = new MultiWordSuggestOracle();
 
@@ -61,14 +69,20 @@ public class TimesliceApp implements EntryPoint
 	private final Anchor updateLink = new Anchor("[u]");
 
 	private final HotlistPanel hotlistPanel = new HotlistPanel();
-	private final Hyperlink addHotlink = new Hyperlink("Add to hotlist", "");
-	private final Hyperlink enterLink = new Hyperlink("Enter", "");
+	private final Anchor addHotlink = new Anchor("Add to hotlist");
+	private final Anchor enterLink = new Anchor("Enter");
 	private final VerticalPanel actionPanel = new VerticalPanel();
 	private String originalWindowTitle;
+	private final Label serverInfoLabel = new Label("[querying]");
 
 	private void updateStartTag(StartTag editedStartTag)
 	{
 		controller.startEditDescription(editedStartTag);
+	}
+
+	private void enterNewStartTag(String description)
+	{
+		enterNewStartTag(null, description);
 	}
 
 	private void enterNewStartTag(String instantString, String description)
@@ -109,19 +123,27 @@ public class TimesliceApp implements EntryPoint
 	{
 		originalWindowTitle = Window.getTitle();
 
+	    OptionsPanel optionsPanel = new OptionsPanel();
 		optionsPanel.addOptionsListener(new OptionsPanel.IOptionsListener()
 		{
 			public void optionsChanged(OptionsPanel source)
 			{
+			    timer.cancel();
+				if (options.isAutoRefresh())
+				{
+				    timer.scheduleRepeating(options.getAutoRefreshMs());
+				}
+
 				scheduleRefresh();
 			}
 		});
+        options = optionsPanel;
 
 		historyPanel.addHistoryPanelListener(new HistoryPanel.IHistoryPanelListener()
 		{
 			public void interestingThing(String p)
 			{
-				enterNewStartTag("", p);
+				enterNewStartTag(p);
 			}
 
 			public void fireEdited(StartTag editedStartTag)
@@ -138,62 +160,81 @@ public class TimesliceApp implements EntryPoint
 			{
 				hotlistPanel.addAsHotlistItem(name, description);
 			}
+
+            @Override
+            public void editModeEntered()
+            {
+                timer.cancel();
+            }
+
+            @Override
+            public void editModeLeft()
+            {
+                if (options.isAutoRefresh()) timer.scheduleRepeating(options.getAutoRefreshMs());
+            }
 		});
 
-		addHotlink.addClickListener(new ClickListener()
+		addHotlink.addClickHandler(new ClickHandler()
 		{
-			public void onClick(Widget arg0)
+			@Override
+			public void onClick(ClickEvent event)
 			{
-				if (!taskDescriptionEntry.getText().trim().isEmpty())
-				{
-					hotlistPanel.addAsHotlistItem(taskDescriptionEntry.getText(), taskDescriptionEntry.getText());
-					taskDescriptionEntry.setText("");
-					scheduleHotlistValidation();
-					scheduleHotlinkValidation();
-				}
+                if (!taskDescriptionEntry.getText().trim().isEmpty())
+                {
+                    hotlistPanel.addAsHotlistItem(taskDescriptionEntry.getText(), taskDescriptionEntry.getText());
+                    taskDescriptionEntry.setText("");
+                    scheduleHotlistValidation();
+                    scheduleHotlinkValidation();
+                }
 			}
 		});
 
 		taskDescriptionEntry.setWidth("30em");
 		taskDescriptionEntry.setAccessKey('t');
 		scheduleHotlinkValidation();
-		taskDescriptionEntry.addKeyboardListener(new KeyboardListenerAdapter()
-		{
-			public void onKeyPress(Widget sender, char keyCode, int modifiers)
-			{
-				scheduleHotlinkValidation();
 
-				if (KEY_ESCAPE == keyCode)
-				{
-					taskDescriptionEntry.setText("");
-				}
-				else if (0 != (modifiers & MODIFIER_CTRL)
-						&& (keyCode == KEY_ENTER || (keyCode == ' ' && optionsPanel.isControlSpaceSends())))
-				{
-					enterNewStartTag("", taskDescriptionEntry.getText());
-				}
-				else
-				{
-					super.onKeyPress(sender, keyCode, modifiers);
-				}
-			}
-		});
+
+		taskDescriptionEntry.getTextBox().addKeyPressHandler(new KeyPressHandler()
+        {
+            @Override
+            public void onKeyPress(KeyPressEvent event)
+            {
+                scheduleHotlinkValidation();
+
+                if (KeyCodes.KEY_ESCAPE == event.getCharCode())
+                {
+                    taskDescriptionEntry.setText("");
+                }
+                else if (event.isControlKeyDown() && (KeyCodes.KEY_ENTER == event.getCharCode()))
+                {
+                    enterNewStartTag(taskDescriptionEntry.getText());
+                }
+                else if (options.isControlSpaceSends() && event.isControlKeyDown() && (' ' == event.getCharCode()))
+                {
+                    enterNewStartTag(taskDescriptionEntry.getText());
+                }
+                event.stopPropagation();
+            }
+        });
 
 		updateLink.setAccessKey('u');
 		updateLink.setHref("#");
-		updateLink.addClickListener(new ClickListener()
-		{
-			public void onClick(Widget sender)
-			{
-				scheduleRefresh();
-			}
-		});
+		updateLink.addClickHandler(new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                scheduleRefresh();
+            }
+        });
 
-		enterLink.addClickListener(new ClickListener()
+		enterLink.addClickHandler(new ClickHandler()
 		{
-			public void onClick(Widget arg0)
+			@Override
+			public void onClick(ClickEvent event)
 			{
-				enterNewStartTag("", taskDescriptionEntry.getText());
+				enterNewStartTag(taskDescriptionEntry.getText());
+				GWT.log("enter link clicked");
 			}
 		});
 
@@ -213,7 +254,7 @@ public class TimesliceApp implements EntryPoint
 		{
 			public void hotlistItemClicked(String description)
 			{
-				enterNewStartTag("", description);
+				enterNewStartTag(description);
 			}
 
 			public void hotlistChanged()
@@ -222,43 +263,113 @@ public class TimesliceApp implements EntryPoint
 			}
 		});
 
+		DockLayoutPanel mainEntryPanel = new DockLayoutPanel(Unit.EM);
+
+	    //VerticalPanel mainEntryPanel = new VerticalPanel();
+		mainEntryPanel.addSouth(hotlistPanel, 4);
+		mainEntryPanel.addSouth(entryPanel, 3);
 		mainEntryPanel.add(historyPanel);
-		mainEntryPanel.add(entryPanel);
-		mainEntryPanel.add(hotlistPanel);
 
-		historyPanel.setHeight("30em");
-		historyPanel.setWidth("50em");
+		//historyPanel.setHeight("30em");
+		//historyPanel.setWidth("50em");
 
-		ReportPanel p2 = new ReportPanel(controller);
+		final ReportPanel reportPanel = new ReportPanel();
+		reportPanel.addReportPanelListener(new ReportPanel.IReportPanelListener()
+        {
+            @Override
+            public void refreshRequested(String startingTimeText, String endingTimeText)
+            {
+                controller.startRefreshTotals(
+                        1000,
+                        SortDir.desc,
+                        ProcType.sumbydesc,
+                        startingTimeText,
+                        endingTimeText);
+            }
 
-		final DecoratedTabPanel tp = new DecoratedTabPanel();
-		Anchor inputlink = new Anchor("<u>I</u>nput", true, "#");
+            @Override
+            public void persistRequested(String persistAsName, String startingTimeText, String endingTimeText)
+            {
+                controller.startPersistTotals(
+                        persistAsName,
+                        1000,
+                        SortDir.desc,
+                        ProcType.sumbydesc,
+                        startingTimeText,
+                        endingTimeText);
+            }
+        });
+
+		final TabLayoutPanel tp = new TabLayoutPanel(2, Unit.EM);
+		//final DecoratedTabPanel tp = new DecoratedTabPanel();
+		Anchor inputlink = new Anchor("<u>I</u>nput", true);
 		inputlink.setAccessKey('i');
 		tp.add(mainEntryPanel, inputlink);
-		Anchor reportslink = new Anchor("<u>R</u>eports", true, "#");
+		Anchor reportslink = new Anchor("<u>R</u>eports", true);
 		reportslink.setAccessKey('r');
-		tp.add(p2, reportslink);
-		Anchor optionslink = new Anchor("<u>O</u>ptions", true, "#");
+		tp.add(reportPanel, reportslink);
+		Anchor optionslink = new Anchor("<u>O</u>ptions", true);
 		optionslink.setAccessKey('o');
 		tp.add(optionsPanel, optionslink);
 		tp.selectTab(0);
-		tp.setAnimationEnabled(true);
+//		tp.setAnimationEnabled(true);
+
+		Anchor logoutAnchor = new Anchor("Logout");
+		logoutAnchor.addClickHandler(new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                controller.logout();
+            }
+        });
+
+		serverInfoLabel.addClickHandler(new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                serverInfoLabel.setText("[querying...]");
+                controller.serverInfo();
+            }
+        });
+		controller.serverInfo();
 
 		HorizontalPanel buildLabelBox = new HorizontalPanel();
 		buildLabelBox.setSpacing(15);
 		buildLabelBox.add(new HTML("<a href=\"" + IssuesUrl + "\" target=\"_blank\">Feedback / RFEs / Bugs</a>"));
 		buildLabelBox.add(new HTML("<a href=\"" + FormsUrl + "\" target=\"_blank\">Input Forms</a>"));
+        buildLabelBox.add(logoutAnchor);
+        buildLabelBox.add(serverInfoLabel);
 
-		final DockPanel dockPanel = new DockPanel();
-		dockPanel.setSpacing(5);
-		dockPanel.add(tp, DockPanel.CENTER);
-		dockPanel.add(buildLabelBox, DockPanel.SOUTH);
+		final DockLayoutPanel dockPanel = new DockLayoutPanel(Unit.EM);
+		dockPanel.addSouth(buildLabelBox, 4);
+		dockPanel.add(tp);
 
-		RootPanel.get().add(dockPanel);
+		RootLayoutPanel.get().add(dockPanel);
+		//RootPanel.get().add(dockPanel);
 
 		controller.addControllerListener(new IControllerListener()
 			{
-				public void onAddItemDone(AsyncResult<Void> result)
+                @Override
+                public void authenticated()
+                {
+                    // do whatever restarts, ?
+                    // start auto-refresh
+                    if (options.isAutoRefresh()) timer.scheduleRepeating(options.getAutoRefreshMs());
+                    scheduleRefresh();
+                }
+
+                @Override
+                public void unauthenticated(boolean retry)
+                {
+                    // notify ? blank stuff ?
+                    // stop auto-refresh
+                    timer.cancel();
+                    if (retry) scheduleRefresh();
+                }
+
+                public void onAddItemDone(AsyncResult<Void> result)
 				{
 					handleAddItemDone(result);
 				}
@@ -267,7 +378,53 @@ public class TimesliceApp implements EntryPoint
 				{
 					handleRefreshItemsDone(result);
 				}
+
+	            @Override
+	            public void onRefreshTotalsDone(AsyncResult<List<TaskTotal>> result)
+	            {
+	                if (result.isError())
+	                {
+	                    GWT.log("got error back: " + result.getThrown().getMessage(), result.getThrown());
+	                }
+	                else
+	                {
+	                    reportPanel.updateResults(result.getReturned());
+	                    reportPanel.updateChart(result.getReturned());
+	                }
+	            }
+
+	            @Override
+	            public void onPersistTotalsDone(AsyncResult<String> result)
+	            {
+	                if (result.isError())
+	                {
+                        GWT.log("got error back: " + result.getThrown().getMessage(), result.getThrown());
+	                }
+	                else
+	                {
+	                    GWT.log(" saved report: " + result.getReturned());
+	                    // TODO: show download link in browser.
+	                    reportPanel.setPersisted(result.getReturned());
+	                }
+	            }
+
+                @Override
+                public void serverInfoRecieved(String info)
+                {
+                    serverInfoLabel.setText(info);
+                }
 			});
+
+		timer = new Timer()
+        {
+            @Override
+            public void run()
+            {
+                scheduleRefresh();
+            }
+        };
+
+        if (options.isAutoRefresh()) timer.scheduleRepeating(options.getAutoRefreshMs());
 
 		scheduleRefresh();
 	}
@@ -284,8 +441,8 @@ public class TimesliceApp implements EntryPoint
 			updateSuggestSource(items);
 
 			Window.setTitle(
-				optionsPanel.isCurrentTaskInTitlebar()
-					? optionsPanel.renderTitlebar(Checks.mapNullTo(findCurrentStartTag(items), UnknownTag).getDescription())
+				options.isCurrentTaskInTitlebar()
+					? renderTitlebar(Checks.mapNullTo(findCurrentStartTag(items), UnknownTag).getDescription())
 					: originalWindowTitle);
 		}
 		else
@@ -324,19 +481,21 @@ public class TimesliceApp implements EntryPoint
 
 	private void showError(AsyncResult<?> result)
 	{
-		Label label = new Label(result.getThrown().getMessage());
+		String tmsg = "(nothing thrown)";
 
-		Label msgText = new Label(result.getStatus().toString());
+		Throwable t = result.getThrown();
+		if (null != t) tmsg = t.getMessage();
+
+		Label label = new Label(tmsg);
 
 		VerticalPanel vp = new VerticalPanel();
 		vp.add(label);
-		vp.add(msgText);
 
 		DialogBox msgBox = new DialogBox(true);
 		msgBox.setWidget(vp);
 		msgBox.show();
 
-		GWT.log("showed message: " + result.getStatus(), null);
+		GWT.log("showed message: " + tmsg, null);
 	}
 
 	private void handleAddItemDone(AsyncResult<Void> result)
@@ -363,8 +522,17 @@ public class TimesliceApp implements EntryPoint
 		{
 			public void execute()
 			{
-				controller.startRefreshItems(optionsPanel.getMaxSize());
+				controller.startRefreshItems(options.getMaxSize());
 			}
 		});
 	}
+
+    public String renderTitlebar(String currentTaskDescription)
+    {
+        return options.getTitleBarTemplate().replaceAll(IOptionsProvider.CurrentTaskToken, currentTaskDescription);
+    }
+
+    private IOptionsProvider options = new EmptyOptionsProvider();
+    private Timer timer;
+
 }

@@ -1,43 +1,35 @@
 package bacond.timeslice.web.gwt.client.entry;
 
-import org.restlet.gwt.data.Status;
-
 public class AsyncResult<T>
 {
-	private final Status status;
 	private final T returned;
 	private final Throwable thrown;
 
+
 	public boolean isError()
 	{
-		return status.isError() || null != thrown;
+		return null != thrown;
 	}
 
-	public static AsyncResult<Void> returnedVoid(Status status)
+	public static AsyncResult<Void> returnedVoid()
 	{
-		return new AsyncResult<Void>(status, null, null);
+		return new AsyncResult<Void>(null, null);
 	}
 
-	public static <T> AsyncResult<T> returned(Status status, T returned)
+	public static <T> AsyncResult<T> returned(T returned)
 	{
-		return new AsyncResult<T>(status, returned, null);
+		return new AsyncResult<T>(returned, null);
 	}
 
-	public static <T> AsyncResult<T> threw(Status status, Throwable t)
+	public static <T> AsyncResult<T> threw(Throwable t)
 	{
-		return new AsyncResult<T>(status, null, t);
+		return new AsyncResult<T>(null, t);
 	}
 
-	public AsyncResult(Status status, T returned, Throwable thrown)
+	public AsyncResult(T returned, Throwable thrown)
 	{
-		this.status = status;
 		this.returned = returned;
 		this.thrown = thrown;
-	}
-
-	public Status getStatus()
-	{
-		return status;
 	}
 
 	public T getReturned()

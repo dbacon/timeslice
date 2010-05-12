@@ -1,7 +1,11 @@
 package bacond.timeslice.web.gwt.client.beans;
 
-public class StartTag
+import java.io.Serializable;
+
+public class StartTag implements Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	private String instantString;
 	private String untilString;
 	private Double durationMillis;

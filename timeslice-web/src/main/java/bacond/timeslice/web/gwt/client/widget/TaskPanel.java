@@ -7,24 +7,30 @@ import java.util.List;
 
 import bacond.timeslice.web.gwt.client.beans.StartTag;
 
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FocusListenerAdapter;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
-public class TaskPanel extends Composite
+public class TaskPanel extends ResizeComposite
 {
 	public static interface ITaskPanelListener
 	{
 		void resumeClicked(StartTag historicStartTag);
 		void itemEdited(StartTag editedTag);
 		void timeEdited(StartTag newTag);
+		void editModeEntered(StartTag tag);
+		void editModeLeft(StartTag tag);
 	}
 
 	private final List<ITaskPanelListener> listeners = new ArrayList<ITaskPanelListener>();
@@ -45,6 +51,22 @@ public class TaskPanel extends Composite
 	{
 		listeners.remove(listener);
 	}
+
+    protected void fireEditModeEntered(StartTag startTag)
+    {
+        for (ITaskPanelListener listener: listeners)
+        {
+            listener.editModeEntered(startTag);
+        }
+    }
+
+    protected void fireEditModeLeft(StartTag startTag)
+    {
+        for (ITaskPanelListener listener: listeners)
+        {
+            listener.editModeLeft(startTag);
+        }
+    }
 
 	protected void fireResumeClicked(StartTag startTag)
 	{
@@ -72,6 +94,7 @@ public class TaskPanel extends Composite
 
 	private void editModeOn(final StartTag startTag)
 	{
+        fireEditModeEntered(startTag);
 		label.setVisible(false);
 		descriptionEditor.setText(startTag.getDescription());
 		descriptionEditor.setVisible(true);
@@ -81,6 +104,7 @@ public class TaskPanel extends Composite
 
 	private void editModeOn2(final StartTag startTag)
 	{
+	    fireEditModeEntered(startTag);
 		timeLabel.setVisible(false);
 		timeEditor.setText(startTag.getInstantString());
 		timeEditor.setVisible(true);
@@ -104,6 +128,8 @@ public class TaskPanel extends Composite
 					startTag.getDurationMillis(),
 					descriptionEditor.getText().trim()));
 		}
+
+		fireEditModeLeft(startTag);
 	}
 
 	private void editModeOff2(final StartTag startTag, boolean accepted)
@@ -122,126 +148,117 @@ public class TaskPanel extends Composite
 				startTag.getDurationMillis(),
 				startTag.getDescription()));
 		}
+
+		fireEditModeLeft(startTag);
 	}
 
 	public TaskPanel(final StartTag startTag)
 	{
-		Hyperlink resumeLink = new Hyperlink("[R]", null);
+		Anchor resumeLink = new Anchor("[R]");
 		resumeLink.setTitle("Resume this task");
-		resumeLink.addClickListener(new ClickListener()
-		{
-			public void onClick(Widget sender)
-			{
-				fireResumeClicked(startTag);
-			}
-		});
+		resumeLink.addClickHandler(new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                fireResumeClicked(startTag);
+            }
+        });
 
-		descriptionEditor.addKeyboardListener(new KeyboardListenerAdapter()
-		{
-			public void onKeyPress(Widget sender, char keyCode, int modifiers)
-			{
-				if (keyCode == KEY_ENTER)
-				{
-					editModeOff(startTag, true);
-				}
-				else if (keyCode == KEY_ESCAPE)
-				{
-					editModeOff(startTag, false);
-				}
-				else
-				{
-					super.onKeyPress(sender, keyCode, modifiers);
-				}
-			}
+		descriptionEditor.addKeyPressHandler(new KeyPressHandler()
+        {
+            @Override
+            public void onKeyPress(KeyPressEvent event)
+            {
+                if (KeyCodes.KEY_ENTER == event.getCharCode())
+                {
+                    editModeOff(startTag, true);
+                }
+                else if (KeyCodes.KEY_ESCAPE == event.getCharCode())
+                {
+                    editModeOff(startTag, false);
+                }
+            }
+        });
 
-		});
 
-		HorizontalPanel hp1 = new HorizontalPanel();
-		hp1.setSpacing(5);
-		hp1.add(resumeLink);
 		label.setText(startTag.getDescription());
-		label.addClickListener(new ClickListener()
-		{
-			public void onClick(Widget arg0)
-			{
-				editModeOn(startTag);
-			}
-		});
+		label.addClickHandler(new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                editModeOn(startTag);
+            }
+        });
 
-		String descWidth = "25em";
-		String timeWidth = "15em";
-
-		label.setWidth(descWidth);
 		descriptionContainer.add(label);
 		descriptionContainer.add(descriptionEditor);
 		descriptionEditor.setVisible(false);
-		descriptionEditor.setWidth(descWidth);
-		descriptionEditor.addFocusListener(new FocusListenerAdapter()
-		{
-			public void onLostFocus(Widget sender)
-			{
-				if (descriptionEditor.isVisible())
-				{
-					editModeOff(startTag, losingFocusAccepts);
-				}
-				super.onLostFocus(sender);
-			}
-		});
-		hp1.add(descriptionContainer);
 
-		timeLabel.setWidth(timeWidth);
-		timeLabel.addClickListener(new ClickListener()
-		{
-			public void onClick(Widget arg0)
-			{
-				editModeOn2(startTag);
-			}
-		});
+		descriptionEditor.addBlurHandler(new BlurHandler()
+        {
+            @Override
+            public void onBlur(BlurEvent event)
+            {
+                if (descriptionEditor.isVisible())
+                {
+                    editModeOff(startTag, losingFocusAccepts);
+                }
+            }
+        });
+
+		timeLabel.addClickHandler(new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                editModeOn2(startTag);
+            }
+        });
+		timeContainer.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
 		timeContainer.add(timeLabel);
 		timeContainer.add(timeEditor);
 		timeEditor.setVisible(false);
-		timeEditor.setWidth(timeWidth);
-		timeEditor.addFocusListener(new FocusListenerAdapter()
-		{
-			public void onLostFocus(Widget sender)
-			{
-				if (timeEditor.isVisible())
-				{
-					editModeOff2(startTag, losingFocusAccepts);
-				}
-
-				super.onLostFocus(sender);
-			}
-		});
-		timeEditor.addKeyboardListener(new KeyboardListenerAdapter()
-		{
-			public void onKeyPress(Widget sender, char keyCode, int modifiers)
-			{
-				if (keyCode == KEY_ENTER)
-				{
-					editModeOff2(startTag, true);
-				}
-				else if (keyCode == KEY_ESCAPE)
-				{
-					editModeOff2(startTag, false);
-				}
-				else
-				{
-					super.onKeyPress(sender, keyCode, modifiers);
-				}
-			}
-
-		});
+		timeEditor.addBlurHandler(new BlurHandler()
+        {
+            @Override
+            public void onBlur(BlurEvent event)
+            {
+                if (timeEditor.isVisible())
+                {
+                    editModeOff2(startTag, losingFocusAccepts);
+                }
+            }
+        });
+		timeEditor.addKeyPressHandler(new KeyPressHandler()
+        {
+            @Override
+            public void onKeyPress(KeyPressEvent event)
+            {
+                if (KeyCodes.KEY_ENTER == event.getCharCode())
+                {
+                    editModeOff2(startTag, true);
+                }
+                else if (KeyCodes.KEY_ESCAPE == event.getCharCode())
+                {
+                    editModeOff2(startTag, false);
+                }
+            }
+        });
 		if (null != startTag.getUntilString())
 		{
 			timeLabel.setText(formatDuration(startTag.getDurationMillis().longValue()));
-			hp1.add(timeContainer);
 		}
 
-		VerticalPanel vp = new VerticalPanel();
-		vp.setTitle(startTag.getInstantString());
-		vp.add(hp1);
+		DockLayoutPanel dp = new DockLayoutPanel(Unit.EM);
+		dp.setTitle(startTag.getInstantString());
+		dp.setSize("100%", "1.5em");
+		dp.addWest(resumeLink, 1.5);
+		dp.addEast(timeContainer, 20);
+		timeContainer.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
+		dp.add(descriptionContainer);
 
-		initWidget(vp);
+		initWidget(dp);
 	}
 }

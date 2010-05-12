@@ -15,21 +15,11 @@
 		</fileSet>
 		<fileSet>
 			<directory>target/timeslice-web-${pom.version}</directory>
-			<excludes><exclude>**/.gwt-tmp/**</exclude></excludes>
+			<excludes>
+			    <exclude>**/.gwt-tmp/**</exclude>
+			    <exclude>WEB-INF</exclude>
+			</excludes>
 			<outputDirectory>/</outputDirectory>
 		</fileSet>
-		<fileSet>
-			<directory>src/main/webapp</directory>
-			<outputDirectory>/</outputDirectory>
-		</fileSet>
-<!--
-		<fileSet>
-			<directory>target/${project.build.directory}</directory>
-			<directory>${project.build.directory}</directory>
-			<includes>
-				<include></include>
-			</includes>
-		</fileSet>
--->
 	</fileSets>
 </assembly>
