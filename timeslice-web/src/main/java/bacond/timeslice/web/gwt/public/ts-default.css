@@ -9,3 +9,12 @@
 	margin: 0.05em;
 	padding: 0.05em;
 }
+
+.ts-task
+{
+}
+
+.ts-task-future
+{
+	color: gray;
+}

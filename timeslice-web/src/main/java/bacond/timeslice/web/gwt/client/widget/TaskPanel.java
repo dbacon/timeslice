@@ -126,7 +126,8 @@ public class TaskPanel extends ResizeComposite
 					startTag.getInstantString(),
 					startTag.getUntilString(),
 					startTag.getDurationMillis(),
-					descriptionEditor.getText().trim()));
+					descriptionEditor.getText().trim(),
+					startTag.getPast()));
 		}
 
 		fireEditModeLeft(startTag);
@@ -146,7 +147,8 @@ public class TaskPanel extends ResizeComposite
 				timeEditor.getText(),
 				startTag.getUntilString(),
 				startTag.getDurationMillis(),
-				startTag.getDescription()));
+				startTag.getDescription(),
+				false));
 		}
 
 		fireEditModeLeft(startTag);
@@ -260,5 +262,15 @@ public class TaskPanel extends ResizeComposite
 		dp.add(descriptionContainer);
 
 		initWidget(dp);
+
+		setStylePrimaryName("ts-task");
+		if (!startTag.getPast())
+	    {
+		    addStyleDependentName("future");
+	    }
+		else
+		{
+		    removeStyleDependentName("future");
+	    }
 	}
 }

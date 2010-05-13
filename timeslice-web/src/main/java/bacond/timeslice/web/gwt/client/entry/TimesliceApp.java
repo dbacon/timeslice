@@ -453,7 +453,7 @@ public class TimesliceApp implements EntryPoint
 		}
 	}
 
-	private static final StartTag UnknownTag = new StartTag(null, null, null, "-unknown-");
+	private static final StartTag UnknownTag = new StartTag(null, null, null, "-unknown-", false);
 
 	private StartTag findCurrentStartTag(ArrayList<StartTag> items)
 	{

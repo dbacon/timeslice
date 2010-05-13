@@ -33,7 +33,8 @@ public class ServerToClient
 	                    r.getWhen().toDateTime(DateTimeZone.forOffsetHours(tzoffset)).toString(),
 	                    r.getUntil() == null ? null : r.getUntil().toString(),
 	                    r.getUntil() == null ? null : new Double(new Duration(r.getWhen(), r.getUntil()).toDuration().getMillis()),
-	                    r.getWhat()
+	                    r.getWhat(),
+	                    r.getWhen().isBeforeNow()
 	                    );
 	        }
 	    };
