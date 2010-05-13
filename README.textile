@@ -1,5 +1,5 @@
 Timeslice
 
-Report issues:http://code.google.com/p/timeslice
+Report "issues":http://code.google.com/p/timeslice
 
 
