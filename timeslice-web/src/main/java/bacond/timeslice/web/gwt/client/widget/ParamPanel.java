@@ -216,6 +216,11 @@ public class ParamPanel extends Composite
         return d;
     }
 
+    public String getFullDaySelected()
+    {
+        return dateBox.getTextBox().getText();
+    }
+
 	public ParamPanel()
 	{
 	    dateBox.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getFormat("yyyy-MM-dd")));

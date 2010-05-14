@@ -151,10 +151,10 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
             lines.add(String.format("%s,%s,%s", total.getWho(), total.getWhat(), total.getMillis()));
         }
 
+        String filename = getTimesliceApp().getReportPrefix();
+        if (null != persistAsName && !persistAsName.isEmpty()) filename = filename + persistAsName;
         String ts = new Instant().toDateTime(DateTimeZone.forOffsetHours(getTimesliceApp().getTzOffset())).toString();
-        String filename = "report-" + ts;
-        if (null != persistAsName && !persistAsName.isEmpty()) filename = filename + "-" + persistAsName;
-        filename = filename + ".ts-snapshot.csv";
+        filename = filename + "." + ts + ".ts-snapshot.csv";
 
         File safeDir = new File(getTimesliceApp().getSafeDir());
         filename = filename.replaceAll(":", "-"); // armor the filename for filesystems which don't support ':'

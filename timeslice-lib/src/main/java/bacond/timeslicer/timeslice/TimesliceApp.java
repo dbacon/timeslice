@@ -89,6 +89,7 @@ public class TimesliceApp
 	private String safeDir;
 	private String updateUrl;
 	private int tzOffset;
+	private String reportPrefix = "";
 
     public TimesliceApp(String aclFilename, String safeDir, String updateUrl)
     {
@@ -101,6 +102,16 @@ public class TimesliceApp
         this.safeDir = safeDir;
         this.updateUrl = updateUrl;
         this.tzOffset = tzOffset;
+    }
+
+    public String getReportPrefix()
+    {
+        return reportPrefix;
+    }
+
+    public void setReportPrefix(String reportPrefix)
+    {
+        this.reportPrefix = reportPrefix;
     }
 
 	public int getTzOffset()

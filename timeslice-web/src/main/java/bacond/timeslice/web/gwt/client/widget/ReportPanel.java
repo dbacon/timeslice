@@ -139,7 +139,7 @@ public class ReportPanel extends Composite
             public void onClick(ClickEvent event)
             {
                 firePersistRequested(
-                        persistAsName.getText(),
+                        renderPersistName(),
                         params.getStartingTimeRendered().getText(),
                         params.getEndingTimeRendered().getText());
             }
@@ -182,7 +182,8 @@ public class ReportPanel extends Composite
 		DisclosurePanel pdp = new DisclosurePanel("Persist");
 		pdp.add(pp);
 
-		persistAsName.setText("");
+		persistAsName.setText("full-day-%D");
+		persistAsName.setTitle("%D - selected full day;  %S - starting date/time;  %E - ending date/time");
 		HorizontalPanel buttonPanel = new HorizontalPanel();
 		buttonPanel.add(refreshButton);
 		buttonPanel.add(pdp);
@@ -197,6 +198,14 @@ public class ReportPanel extends Composite
 		readPrefs();
 
 		initWidget(dp);
+	}
+
+	protected String renderPersistName()
+	{
+	    return persistAsName.getText()
+	        .replaceAll("%D", params.getFullDaySelected())
+	        .replaceAll("%S", params.getStartingTimeRendered().getText())
+	        .replaceAll("%E", params.getEndingTimeRendered().getText());
 	}
 
     public void updateChart(List<TaskTotal> items)
