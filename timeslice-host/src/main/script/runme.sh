@@ -23,6 +23,7 @@ do
 done
 shift $(($OPTIND - 1))
 
+topdir="$( (cd "$(dirname $0)/.." && pwd) )"
 
 #----------------------------------------------------------
 # create RC file
@@ -75,7 +76,7 @@ then
     # safedir stuff
     # Wherever this was unzipped,
     # we should be able to unzip another one.
-    safedir="$( (cd "$(dirname $0)/../.." && pwd) )"
+    safedir="$( cd "$topdir/.." && pwd )"
 
     datadir="${HOME}/.timeslice-data"
 
@@ -85,10 +86,10 @@ then
     datadir="${REPLY:-$datadir}"
 
     [ -d "$datadir" ] || {
-        printf "Datadir '%s' doesn't exist, create now ? " "$datadir"
+        printf "Datadir '%s' doesn't exist, create now (Y/n) ? " "$datadir"
         read
         case "$REPLY" in
-            y|Y) mkdir -p "$datadir"
+            ""|y|Y) mkdir -p "$datadir"
         esac
     }
 
@@ -96,10 +97,10 @@ then
     then
         printf "Found existing datastore(s).\n"
     else
-        printf "Create a default on-disk data store? (y/n) "
+        printf "Create a default on-disk data store? (Y/n) "
         read
         case "$REPLY" in
-            y|Y)
+            ""|y|Y)
                 cat << EOF > "$datadir/default.sd.properties"
 type=hsqldb
 starting=2000-01-01T00:00:00.000Z
@@ -120,7 +121,7 @@ EOF
 timeslice.port = $PORT
 timeslice.acl = $ACLFILE
 timeslice.safedir = $safedir
-timeslice.war = webapps/timeslice-web-${WEBVERSION}.war
+timeslice.war = ${topdir}/webapps/timeslice-web-${WEBVERSION}.war
 timeslice.datadir = $datadir
 timeslice.tzoffset = 9
 
@@ -144,5 +145,5 @@ set -x
 set +e
 
 java \
-    -jar "lib/timeslice-host-${SVCVERSION}-jar-with-dependencies.jar" \
+    -jar "${topdir}/lib/timeslice-host-${SVCVERSION}-jar-with-dependencies.jar" \
     "$RCFILE"
