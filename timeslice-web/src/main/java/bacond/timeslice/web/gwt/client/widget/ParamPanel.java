@@ -218,6 +218,8 @@ public class ParamPanel extends Composite
 
 	public ParamPanel()
 	{
+	    dateBox.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getFormat("yyyy-MM-dd")));
+
 	    dateBox.addValueChangeHandler(new ValueChangeHandler<Date>()
         {
             @Override
