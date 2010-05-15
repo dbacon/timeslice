@@ -106,6 +106,7 @@
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-user</artifactId>
 			<version>${gwt.version}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -161,21 +162,6 @@
 							<inplace>true</inplace>
 							<warSourceDirectory>war</warSourceDirectory>
 						</configuration>
-					</plugin>
-
-					<plugin>
-						<artifactId>maven-assembly-plugin</artifactId>
-						<configuration>
-							<descriptors><descriptor>src/main/assembly/static-web-root.xml</descriptor></descriptors>
-						</configuration>
-
-						<executions>
-							<execution>
-								<id>make-assembly</id>
-								<phase>package</phase>
-								<goals><goal>single</goal></goals>
-							</execution>
-						</executions>
 					</plugin>
 				</plugins>
 			</build>
