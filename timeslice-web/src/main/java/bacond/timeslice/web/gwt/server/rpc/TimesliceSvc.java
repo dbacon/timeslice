@@ -224,7 +224,7 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
         ArrayList<String> lines = new ArrayList<String>();
         for (TaskTotal row: rows)
         {
-            lines.add(String.format("%s,%s,%s", row.getWho(), row.getWhat(), row.getHours()));
+            lines.add(String.format("%s,%s,%.6f", row.getWho(), row.getWhat(), row.getHours()));
         }
 
         String filename = getTimesliceApp().getReportPrefix();
