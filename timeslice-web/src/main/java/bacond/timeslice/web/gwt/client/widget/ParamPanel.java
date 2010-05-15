@@ -15,14 +15,13 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.datepicker.client.DateBox;
 
 public class ParamPanel extends Composite
@@ -33,16 +32,12 @@ public class ParamPanel extends Composite
 	public static final DateTimeFormat HumanFormat = DateTimeFormat.getFormat("yyyy/MM/dd HH:mm:ss");
 
 	private final DateBox dateBox = new DateBox();
-	private final ListBox mediaTypeSelector = new ListBox(false);
 	private final TextBox startingTime = new TextBox();
 	private final Label startingTimeRendered = new Label("", false);
 	private final Label startingTimeError = new Label("", false);
 	private final TextBox endingTime = new TextBox();
 	private final Label endingTimeRendered = new Label("", false);
 	private final Label endingTimeError = new Label("", false);
-    private DisclosurePanel rangePanel = new DisclosurePanel("Specific start- & end-times");
-	private final ListBox processingTypeSelector = new ListBox(false);
-	private final Label lastUpdatedLabel = new Label("never");
 	private final Label allowWordsOn = new Label("Allow words containing:");
 	private final TextBox allowWords = new TextBox();
 	private final Label ignoreWordsOn = new Label("Ignore words containing:");
@@ -96,16 +91,6 @@ public class ParamPanel extends Composite
 		return endingTimeRendered;
 	}
 
-	public String getSelectedProcessingType()
-	{
-		return getProcessingTypeSelector().getValue(getProcessingTypeSelector().getSelectedIndex());
-	}
-
-	public String getSelectedMediaType()
-	{
-		return getMediaTypeSelector().getValue(getMediaTypeSelector().getSelectedIndex());
-	}
-
 	public String getSelectedStartingTime()
 	{
 		return getStartingTime().getText();
@@ -116,17 +101,6 @@ public class ParamPanel extends Composite
 		return getEndingTime().getText();
 	}
 
-
-	public Label getLastUpdatedLabel()
-	{
-		return lastUpdatedLabel;
-	}
-
-	public ListBox getMediaTypeSelector()
-	{
-		return mediaTypeSelector;
-	}
-
 	public TextBox getStartingTime()
 	{
 		return startingTime;
@@ -135,11 +109,6 @@ public class ParamPanel extends Composite
 	public TextBox getEndingTime()
 	{
 		return endingTime;
-	}
-
-	public ListBox getProcessingTypeSelector()
-	{
-		return processingTypeSelector;
 	}
 
 	public TextBox getIgnoreWords()
@@ -161,8 +130,6 @@ public class ParamPanel extends Composite
 
 	public void update()
 	{
-		lastUpdatedLabel.setText("" + new Date().toString());
-
 		tryParseTimeWithWidgets(endingTime, endingTimeRendered, endingTimeError);
 		tryParseTimeWithWidgets(startingTime, startingTimeRendered, startingTimeError);
 
@@ -238,89 +205,48 @@ public class ParamPanel extends Composite
                 startingTime.setText(HumanFormat.format(d1));
                 endingTime.setText(HumanFormat.format(d2));
                 update();
-
             }
         });
 
-		processingTypeSelector.addItem("None", "none");
-		processingTypeSelector.addItem("Sum by Task", "sumbydesc");
-		processingTypeSelector.addChangeHandler(commonChangeHandler);
-
-		mediaTypeSelector.addItem("Plain text", "text/plain");
-		mediaTypeSelector.addItem("JSON", "application/json");
-		mediaTypeSelector.addChangeHandler(commonChangeHandler);
-
-
-		FlexTable t = new FlexTable();
-        t.setWidget(0, 0, new Label("Starting"));
-        t.setWidget(0, 1, getStartingTime());
-        t.setWidget(0, 2, getStartingTimeRendered());
-        t.setWidget(0, 3, getStartingTimeError());
-        t.setWidget(1, 0, new Label("Ending"));
-        t.setWidget(1, 1, getEndingTime());
-        t.setWidget(1, 2, getEndingTimeRendered());
-        t.setWidget(1, 3, getEndingTimeError());
-		rangePanel.setAnimationEnabled(true);
-		rangePanel.setOpen(false);
-		rangePanel.add(t);
-
 		startingTime.addChangeHandler(commonChangeHandler);
-
 		endingTime.addChangeHandler(commonChangeHandler);
-
-//        HorizontalPanel allowHp = new HorizontalPanel();
-//        allowHp.setTitle("Comma-separated list of strings, only items \ncontaining any of which will be included.");
-//        allowHp.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
-//        allowHp.add(allowWordsOn);
-//        allowHp.add(allowWords);
-//
-//        HorizontalPanel ignoreHp = new HorizontalPanel();
-//        ignoreHp.setTitle("Comma-separated list of strings, items \ncontaining any of which will be ignored.");
-//        ignoreHp.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
-//        ignoreHp.add(ignoreWordsOn);
-//        ignoreHp.add(ignoreWords);
+		ignoreWords.addChangeHandler(commonChangeHandler);
+		allowWords.addChangeHandler(commonChangeHandler);
 
 		FlexTable table = new FlexTable();
 		table.setCellSpacing(3);
 		int row = 0;
 
-//		table.setWidget(row,   0, new Label("Starting"));
-//		table.setWidget(row,   1, getStartingTime());
-//		table.setWidget(row,   2, getStartingTimeRendered());
-//		table.setWidget(row++, 3, getStartingTimeError());
-//		table.setWidget(row,   0, new Label("Ending"));
-//		table.setWidget(row,   1, getEndingTime());
-//		table.setWidget(row,   2, getEndingTimeRendered());
-//		table.setWidget(row++, 3, getEndingTimeError());
-		table.setWidget(row,   0, new Label("For full-day: "));
-		table.setWidget(row++, 1, dateBox);
-		table.setWidget(row, 0, rangePanel);
-		table.getFlexCellFormatter().setColSpan(row++, 0, 2);
-		table.setWidget(row,   0, new Label("Processing:"));
-		table.setWidget(row++, 1, processingTypeSelector);
-		table.setWidget(row,   0, new Label("Output:"));
-		table.setWidget(row++, 1, mediaTypeSelector);
-        table.setWidget(row,   0, allowWordsOn);
-        table.setWidget(row++, 1, allowWords);
-        table.setWidget(row,   0, ignoreWordsOn);
-        table.setWidget(row++, 1, ignoreWords);
+		table.setWidget(  row, 0, new Label("For full-day: "));
+		table.setWidget(  row, 1, dateBox);
+        table.setWidget(++row, 0, new Label("Starting"));
+        table.setWidget(  row, 1, getStartingTime());
+        table.setWidget(  row, 2, getStartingTimeRendered());
+        table.setWidget(  row, 3, getStartingTimeError());
+        table.setWidget(++row, 0, new Label("Ending"));
+        table.setWidget(  row, 1, getEndingTime());
+        table.setWidget(  row, 2, getEndingTimeRendered());
+        table.setWidget(  row, 3, getEndingTimeError());
+        table.setWidget(++row, 0, allowWordsOn);
+        table.setWidget(  row, 1, allowWords);
+        table.setWidget(++row, 0, ignoreWordsOn);
+        table.setWidget(  row, 1, ignoreWords);
 
 
+		FlowPanel fp = new FlowPanel();
+		fp.add(table);
 
-		HorizontalPanel lastUpdatedPanel = new HorizontalPanel();
-		lastUpdatedPanel.setSpacing(3);
-		lastUpdatedPanel.add(new Label("Last updated:"));
-		lastUpdatedPanel.add(lastUpdatedLabel);
+		initWidget(fp);
 
-		VerticalPanel vp = new VerticalPanel();
-		vp.add(table);
-		vp.add(lastUpdatedPanel);
+		dateBox.setValue(new Date(), true);
 
-		initWidget(vp);
-
-		startingTime.setText(HumanFormat.format(new Date()));
-		endingTime.setText(HumanFormat.format(new Date()));
-
-		update();
+		DeferredCommand.addCommand(new Command()
+        {
+            @Override
+            public void execute()
+            {
+                update();
+            }
+        });
 	}
 }
