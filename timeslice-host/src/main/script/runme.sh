@@ -60,7 +60,7 @@ then
     fi
 
     # http proxy stuff
-    printf "Do you need an HTTP proxy ? "
+    printf "Do you need an HTTP proxy (y/N) ? "
     read ans
     case "$ans" in
         [Yy])
