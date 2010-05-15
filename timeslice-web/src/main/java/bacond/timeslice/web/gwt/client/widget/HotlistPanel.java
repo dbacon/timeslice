@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Cookies;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.Widget;
 
 public class HotlistPanel extends Composite
 {
@@ -24,7 +24,7 @@ public class HotlistPanel extends Composite
 	private static final String CookieNamePrefix = "timeslice.hotlist.";
 
 	private final FlowPanel vp = new FlowPanel();
-	private final Hyperlink mode = new Hyperlink(Mode.Hotlist, "");
+	private final Anchor mode = new Anchor(Mode.Hotlist, true);
 
 	public static interface IHotlistPanelListener
 	{
@@ -66,28 +66,29 @@ public class HotlistPanel extends Composite
 	public HotlistPanel()
 	{
 		mode.setTitle("Hotlist panel - click to switch between live and delete mode.");
-		mode.addClickListener(new ClickListener()
-		{
-			public void onClick(Widget arg0)
-			{
-				if (Mode.Hotlist.equals(mode.getText()) && 1 < vp.getWidgetCount())
-				{
-					mode.setText(Mode.EditSingle);
-				}
-				else if (Mode.EditSingle.equals(mode.getText()))
-				{
-					mode.setText(Mode.EditMulti);
-				}
-				else if (Mode.EditMulti.equals(mode.getText()))
-				{
-					mode.setText(Mode.Hotlist);
-				}
-				else
-				{
-					mode.setText(Mode.Hotlist);
-				}
-			}
-		});
+		mode.addClickHandler(new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                if (Mode.Hotlist.equals(mode.getText()) && 1 < vp.getWidgetCount())
+                {
+                    mode.setText(Mode.EditSingle);
+                }
+                else if (Mode.EditSingle.equals(mode.getText()))
+                {
+                    mode.setText(Mode.EditMulti);
+                }
+                else if (Mode.EditMulti.equals(mode.getText()))
+                {
+                    mode.setText(Mode.Hotlist);
+                }
+                else
+                {
+                    mode.setText(Mode.Hotlist);
+                }
+            }
+        });
 
 		repopulate();
 
@@ -108,29 +109,30 @@ public class HotlistPanel extends Composite
 			{
 				final String description = Cookies.getCookie(name);
 
-				Button button = new Button(description, new ClickListener()
-				{
-					public void onClick(Widget arg0)
-					{
-						if (Mode.Hotlist.equals(mode.getText()))
-						{
-							fireHotlistItemClicked(description);
-						}
-						else
-						{
-							Cookies.removeCookie(name);
+				Button button = new Button(description, new ClickHandler()
+                {
+                    @Override
+                    public void onClick(ClickEvent event)
+                    {
+                        if (Mode.Hotlist.equals(mode.getText()))
+                        {
+                            fireHotlistItemClicked(description);
+                        }
+                        else
+                        {
+                            Cookies.removeCookie(name);
 
-							if (Mode.EditSingle.equals(mode.getText()))
-							{
-								mode.setText(Mode.Hotlist);
-							}
+                            if (Mode.EditSingle.equals(mode.getText()))
+                            {
+                                mode.setText(Mode.Hotlist);
+                            }
 
-							repopulate();
+                            repopulate();
 
-							fireHotlistChanged();
-						}
-					}
-				});
+                            fireHotlistChanged();
+                        }
+                    }
+                });
 
 				if (added < 10)
 				{

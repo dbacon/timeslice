@@ -3,15 +3,15 @@ package bacond.timeslice.web.gwt.client.widget;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 public class ItemNew extends Composite
 {
@@ -80,13 +80,14 @@ public class ItemNew extends Composite
 		table.setWidget(1, 0, new HTML("Project name", false));
 		table.setWidget(1, 1, projectNameTextBox);
 
-		submitButton.addClickListener(new ClickListener()
-		{
-			public void onClick(Widget sender)
-			{
-				fireOnSubmitted();
-			}
-		});
+		submitButton.addClickHandler(new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                fireOnSubmitted();
+            }
+        });
 
 		resultsHTML.setHTML("");
 
