@@ -277,18 +277,20 @@ public class TimesliceApp implements EntryPoint
 		reportPanel.addReportPanelListener(new ReportPanel.IReportPanelListener()
         {
             @Override
-            public void refreshRequested(String startingTimeText, String endingTimeText)
+            public void refreshRequested(String startingTimeText, String endingTimeText, List<String> allowWords, List<String> ignoreWords)
             {
                 controller.startRefreshTotals(
                         1000,
                         SortDir.desc,
                         ProcType.sumbydesc,
                         startingTimeText,
-                        endingTimeText);
+                        endingTimeText,
+                        allowWords,
+                        ignoreWords);
             }
 
             @Override
-            public void persistRequested(String persistAsName, String startingTimeText, String endingTimeText)
+            public void persistRequested(String persistAsName, String startingTimeText, String endingTimeText, List<String> allowWords, List<String> ignoreWords)
             {
                 controller.startPersistTotals(
                         persistAsName,
@@ -296,7 +298,9 @@ public class TimesliceApp implements EntryPoint
                         SortDir.desc,
                         ProcType.sumbydesc,
                         startingTimeText,
-                        endingTimeText);
+                        endingTimeText,
+                        allowWords,
+                        ignoreWords);
             }
         });
 

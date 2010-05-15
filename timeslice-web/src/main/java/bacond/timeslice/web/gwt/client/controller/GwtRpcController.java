@@ -249,7 +249,7 @@ public class GwtRpcController extends BaseController
     }
 
     @Override
-    public void startRefreshTotals(int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant)
+    public void startRefreshTotals(int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
     {
         String token = getAuthToken();
         if (null == token)
@@ -259,7 +259,7 @@ public class GwtRpcController extends BaseController
         }
         else
         {
-            getSvc().refreshTotals(token, maxSize, sortDir, procType, startingInstant, endingInstant, new AsyncCallback<List<TaskTotal>>()
+            getSvc().refreshTotals(token, maxSize, sortDir, procType, startingInstant, endingInstant, allowWords, ignoreWords, new AsyncCallback<List<TaskTotal>>()
                     {
                         @Override
                         public void onFailure(Throwable caught)
@@ -284,7 +284,7 @@ public class GwtRpcController extends BaseController
     }
 
     @Override
-    public void startPersistTotals(String persistAsName, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant)
+    public void startPersistTotals(String persistAsName, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
     {
         String authToken = getAuthToken();
         if (null == authToken)
@@ -293,7 +293,7 @@ public class GwtRpcController extends BaseController
         }
         else
         {
-            getSvc().persistTotals(authToken, persistAsName, maxSize, sortDir, procType, startingInstant, endingInstant, new AsyncCallback<String>()
+            getSvc().persistTotals(authToken, persistAsName, maxSize, sortDir, procType, startingInstant, endingInstant, allowWords, ignoreWords, new AsyncCallback<String>()
             {
                 @Override
                 public void onSuccess(String result)

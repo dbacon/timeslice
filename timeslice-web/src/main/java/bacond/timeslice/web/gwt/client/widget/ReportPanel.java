@@ -1,6 +1,7 @@
 package bacond.timeslice.web.gwt.client.widget;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -48,8 +49,8 @@ public class ReportPanel extends Composite
 
 	public static interface IReportPanelListener
 	{
-	    void refreshRequested(String startingTimeText, String endingTimeText);
-        void persistRequested(String persistAsName, String startingTimeText, String endingTimeText);
+	    void refreshRequested(String startingTimeText, String endingTimeText, List<String> allowWords, List<String> ignoreWords);
+        void persistRequested(String persistAsName, String startingTimeText, String endingTimeText, List<String> allowWords, List<String> ignoreWords);
 	}
 
 	private ArrayList<IReportPanelListener> listeners = new ArrayList<IReportPanelListener>();
@@ -62,19 +63,19 @@ public class ReportPanel extends Composite
 	    }
 	}
 
-	protected void fireRefreshRequested(String startingTimeText, String endingTimeText)
+	protected void fireRefreshRequested(String startingTimeText, String endingTimeText, List<String> allowWords, List<String> ignoreWords)
 	{
 	    for (IReportPanelListener listener: listeners)
 	    {
-	        listener.refreshRequested(startingTimeText, endingTimeText);
+	        listener.refreshRequested(startingTimeText, endingTimeText, allowWords, ignoreWords);
 	    }
 	}
 
-    protected void firePersistRequested(String persistAsName, String startingTimeText, String endingTimeText)
+    protected void firePersistRequested(String persistAsName, String startingTimeText, String endingTimeText, List<String> allowWords, List<String> ignoreWords)
     {
         for (IReportPanelListener listener: listeners)
         {
-            listener.persistRequested(persistAsName, startingTimeText, endingTimeText);
+            listener.persistRequested(persistAsName, startingTimeText, endingTimeText, allowWords, ignoreWords);
         }
     }
 
@@ -115,7 +116,9 @@ public class ReportPanel extends Composite
 				writePrefs();
 				fireRefreshRequested(
                     params.getStartingTimeRendered().getText(),
-                    params.getEndingTimeRendered().getText());
+                    params.getEndingTimeRendered().getText(),
+                    Arrays.asList(params.getAllowWords().getText().split(",")),
+                    Arrays.asList(params.getIgnoreWords().getText().split(",")));
 				//reselectData();
 			}
 		});
@@ -128,7 +131,9 @@ public class ReportPanel extends Composite
             {
                 fireRefreshRequested(
                         params.getStartingTimeRendered().getText(),
-                        params.getEndingTimeRendered().getText());
+                        params.getEndingTimeRendered().getText(),
+                        Arrays.asList(params.getAllowWords().getText().split(",")),
+                        Arrays.asList(params.getIgnoreWords().getText().split(",")));
             }
         });
 
@@ -141,7 +146,9 @@ public class ReportPanel extends Composite
                 firePersistRequested(
                         renderPersistName(),
                         params.getStartingTimeRendered().getText(),
-                        params.getEndingTimeRendered().getText());
+                        params.getEndingTimeRendered().getText(),
+                        Arrays.asList(params.getAllowWords().getText().split(",")),
+                        Arrays.asList(params.getIgnoreWords().getText().split(",")));
             }
         });
 
@@ -210,12 +217,8 @@ public class ReportPanel extends Composite
 
     public void updateChart(List<TaskTotal> items)
 	{
-	    items = filterItems(items);
-
 		StringBuilder dataPointsString = new StringBuilder();
 		StringBuilder labelsString = new StringBuilder();
-
-		Double total = calcTotal(items);
 
 		boolean notTheFirst = false;
 		for (TaskTotal item: items)
@@ -226,7 +229,7 @@ public class ReportPanel extends Composite
 				labelsString.append("|");
 			}
 
-			dataPointsString.append(item.getDurationMillis() / total);
+			dataPointsString.append(item.getPercentage());
 			labelsString.append(item.getWhat().hashCode());
 
 			notTheFirst = true;
@@ -244,63 +247,13 @@ public class ReportPanel extends Composite
 		//chartBit.add(new Label(chartImageUrl));
 	}
 
-	private List<TaskTotal> filterItems(List<TaskTotal> items)
+	public void updateResults(List<TaskTotal> report)
 	{
-	    ArrayList<TaskTotal> result = new ArrayList<TaskTotal>();
-
-        String[] allowWords = params.getAllowWords().getText().split(",");
-        boolean allowfilter = allowWords.length > 0;
-        String[] ignoreWords = params.getIgnoreWords().getText().split(",");
-        for (TaskTotal item: items)
-        {
-            if (allowfilter)
-            {
-                boolean foundatleastone = false;
-                for (String allowWord: allowWords)
-                {
-                    if (item.getWhat().contains(allowWord))
-                    {
-                        foundatleastone = true;
-                        break;
-                    }
-                }
-                if (!foundatleastone) continue;
-            }
-
-            boolean shouldIgnore = false;
-            for (String ignoreWord: ignoreWords)
-            {
-                if (!ignoreWord.isEmpty() && item.getWhat().contains(ignoreWord))
-                {
-                    shouldIgnore = true;
-                    break;
-                }
-            }
-            if (shouldIgnore) continue;
-
-            result.add(item);
-        }
-
-        return result;
-	}
-
-	private Double calcTotal(List<TaskTotal> items)
-	{
-		Double total = 0.;
-		for (TaskTotal item: filterItems(items))
-		{
-			total += item.getDurationMillis().intValue();
-		}
-		return total;
-	}
-
-	public void updateResults(List<TaskTotal> items)
-	{
-		Collections.sort(items, Collections.reverseOrder(new Comparator<TaskTotal>()
+	    Collections.sort(report, Collections.reverseOrder(new Comparator<TaskTotal>()
 				{
 					public int compare(TaskTotal o1, TaskTotal o2)
 					{
-						return o1.getDurationMillis().compareTo(o2.getDurationMillis());
+						return o1.getHours().compareTo(o2.getHours());
 					}
 				}));
 
@@ -318,17 +271,15 @@ public class ReportPanel extends Composite
 
 		row++;
 
-		Double total = calcTotal(items);
-
-		for (TaskTotal item: filterItems(items))
+		for (TaskTotal reportRow: report)
 		{
 			col = 0;
 
-			ft.setText(row, col++, item.getWho());
-			ft.setText(row, col++, NumberFormat.getDecimalFormat().format(item.getDurationMillis() / 1000. / 60. / 60.));
-			ft.setText(row, col++, NumberFormat.getPercentFormat().format(item.getDurationMillis() / total));
-			ft.setText(row, col++, item.getWhat());
-			ft.setText(row, col++, "" + item.getWhat().hashCode());
+			ft.setText(row, col++, reportRow.getWho());
+			ft.setText(row, col++, NumberFormat.getDecimalFormat().format(reportRow.getHours()));
+			ft.setText(row, col++, NumberFormat.getPercentFormat().format(reportRow.getPercentage()));
+			ft.setText(row, col++, reportRow.getWhat());
+			ft.setText(row, col++, "" + reportRow.getWhat().hashCode());
 
 			row++;
 		}

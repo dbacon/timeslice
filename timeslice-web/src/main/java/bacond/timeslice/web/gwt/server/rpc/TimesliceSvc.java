@@ -107,8 +107,75 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
             ServerToClient.createStartTagTx(getTimesliceApp().getTzOffset())));
 	}
 
-	@Override
-	public List<TaskTotal> refreshTotals(String authToken, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant)
+    private Collection<bacond.timeslicer.app.core.TaskTotal> filterItems(Collection<bacond.timeslicer.app.core.TaskTotal> items, List<String> allowWords, List<String> ignoreWords)
+    {
+        ArrayList<bacond.timeslicer.app.core.TaskTotal> result = new ArrayList<bacond.timeslicer.app.core.TaskTotal>();
+
+        boolean allowfilter = !allowWords.isEmpty();
+        for (bacond.timeslicer.app.core.TaskTotal item: items)
+        {
+            if (allowfilter)
+            {
+                boolean foundatleastone = false;
+                for (String allowWord: allowWords)
+                {
+                    if (item.getWhat().contains(allowWord))
+                    {
+                        foundatleastone = true;
+                        break;
+                    }
+                }
+                if (!foundatleastone) continue;
+            }
+
+            boolean shouldIgnore = false;
+            for (String ignoreWord: ignoreWords)
+            {
+                if (!ignoreWord.isEmpty() && item.getWhat().contains(ignoreWord))
+                {
+                    shouldIgnore = true;
+                    break;
+                }
+            }
+            if (shouldIgnore) continue;
+
+            result.add(item);
+        }
+
+        return result;
+    }
+
+    private Double calcTotal(List<bacond.timeslicer.app.core.TaskTotal> items)
+    {
+        Double total = 0.;
+        for (bacond.timeslicer.app.core.TaskTotal item: items)
+        {
+            total += item.getMillis();
+        }
+        return total;
+    }
+
+    public List<TaskTotal> createReport(List<bacond.timeslicer.app.core.TaskTotal> items)
+    {
+        ArrayList<TaskTotal> result = new ArrayList<TaskTotal>();
+
+        Double total = calcTotal(items);
+
+        for(bacond.timeslicer.app.core.TaskTotal item: items)
+        {
+            result.add(new TaskTotal(
+                    item.getWho(),
+                    item.getMillis() / 1000. / 60. / 60.,
+                    item.getMillis() / total,
+                    item.getWhat()
+                    ));
+        }
+
+        return result;
+    }
+
+    @Override
+	public List<TaskTotal> refreshTotals(String authToken, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
 	{
 	    SessionData sd = checkToken(authToken);
 
@@ -124,11 +191,15 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
 				maxSize,
 				0);
 
-		return new ArrayList<TaskTotal>(Transform.tr(new Aggregate().sumThem(new Aggregate().aggregate(tags)).values(), ServerToClient.TaskTotal));
+		return createReport(new ArrayList<bacond.timeslicer.app.core.TaskTotal>(
+		       filterItems(
+		               new Aggregate().sumThem(new Aggregate().aggregate(tags)).values(),
+		               allowWords,
+		               ignoreWords)));
 	}
 
 	@Override
-	public String persistTotals(String authToken, String persistAsName, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant)
+	public String persistTotals(String authToken, String persistAsName, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
 	{
         SessionData sd = checkToken(authToken);
 
@@ -144,11 +215,16 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
                 maxSize,
                 0);
 
-        Collection<bacond.timeslicer.app.core.TaskTotal> values = new Aggregate().sumThem(new Aggregate().aggregate(tags)).values();
+        List<TaskTotal> rows = createReport(new ArrayList<bacond.timeslicer.app.core.TaskTotal>(
+                    filterItems(
+                        new Aggregate().sumThem(new Aggregate().aggregate(tags)).values(),
+                        allowWords,
+                        ignoreWords)));
+
         ArrayList<String> lines = new ArrayList<String>();
-        for (bacond.timeslicer.app.core.TaskTotal total: values)
+        for (TaskTotal row: rows)
         {
-            lines.add(String.format("%s,%s,%s", total.getWho(), total.getWhat(), total.getMillis()));
+            lines.add(String.format("%s,%s,%s", row.getWho(), row.getWhat(), row.getHours()));
         }
 
         String filename = getTimesliceApp().getReportPrefix();

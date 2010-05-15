@@ -7,18 +7,20 @@ public class TaskTotal implements Serializable
 	private static final long serialVersionUID = 1L;
 
 	private String who;
-	private Double durationMillis;
+	private Double hours;
+	private Double percentage;
 	private String what;
 
 	public TaskTotal()
 	{
-		this(null, null, null);
+		this("", 0., 0., "");
 	}
 
-	public TaskTotal(String who, Double durationMillis, String what)
+	public TaskTotal(String who, Double hours, Double percentage, String what)
 	{
 		this.who = who;
-		this.durationMillis = durationMillis;
+		this.hours = hours;
+		this.percentage = percentage;
 		this.what = what;
 	}
 
@@ -32,14 +34,24 @@ public class TaskTotal implements Serializable
 		this.who = who;
 	}
 
-	public Double getDurationMillis()
+	public Double getHours()
 	{
-		return durationMillis;
+		return hours;
 	}
 
-	public void setDurationMillis(Double durationMillis)
+	public void setHours(Double hours)
 	{
-		this.durationMillis = durationMillis;
+		this.hours = hours;
+	}
+
+	public Double getPercentage()
+	{
+		return percentage;
+	}
+
+	public void setPercentage(Double percentage)
+	{
+		this.percentage = percentage;
 	}
 
 	public String getWhat()
