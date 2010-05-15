@@ -11,7 +11,7 @@ public class HsqldbTimesliceStoreTest
     @Test
     public void test1()
     {
-        HsqldbTimesliceStore store = new HsqldbTimesliceStore(new File("."), "abc", "first-task", new Instant(), new Instant());
+        HsqldbTimesliceStore store = new HsqldbTimesliceStore(new File("."), "target/test-generated-data/abc", "first-task", new Instant(), new Instant());
         store.enable();
         store.disable();
     }
