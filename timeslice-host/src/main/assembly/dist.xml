@@ -25,7 +25,7 @@
 			<directoryMode>0755</directoryMode>
 		</fileSet>
 		<fileSet>
-			<directory>src/main/script</directory>
+			<directory>${basedir}/src/main/script</directory>
 			<filtered>true</filtered>
 			<outputDirectory>/bin</outputDirectory>
 			<fileMode>0755</fileMode>
