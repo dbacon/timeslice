@@ -6,7 +6,7 @@
 	<groupId>bacond</groupId>
 	<artifactId>timeslice-lib</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.8-SNAPSHOT</version>
+	<version>1.0.8</version>
 
 	<build>
 		<resources>
