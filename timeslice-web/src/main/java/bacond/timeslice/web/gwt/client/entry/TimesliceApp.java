@@ -342,7 +342,6 @@ public class TimesliceApp implements EntryPoint
 		HorizontalPanel buildLabelBox = new HorizontalPanel();
 		buildLabelBox.setSpacing(15);
 		buildLabelBox.add(new HTML("<a href=\"" + IssuesUrl + "\" target=\"_blank\">Feedback / RFEs / Bugs</a>"));
-		buildLabelBox.add(new HTML("<a href=\"" + FormsUrl + "\" target=\"_blank\">Input Forms</a>"));
         buildLabelBox.add(logoutAnchor);
         buildLabelBox.add(serverInfoLabel);
 
