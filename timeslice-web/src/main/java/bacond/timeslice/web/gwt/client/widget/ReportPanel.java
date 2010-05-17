@@ -99,7 +99,7 @@ public class ReportPanel extends ResizeComposite
 		Cookies.setCookie(PrefKey.Starting, params.getSelectedStartingTime());
 		Cookies.setCookie(PrefKey.Ending, params.getSelectedEndingTime());
         Cookies.setCookie(PrefKey.IgnoreStrings, params.getIgnoreWords().getText());
-        Cookies.setCookie(PrefKey.AllowStrings, params.getIgnoreWords().getText());
+        Cookies.setCookie(PrefKey.AllowStrings, params.getAllowWords().getText());
 	}
 
 	public ReportPanel()
