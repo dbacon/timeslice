@@ -180,6 +180,41 @@ public class GwtRpcController extends BaseController
     }
 
     @Override
+    public void startAddItems(List<StartTag> items)
+    {
+        String token = getAuthToken();
+        if (null == token)
+        {
+            // not authenticated.
+            authenticate();
+        }
+        else
+        {
+            getSvc().addItems(token, items, new AsyncCallback<Void>()
+                    {
+                        @Override
+                        public void onFailure(Throwable caught)
+                        {
+                            if (caught instanceof NotAuthenticException)
+                            {
+                                authenticate(caught.getMessage());
+                            }
+                            else
+                            {
+                                fireAddItemDone(new AsyncResult<Void>(null, caught));
+                            }
+                        }
+
+                        @Override
+                        public void onSuccess(Void result)
+                        {
+                            fireAddItemDone(new AsyncResult<Void>(result, null));
+                        }
+                    });
+        }
+    }
+
+    @Override
     public void startEditDescription(StartTag editedStartTag)
     {
         String token = getAuthToken();

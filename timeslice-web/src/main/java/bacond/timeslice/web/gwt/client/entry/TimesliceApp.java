@@ -9,6 +9,7 @@ import bacond.timeslice.web.gwt.client.beans.TaskTotal;
 import bacond.timeslice.web.gwt.client.controller.GwtRpcController;
 import bacond.timeslice.web.gwt.client.controller.IController;
 import bacond.timeslice.web.gwt.client.controller.IControllerListener;
+import bacond.timeslice.web.gwt.client.entry.ImportBulkItemsDialog.BulkItemListener;
 import bacond.timeslice.web.gwt.client.server.ProcType;
 import bacond.timeslice.web.gwt.client.server.SortDir;
 import bacond.timeslice.web.gwt.client.util.Checks;
@@ -48,7 +49,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class TimesliceApp implements EntryPoint
 {
 	public static final String IssuesUrl = "http://code.google.com/p/timeslice/issues/list";
-	private static final String FormsUrl = "forms/items-new.html";
 
 	public static final class Defaults
 	{
@@ -72,6 +72,8 @@ public class TimesliceApp implements EntryPoint
 	private final Anchor addHotlink = new Anchor("Add to hotlist");
 	private final Anchor enterLink = new Anchor("Enter");
 	private final VerticalPanel actionPanel = new VerticalPanel();
+	private final Anchor bulkLink = new Anchor("bulk");
+	private final VerticalPanel idleActionPanel = new VerticalPanel();
 	private String originalWindowTitle;
 	private final Label serverInfoLabel = new Label("[querying]");
 
@@ -103,7 +105,9 @@ public class TimesliceApp implements EntryPoint
 		{
 			public void execute()
 			{
-				actionPanel.setVisible(!taskDescriptionEntry.getText().trim().isEmpty());
+				boolean descriptionIsEmpty = taskDescriptionEntry.getText().trim().isEmpty();
+                actionPanel.setVisible(!descriptionIsEmpty);
+				idleActionPanel.setVisible(descriptionIsEmpty);
 			}
 		});
 	}
@@ -242,12 +246,32 @@ public class TimesliceApp implements EntryPoint
 		actionPanel.add(addHotlink);
 		actionPanel.setStyleName("ts-actionPanel");
 
+		bulkLink.addClickHandler(new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                new ImportBulkItemsDialog(new BulkItemListener()
+                {
+                    @Override
+                    public void addItems(List<StartTag> items)
+                    {
+                        controller.startAddItems(items);
+                    }
+                }).show();
+            }
+        });
+
+		idleActionPanel.add(bulkLink);
+		idleActionPanel.setStyleName("ts-idlePanel");
+
 		entryPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
 		entryPanel.setSpacing(5);
 		entryPanel.add(updateLink);
 		entryPanel.add(new HTML("<u>T</u>ask:", false));
 		entryPanel.add(taskDescriptionEntry);
 		entryPanel.add(actionPanel);
+		entryPanel.add(idleActionPanel);
 
 		scheduleHotlistValidation();
 		hotlistPanel.addHotlistPanelListener(new IHotlistPanelListener()

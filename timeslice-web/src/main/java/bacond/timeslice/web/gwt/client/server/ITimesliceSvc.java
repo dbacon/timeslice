@@ -18,6 +18,7 @@ public interface ITimesliceSvc extends RemoteService
 	List<StartTag> refreshItems(String authToken, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant) throws NotAuthenticException;
 	List<TaskTotal> refreshTotals(String authToken, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords) throws NotAuthenticException;
 	void addItem(String authToken, String instantString, String taskDescription) throws NotAuthenticException;
+	void addItems(String authToken, List<StartTag> items);
 	void update(String authToken, StartTag editedStartTag) throws NotAuthenticException;
 
 	String persistTotals(String authToken, String persistAsName, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords) throws NotAuthenticException;
