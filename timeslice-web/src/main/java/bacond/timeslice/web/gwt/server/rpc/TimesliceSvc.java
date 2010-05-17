@@ -259,6 +259,18 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
 	    getTimesliceApp().getFrontStore().add(new bacond.timeslicer.app.core.StartTag(sd.getUser(), instantString, taskDescription, null));
 	}
 
+    @Override
+    public void addItems(String authToken, List<StartTag> items)
+    {
+        SessionData sd = checkToken(authToken);
+        throwIfNoAvailableStore();
+
+        for (StartTag item: items)
+        {
+            getTimesliceApp().getFrontStore().add(new bacond.timeslicer.app.core.StartTag(sd.getUser(), item.getInstantString(), item.getDescription(), null));
+        }
+    }
+
     private void throwIfNoAvailableStore()
     {
         if (null == getTimesliceApp().getFrontStore())

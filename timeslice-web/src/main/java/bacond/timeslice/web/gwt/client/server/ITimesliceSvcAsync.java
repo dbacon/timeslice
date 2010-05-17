@@ -15,6 +15,7 @@ public interface ITimesliceSvcAsync
 	void refreshItems(String authToken, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, AsyncCallback<List<StartTag>> callback);
 	void refreshTotals(String authToken, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords, AsyncCallback<List<TaskTotal>> callback);
 	void addItem(String authToken, String instantString, String taskDescription, AsyncCallback<Void> callback);
+	void addItems(String authToken, List<StartTag> items, AsyncCallback<Void> callback);
 	void update(String authToken, StartTag editedStartTag, AsyncCallback<Void> callback);
     void persistTotals(String authToken, String persistAsName, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords, AsyncCallback<String> callback);
 }
