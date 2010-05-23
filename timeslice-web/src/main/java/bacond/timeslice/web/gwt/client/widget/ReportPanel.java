@@ -2,26 +2,22 @@ package bacond.timeslice.web.gwt.client.widget;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
 import bacond.timeslice.web.gwt.client.beans.TaskTotal;
 import bacond.timeslice.web.gwt.client.widget.ParamPanel.IParamChangedListener;
 
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ResizeComposite;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
+import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -32,7 +28,8 @@ public class ReportPanel extends ResizeComposite
 	private final Button persistButton = new Button("Persist");
 	private final TextBox persistAsName = new TextBox();
 	private final Label persisted = new Label();
-	private FlexTable resultsTable = new FlexTable();
+	private final TabularResultsView resultsView = new TabularResultsView();
+	private final TreeTableResultsView resultsTreeView = new TreeTableResultsView();
 
 	private static class PrefKey
 	{
@@ -118,7 +115,7 @@ public class ReportPanel extends ResizeComposite
 			}
 		});
 
-		refreshButton.setAccessKey('r');
+		refreshButton.setAccessKey('t');
 		refreshButton.addClickHandler(new ClickHandler()
         {
             @Override
@@ -161,13 +158,23 @@ public class ReportPanel extends ResizeComposite
 		vp.add(params);
 		vp.add(buttonPanel);
 
+		TabLayoutPanel resultsTabs = new TabLayoutPanel(2, Unit.EM);
+		resultsTabs.add(resultsTreeView, "Totaling");
+		resultsTabs.add(resultsView, "Table");
+
 		SplitLayoutPanel dp = new SplitLayoutPanel();
 		dp.addNorth(vp, 180);
-		dp.add(new ScrollPanel(resultsTable));
+		dp.add(resultsTabs);
 
 		readPrefs();
 
 		initWidget(dp);
+	}
+
+	public void setResults(List<TaskTotal> results)
+	{
+	    resultsView.setResults(results);
+	    resultsTreeView.setResults(results);
 	}
 
 	protected String renderPersistName()
@@ -176,44 +183,6 @@ public class ReportPanel extends ResizeComposite
 	        .replaceAll("%D", params.getFullDaySelected())
 	        .replaceAll("%S", params.getStartingTimeRendered().getText())
 	        .replaceAll("%E", params.getEndingTimeRendered().getText());
-	}
-
-	public void updateResults(List<TaskTotal> report)
-	{
-	    Collections.sort(report, Collections.reverseOrder(new Comparator<TaskTotal>()
-				{
-					public int compare(TaskTotal o1, TaskTotal o2)
-					{
-						return o1.getHours().compareTo(o2.getHours());
-					}
-				}));
-
-
-		resultsTable.removeAllRows();
-		resultsTable.setCellSpacing(5);
-		int row = 0;
-		int col = 0;
-
-		resultsTable.setWidget(row, col++, new HTML("<b><u>Who</u></b>", false));
-		resultsTable.setWidget(row, col++, new HTML("<b><u>Hours</u></b>", false));
-		resultsTable.setWidget(row, col++, new HTML("<b><u>%</u></b>", false));
-		resultsTable.setWidget(row, col++, new HTML("<b><u>What</u></b>", false));
-		resultsTable.setWidget(row, col++, new HTML("<b><u>Code</u></b>", false));
-
-		row++;
-
-		for (TaskTotal reportRow: report)
-		{
-			col = 0;
-
-			resultsTable.setText(row, col++, reportRow.getWho());
-			resultsTable.setText(row, col++, NumberFormat.getDecimalFormat().format(reportRow.getHours()));
-			resultsTable.setText(row, col++, NumberFormat.getPercentFormat().format(reportRow.getPercentage()));
-			resultsTable.setText(row, col++, reportRow.getWhat());
-			resultsTable.setText(row, col++, "" + reportRow.getWhat().hashCode());
-
-			row++;
-		}
 	}
 
 	public void setPersisted(String persistedName)

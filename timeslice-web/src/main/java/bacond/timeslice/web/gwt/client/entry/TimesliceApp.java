@@ -415,7 +415,7 @@ public class TimesliceApp implements EntryPoint
 	                }
 	                else
 	                {
-	                    reportPanel.updateResults(result.getReturned());
+	                    reportPanel.setResults(result.getReturned());
 	                }
 	            }
 

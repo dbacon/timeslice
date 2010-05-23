@@ -18,3 +18,31 @@
 {
 	color: gray;
 }
+
+.resultTree-Empty
+{
+	font-style: italic;
+	color: gray;
+}
+
+.resultTree-Depth0
+{
+	background: #ccc;
+}
+
+.resultTree-Depth1
+{
+	background: #ddd;
+}
+
+.resultTree-Depth2
+{
+	background: #eee;
+}
+
+.resultTree-What
+{
+	font-weight: bold;
+	font-size: xx-large;
+	background: white;
+}
