@@ -16,11 +16,16 @@ public class TimesliceContract
 
         public static final String WHO = "who";
         public static final String WHAT = "what";
-        public static final String WHEN = "when";
-        /**
-         *  One of {new,sent,deleted}.
-         */
+        public static final String WHEN = "_when";
         public static final String STATUS = "status";
+
+        public static class StatusValue
+        {
+            private StatusValue() { }
+
+            public static final String ST_UNSENT = "U";
+            public static final String ST_SENT = "S";
+        }
 
 
         /**
