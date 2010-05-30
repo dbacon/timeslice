@@ -237,7 +237,7 @@ public class TaskListActivity extends Activity
 
     private String[] createRecipients()
     {
-        return new String[] { "dave@enokinomi.com" };
+        return new String[] { };
     }
 
     private String createSubject()
