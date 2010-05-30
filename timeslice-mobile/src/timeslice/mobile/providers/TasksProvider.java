@@ -169,8 +169,6 @@ public class TasksProvider extends ContentProvider
         {
             case URI_MATCH_TASKS:
                 qb.setProjectionMap(taskProjectionMap);
-                selection = null;
-                selectionArgs = null;
                 break;
 
             case URI_MATCH_TASKS_ID:
@@ -181,7 +179,7 @@ public class TasksProvider extends ContentProvider
 
             case URI_MATCH_TASKS_FILTER:
                 qb.setProjectionMap(taskProjectionMap);
-                selection = Tasks.WHAT + " match ?";
+                selection = Tasks.WHAT + " like ?";
                 selectionArgs = new String[] { uri.getPathSegments().get(1) };
                 break;
         }
