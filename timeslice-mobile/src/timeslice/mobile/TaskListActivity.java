@@ -4,6 +4,8 @@ import timeslice.mobile.providers.TimesliceContract;
 import timeslice.mobile.providers.TimesliceContract.Tasks;
 import timeslice.mobile.providers.TimesliceContract.Tasks.StatusValue;
 import android.app.Activity;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -11,20 +13,23 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RemoteViews;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.TextView.OnEditorActionListener;
 
 public class TaskListActivity extends Activity
@@ -36,24 +41,44 @@ public class TaskListActivity extends Activity
     private static final int MENU_ADD = 1;
     private static final int MENU_SEND = 2;
     private static final int MENU_PREF = 3;
-//    private static final int MENU_SETUP = 4;
+    private static final int MENU_SUTOGGLE = 4;
 
     private Cursor cursor;
     private TextView tv;
     private ListView list;
 
-    private void note(String msg, boolean toast)
+    protected void note(String msg, boolean toast)
     {
         Log.i(LOG_TAG_TIMESLICE, msg);
         if (toast) Toast.makeText(TaskListActivity.this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    private String createDescription()
+    public String createDescription()
     {
         String descr = tv.getText().toString().trim();
         if (descr.length() == 0) descr = "new item";
         // todo: provide a better clue here when there's no description?
         return descr;
+    }
+
+    protected void onListItemClick(int position, long id)
+    {
+        note("click item: position=" + position + " id=" + id, false);
+    }
+
+    protected void onListItemLongClick(int position, long id)
+    {
+        note("long-click item: position=" + position + " id=" + id, true);
+    }
+
+    protected void onButtonClick()
+    {
+        createEntry(createDescription());
+    }
+
+    protected void onNewItemEditorAction()
+    {
+        createEntry(createDescription());
     }
 
     @Override
@@ -70,24 +95,14 @@ public class TaskListActivity extends Activity
             {
                 if (EditorInfo.IME_NULL == actionId)
                 {
-                    createEntry(createDescription());
+                    onNewItemEditorAction();
                 }
 
                 return false;
             }
         });
 
-        cursor = managedQuery(
-                TimesliceContract.Tasks.CONTENT_URI,
-                new String[] { Tasks._ID, Tasks.STATUS, Tasks.WHAT, Tasks.WHO },
-                null, null, null);
-
-        SimpleCursorAdapter cursorAdapter = new SimpleCursorAdapter(
-                this,
-                R.layout.task_row,
-                cursor,
-                new String[] { Tasks.STATUS, Tasks.WHAT },
-                new int[] { R.id.status, R.id.description });
+        SimpleCursorAdapter cursorAdapter = createCursorAdaptor(false);
 
         list = (ListView) findViewById(R.id.tasklist);
         list.setAdapter(cursorAdapter);
@@ -97,20 +112,8 @@ public class TaskListActivity extends Activity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                note("click item: position=" + position + " id=" + id, false);
-                toggleStatus(id);
+                onListItemClick(position, id);
             }
-        });
-
-        list.setOnItemLongClickListener(new OnItemLongClickListener()
-        {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
-            {
-                note("long-click item: position=" + position + " id=" + id, true);
-                return true;
-            }
-
         });
 
         Button b = (Button) findViewById(R.id.b1);
@@ -120,9 +123,39 @@ public class TaskListActivity extends Activity
             @Override
             public void onClick(View v)
             {
-                createEntry(createDescription());
+                onButtonClick();
             }
         });
+
+        registerForContextMenu(list);
+    }
+
+    private SimpleCursorAdapter createCursorAdaptor(boolean showSent)
+    {
+        String selection = null;
+        String[] selectionArgs = null;
+
+        if (!showSent)
+        {
+            selection = Tasks.STATUS + "=?";
+            selectionArgs = new String[] { StatusValue.ST_UNSENT };
+        }
+
+        cursor = managedQuery(
+                TimesliceContract.Tasks.CONTENT_URI,
+                new String[] { Tasks._ID, Tasks.STATUS, Tasks.WHAT, Tasks.WHO },
+                selection,
+                selectionArgs,
+                null);
+
+        SimpleCursorAdapter cursorAdapter = new SimpleCursorAdapter(
+                this,
+                R.layout.task_row,
+                cursor,
+                new String[] { Tasks.STATUS, Tasks.WHAT },
+                new int[] { R.id.status, R.id.description });
+
+        return cursorAdapter;
     }
 
     @Override
@@ -133,10 +166,12 @@ public class TaskListActivity extends Activity
         menu.add(Menu.NONE, MENU_SEND, Menu.NONE, "Send").setIcon(android.R.drawable.ic_menu_send);
         menu.add(Menu.NONE, MENU_ADD, Menu.NONE, "Add").setIcon(android.R.drawable.ic_menu_add);
         menu.add(Menu.NONE, MENU_PREF, Menu.NONE, "Preferences").setIcon(android.R.drawable.ic_menu_preferences);
-//        menu.add(Menu.NONE, MENU_SETUP, Menu.NONE, "Setup").setIcon(android.R.drawable.ic_menu_set_as);
+        menu.add(Menu.NONE, MENU_SUTOGGLE, Menu.NONE, "Unsent Toggle").setIcon(android.R.drawable.ic_menu_sort_alphabetically);
 
         return true;
     }
+
+    private boolean showSent = false;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
@@ -155,6 +190,11 @@ public class TaskListActivity extends Activity
             case MENU_PREF:
                 note("menu: Preferences", true);
                 return true;
+
+            case MENU_SUTOGGLE:
+                showSent = !showSent;
+                list.setAdapter(createCursorAdaptor(showSent));
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -166,7 +206,7 @@ public class TaskListActivity extends Activity
      * @param key
      * @return
      */
-    private String createBody(String key)
+    public String createBody(String key)
     {
         String body = createStandardParsableOfUnsentItems();
         if (null != key)
@@ -188,23 +228,10 @@ public class TaskListActivity extends Activity
         return outgoingPlain;
     }
 
-    private Cursor openQueryUnsentItems()
-    {
-        return getContentResolver().query(Tasks.CONTENT_URI, null, Tasks.STATUS + " = ?", new String[] { StatusValue.ST_UNSENT }, null);
-    }
-
-    private int queryUnsentCount()
-    {
-        Cursor items = openQueryUnsentItems();
-        int count = items.getCount();
-        items.close();
-        return count;
-    }
-
     private String createStandardParsableOfUnsentItems()
     {
         String result = "";
-        Cursor unsentItems = openQueryUnsentItems();
+        Cursor unsentItems = new QueryHelper(this).openQueryUnsentItems();
 
         if (unsentItems.moveToFirst())
         {
@@ -250,7 +277,7 @@ public class TaskListActivity extends Activity
 
     private void sendUnsent()
     {
-        if (queryUnsentCount() > 0)
+        if (new QueryHelper(this).queryUnsentCount() > 0)
         {
             String body = createBody(null);
             String[] toAddrs = createRecipients();
@@ -317,7 +344,7 @@ public class TaskListActivity extends Activity
                             }
 
                             note("Marked " + updated + " as sent.", false);
-                            cursor.requery();
+                            refreshCursor();
                         }
 
                         break;
@@ -331,6 +358,24 @@ public class TaskListActivity extends Activity
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    public void refreshCursor()
+    {
+        cursor.requery();
+
+        updateWidgets();
+    }
+
+    private void updateWidgets()
+    {
+        int unsent = new QueryHelper(this).queryUnsentCount();
+
+        AppWidgetManager awm = AppWidgetManager.getInstance(this);
+        RemoteViews rviews = new RemoteViews(getPackageName(), R.layout.hsw);
+        rviews.setTextViewText(R.id.addbutton, "" + unsent + " unsent");
+
+        awm.updateAppWidget(new ComponentName(this, TimesliceWidget.class), rviews);
+    }
+
     private void createEntry(String description)
     {
         ContentValues values = new ContentValues();
@@ -339,34 +384,12 @@ public class TaskListActivity extends Activity
 
         note("Item entered.", true);
         tv.setText("");
-        cursor.requery();
-    }
-
-    private String queryCurrentStatus(long id)
-    {
-        String result = null;
-
-        Cursor target = getContentResolver().query(
-                Uri.withAppendedPath(Tasks.CONTENT_URI, Long.toString(id)),
-                new String[] { Tasks._ID, Tasks.STATUS },
-                null, null, null);
-
-        if (target.moveToFirst())
-        {
-            result = target.getString(cursor.getColumnIndex(Tasks.STATUS));
-        }
-        else
-        {
-            note("queryCurrentStatus(" + id + "): did not find task", true);
-        }
-
-        target.close();
-        return result;
+        refreshCursor();
     }
 
     private void toggleStatus(long id)
     {
-        String currentStatus = queryCurrentStatus(id);
+        String currentStatus = new QueryHelper(this).queryItemsStatus(id);
 
         if (null != currentStatus)
         {
@@ -379,11 +402,46 @@ public class TaskListActivity extends Activity
             getContentResolver().update(Uri.withAppendedPath(Tasks.CONTENT_URI, Long.toString(id)), values, null, null);
 
             note("Toggled id=" + id + " status: " + currentStatus + "->" + nextStatus, false);
-            cursor.requery();
+            refreshCursor();
         }
         else
         {
             note("Toggle failed, no current status for id=" + id, false);
+        }
+    }
+
+    public static final int CONTEXT_ONE = 1;
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo)
+    {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        AdapterContextMenuInfo dMenuInfo = (AdapterContextMenuInfo) menuInfo;
+
+        String status = new QueryHelper(this).queryItemsStatus(dMenuInfo.id);
+        String label = "Mark as Unsent";
+        if (StatusValue.ST_UNSENT.equals(status))
+        {
+            label = "Mark as Sent";
+        }
+
+        menu.add(0, CONTEXT_ONE, 0, label);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item)
+    {
+        AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();
+
+        switch (item.getItemId())
+        {
+            case CONTEXT_ONE:
+                toggleStatus(menuInfo.id);
+                return true;
+
+            default:
+                return super.onContextItemSelected(item);
         }
     }
 }
