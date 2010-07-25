@@ -30,7 +30,7 @@ public class StartTagIo
 		return result;
 	}
 
-	public static String toLine(StartTag tag)
+	public String toLine(StartTag tag)
 	{
 		return String.format("[%s#%s#%s]",
 				tag.getWho(),
@@ -38,7 +38,7 @@ public class StartTagIo
 				tag.getWhat());
 	}
 
-	public static StartTag fromLine(String line)
+	public StartTag fromLine(String line)
 	{
 		StartTag result = null;
 

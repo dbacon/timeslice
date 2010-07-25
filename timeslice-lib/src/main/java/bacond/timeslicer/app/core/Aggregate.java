@@ -16,13 +16,13 @@ public class Aggregate
 		return Bucket.create(Transforms.member(StartTag.class, String.class, "what")).bucket(items).getBuckets();
 	}
 
-	public Map<String, TaskTotal> sumThem(Map<String, List<StartTag>> buckets)
+	public Map<String, TaskTotal> sumThem(Sum summer, Map<String, List<StartTag>> buckets)
 	{
 		Map<String, TaskTotal> result = new LinkedHashMap<String, TaskTotal>();
 
 		for (Entry<String, List<StartTag>> entry: buckets.entrySet())
 		{
-			result.put(entry.getKey(), new Sum().sum(entry.getValue()));
+			result.put(entry.getKey(), summer.sum(entry.getValue()));
 		}
 
 		return result;

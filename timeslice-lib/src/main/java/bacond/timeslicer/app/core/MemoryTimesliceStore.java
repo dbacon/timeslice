@@ -3,6 +3,7 @@ package bacond.timeslicer.app.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,12 +18,14 @@ public class MemoryTimesliceStore implements ITimesliceStore
     private String firstTagText = "[blank]";
 
     private final Map<Instant, StartTag> store = new LinkedHashMap<Instant, StartTag>();
+	private Comparator<StartTag> sorter;
 
-    public MemoryTimesliceStore(Instant starting, Instant ending, String firstTagText)
+    public MemoryTimesliceStore(Instant starting, Instant ending, String firstTagText, Comparator<StartTag> sorter)
     {
         this.starting = starting;
         this.ending = ending;
         this.firstTagText = firstTagText;
+        this.sorter = sorter;
     }
 
     @Override
@@ -145,7 +148,7 @@ public class MemoryTimesliceStore implements ITimesliceStore
             }
         }
 
-        Collections.sort(result, ByWhen.get());
+		Collections.sort(result, sorter);
         Collections.reverse(result);
 
         int si = pageIndex*pageSize;

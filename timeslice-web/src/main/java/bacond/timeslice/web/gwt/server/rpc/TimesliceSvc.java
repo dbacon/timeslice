@@ -22,6 +22,7 @@ import bacond.timeslice.web.gwt.client.server.SortDir;
 import bacond.timeslice.web.gwt.server.beantx.ServerToClient;
 import bacond.timeslicer.app.core.AclFile;
 import bacond.timeslicer.app.core.Aggregate;
+import bacond.timeslicer.app.core.Sum;
 import bacond.timeslicer.timeslice.TimesliceApp;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -31,6 +32,9 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
 	private static final long serialVersionUID = 1L;
 
     private Map<String, SessionData> validSessions = new LinkedHashMap<String, SessionData>();
+
+    private Sum summer = new Sum();
+    private Aggregate aggregator = new Aggregate();
 
 	protected TimesliceApp getTimesliceApp()
 	{
@@ -193,7 +197,7 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
 
 		return createReport(new ArrayList<bacond.timeslicer.app.core.TaskTotal>(
 		       filterItems(
-		               new Aggregate().sumThem(new Aggregate().aggregate(tags)).values(),
+		               aggregator.sumThem(summer, aggregator.aggregate(tags)).values(),
 		               allowWords,
 		               ignoreWords)));
 	}
@@ -217,7 +221,7 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
 
         List<TaskTotal> rows = createReport(new ArrayList<bacond.timeslicer.app.core.TaskTotal>(
                     filterItems(
-                        new Aggregate().sumThem(new Aggregate().aggregate(tags)).values(),
+                        aggregator.sumThem(summer, aggregator.aggregate(tags)).values(),
                         allowWords,
                         ignoreWords)));
 

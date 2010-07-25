@@ -14,8 +14,6 @@ import bacond.timeslicer.app.core.ITimesliceStore;
 import bacond.timeslicer.app.core.Split;
 import bacond.timeslicer.app.core.StartTag;
 import bacond.timeslicer.app.core.StartTagIo;
-import bacond.timeslicer.app.rolodex.FileRolodex;
-import bacond.timeslicer.app.rolodex.IRolodex;
 
 public class TimesliceApp
 {
@@ -83,25 +81,28 @@ public class TimesliceApp
 	    return stores.size();
 	}
 
-	private final IRolodex rolodex = new FileRolodex(new File("rolodex.dat"));
-
 	private String aclFileName;
 	private String safeDir;
 	private String updateUrl;
 	private int tzOffset;
+	private final StartTagIo startTagIo;
+	private final Split splitter;
 	private String reportPrefix = "";
 
-    public TimesliceApp(String aclFilename, String safeDir, String updateUrl)
+
+	public TimesliceApp(String aclFilename, String safeDir, String updateUrl, StartTagIo startTagIo, Split splitter)
     {
-        this(aclFilename, safeDir, updateUrl, 0);
+        this(aclFilename, safeDir, updateUrl, 0, startTagIo, splitter);
     }
 
-    public TimesliceApp(String aclFilename, String safeDir, String updateUrl, int tzOffset)
+    public TimesliceApp(String aclFilename, String safeDir, String updateUrl, int tzOffset, StartTagIo startTagIo, Split splitter)
     {
         this.aclFileName = aclFilename;
         this.safeDir = safeDir;
         this.updateUrl = updateUrl;
         this.tzOffset = tzOffset;
+		this.startTagIo = startTagIo;
+		this.splitter = splitter;
     }
 
     public String getReportPrefix()
@@ -154,11 +155,6 @@ public class TimesliceApp
 		this.updateUrl = updateUrl;
 	}
 
-	public IRolodex getRolodex()
-	{
-		return rolodex;
-	}
-
 	public boolean canSaveLoad()
 	{
 		return null != getSafeDir();
@@ -182,7 +178,7 @@ public class TimesliceApp
 			File backupFile = findBackupFile(Key_Upgrade);
 			try
 			{
-				List<StartTag> preloadItems = new StartTagIo().readItems(new FileInputStream(backupFile));
+				List<StartTag> preloadItems = startTagIo.readItems(new FileInputStream(backupFile));
 
 				getFrontStore().addAll(preloadItems, true);
 
@@ -202,7 +198,7 @@ public class TimesliceApp
 	    if (stores.size() > 0)
 	    {
 	        // todo: switch to query all stores.
-	        return new Split().split(
+	        return splitter.split(
 	                getFrontStore().query(
 	                        who,
 	                        minDate,

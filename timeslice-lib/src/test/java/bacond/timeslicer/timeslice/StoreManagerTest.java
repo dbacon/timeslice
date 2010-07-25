@@ -1,6 +1,7 @@
 package bacond.timeslicer.timeslice;
 
 import java.io.File;
+import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,7 +15,7 @@ public class StoreManagerTest
     @Test
     public void test1()
     {
-        TimesliceApp tsApp = new TimesliceApp(null, null, null)
+        TimesliceApp tsApp = new TimesliceApp(null, null, null, null, null)
         {
             @Override
             public void pushFront(ITimesliceStore store)
@@ -26,7 +27,9 @@ public class StoreManagerTest
             }
         };
 
-        StoreManager storeManager = new StoreManager(new File("test-input/storemanager/dir1"));
+        StoreManager storeManager = new StoreManager(
+                new File("test-input/storemanager/dir1"),
+                Arrays.<StoreManager.IParser>asList(new StoreManager.MemoryPlugin()));
 
         storeManager.configure(tsApp);
 
