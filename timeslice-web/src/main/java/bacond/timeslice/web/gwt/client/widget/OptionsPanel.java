@@ -23,6 +23,7 @@ public class OptionsPanel extends Composite implements IOptionsProvider
     public static class PrefKeys
     {
         public static final String PageSize = "timeslice.options.pagesize";
+        public static final String PageSizeSeconds = "timeslice.options.pagesizeseconds";
         public static final String User = "timeslice.options.user";
         public static final String CtrlSpaceSends = "timeslice.options.controlspacesends";
         public static final String AutoRefresh = "timeslice.options.autorefresh";
@@ -34,6 +35,7 @@ public class OptionsPanel extends Composite implements IOptionsProvider
     public static final String DefaultTitlebarTemplate = "[TS] " + IOptionsProvider.CurrentTaskToken;
 
     private final TextBox maxSize = new TextBox();
+    private final TextBox maxSeconds = new TextBox();
 //    private final TextBox baseUri = new TextBox();
 //
 //    private final TextBox username = new TextBox();
@@ -94,6 +96,8 @@ public class OptionsPanel extends Composite implements IOptionsProvider
 //        optionsTable.setWidget(row++, 1, password);
         optionsTable.setWidget(row,   0, createTitledLabel("Max results", "Number of items to show in history and include in word-completion."));
         optionsTable.setWidget(row++, 1, maxSize);
+        optionsTable.setWidget(row,   0, createTitledLabel("Max hours", "Number of hours (decimal ok) to show in history and include in word-completion."));
+        optionsTable.setWidget(row++, 1, maxSeconds);
         optionsTable.setWidget(row++, 0, controlSpaceSends);
         optionsTable.setWidget(row,   0, currentTaskInTitlebar);
         optionsTable.setWidget(row++, 1, titleBarTemplate);
@@ -134,6 +138,7 @@ public class OptionsPanel extends Composite implements IOptionsProvider
     private void localWidgetsInit()
     {
         maxSize.addChangeHandler(CommonChangeFireChanged);
+        maxSeconds.addChangeHandler(CommonChangeFireChanged);
 
         controlSpaceSends.addClickHandler(CommonClickFireChanged);
         autoRefresh.addClickHandler(CommonClickFireChanged);
@@ -169,7 +174,19 @@ public class OptionsPanel extends Composite implements IOptionsProvider
         }
         catch (Exception e)
         {
-            return 10;
+            return Defaults.MaxResults;
+        }
+    }
+
+    public long getMaxSeconds()
+    {
+        try
+        {
+            return Math.round(Double.parseDouble(maxSeconds.getText()) * 60 * 60);
+        }
+        catch (NumberFormatException e)
+        {
+            return Defaults.MaxSeconds;
         }
     }
 
@@ -210,6 +227,7 @@ public class OptionsPanel extends Composite implements IOptionsProvider
     {
 //        username.setText(Cookies.getCookie(PrefKeys.User));
         maxSize.setText(Cookies.getCookie(PrefKeys.PageSize));
+        maxSeconds.setText(Cookies.getCookie(PrefKeys.PageSizeSeconds));
         controlSpaceSends.setValue("true".equals(Cookies.getCookie(PrefKeys.CtrlSpaceSends)));
         currentTaskInTitlebar.setValue("true".equals(Cookies.getCookie(PrefKeys.CurrentTaskInTitlebar)));
         titleBarTemplate.setText(Cookies.getCookie(PrefKeys.TitlebarTemplate));
@@ -235,6 +253,11 @@ public class OptionsPanel extends Composite implements IOptionsProvider
             maxSize.setText("" + Defaults.MaxResults);
         }
 
+        if (maxSeconds.getText().trim().isEmpty())
+        {
+            maxSeconds.setText("" + Defaults.MaxSeconds / 60. / 60.);
+        }
+
         if (titleBarTemplate.getText().trim().isEmpty())
         {
             titleBarTemplate.setText(DefaultTitlebarTemplate);
@@ -249,6 +272,7 @@ public class OptionsPanel extends Composite implements IOptionsProvider
     {
 //        Cookies.setCookie(PrefKeys.User, username.getText());
         Cookies.setCookie(PrefKeys.PageSize, maxSize.getText());
+        Cookies.setCookie(PrefKeys.PageSizeSeconds, maxSeconds.getText());
         Cookies.setCookie(PrefKeys.CtrlSpaceSends, (controlSpaceSends.getValue() ? "true" : "false"));
         Cookies.setCookie(PrefKeys.AutoRefresh, autoRefresh.getValue() ? "true" : "false");
         Cookies.setCookie(PrefKeys.AutoRefreshMs, autoRefreshMs.getText());
