@@ -12,6 +12,12 @@ public class EmptyOptionsProvider implements IOptionsProvider
     }
 
     @Override
+    public long getMaxSeconds()
+    {
+        return 60*60*24;
+    }
+
+    @Override
     public String getTitleBarTemplate()
     {
         return "Timeslice";
@@ -40,4 +46,5 @@ public class EmptyOptionsProvider implements IOptionsProvider
     {
         return Integer.MAX_VALUE;
     }
+
 }

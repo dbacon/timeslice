@@ -16,11 +16,11 @@ import bacond.timeslice.web.gwt.client.util.Checks;
 import bacond.timeslice.web.gwt.client.widget.EmptyOptionsProvider;
 import bacond.timeslice.web.gwt.client.widget.HistoryPanel;
 import bacond.timeslice.web.gwt.client.widget.HotlistPanel;
+import bacond.timeslice.web.gwt.client.widget.HotlistPanel.IHotlistPanelListener;
 import bacond.timeslice.web.gwt.client.widget.IOptionsProvider;
 import bacond.timeslice.web.gwt.client.widget.OptionsPanel;
 import bacond.timeslice.web.gwt.client.widget.ParamPanel;
 import bacond.timeslice.web.gwt.client.widget.ReportPanel;
-import bacond.timeslice.web.gwt.client.widget.HotlistPanel.IHotlistPanelListener;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -30,6 +30,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Timer;
@@ -37,14 +39,17 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.datepicker.client.DateBox;
 
 public class TimesliceApp implements EntryPoint
 {
@@ -54,6 +59,7 @@ public class TimesliceApp implements EntryPoint
     {
         public static final String BaseUri = "http://localhost:8082";
         public static final int MaxResults = 10;
+        public static final long MaxSeconds = 60 * 60 * 24;
         public static final int AutoRefreshMs = 500;
     }
 
@@ -76,6 +82,9 @@ public class TimesliceApp implements EntryPoint
     private final VerticalPanel idleActionPanel = new VerticalPanel();
     private String originalWindowTitle;
     private final Label serverInfoLabel = new Label("[querying]");
+    private final DateBox specifiedDateBox = new DateBox();
+    private final RadioButton modeRadioSpecify = new RadioButton("MODE", "Specify Date");
+    private final RadioButton modeRadioNormal = new RadioButton("MODE", "Normal");
 
     private void updateStartTag(StartTag editedStartTag)
     {
@@ -121,6 +130,11 @@ public class TimesliceApp implements EntryPoint
                 hotlistPanel.setVisible(0 < hotlistPanel.getHotlistItemCount());
             }
         });
+    }
+    private void fixSpecifiedDateBox(boolean value)
+    {
+        specifiedDateBox.setEnabled(value);
+        specifiedDateBox.setVisible(value);
     }
 
     public void onModuleLoad()
@@ -287,9 +301,44 @@ public class TimesliceApp implements EntryPoint
             }
         });
 
+        specifiedDateBox.addValueChangeHandler(new ValueChangeHandler<Date>()
+        {
+            @Override
+            public void onValueChange(ValueChangeEvent<Date> event)
+            {
+                scheduleRefresh();
+            }
+        });
+
+        modeRadioSpecify.addValueChangeHandler(new ValueChangeHandler<Boolean>()
+                {
+                    @Override
+                    public void onValueChange(ValueChangeEvent<Boolean> event)
+                    {
+                        fixSpecifiedDateBox(event.getValue());
+                        scheduleRefresh();
+                    }
+                });
+        modeRadioNormal.addValueChangeHandler(new ValueChangeHandler<Boolean>()
+                {
+                    @Override
+                    public void onValueChange(ValueChangeEvent<Boolean> event)
+                    {
+                        fixSpecifiedDateBox(!event.getValue());
+                        scheduleRefresh();
+                    }
+                });
+        modeRadioNormal.setValue(true, true);
+
+        FlowPanel modePanel = new FlowPanel();
+        modePanel.add(modeRadioNormal);
+        modePanel.add(modeRadioSpecify);
+        modePanel.add(specifiedDateBox);
+
         DockLayoutPanel mainEntryPanel = new DockLayoutPanel(Unit.EM);
 
         //VerticalPanel mainEntryPanel = new VerticalPanel();
+        mainEntryPanel.addNorth(modePanel, 3);
         mainEntryPanel.addSouth(hotlistPanel, 4);
         mainEntryPanel.addSouth(entryPanel, 3);
         mainEntryPanel.add(historyPanel);
@@ -548,7 +597,19 @@ public class TimesliceApp implements EntryPoint
         {
             public void execute()
             {
-                controller.startRefreshItems(options.getMaxSize(), null, null);
+                String starting = ParamPanel.MachineFormat.format(new Date(new Date().getTime() - options.getMaxSeconds() * 1000));
+                String ending = null;
+
+                if (modeRadioSpecify.getValue() && null != specifiedDateBox.getValue())
+                {
+                    starting = ParamPanel.MachineFormat.format(specifiedDateBox.getValue());
+                    ending = ParamPanel.MachineFormat.format(new Date(specifiedDateBox.getValue().getTime() + 1000*3600*24));
+                }
+
+                controller.startRefreshItems(
+                        options.getMaxSize(),
+                        starting,
+                        ending);
             }
         });
     }
