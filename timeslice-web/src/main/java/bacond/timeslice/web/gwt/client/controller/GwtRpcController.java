@@ -249,7 +249,7 @@ public class GwtRpcController extends BaseController
     }
 
     @Override
-    public void startRefreshItems(int maxSize)
+    public void startRefreshItems(int maxSize, String startingInstant, String endingInstant)
     {
         String token = getAuthToken();
         if (null == token)
@@ -259,7 +259,7 @@ public class GwtRpcController extends BaseController
         }
         else
         {
-            getSvc().refreshItems(token, maxSize, SortDir.desc, null, null, null, new AsyncCallback<List<StartTag>>()
+            getSvc().refreshItems(token, maxSize, SortDir.desc, null, startingInstant, endingInstant, new AsyncCallback<List<StartTag>>()
                     {
                         @Override
                         public void onSuccess(List<StartTag> result)

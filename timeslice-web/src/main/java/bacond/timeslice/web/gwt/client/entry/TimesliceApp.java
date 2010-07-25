@@ -548,7 +548,7 @@ public class TimesliceApp implements EntryPoint
         {
             public void execute()
             {
-                controller.startRefreshItems(options.getMaxSize());
+                controller.startRefreshItems(options.getMaxSize(), null, null);
             }
         });
     }
