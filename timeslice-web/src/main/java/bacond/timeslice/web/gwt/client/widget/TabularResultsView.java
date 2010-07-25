@@ -37,8 +37,6 @@ public class TabularResultsView extends ResizeComposite
 
         int col = 0;
         resultsTable.setWidget(row, col++, new HTML("<b><u>Who</u></b>", false));
-        resultsTable.setWidget(row, col++, new HTML("<b><u>(Total %)</u></b>", false));
-        resultsTable.setWidget(row, col++, new HTML("<b><u>(Total Hours)</u></b>", false));
         resultsTable.setWidget(row, col++, new HTML("<b><u>Hours</u></b>", false));
         resultsTable.setWidget(row, col++, new HTML("<b><u>%</u></b>", false));
         resultsTable.setWidget(row, col++, new HTML("<b><u>What</u></b>", false));

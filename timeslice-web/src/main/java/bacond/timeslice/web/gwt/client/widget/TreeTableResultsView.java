@@ -90,8 +90,8 @@ public class TreeTableResultsView extends ResizeComposite
 
         int col = 0;
         resultsTable.setWidget(row.getValue(), col++, new HTML("<b><u>Who</u></b>", false));
-        resultsTable.setWidget(row.getValue(), col++, new HTML("<b><u>(Total %)</u></b>", false));
         resultsTable.setWidget(row.getValue(), col++, new HTML("<b><u>(Total Hours)</u></b>", false));
+        resultsTable.setWidget(row.getValue(), col++, new HTML("<b><u>(Total %)</u></b>", false));
         resultsTable.setWidget(row.getValue(), col++, new HTML("<b><u>Hours</u></b>", false));
         resultsTable.setWidget(row.getValue(), col++, new HTML("<b><u>%</u></b>", false));
         resultsTable.getColumnFormatter().addStyleName(col, "resultTree-What");
