@@ -7,34 +7,34 @@ import java.util.List;
 
 public class BillableTotalList
 {
-	private final List<BillableTotal> billableTotals = new ArrayList<BillableTotal>();
+    private final List<BillableTotal> billableTotals = new ArrayList<BillableTotal>();
 
-//	private final Set<String> distinctNames = new LinkedHashSet<String>();
+//    private final Set<String> distinctNames = new LinkedHashSet<String>();
 
-	public List<BillableTotal> getConstBillableTasks()
-	{
-		return Collections.unmodifiableList(billableTotals);
-	}
+    public List<BillableTotal> getConstBillableTasks()
+    {
+        return Collections.unmodifiableList(billableTotals);
+    }
 
-	public BillableTotalList addBillableTotal(BillableTotal total)
-	{
-//		if (distinctNames.contains(total.getDescription()))
-//		{
-//			throw new RuntimeException("Billable totals list already contains a total '" + total.getDescription() + "'.");
-//		}
+    public BillableTotalList addBillableTotal(BillableTotal total)
+    {
+//        if (distinctNames.contains(total.getDescription()))
+//        {
+//            throw new RuntimeException("Billable totals list already contains a total '" + total.getDescription() + "'.");
+//        }
 
-		billableTotals.add(total);
+        billableTotals.add(total);
 
-		return this;
-	}
+        return this;
+    }
 
-	public BillableTotalList addAllBillableTotals(Collection<? extends BillableTotal> collection)
-	{
-		for (BillableTotal total: collection)
-		{
-			addBillableTotal(total);
-		}
+    public BillableTotalList addAllBillableTotals(Collection<? extends BillableTotal> collection)
+    {
+        for (BillableTotal total: collection)
+        {
+            addBillableTotal(total);
+        }
 
-		return this;
-	}
+        return this;
+    }
 }

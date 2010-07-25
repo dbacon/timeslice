@@ -14,54 +14,54 @@ import org.apache.commons.io.FilenameUtils;
  */
 public class GenericSettingsProvider implements ISettingsProvider
 {
-	private final String filename;
+    private final String filename;
 
-	public GenericSettingsProvider(String filename)
-	{
-		this.filename = filename;
-	}
+    public GenericSettingsProvider(String filename)
+    {
+        this.filename = filename;
+    }
 
-	/**
-	 *
-	 * <p>
-	 * If {@code null} is passed, it will be replaced
-	 * with the default rc filename calculated for the platform
-	 * (e.g. {@code ~/.timeslicerc}).
-	 * </p>
-	 *
-	 * @param filename
-	 * @return
-	 */
-	@Override
-	public Properties readSettings(Properties settings)
-	{
-		File rcfile = new File(filename);
+    /**
+     *
+     * <p>
+     * If {@code null} is passed, it will be replaced
+     * with the default rc filename calculated for the platform
+     * (e.g. {@code ~/.timeslicerc}).
+     * </p>
+     *
+     * @param filename
+     * @return
+     */
+    @Override
+    public Properties readSettings(Properties settings)
+    {
+        File rcfile = new File(filename);
 
-		System.out.println("Reading settings file: " + rcfile);
+        System.out.println("Reading settings file: " + rcfile);
 
-		try
-		{
-			settings.load(new FileInputStream(rcfile));
-		}
-		catch (Exception e)
-		{
-			System.err.println("Exception reading settings: " + e.getMessage());
-		}
+        try
+        {
+            settings.load(new FileInputStream(rcfile));
+        }
+        catch (Exception e)
+        {
+            System.err.println("Exception reading settings: " + e.getMessage());
+        }
 
-		return settings;
-	}
+        return settings;
+    }
 
-	public static String calculateDefaultRcFilename()
-	{
-		String homeDir = System.getProperty("user.home", ".");
+    public static String calculateDefaultRcFilename()
+    {
+        String homeDir = System.getProperty("user.home", ".");
 
-		String rcFilename = FilenameUtils.concat(homeDir, ".timeslicerc");
-		return rcFilename;
-	}
+        String rcFilename = FilenameUtils.concat(homeDir, ".timeslicerc");
+        return rcFilename;
+    }
 
-	@Override
-	public void writeSettings(Properties settings)
-	{
-		throw new RuntimeException("Not implemented.");
-	}
+    @Override
+    public void writeSettings(Properties settings)
+    {
+        throw new RuntimeException("Not implemented.");
+    }
 }

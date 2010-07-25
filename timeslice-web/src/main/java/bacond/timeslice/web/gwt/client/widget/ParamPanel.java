@@ -26,142 +26,142 @@ import com.google.gwt.user.datepicker.client.DateBox;
 
 public class ParamPanel extends Composite
 {
-	// 2009-03-21T13:30:42.626 -- assume +9
-	public static final DateTimeFormat MachineFormat = DateTimeFormat.getFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'+09:00'");
+    // 2009-03-21T13:30:42.626 -- assume +9
+    public static final DateTimeFormat MachineFormat = DateTimeFormat.getFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'+09:00'");
 
-	public static final DateTimeFormat HumanFormat = DateTimeFormat.getFormat("yyyy/MM/dd HH:mm:ss");
+    public static final DateTimeFormat HumanFormat = DateTimeFormat.getFormat("yyyy/MM/dd HH:mm:ss");
 
-	private final DateBox dateBox = new DateBox();
-	private final TextBox startingTime = new TextBox();
-	private final Label startingTimeRendered = new Label("", false);
-	private final Label startingTimeError = new Label("", false);
-	private final TextBox endingTime = new TextBox();
-	private final Label endingTimeRendered = new Label("", false);
-	private final Label endingTimeError = new Label("", false);
-	private final Label allowWordsOn = new Label("Allow words containing:");
-	private final TextBox allowWords = new TextBox();
-	private final Label ignoreWordsOn = new Label("Ignore words containing:");
+    private final DateBox dateBox = new DateBox();
+    private final TextBox startingTime = new TextBox();
+    private final Label startingTimeRendered = new Label("", false);
+    private final Label startingTimeError = new Label("", false);
+    private final TextBox endingTime = new TextBox();
+    private final Label endingTimeRendered = new Label("", false);
+    private final Label endingTimeError = new Label("", false);
+    private final Label allowWordsOn = new Label("Allow words containing:");
+    private final TextBox allowWords = new TextBox();
+    private final Label ignoreWordsOn = new Label("Ignore words containing:");
     private final TextBox ignoreWords = new TextBox();
 
-	public static interface IParamChangedListener
-	{
-		void paramChanged(ParamPanel source);
-	}
+    public static interface IParamChangedListener
+    {
+        void paramChanged(ParamPanel source);
+    }
 
-	private final List<IParamChangedListener> listeners = new ArrayList<IParamChangedListener>();
+    private final List<IParamChangedListener> listeners = new ArrayList<IParamChangedListener>();
 
-	public void addParamChangedListener(IParamChangedListener listener)
-	{
-		if (null != listener)
-		{
-			listeners.add(listener);
-		}
-	}
+    public void addParamChangedListener(IParamChangedListener listener)
+    {
+        if (null != listener)
+        {
+            listeners.add(listener);
+        }
+    }
 
-	public void removeParamChangedListener(IParamChangedListener listener)
-	{
-		listeners.remove(listener);
-	}
+    public void removeParamChangedListener(IParamChangedListener listener)
+    {
+        listeners.remove(listener);
+    }
 
-	protected void fireParamChanged()
-	{
-		for (IParamChangedListener listener: listeners)
-		{
-			listener.paramChanged(this);
-		}
-	}
+    protected void fireParamChanged()
+    {
+        for (IParamChangedListener listener: listeners)
+        {
+            listener.paramChanged(this);
+        }
+    }
 
-	public Label getStartingTimeError()
-	{
-		return startingTimeError;
-	}
+    public Label getStartingTimeError()
+    {
+        return startingTimeError;
+    }
 
-	public Label getEndingTimeError()
-	{
-		return endingTimeError;
-	}
+    public Label getEndingTimeError()
+    {
+        return endingTimeError;
+    }
 
-	public Label getStartingTimeRendered()
-	{
-		return startingTimeRendered;
-	}
+    public Label getStartingTimeRendered()
+    {
+        return startingTimeRendered;
+    }
 
-	public Label getEndingTimeRendered()
-	{
-		return endingTimeRendered;
-	}
+    public Label getEndingTimeRendered()
+    {
+        return endingTimeRendered;
+    }
 
-	public String getSelectedStartingTime()
-	{
-		return getStartingTime().getText();
-	}
+    public String getSelectedStartingTime()
+    {
+        return getStartingTime().getText();
+    }
 
-	public String getSelectedEndingTime()
-	{
-		return getEndingTime().getText();
-	}
+    public String getSelectedEndingTime()
+    {
+        return getEndingTime().getText();
+    }
 
-	public TextBox getStartingTime()
-	{
-		return startingTime;
-	}
+    public TextBox getStartingTime()
+    {
+        return startingTime;
+    }
 
-	public TextBox getEndingTime()
-	{
-		return endingTime;
-	}
+    public TextBox getEndingTime()
+    {
+        return endingTime;
+    }
 
-	public TextBox getIgnoreWords()
+    public TextBox getIgnoreWords()
     {
         return ignoreWords;
     }
 
-	public TextBox getAllowWords()
-	{
-	    return allowWords;
-	}
+    public TextBox getAllowWords()
+    {
+        return allowWords;
+    }
 
     public boolean hasError()
-	{
-		return false
-			|| (!Checks.mapNullTo(getStartingTimeError().getText(), "").trim().isEmpty())
-			|| (!Checks.mapNullTo(getEndingTimeError().getText(), "").trim().isEmpty());
-	}
+    {
+        return false
+            || (!Checks.mapNullTo(getStartingTimeError().getText(), "").trim().isEmpty())
+            || (!Checks.mapNullTo(getEndingTimeError().getText(), "").trim().isEmpty());
+    }
 
-	public void update()
-	{
-		tryParseTimeWithWidgets(endingTime, endingTimeRendered, endingTimeError);
-		tryParseTimeWithWidgets(startingTime, startingTimeRendered, startingTimeError);
+    public void update()
+    {
+        tryParseTimeWithWidgets(endingTime, endingTimeRendered, endingTimeError);
+        tryParseTimeWithWidgets(startingTime, startingTimeRendered, startingTimeError);
 
-		if (!hasError())
-		{
-			fireParamChanged();
-		}
-	}
+        if (!hasError())
+        {
+            fireParamChanged();
+        }
+    }
 
-	private void tryParseTimeWithWidgets(TextBox input, Label result, Label errorMsg)
-	{
-		tryParseTime(
-				ValueUtil.asReadableWritable(input),
-				ValueUtil.asReadableWritable(result),
-				ValueUtil.asReadableWritable(errorMsg));
-	}
+    private void tryParseTimeWithWidgets(TextBox input, Label result, Label errorMsg)
+    {
+        tryParseTime(
+                ValueUtil.asReadableWritable(input),
+                ValueUtil.asReadableWritable(result),
+                ValueUtil.asReadableWritable(errorMsg));
+    }
 
-	private void tryParseTime(IReadableValue<String> readable, IWritableValue<String> result, IWritableValue<String> errorMessage)
-	{
-		try
-		{
-			result.setValue(MachineFormat.format(HumanFormat.parse(readable.getValue())));
-			errorMessage.setValue(null);
-		}
-		catch (Exception e)
-		{
-			result.setValue(null);
-			errorMessage.setValue("Parse failed: " + e.getMessage());
-		}
-	}
+    private void tryParseTime(IReadableValue<String> readable, IWritableValue<String> result, IWritableValue<String> errorMessage)
+    {
+        try
+        {
+            result.setValue(MachineFormat.format(HumanFormat.parse(readable.getValue())));
+            errorMessage.setValue(null);
+        }
+        catch (Exception e)
+        {
+            result.setValue(null);
+            errorMessage.setValue("Parse failed: " + e.getMessage());
+        }
+    }
 
-	private final ChangeHandler commonChangeHandler = new ChangeHandler()
+    private final ChangeHandler commonChangeHandler = new ChangeHandler()
     {
         @Override
         public void onChange(ChangeEvent event)
@@ -188,11 +188,11 @@ public class ParamPanel extends Composite
         return dateBox.getTextBox().getText();
     }
 
-	public ParamPanel()
-	{
-	    dateBox.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getFormat("yyyy-MM-dd")));
+    public ParamPanel()
+    {
+        dateBox.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getFormat("yyyy-MM-dd")));
 
-	    dateBox.addValueChangeHandler(new ValueChangeHandler<Date>()
+        dateBox.addValueChangeHandler(new ValueChangeHandler<Date>()
         {
             @Override
             public void onValueChange(ValueChangeEvent<Date> event)
@@ -208,17 +208,17 @@ public class ParamPanel extends Composite
             }
         });
 
-		startingTime.addChangeHandler(commonChangeHandler);
-		endingTime.addChangeHandler(commonChangeHandler);
-		ignoreWords.addChangeHandler(commonChangeHandler);
-		allowWords.addChangeHandler(commonChangeHandler);
+        startingTime.addChangeHandler(commonChangeHandler);
+        endingTime.addChangeHandler(commonChangeHandler);
+        ignoreWords.addChangeHandler(commonChangeHandler);
+        allowWords.addChangeHandler(commonChangeHandler);
 
-		FlexTable table = new FlexTable();
-		table.setCellSpacing(3);
-		int row = 0;
+        FlexTable table = new FlexTable();
+        table.setCellSpacing(3);
+        int row = 0;
 
-		table.setWidget(  row, 0, new Label("For full-day: "));
-		table.setWidget(  row, 1, dateBox);
+        table.setWidget(  row, 0, new Label("For full-day: "));
+        table.setWidget(  row, 1, dateBox);
         table.setWidget(++row, 0, new Label("Starting"));
         table.setWidget(  row, 1, getStartingTime());
         table.setWidget(  row, 2, getStartingTimeRendered());
@@ -233,14 +233,14 @@ public class ParamPanel extends Composite
         table.setWidget(  row, 1, ignoreWords);
 
 
-		FlowPanel fp = new FlowPanel();
-		fp.add(table);
+        FlowPanel fp = new FlowPanel();
+        fp.add(table);
 
-		initWidget(fp);
+        initWidget(fp);
 
-		dateBox.setValue(new Date(), true);
+        dateBox.setValue(new Date(), true);
 
-		DeferredCommand.addCommand(new Command()
+        DeferredCommand.addCommand(new Command()
         {
             @Override
             public void execute()
@@ -248,5 +248,5 @@ public class ParamPanel extends Composite
                 update();
             }
         });
-	}
+    }
 }

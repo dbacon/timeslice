@@ -2,22 +2,22 @@ package bacond.timeslicer.app.periodbilling;
 
 public class Charge
 {
-	private final String chargeableName;
-	private final long millis;
+    private final String chargeableName;
+    private final long millis;
 
-	public Charge(String chargeableName, long millis)
-	{
-		this.chargeableName = chargeableName;
-		this.millis = millis;
-	}
+    public Charge(String chargeableName, long millis)
+    {
+        this.chargeableName = chargeableName;
+        this.millis = millis;
+    }
 
-	public String getChargeableName()
-	{
-		return chargeableName;
-	}
+    public String getChargeableName()
+    {
+        return chargeableName;
+    }
 
-	public long getMillis()
-	{
-		return millis;
-	}
+    public long getMillis()
+    {
+        return millis;
+    }
 }

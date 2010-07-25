@@ -35,61 +35,61 @@ import bacond.timeslicer.app.generic.CompareByTime;
  */
 public class Split
 {
-	public List<StartTag> split(List<? extends StartTag> tags, Instant endInstantOfLastTasks)
-	{
-		List<StartTag> localTags = new ArrayList<StartTag>(tags);
-		Collections.sort(localTags, new CompareByTime<StartTag>());
+    public List<StartTag> split(List<? extends StartTag> tags, Instant endInstantOfLastTasks)
+    {
+        List<StartTag> localTags = new ArrayList<StartTag>(tags);
+        Collections.sort(localTags, new CompareByTime<StartTag>());
 
-		List<StartTag> result = new LinkedList<StartTag>();
+        List<StartTag> result = new LinkedList<StartTag>();
 
-		Map<String, StartTag> lastStartTagForUser = new LinkedHashMap<String, StartTag>();
+        Map<String, StartTag> lastStartTagForUser = new LinkedHashMap<String, StartTag>();
 
-		for (StartTag tag: localTags)
-		{
-			StartTag lastStartTag = lastStartTagForUser.get(tag.getWho());
+        for (StartTag tag: localTags)
+        {
+            StartTag lastStartTag = lastStartTagForUser.get(tag.getWho());
 
-			if (null != lastStartTag)
-			{
-				StartTag enrichedLastStartTag = new StartTag(lastStartTag.getWho(), lastStartTag.getWhen(), lastStartTag.getWhat(), tag.getWhen());
+            if (null != lastStartTag)
+            {
+                StartTag enrichedLastStartTag = new StartTag(lastStartTag.getWho(), lastStartTag.getWhen(), lastStartTag.getWhat(), tag.getWhen());
 
-				result.add(enrichedLastStartTag);
-			}
+                result.add(enrichedLastStartTag);
+            }
 
-			lastStartTagForUser.put(tag.getWho(), tag);
-		}
+            lastStartTagForUser.put(tag.getWho(), tag);
+        }
 
-		for (StartTag tag: lastStartTagForUser.values())
-		{
-			result.add(new StartTag(tag.getWho(), tag.getWhen(), tag.getWhat(), max(tag.getWhen(), endInstantOfLastTasks)));
-		}
+        for (StartTag tag: lastStartTagForUser.values())
+        {
+            result.add(new StartTag(tag.getWho(), tag.getWhen(), tag.getWhat(), max(tag.getWhen(), endInstantOfLastTasks)));
+        }
 
-		// we want to return items in the same order as the input.
+        // we want to return items in the same order as the input.
 
-		Map<Instant, StartTag> map = new LinkedHashMap<Instant, StartTag>();
-		for (StartTag tag: result)
-		{
-			map.put(tag.getWhen(), tag);
-		}
+        Map<Instant, StartTag> map = new LinkedHashMap<Instant, StartTag>();
+        for (StartTag tag: result)
+        {
+            map.put(tag.getWhen(), tag);
+        }
 
-		List<StartTag> orderedResult = new ArrayList<StartTag>(result.size());
-		for (StartTag origTag: tags)
-		{
-			orderedResult.add(map.get(origTag.getWhen()));
-		}
+        List<StartTag> orderedResult = new ArrayList<StartTag>(result.size());
+        for (StartTag origTag: tags)
+        {
+            orderedResult.add(map.get(origTag.getWhen()));
+        }
 
-		return orderedResult;
-	}
+        return orderedResult;
+    }
 
-	public static Instant max(Instant a, Instant b)
-	{
-		if (a.isAfter(b))
-		{
-			return a;
-		}
-		else
-		{
-			return b;
-		}
-	}
+    public static Instant max(Instant a, Instant b)
+    {
+        if (a.isAfter(b))
+        {
+            return a;
+        }
+        else
+        {
+            return b;
+        }
+    }
 
 }

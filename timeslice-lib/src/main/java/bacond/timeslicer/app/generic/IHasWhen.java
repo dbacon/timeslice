@@ -4,5 +4,5 @@ import org.joda.time.Instant;
 
 public interface IHasWhen
 {
-	Instant getWhen();
+    Instant getWhen();
 }

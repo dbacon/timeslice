@@ -24,33 +24,33 @@ import com.google.gwt.user.client.ui.TextBox;
 
 public class TaskPanel extends ResizeComposite
 {
-	public static interface ITaskPanelListener
-	{
-		void resumeClicked(StartTag historicStartTag);
-		void itemEdited(StartTag editedTag);
-		void timeEdited(StartTag newTag);
-		void editModeEntered(StartTag tag);
-		void editModeLeft(StartTag tag);
-	}
+    public static interface ITaskPanelListener
+    {
+        void resumeClicked(StartTag historicStartTag);
+        void itemEdited(StartTag editedTag);
+        void timeEdited(StartTag newTag);
+        void editModeEntered(StartTag tag);
+        void editModeLeft(StartTag tag);
+    }
 
-	private final List<ITaskPanelListener> listeners = new ArrayList<ITaskPanelListener>();
-	private final HorizontalPanel descriptionContainer= new HorizontalPanel();
-	private final Label label = new Label();
-	private final TextBox descriptionEditor = new TextBox();
-	private final HorizontalPanel timeContainer = new HorizontalPanel();
-	private final Label timeLabel = new Label();
-	private final TextBox timeEditor = new TextBox();
-	private boolean losingFocusAccepts = false;
+    private final List<ITaskPanelListener> listeners = new ArrayList<ITaskPanelListener>();
+    private final HorizontalPanel descriptionContainer= new HorizontalPanel();
+    private final Label label = new Label();
+    private final TextBox descriptionEditor = new TextBox();
+    private final HorizontalPanel timeContainer = new HorizontalPanel();
+    private final Label timeLabel = new Label();
+    private final TextBox timeEditor = new TextBox();
+    private boolean losingFocusAccepts = false;
 
-	public void addTaskPanelListener(ITaskPanelListener listener)
-	{
-		listeners.add(listener);
-	}
+    public void addTaskPanelListener(ITaskPanelListener listener)
+    {
+        listeners.add(listener);
+    }
 
-	public void removeTaskPanelListener(ITaskPanelListener listener)
-	{
-		listeners.remove(listener);
-	}
+    public void removeTaskPanelListener(ITaskPanelListener listener)
+    {
+        listeners.remove(listener);
+    }
 
     protected void fireEditModeEntered(StartTag startTag)
     {
@@ -68,97 +68,97 @@ public class TaskPanel extends ResizeComposite
         }
     }
 
-	protected void fireResumeClicked(StartTag startTag)
-	{
-		for (ITaskPanelListener listener: listeners)
-		{
-			listener.resumeClicked(startTag);
-		}
-	}
+    protected void fireResumeClicked(StartTag startTag)
+    {
+        for (ITaskPanelListener listener: listeners)
+        {
+            listener.resumeClicked(startTag);
+        }
+    }
 
-	protected void fireEdited(StartTag startTag)
-	{
-		for (ITaskPanelListener listener: listeners)
-		{
-			listener.itemEdited(startTag);
-		}
-	}
+    protected void fireEdited(StartTag startTag)
+    {
+        for (ITaskPanelListener listener: listeners)
+        {
+            listener.itemEdited(startTag);
+        }
+    }
 
-	protected void fireTimeEdited(StartTag startTag)
-	{
-		for (ITaskPanelListener listener: listeners)
-		{
-			listener.timeEdited(startTag);
-		}
-	}
+    protected void fireTimeEdited(StartTag startTag)
+    {
+        for (ITaskPanelListener listener: listeners)
+        {
+            listener.timeEdited(startTag);
+        }
+    }
 
-	private void editModeOn(final StartTag startTag)
-	{
+    private void editModeOn(final StartTag startTag)
+    {
         fireEditModeEntered(startTag);
-		label.setVisible(false);
-		descriptionEditor.setText(startTag.getDescription());
-		descriptionEditor.setVisible(true);
-		descriptionEditor.selectAll();
-		descriptionEditor.setFocus(true);
-	}
+        label.setVisible(false);
+        descriptionEditor.setText(startTag.getDescription());
+        descriptionEditor.setVisible(true);
+        descriptionEditor.selectAll();
+        descriptionEditor.setFocus(true);
+    }
 
-	private void editModeOn2(final StartTag startTag)
-	{
-	    fireEditModeEntered(startTag);
-		timeLabel.setVisible(false);
-		timeEditor.setText(startTag.getInstantString());
-		timeEditor.setVisible(true);
-		timeEditor.selectAll();
-		timeEditor.setFocus(true);
-	}
+    private void editModeOn2(final StartTag startTag)
+    {
+        fireEditModeEntered(startTag);
+        timeLabel.setVisible(false);
+        timeEditor.setText(startTag.getInstantString());
+        timeEditor.setVisible(true);
+        timeEditor.selectAll();
+        timeEditor.setFocus(true);
+    }
 
-	private void editModeOff(final StartTag startTag, boolean accepted)
-	{
-		descriptionEditor.setVisible(false);
-		label.setText(startTag.getDescription());
-		label.setVisible(true);
+    private void editModeOff(final StartTag startTag, boolean accepted)
+    {
+        descriptionEditor.setVisible(false);
+        label.setText(startTag.getDescription());
+        label.setVisible(true);
 
-		if (accepted)
-		{
-			startTag.setDescription(descriptionEditor.getText());
-			label.setText(descriptionEditor.getText());
-			fireEdited(new StartTag(
-					startTag.getInstantString(),
-					startTag.getUntilString(),
-					startTag.getDurationMillis(),
-					descriptionEditor.getText().trim(),
-					startTag.getPast()));
-		}
+        if (accepted)
+        {
+            startTag.setDescription(descriptionEditor.getText());
+            label.setText(descriptionEditor.getText());
+            fireEdited(new StartTag(
+                    startTag.getInstantString(),
+                    startTag.getUntilString(),
+                    startTag.getDurationMillis(),
+                    descriptionEditor.getText().trim(),
+                    startTag.getPast()));
+        }
 
-		fireEditModeLeft(startTag);
-	}
+        fireEditModeLeft(startTag);
+    }
 
-	private void editModeOff2(final StartTag startTag, boolean accepted)
-	{
-		timeEditor.setVisible(false);
-		timeLabel.setText(formatDuration(startTag.getDurationMillis().longValue()));
-		timeLabel.setVisible(true);
+    private void editModeOff2(final StartTag startTag, boolean accepted)
+    {
+        timeEditor.setVisible(false);
+        timeLabel.setText(formatDuration(startTag.getDurationMillis().longValue()));
+        timeLabel.setVisible(true);
 
-		if (accepted)
-		{
-			startTag.setInstantString(timeEditor.getText());
-			timeLabel.setText(formatDuration(startTag.getDurationMillis().longValue()));
-			fireTimeEdited(new StartTag(
-				timeEditor.getText(),
-				startTag.getUntilString(),
-				startTag.getDurationMillis(),
-				startTag.getDescription(),
-				false));
-		}
+        if (accepted)
+        {
+            startTag.setInstantString(timeEditor.getText());
+            timeLabel.setText(formatDuration(startTag.getDurationMillis().longValue()));
+            fireTimeEdited(new StartTag(
+                timeEditor.getText(),
+                startTag.getUntilString(),
+                startTag.getDurationMillis(),
+                startTag.getDescription(),
+                false));
+        }
 
-		fireEditModeLeft(startTag);
-	}
+        fireEditModeLeft(startTag);
+    }
 
-	public TaskPanel(final StartTag startTag)
-	{
-		Anchor resumeLink = new Anchor("[R]");
-		resumeLink.setTitle("Resume this task");
-		resumeLink.addClickHandler(new ClickHandler()
+    public TaskPanel(final StartTag startTag)
+    {
+        Anchor resumeLink = new Anchor("[R]");
+        resumeLink.setTitle("Resume this task");
+        resumeLink.addClickHandler(new ClickHandler()
         {
             @Override
             public void onClick(ClickEvent event)
@@ -167,7 +167,7 @@ public class TaskPanel extends ResizeComposite
             }
         });
 
-		descriptionEditor.addKeyPressHandler(new KeyPressHandler()
+        descriptionEditor.addKeyPressHandler(new KeyPressHandler()
         {
             @Override
             public void onKeyPress(KeyPressEvent event)
@@ -184,8 +184,8 @@ public class TaskPanel extends ResizeComposite
         });
 
 
-		label.setText(startTag.getDescription());
-		label.addClickHandler(new ClickHandler()
+        label.setText(startTag.getDescription());
+        label.addClickHandler(new ClickHandler()
         {
             @Override
             public void onClick(ClickEvent event)
@@ -194,11 +194,11 @@ public class TaskPanel extends ResizeComposite
             }
         });
 
-		descriptionContainer.add(label);
-		descriptionContainer.add(descriptionEditor);
-		descriptionEditor.setVisible(false);
+        descriptionContainer.add(label);
+        descriptionContainer.add(descriptionEditor);
+        descriptionEditor.setVisible(false);
 
-		descriptionEditor.addBlurHandler(new BlurHandler()
+        descriptionEditor.addBlurHandler(new BlurHandler()
         {
             @Override
             public void onBlur(BlurEvent event)
@@ -210,7 +210,7 @@ public class TaskPanel extends ResizeComposite
             }
         });
 
-		timeLabel.addClickHandler(new ClickHandler()
+        timeLabel.addClickHandler(new ClickHandler()
         {
             @Override
             public void onClick(ClickEvent event)
@@ -218,11 +218,11 @@ public class TaskPanel extends ResizeComposite
                 editModeOn2(startTag);
             }
         });
-		timeContainer.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
-		timeContainer.add(timeLabel);
-		timeContainer.add(timeEditor);
-		timeEditor.setVisible(false);
-		timeEditor.addBlurHandler(new BlurHandler()
+        timeContainer.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
+        timeContainer.add(timeLabel);
+        timeContainer.add(timeEditor);
+        timeEditor.setVisible(false);
+        timeEditor.addBlurHandler(new BlurHandler()
         {
             @Override
             public void onBlur(BlurEvent event)
@@ -233,7 +233,7 @@ public class TaskPanel extends ResizeComposite
                 }
             }
         });
-		timeEditor.addKeyPressHandler(new KeyPressHandler()
+        timeEditor.addKeyPressHandler(new KeyPressHandler()
         {
             @Override
             public void onKeyPress(KeyPressEvent event)
@@ -248,29 +248,29 @@ public class TaskPanel extends ResizeComposite
                 }
             }
         });
-		if (null != startTag.getUntilString())
-		{
-			timeLabel.setText(formatDuration(startTag.getDurationMillis().longValue()));
-		}
+        if (null != startTag.getUntilString())
+        {
+            timeLabel.setText(formatDuration(startTag.getDurationMillis().longValue()));
+        }
 
-		DockLayoutPanel dp = new DockLayoutPanel(Unit.EM);
-		dp.setTitle(startTag.getInstantString());
-		dp.setSize("100%", "1.5em");
-		dp.addWest(resumeLink, 1.5);
-		dp.addEast(timeContainer, 20);
-		timeContainer.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
-		dp.add(descriptionContainer);
+        DockLayoutPanel dp = new DockLayoutPanel(Unit.EM);
+        dp.setTitle(startTag.getInstantString());
+        dp.setSize("100%", "1.5em");
+        dp.addWest(resumeLink, 1.5);
+        dp.addEast(timeContainer, 20);
+        timeContainer.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
+        dp.add(descriptionContainer);
 
-		initWidget(dp);
+        initWidget(dp);
 
-		setStylePrimaryName("ts-task");
-		if (!startTag.getPast())
-	    {
-		    addStyleDependentName("future");
-	    }
-		else
-		{
-		    removeStyleDependentName("future");
-	    }
-	}
+        setStylePrimaryName("ts-task");
+        if (!startTag.getPast())
+        {
+            addStyleDependentName("future");
+        }
+        else
+        {
+            removeStyleDependentName("future");
+        }
+    }
 }

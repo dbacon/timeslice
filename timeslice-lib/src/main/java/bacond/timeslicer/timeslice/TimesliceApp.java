@@ -17,37 +17,37 @@ import bacond.timeslicer.app.core.StartTagIo;
 
 public class TimesliceApp
 {
-	public static final String Key_Upgrade = "upgrade";
+    public static final String Key_Upgrade = "upgrade";
 
-	private final List<ITimesliceStore> stores = new LinkedList<ITimesliceStore>();
+    private final List<ITimesliceStore> stores = new LinkedList<ITimesliceStore>();
 
-	public void pushFront(ITimesliceStore store)
-	{
-	    stores.add(0, store);
-	}
+    public void pushFront(ITimesliceStore store)
+    {
+        stores.add(0, store);
+    }
 
-	public void pushBack(ITimesliceStore store)
-	{
-	    stores.add(store);
-	}
+    public void pushBack(ITimesliceStore store)
+    {
+        stores.add(store);
+    }
 
-	public static interface Visitor<T>
-	{
-	    void visit(T t);
-	}
+    public static interface Visitor<T>
+    {
+        void visit(T t);
+    }
 
-	public void forEachStore(Visitor<ITimesliceStore> visitor)
-	{
-	    for(ITimesliceStore store: stores)
-	    {
-	        visitor.visit(store);
-	    }
-	}
+    public void forEachStore(Visitor<ITimesliceStore> visitor)
+    {
+        for(ITimesliceStore store: stores)
+        {
+            visitor.visit(store);
+        }
+    }
 
-	public void disableAllStores()
-	{
-	    forEachStore(new Visitor<ITimesliceStore>()
-	            {
+    public void disableAllStores()
+    {
+        forEachStore(new Visitor<ITimesliceStore>()
+                {
                     @Override
                     public void visit(ITimesliceStore t)
                     {
@@ -63,34 +63,34 @@ public class TimesliceApp
                             System.out.println("WARNING: Disabling failed: " + e.getMessage());
                         }
                     }
-	            });
-	}
+                });
+    }
 
-	public ITimesliceStore getFrontStore()
-	{
-	    if (stores.size() <= 0)
-	    {
-	        throw new RuntimeException("No store.");
-	    }
+    public ITimesliceStore getFrontStore()
+    {
+        if (stores.size() <= 0)
+        {
+            throw new RuntimeException("No store.");
+        }
 
-	    return stores.get(0);
-	}
+        return stores.get(0);
+    }
 
-	public int storeCount()
-	{
-	    return stores.size();
-	}
+    public int storeCount()
+    {
+        return stores.size();
+    }
 
-	private String aclFileName;
-	private String safeDir;
-	private String updateUrl;
-	private int tzOffset;
-	private final StartTagIo startTagIo;
-	private final Split splitter;
-	private String reportPrefix = "";
+    private String aclFileName;
+    private String safeDir;
+    private String updateUrl;
+    private int tzOffset;
+    private final StartTagIo startTagIo;
+    private final Split splitter;
+    private String reportPrefix = "";
 
 
-	public TimesliceApp(String aclFilename, String safeDir, String updateUrl, StartTagIo startTagIo, Split splitter)
+    public TimesliceApp(String aclFilename, String safeDir, String updateUrl, StartTagIo startTagIo, Split splitter)
     {
         this(aclFilename, safeDir, updateUrl, 0, startTagIo, splitter);
     }
@@ -101,8 +101,8 @@ public class TimesliceApp
         this.safeDir = safeDir;
         this.updateUrl = updateUrl;
         this.tzOffset = tzOffset;
-		this.startTagIo = startTagIo;
-		this.splitter = splitter;
+        this.startTagIo = startTagIo;
+        this.splitter = splitter;
     }
 
     public String getReportPrefix()
@@ -115,7 +115,7 @@ public class TimesliceApp
         this.reportPrefix = reportPrefix;
     }
 
-	public int getTzOffset()
+    public int getTzOffset()
     {
         return tzOffset;
     }
@@ -126,91 +126,91 @@ public class TimesliceApp
     }
 
     public String getAclFileName()
-	{
-		return aclFileName;
-	}
+    {
+        return aclFileName;
+    }
 
-	public void setAclFileName(String aclFileName)
-	{
-		this.aclFileName = aclFileName;
-	}
+    public void setAclFileName(String aclFileName)
+    {
+        this.aclFileName = aclFileName;
+    }
 
-	public String getSafeDir()
-	{
-		return safeDir;
-	}
+    public String getSafeDir()
+    {
+        return safeDir;
+    }
 
-	public void setSafeDir(String safeDir)
-	{
-		this.safeDir = safeDir;
-	}
+    public void setSafeDir(String safeDir)
+    {
+        this.safeDir = safeDir;
+    }
 
-	public String getUpdateUrl()
-	{
-		return updateUrl;
-	}
+    public String getUpdateUrl()
+    {
+        return updateUrl;
+    }
 
-	public void setUpdateUrl(String updateUrl)
-	{
-		this.updateUrl = updateUrl;
-	}
+    public void setUpdateUrl(String updateUrl)
+    {
+        this.updateUrl = updateUrl;
+    }
 
-	public boolean canSaveLoad()
-	{
-		return null != getSafeDir();
-	}
+    public boolean canSaveLoad()
+    {
+        return null != getSafeDir();
+    }
 
-	private File findBackupFile(String key)
-	{
-		return new File(FilenameUtils.concat(getSafeDir(), "backup-" + key + ".dat"));
-	}
+    private File findBackupFile(String key)
+    {
+        return new File(FilenameUtils.concat(getSafeDir(), "backup-" + key + ".dat"));
+    }
 
-	public TimesliceApp preload(boolean doPreload)
-	{
-	    // todo: switch to preload all selected stores
-		if (doPreload)
-		{
-			if (!canSaveLoad())
-			{
-				throw new RuntimeException("Pre-load requested, but no safe-dir available to save/load.");
-			}
+    public TimesliceApp preload(boolean doPreload)
+    {
+        // todo: switch to preload all selected stores
+        if (doPreload)
+        {
+            if (!canSaveLoad())
+            {
+                throw new RuntimeException("Pre-load requested, but no safe-dir available to save/load.");
+            }
 
-			File backupFile = findBackupFile(Key_Upgrade);
-			try
-			{
-				List<StartTag> preloadItems = startTagIo.readItems(new FileInputStream(backupFile));
+            File backupFile = findBackupFile(Key_Upgrade);
+            try
+            {
+                List<StartTag> preloadItems = startTagIo.readItems(new FileInputStream(backupFile));
 
-				getFrontStore().addAll(preloadItems, true);
+                getFrontStore().addAll(preloadItems, true);
 
-				System.out.println("Pre-loaded " + preloadItems.size() + " item(s) from '" + backupFile + "'.");
-			}
-			catch (IOException e)
-			{
-				System.err.println("Could not pre-load file '" + backupFile + "': " + e.getMessage());
-			}
-		}
+                System.out.println("Pre-loaded " + preloadItems.size() + " item(s) from '" + backupFile + "'.");
+            }
+            catch (IOException e)
+            {
+                System.err.println("Could not pre-load file '" + backupFile + "': " + e.getMessage());
+            }
+        }
 
-		return this;
-	}
+        return this;
+    }
 
-	public List<StartTag> queryForTags(String who, Boolean sortReverse, Instant minDate, Instant maxDate, int pageSize, int pageIndex)
-	{
-	    if (stores.size() > 0)
-	    {
-	        // todo: switch to query all stores.
-	        return splitter.split(
-	                getFrontStore().query(
-	                        who,
-	                        minDate,
-	                        maxDate,
-	                        pageSize,
-	                        pageIndex),
-	                        new Instant());
-	    }
-	    else
-	    {
-	        return Collections.emptyList();
-	    }
-	}
+    public List<StartTag> queryForTags(String who, Boolean sortReverse, Instant minDate, Instant maxDate, int pageSize, int pageIndex)
+    {
+        if (stores.size() > 0)
+        {
+            // todo: switch to query all stores.
+            return splitter.split(
+                    getFrontStore().query(
+                            who,
+                            minDate,
+                            maxDate,
+                            pageSize,
+                            pageIndex),
+                            new Instant());
+        }
+        else
+        {
+            return Collections.emptyList();
+        }
+    }
 
 }

@@ -9,17 +9,17 @@ import bacond.timeslice.web.gwt.client.server.SortDir;
 public interface IController
 {
 
-	void addControllerListener(IControllerListener listener);
-	void removeControllerListener(IControllerListener listener);
+    void addControllerListener(IControllerListener listener);
+    void removeControllerListener(IControllerListener listener);
 
-	void logout();
+    void logout();
 
     void serverInfo();
-	void startEditDescription(StartTag editedStartTag);
-	void startAddItem(String instantString, String taskDescription);
+    void startEditDescription(StartTag editedStartTag);
+    void startAddItem(String instantString, String taskDescription);
     void startAddItems(List<StartTag> items);
-	void startRefreshItems(int maxSize);
-	void startRefreshTotals(int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords);
-	void startPersistTotals(String persistAsName, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords);
+    void startRefreshItems(int maxSize);
+    void startRefreshTotals(int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords);
+    void startPersistTotals(String persistAsName, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords);
 
 }

@@ -10,34 +10,34 @@ import bacond.timeslicer.app.generic.IListable;
 
 public class TodoItem implements IListable, IHasWhen
 {
-	private final Instant when;
-	private final String description;
+    private final Instant when;
+    private final String description;
 
-	public TodoItem(Instant when, String description)
-	{
-		this.when = when;
-		this.description = description;
-	}
+    public TodoItem(Instant when, String description)
+    {
+        this.when = when;
+        this.description = description;
+    }
 
-	public Instant getWhen()
-	{
-		return when;
-	}
+    public Instant getWhen()
+    {
+        return when;
+    }
 
-	public String getDescription()
-	{
-		return description;
-	}
+    public String getDescription()
+    {
+        return description;
+    }
 
-	@Override
-	public String getListableHref()
-	{
-		return ISODateTimeFormat.dateTime().print(getWhen());
-	}
+    @Override
+    public String getListableHref()
+    {
+        return ISODateTimeFormat.dateTime().print(getWhen());
+    }
 
-	@Override
-	public String getListableName()
-	{
-		return getDescription();
-	}
+    @Override
+    public String getListableName()
+    {
+        return getDescription();
+    }
 }

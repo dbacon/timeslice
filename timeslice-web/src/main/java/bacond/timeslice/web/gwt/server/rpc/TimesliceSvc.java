@@ -29,22 +29,22 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
 {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     private Map<String, SessionData> validSessions = new LinkedHashMap<String, SessionData>();
 
     private Sum summer = new Sum();
     private Aggregate aggregator = new Aggregate();
 
-	protected TimesliceApp getTimesliceApp()
-	{
-		return TimesliceStartupServletContextListener.getTimesliceApp(getServletContext());
-	}
+    protected TimesliceApp getTimesliceApp()
+    {
+        return TimesliceStartupServletContextListener.getTimesliceApp(getServletContext());
+    }
 
-	@Override
+    @Override
     public void logout(String authenticationToken)
     {
-	    validSessions.remove(authenticationToken);
+        validSessions.remove(authenticationToken);
     }
 
     @Override
@@ -58,8 +58,8 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
     {
         System.out.println("authenticate(" + username + ").");
 
-	    // TODO: implement hashing the pw, lookup in db, applying authorization.
-	    // for now, just make sure it matches what's in their acl.
+        // TODO: implement hashing the pw, lookup in db, applying authorization.
+        // for now, just make sure it matches what's in their acl.
         String aclFileName = getTimesliceApp().getAclFileName();
         if (null == aclFileName) return null;
 
@@ -74,12 +74,12 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
         return sd.getUuid();
     }
 
-	protected SessionData checkToken(String authenticationToken)
-	{
-	    if (!validSessions.containsKey(authenticationToken))
-	    {
-	        throw new NotAuthenticException("Invalid token.");
-	    }
+    protected SessionData checkToken(String authenticationToken)
+    {
+        if (!validSessions.containsKey(authenticationToken))
+        {
+            throw new NotAuthenticException("Invalid token.");
+        }
 
         SessionData sessionData = validSessions.get(authenticationToken);
         if (sessionData.getExpiresAt().isBeforeNow())
@@ -90,26 +90,26 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
 
         // great, have a nice time.
         return sessionData;
-	}
+    }
 
     @Override
-	public List<StartTag> refreshItems(String authToken, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant)
-	{
+    public List<StartTag> refreshItems(String authToken, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant)
+    {
         SessionData sd = checkToken(authToken);
 
-	    return new ArrayList<StartTag>(Transform.tr(getTimesliceApp().queryForTags(
-	            sd.getUser(),
-	            sortDir == SortDir.desc, // check this
+        return new ArrayList<StartTag>(Transform.tr(getTimesliceApp().queryForTags(
+                sd.getUser(),
+                sortDir == SortDir.desc, // check this
                 startingInstant == null
                     ? new Instant(0)
                     : ISODateTimeFormat.dateTime().parseDateTime(startingInstant).toInstant(),
                 endingInstant == null
                     ? new Instant(Long.MAX_VALUE)
                     : ISODateTimeFormat.dateTime().parseDateTime(endingInstant).toInstant(),
-	            maxSize,
-	            0),
+                maxSize,
+                0),
             ServerToClient.createStartTagTx(getTimesliceApp().getTzOffset())));
-	}
+    }
 
     private Collection<bacond.timeslicer.app.core.TaskTotal> filterItems(Collection<bacond.timeslicer.app.core.TaskTotal> items, List<String> allowWords, List<String> ignoreWords)
     {
@@ -179,32 +179,32 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
     }
 
     @Override
-	public List<TaskTotal> refreshTotals(String authToken, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
-	{
-	    SessionData sd = checkToken(authToken);
+    public List<TaskTotal> refreshTotals(String authToken, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
+    {
+        SessionData sd = checkToken(authToken);
 
-		List<bacond.timeslicer.app.core.StartTag> tags = getTimesliceApp().queryForTags(
-		        sd.getUser(),
-				sortDir == SortDir.asc,
-				startingInstant == null
-					? new Instant(0)
-					: ISODateTimeFormat.dateTime().parseDateTime(startingInstant).toInstant(),
-				endingInstant == null
-					? new Instant(Integer.MAX_VALUE)
-					: ISODateTimeFormat.dateTime().parseDateTime(endingInstant).toInstant(),
-				maxSize,
-				0);
+        List<bacond.timeslicer.app.core.StartTag> tags = getTimesliceApp().queryForTags(
+                sd.getUser(),
+                sortDir == SortDir.asc,
+                startingInstant == null
+                    ? new Instant(0)
+                    : ISODateTimeFormat.dateTime().parseDateTime(startingInstant).toInstant(),
+                endingInstant == null
+                    ? new Instant(Integer.MAX_VALUE)
+                    : ISODateTimeFormat.dateTime().parseDateTime(endingInstant).toInstant(),
+                maxSize,
+                0);
 
-		return createReport(new ArrayList<bacond.timeslicer.app.core.TaskTotal>(
-		       filterItems(
-		               aggregator.sumThem(summer, aggregator.aggregate(tags)).values(),
-		               allowWords,
-		               ignoreWords)));
-	}
+        return createReport(new ArrayList<bacond.timeslicer.app.core.TaskTotal>(
+               filterItems(
+                       aggregator.sumThem(summer, aggregator.aggregate(tags)).values(),
+                       allowWords,
+                       ignoreWords)));
+    }
 
-	@Override
-	public String persistTotals(String authToken, String persistAsName, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
-	{
+    @Override
+    public String persistTotals(String authToken, String persistAsName, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
+    {
         SessionData sd = checkToken(authToken);
 
         List<bacond.timeslicer.app.core.StartTag> tags = getTimesliceApp().queryForTags(
@@ -252,16 +252,16 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
         // TODO, write to a file in an accessible location, build & return a link.
         // TODO, for security, link should point to a servlet, which checks authentication, like this one does.
         return filename;
-	}
+    }
 
-	@Override
-	public void addItem(String authToken, String instantString, String taskDescription)
-	{
-	    SessionData sd = checkToken(authToken);
-	    throwIfNoAvailableStore();
+    @Override
+    public void addItem(String authToken, String instantString, String taskDescription)
+    {
+        SessionData sd = checkToken(authToken);
+        throwIfNoAvailableStore();
 
-	    getTimesliceApp().getFrontStore().add(new bacond.timeslicer.app.core.StartTag(sd.getUser(), instantString, taskDescription, null));
-	}
+        getTimesliceApp().getFrontStore().add(new bacond.timeslicer.app.core.StartTag(sd.getUser(), instantString, taskDescription, null));
+    }
 
     @Override
     public void addItems(String authToken, List<StartTag> items)
@@ -278,19 +278,19 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
     private void throwIfNoAvailableStore()
     {
         if (null == getTimesliceApp().getFrontStore())
-	    {
-	        throw new RuntimeException("No store.");
-	    }
+        {
+            throw new RuntimeException("No store.");
+        }
     }
 
-	@Override
-	public void update(String authToken, StartTag editedStartTag)
-	{
-	    SessionData sd = checkToken(authToken);
-	    throwIfNoAvailableStore();
+    @Override
+    public void update(String authToken, StartTag editedStartTag)
+    {
+        SessionData sd = checkToken(authToken);
+        throwIfNoAvailableStore();
 
-	    bacond.timeslicer.app.core.StartTag edited = new bacond.timeslicer.app.core.StartTag(sd.getUser(), editedStartTag.getInstantString(), editedStartTag.getDescription(), null);
+        bacond.timeslicer.app.core.StartTag edited = new bacond.timeslicer.app.core.StartTag(sd.getUser(), editedStartTag.getInstantString(), editedStartTag.getDescription(), null);
 
-	    getTimesliceApp().getFrontStore().updateText(edited);
-	}
+        getTimesliceApp().getFrontStore().updateText(edited);
+    }
 }

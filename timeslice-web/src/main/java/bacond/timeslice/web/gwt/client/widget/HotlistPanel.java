@@ -14,59 +14,59 @@ import com.google.gwt.user.client.ui.FlowPanel;
 
 public class HotlistPanel extends Composite
 {
-	public static final class Mode
-	{
-		public static final String EditSingle = "Hotlist [delete-single]";
-		public static final String EditMulti = "Hotlist [delete-multi]";
-		public static final String Hotlist = "Hotlist";
-	}
+    public static final class Mode
+    {
+        public static final String EditSingle = "Hotlist [delete-single]";
+        public static final String EditMulti = "Hotlist [delete-multi]";
+        public static final String Hotlist = "Hotlist";
+    }
 
-	private static final String CookieNamePrefix = "timeslice.hotlist.";
+    private static final String CookieNamePrefix = "timeslice.hotlist.";
 
-	private final FlowPanel vp = new FlowPanel();
-	private final Anchor mode = new Anchor(Mode.Hotlist, true);
+    private final FlowPanel vp = new FlowPanel();
+    private final Anchor mode = new Anchor(Mode.Hotlist, true);
 
-	public static interface IHotlistPanelListener
-	{
-		void hotlistItemClicked(String description);
-		void hotlistChanged();
-	}
+    public static interface IHotlistPanelListener
+    {
+        void hotlistItemClicked(String description);
+        void hotlistChanged();
+    }
 
-	private final List<IHotlistPanelListener> listeners = new ArrayList<IHotlistPanelListener>();
+    private final List<IHotlistPanelListener> listeners = new ArrayList<IHotlistPanelListener>();
 
-	public void addHotlistPanelListener(IHotlistPanelListener listener)
-	{
-		if (null != listener)
-		{
-			listeners.add(listener);
-		}
-	}
+    public void addHotlistPanelListener(IHotlistPanelListener listener)
+    {
+        if (null != listener)
+        {
+            listeners.add(listener);
+        }
+    }
 
-	public void removeHotlistPanelListener(IHotlistPanelListener listener)
-	{
-		listeners.remove(listener);
-	}
+    public void removeHotlistPanelListener(IHotlistPanelListener listener)
+    {
+        listeners.remove(listener);
+    }
 
-	protected void fireHotlistItemClicked(String description)
-	{
-		for (IHotlistPanelListener listener: listeners)
-		{
-			listener.hotlistItemClicked(description);
-		}
-	}
+    protected void fireHotlistItemClicked(String description)
+    {
+        for (IHotlistPanelListener listener: listeners)
+        {
+            listener.hotlistItemClicked(description);
+        }
+    }
 
-	protected void fireHotlistChanged()
-	{
-		for (IHotlistPanelListener listener: listeners)
-		{
-			listener.hotlistChanged();
-		}
-	}
+    protected void fireHotlistChanged()
+    {
+        for (IHotlistPanelListener listener: listeners)
+        {
+            listener.hotlistChanged();
+        }
+    }
 
-	public HotlistPanel()
-	{
-		mode.setTitle("Hotlist panel - click to switch between live and delete mode.");
-		mode.addClickHandler(new ClickHandler()
+    public HotlistPanel()
+    {
+        mode.setTitle("Hotlist panel - click to switch between live and delete mode.");
+        mode.addClickHandler(new ClickHandler()
         {
             @Override
             public void onClick(ClickEvent event)
@@ -90,26 +90,26 @@ public class HotlistPanel extends Composite
             }
         });
 
-		repopulate();
+        repopulate();
 
-		initWidget(vp);
-	}
+        initWidget(vp);
+    }
 
-	public void repopulate()
-	{
-		vp.clear();
+    public void repopulate()
+    {
+        vp.clear();
 
-		vp.add(mode);
+        vp.add(mode);
 
-		int added = 0;
+        int added = 0;
 
-		for (final String name: Cookies.getCookieNames())
-		{
-			if (name.startsWith(CookieNamePrefix))
-			{
-				final String description = Cookies.getCookie(name);
+        for (final String name: Cookies.getCookieNames())
+        {
+            if (name.startsWith(CookieNamePrefix))
+            {
+                final String description = Cookies.getCookie(name);
 
-				Button button = new Button(description, new ClickHandler()
+                Button button = new Button(description, new ClickHandler()
                 {
                     @Override
                     public void onClick(ClickEvent event)
@@ -134,40 +134,40 @@ public class HotlistPanel extends Composite
                     }
                 });
 
-				if (added < 10)
-				{
-					char digitChar = Character.forDigit((1 + added) % 10, 10);
-					button.setAccessKey(digitChar);
-					button.setHTML("<u>" + digitChar + "</u> " + button.getText());
-				}
+                if (added < 10)
+                {
+                    char digitChar = Character.forDigit((1 + added) % 10, 10);
+                    button.setAccessKey(digitChar);
+                    button.setHTML("<u>" + digitChar + "</u> " + button.getText());
+                }
 
-				vp.add(button);
+                vp.add(button);
 
-				++added;
-			}
-		}
+                ++added;
+            }
+        }
 
-		if (added <= 0)
-		{
-			mode.setText(Mode.Hotlist);
-		}
-	}
+        if (added <= 0)
+        {
+            mode.setText(Mode.Hotlist);
+        }
+    }
 
-	public int getHotlistItemCount()
-	{
-		return vp.getWidgetCount() - 1;
-	}
+    public int getHotlistItemCount()
+    {
+        return vp.getWidgetCount() - 1;
+    }
 
-	public void addAsHotlistItem(String name, String description)
-	{
-		Cookies.setCookie(CookieNamePrefix  + name.hashCode(), description, createDateSufficientlyInTheFuture());
-		repopulate();
-		fireHotlistChanged();
-	}
+    public void addAsHotlistItem(String name, String description)
+    {
+        Cookies.setCookie(CookieNamePrefix  + name.hashCode(), description, createDateSufficientlyInTheFuture());
+        repopulate();
+        fireHotlistChanged();
+    }
 
-	@SuppressWarnings("deprecation")
-	private Date createDateSufficientlyInTheFuture()
-	{
-		return new Date(2099, 0, 1);
-	}
+    @SuppressWarnings("deprecation")
+    private Date createDateSufficientlyInTheFuture()
+    {
+        return new Date(2099, 0, 1);
+    }
 }

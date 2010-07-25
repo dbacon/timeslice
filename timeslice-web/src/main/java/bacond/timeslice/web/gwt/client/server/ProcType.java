@@ -7,6 +7,6 @@ import java.io.Serializable;
 
 public enum ProcType implements Serializable
 {
-	none,
-	sumbydesc,
+    none,
+    sumbydesc,
 }

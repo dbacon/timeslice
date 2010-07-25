@@ -15,31 +15,31 @@ import bacond.timeslice.web.gwt.client.entry.AsyncResult;
  */
 public abstract class BaseController implements IController
 {
-	private List<IControllerListener> listeners = new ArrayList<IControllerListener>();
+    private List<IControllerListener> listeners = new ArrayList<IControllerListener>();
 
-	public void addControllerListener(IControllerListener listener)
-	{
-		if (listener != null)
-		{
-			listeners.add(listener);
-		}
-	}
+    public void addControllerListener(IControllerListener listener)
+    {
+        if (listener != null)
+        {
+            listeners.add(listener);
+        }
+    }
 
-	public void removeControllerListener(IControllerListener listener)
-	{
-		if (listener != null)
-		{
-			listeners.remove(listener);
-		}
-	}
+    public void removeControllerListener(IControllerListener listener)
+    {
+        if (listener != null)
+        {
+            listeners.remove(listener);
+        }
+    }
 
-	protected void fireServerInfoRecieved(String info)
-	{
+    protected void fireServerInfoRecieved(String info)
+    {
         for (IControllerListener listener: listeners)
         {
             listener.serverInfoRecieved(info);
         }
-	}
+    }
 
     protected void fireAuthenticated()
     {
@@ -57,21 +57,21 @@ public abstract class BaseController implements IController
         }
     }
 
-	protected void fireRefreshItemsDone(AsyncResult<List<StartTag>> result)
-	{
-		for (IControllerListener listener: listeners)
-		{
-			listener.onRefreshItemsDone(result);
-		}
-	}
+    protected void fireRefreshItemsDone(AsyncResult<List<StartTag>> result)
+    {
+        for (IControllerListener listener: listeners)
+        {
+            listener.onRefreshItemsDone(result);
+        }
+    }
 
-	protected void fireRefreshTotalsDone(AsyncResult<List<TaskTotal>> result)
-	{
-		for (IControllerListener listener: listeners)
-		{
-			listener.onRefreshTotalsDone(result);
-		}
-	}
+    protected void fireRefreshTotalsDone(AsyncResult<List<TaskTotal>> result)
+    {
+        for (IControllerListener listener: listeners)
+        {
+            listener.onRefreshTotalsDone(result);
+        }
+    }
 
     protected void firePersistTotalsDone(AsyncResult<String> result)
     {
@@ -82,11 +82,11 @@ public abstract class BaseController implements IController
     }
 
     protected void fireAddItemDone(AsyncResult<Void> result)
-	{
-		for (IControllerListener listener: listeners)
-		{
-			listener.onAddItemDone(result);
-		}
-	}
+    {
+        for (IControllerListener listener: listeners)
+        {
+            listener.onAddItemDone(result);
+        }
+    }
 
 }

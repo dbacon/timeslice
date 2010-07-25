@@ -11,8 +11,8 @@ public interface IControllerListener
     void serverInfoRecieved(String info);
     void authenticated();
     void unauthenticated(boolean retry);
-	void onRefreshItemsDone(AsyncResult<List<StartTag>> result);
-	void onAddItemDone(AsyncResult<Void> result);
-	void onRefreshTotalsDone(AsyncResult<List<TaskTotal>> result);
+    void onRefreshItemsDone(AsyncResult<List<StartTag>> result);
+    void onAddItemDone(AsyncResult<Void> result);
+    void onRefreshTotalsDone(AsyncResult<List<TaskTotal>> result);
     void onPersistTotalsDone(AsyncResult<String> result);
 }

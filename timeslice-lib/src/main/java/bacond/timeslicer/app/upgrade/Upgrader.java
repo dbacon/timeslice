@@ -21,160 +21,160 @@ import org.joda.time.format.ISODateTimeFormat;
 
 public class Upgrader
 {
-	private String url;
-	private String safeDir;
+    private String url;
+    private String safeDir;
 
-	public String getUrl()
-	{
-		return url;
-	}
+    public String getUrl()
+    {
+        return url;
+    }
 
-	public void setUrl(String url)
-	{
-		this.url = url;
-	}
+    public void setUrl(String url)
+    {
+        this.url = url;
+    }
 
-	public String getSafeDir()
-	{
-		return safeDir;
-	}
+    public String getSafeDir()
+    {
+        return safeDir;
+    }
 
-	public void setSafeDir(String safeDir)
-	{
-		this.safeDir = safeDir;
-	}
+    public void setSafeDir(String safeDir)
+    {
+        this.safeDir = safeDir;
+    }
 
-	public Upgrader(String url, String safeDir)
-	{
-		this.url = url;
-		this.safeDir = safeDir;
-	}
+    public Upgrader(String url, String safeDir)
+    {
+        this.url = url;
+        this.safeDir = safeDir;
+    }
 
-	public File download(UpgradeInfo info) throws Exception
-	{
-		File localFile = new File(FilenameUtils.concat(getSafeDir(), new File(info.getDownloadUrl().getPath()).getName()));
+    public File download(UpgradeInfo info) throws Exception
+    {
+        File localFile = new File(FilenameUtils.concat(getSafeDir(), new File(info.getDownloadUrl().getPath()).getName()));
 
-		int nread = IOUtils.copy(info.getDownloadUrl().openStream(), new FileOutputStream(localFile));
-		System.out.println("read: " + nread);
-		return localFile;
-	}
+        int nread = IOUtils.copy(info.getDownloadUrl().openStream(), new FileOutputStream(localFile));
+        System.out.println("read: " + nread);
+        return localFile;
+    }
 
-	public File extract(File downloadedFile, boolean clobber) throws Exception
-	{
-		File rootDir = null;
+    public File extract(File downloadedFile, boolean clobber) throws Exception
+    {
+        File rootDir = null;
 
-		ZipFile zipFile = new ZipFile(downloadedFile);
-		Enumeration<? extends ZipEntry> entryEnum = zipFile.entries();
-		while (entryEnum.hasMoreElements())
-		{
-			ZipEntry entry = entryEnum.nextElement();
+        ZipFile zipFile = new ZipFile(downloadedFile);
+        Enumeration<? extends ZipEntry> entryEnum = zipFile.entries();
+        while (entryEnum.hasMoreElements())
+        {
+            ZipEntry entry = entryEnum.nextElement();
 
-			if (entry.getName().endsWith("/"))
-			{
-				File dir = new File(FilenameUtils.concat(getSafeDir(), entry.getName()));
+            if (entry.getName().endsWith("/"))
+            {
+                File dir = new File(FilenameUtils.concat(getSafeDir(), entry.getName()));
 
-				if (entry.getName().lastIndexOf('/') == entry.getName().indexOf('/'))
-				{
-					if (null == rootDir)
-					{
-						rootDir = dir;
-					}
-					else
-					{
-						throw new RuntimeException("More than one folder in the root of zipfile.");
-					}
-				}
+                if (entry.getName().lastIndexOf('/') == entry.getName().indexOf('/'))
+                {
+                    if (null == rootDir)
+                    {
+                        rootDir = dir;
+                    }
+                    else
+                    {
+                        throw new RuntimeException("More than one folder in the root of zipfile.");
+                    }
+                }
 
-				if (dir.exists())
-				{
-					if (clobber)
-					{
-						System.out.println("Found existing directory, deleting: " + dir.toString());
-						FileUtils.deleteDirectory(dir);
-					}
-					else
-					{
-						throw new RuntimeException("Directory already exists, not deleting: " + dir.toString());
-					}
-				}
+                if (dir.exists())
+                {
+                    if (clobber)
+                    {
+                        System.out.println("Found existing directory, deleting: " + dir.toString());
+                        FileUtils.deleteDirectory(dir);
+                    }
+                    else
+                    {
+                        throw new RuntimeException("Directory already exists, not deleting: " + dir.toString());
+                    }
+                }
 
-				System.out.println("Creating directory : " + dir.toString());
-				dir.mkdirs();
-			}
-			else
-			{
-				File file = new File(FilenameUtils.concat(getSafeDir(), entry.getName()));
+                System.out.println("Creating directory : " + dir.toString());
+                dir.mkdirs();
+            }
+            else
+            {
+                File file = new File(FilenameUtils.concat(getSafeDir(), entry.getName()));
 
-				if (file.exists())
-				{
-					throw new RuntimeException("File already exists: " + file.toString());
-				}
+                if (file.exists())
+                {
+                    throw new RuntimeException("File already exists: " + file.toString());
+                }
 
-				System.out.println("Extracting file    : " + file.toString());
-				IOUtils.copy(zipFile.getInputStream(entry), new FileOutputStream(file));
-			}
-		}
+                System.out.println("Extracting file    : " + file.toString());
+                IOUtils.copy(zipFile.getInputStream(entry), new FileOutputStream(file));
+            }
+        }
 
-		return rootDir;
-	}
+        return rootDir;
+    }
 
-	public List<UpgradeInfo> getLatestUpgradeInfo() throws Exception
-	{
-		List<UpgradeInfo> upgrades = new ArrayList<UpgradeInfo>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(new URL(getUrl()).openStream()));
+    public List<UpgradeInfo> getLatestUpgradeInfo() throws Exception
+    {
+        List<UpgradeInfo> upgrades = new ArrayList<UpgradeInfo>();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new URL(getUrl()).openStream()));
 
-		while (true)
-		{
-			String line = reader.readLine();
+        while (true)
+        {
+            String line = reader.readLine();
 
-			if (null == line)
-			{
-				break;
-			}
+            if (null == line)
+            {
+                break;
+            }
 
-			String[] pieces = line.split(Pattern.quote("||"));
-			if (pieces.length > 2)
-			{
-				DateTime when = ISODateTimeFormat.dateTime().parseDateTime(pieces[1]);
-				String url = pieces[2];
+            String[] pieces = line.split(Pattern.quote("||"));
+            if (pieces.length > 2)
+            {
+                DateTime when = ISODateTimeFormat.dateTime().parseDateTime(pieces[1]);
+                String url = pieces[2];
 
-				UpgradeInfo info = new UpgradeInfo(when.toInstant(), new URL(url));
+                UpgradeInfo info = new UpgradeInfo(when.toInstant(), new URL(url));
 
-				if (pieces.length > 3)
-				{
-					info.getTags().addAll(Arrays.asList(pieces[3].split(",")));
-				}
+                if (pieces.length > 3)
+                {
+                    info.getTags().addAll(Arrays.asList(pieces[3].split(",")));
+                }
 
-				upgrades.add(info);
-			}
-		}
+                upgrades.add(info);
+            }
+        }
 
-		return upgrades;
-	}
+        return upgrades;
+    }
 
-	public UpgradeInfo findLatestAcceptable(List<String> requiredTags, List<UpgradeInfo> versions)
-	{
-		UpgradeInfo newestAcceptable = null;
+    public UpgradeInfo findLatestAcceptable(List<String> requiredTags, List<UpgradeInfo> versions)
+    {
+        UpgradeInfo newestAcceptable = null;
 
-		for (UpgradeInfo info: versions)
-		{
-			if (null == requiredTags || info.getTags().containsAll(requiredTags))
-			{
-				if (null == newestAcceptable)
-				{
-					newestAcceptable = info;
-				}
-				else
-				{
-					if (info.getReleaseTime().isAfter(newestAcceptable.getReleaseTime()))
-					{
-						newestAcceptable = info;
-					}
-				}
-			}
-		}
+        for (UpgradeInfo info: versions)
+        {
+            if (null == requiredTags || info.getTags().containsAll(requiredTags))
+            {
+                if (null == newestAcceptable)
+                {
+                    newestAcceptable = info;
+                }
+                else
+                {
+                    if (info.getReleaseTime().isAfter(newestAcceptable.getReleaseTime()))
+                    {
+                        newestAcceptable = info;
+                    }
+                }
+            }
+        }
 
-		return newestAcceptable;
-	}
+        return newestAcceptable;
+    }
 
 }

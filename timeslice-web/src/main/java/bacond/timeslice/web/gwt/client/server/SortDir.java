@@ -7,6 +7,6 @@ import java.io.Serializable;
 
 public enum SortDir implements Serializable
 {
-	desc,
-	asc
+    desc,
+    asc
 }

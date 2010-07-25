@@ -3,5 +3,5 @@ package bacond.timeslicer.app.periodbilling;
 
 public interface IChargeFactoryResolver
 {
-	public IChargeFactory resolve(String name);
+    public IChargeFactory resolve(String name);
 }

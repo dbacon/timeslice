@@ -17,23 +17,23 @@ import bacond.timeslicer.timeslice.TimesliceApp;
 
 public class TimesliceStartupServletContextListener implements ServletContextListener
 {
-	public static final String SCK_TA = "timesliceapp";
+    public static final String SCK_TA = "timesliceapp";
 
-	public static TimesliceApp getTimesliceApp(ServletContext context)
-	{
-		return (TimesliceApp) context.getAttribute(SCK_TA);
-	}
+    public static TimesliceApp getTimesliceApp(ServletContext context)
+    {
+        return (TimesliceApp) context.getAttribute(SCK_TA);
+    }
 
-	@Override
-	public void contextDestroyed(ServletContextEvent sce)
-	{
-	}
+    @Override
+    public void contextDestroyed(ServletContextEvent sce)
+    {
+    }
 
-	@Override
-	public void contextInitialized(ServletContextEvent sce)
-	{
-	    sce.getServletContext().setAttribute(SCK_TA, createTimesliceApp(sce.getServletContext()));
-	}
+    @Override
+    public void contextInitialized(ServletContextEvent sce)
+    {
+        sce.getServletContext().setAttribute(SCK_TA, createTimesliceApp(sce.getServletContext()));
+    }
 
     private TimesliceApp createTimesliceApp(ServletContext context)
     {
@@ -44,15 +44,15 @@ public class TimesliceStartupServletContextListener implements ServletContextLis
 
         TimesliceApp ta = new TimesliceApp(aclFilename, safeDir, updateUrl, tzOffset, new StartTagIo(), new Split());
 
-	    String dataDir = msgIfMissing(context, "timeslice.datadir", "INFO: No data-dir available, not configuring any stores(use init-parameter 'timeslice.datadir' to specify).");
-	    if (null != dataDir) configureStores(ta, dataDir);
+        String dataDir = msgIfMissing(context, "timeslice.datadir", "INFO: No data-dir available, not configuring any stores(use init-parameter 'timeslice.datadir' to specify).");
+        if (null != dataDir) configureStores(ta, dataDir);
 
-	    System.out.println("safe-dir  : " + ta.getSafeDir());
-	    System.out.println("acl-file  : " + ta.getAclFileName());
-	    System.out.println("tz-offset : " + ta.getTzOffset());
-	    System.out.println("data-dir  : " + dataDir);
+        System.out.println("safe-dir  : " + ta.getSafeDir());
+        System.out.println("acl-file  : " + ta.getAclFileName());
+        System.out.println("tz-offset : " + ta.getTzOffset());
+        System.out.println("data-dir  : " + dataDir);
 
-	    return ta;
+        return ta;
     }
 
     private void configureStores(TimesliceApp ta, String dataDir)

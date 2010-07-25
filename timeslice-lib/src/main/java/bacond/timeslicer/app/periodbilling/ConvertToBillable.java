@@ -14,15 +14,15 @@ import bacond.timeslicer.app.core.TaskTotal;
  */
 public class ConvertToBillable
 {
-	public BillableTotalList convert(Collection<TaskTotal> taskTotals)
-	{
-		BillableTotalList billableTaskList = new BillableTotalList();
+    public BillableTotalList convert(Collection<TaskTotal> taskTotals)
+    {
+        BillableTotalList billableTaskList = new BillableTotalList();
 
-		for (TaskTotal taskTotal: taskTotals)
-		{
-			billableTaskList.addBillableTotal(new BillableTotal(taskTotal.getWhat(), taskTotal.getMillis()));
-		}
+        for (TaskTotal taskTotal: taskTotals)
+        {
+            billableTaskList.addBillableTotal(new BillableTotal(taskTotal.getWhat(), taskTotal.getMillis()));
+        }
 
-		return billableTaskList;
-	}
+        return billableTaskList;
+    }
 }

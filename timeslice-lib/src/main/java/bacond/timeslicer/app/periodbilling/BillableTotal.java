@@ -2,43 +2,43 @@ package bacond.timeslicer.app.periodbilling;
 
 public class BillableTotal
 {
-	public static final String Unbilled = "";
+    public static final String Unbilled = "";
 
-	private final String description;
-	private final long millis;
+    private final String description;
+    private final long millis;
 
-	private String billedTo = Unbilled;
+    private String billedTo = Unbilled;
 
-	public BillableTotal(String description, long millis)
-	{
-		this(description, millis, Unbilled);
-	}
+    public BillableTotal(String description, long millis)
+    {
+        this(description, millis, Unbilled);
+    }
 
-	public BillableTotal(String description, long millis, String billTo)
-	{
-		this.description = description;
-		this.millis = millis;
-		this.billedTo = billTo;
-	}
+    public BillableTotal(String description, long millis, String billTo)
+    {
+        this.description = description;
+        this.millis = millis;
+        this.billedTo = billTo;
+    }
 
-	public String getBilledTo()
-	{
-		return billedTo;
-	}
+    public String getBilledTo()
+    {
+        return billedTo;
+    }
 
-	public BillableTotal setBilledTo(String billTo)
-	{
-		this.billedTo = billTo;
-		return this;
-	}
+    public BillableTotal setBilledTo(String billTo)
+    {
+        this.billedTo = billTo;
+        return this;
+    }
 
-	public String getDescription()
-	{
-		return description;
-	}
+    public String getDescription()
+    {
+        return description;
+    }
 
-	public long getMillis()
-	{
-		return millis;
-	}
+    public long getMillis()
+    {
+        return millis;
+    }
 }

@@ -15,72 +15,72 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class ItemNew extends Composite
 {
-	private final TextBox keyTextBox = new TextBox();
-	private final TextBox projectNameTextBox = new TextBox();
-	private final Button submitButton = new Button("Add");
-	private final HTML resultsHTML = new HTML();
+    private final TextBox keyTextBox = new TextBox();
+    private final TextBox projectNameTextBox = new TextBox();
+    private final Button submitButton = new Button("Add");
+    private final HTML resultsHTML = new HTML();
 
-	public static interface ItemNewListener
-	{
-		public void onSubmitted();
-	}
+    public static interface ItemNewListener
+    {
+        public void onSubmitted();
+    }
 
-	private final List<ItemNewListener> listeners = new ArrayList<ItemNewListener>();
+    private final List<ItemNewListener> listeners = new ArrayList<ItemNewListener>();
 
-	protected void fireOnSubmitted()
-	{
-		for (ItemNewListener listener: listeners)
-		{
-			listener.onSubmitted();
-		}
-	}
+    protected void fireOnSubmitted()
+    {
+        for (ItemNewListener listener: listeners)
+        {
+            listener.onSubmitted();
+        }
+    }
 
-	public String getKeyText()
-	{
-		return keyTextBox.getText();
-	}
+    public String getKeyText()
+    {
+        return keyTextBox.getText();
+    }
 
-	public String getProjectText()
-	{
-		return projectNameTextBox.getText();
-	}
+    public String getProjectText()
+    {
+        return projectNameTextBox.getText();
+    }
 
-	public void addItemNewListener(ItemNewListener listener)
-	{
-		if (null != listener)
-		{
-			listeners.add(listener);
-		}
-	}
+    public void addItemNewListener(ItemNewListener listener)
+    {
+        if (null != listener)
+        {
+            listeners.add(listener);
+        }
+    }
 
-	public void removeItemNewListener(ItemNewListener listener)
-	{
-		if (null != listener)
-		{
-			listeners.remove(listener);
-		}
-	}
+    public void removeItemNewListener(ItemNewListener listener)
+    {
+        if (null != listener)
+        {
+            listeners.remove(listener);
+        }
+    }
 
-	public void setFormEnabled(boolean enabled)
-	{
-		keyTextBox.setEnabled(enabled);
-		projectNameTextBox.setEnabled(enabled);
-		submitButton.setEnabled(enabled);
-	}
+    public void setFormEnabled(boolean enabled)
+    {
+        keyTextBox.setEnabled(enabled);
+        projectNameTextBox.setEnabled(enabled);
+        submitButton.setEnabled(enabled);
+    }
 
-	public ItemNew()
-	{
-		FlexTable table = new FlexTable();
+    public ItemNew()
+    {
+        FlexTable table = new FlexTable();
 
-		keyTextBox.setName("key");
-		table.setWidget(0, 0, new HTML("Item key", false));
-		table.setWidget(0, 1, keyTextBox);
+        keyTextBox.setName("key");
+        table.setWidget(0, 0, new HTML("Item key", false));
+        table.setWidget(0, 1, keyTextBox);
 
-		projectNameTextBox.setName("project");
-		table.setWidget(1, 0, new HTML("Project name", false));
-		table.setWidget(1, 1, projectNameTextBox);
+        projectNameTextBox.setName("project");
+        table.setWidget(1, 0, new HTML("Project name", false));
+        table.setWidget(1, 1, projectNameTextBox);
 
-		submitButton.addClickHandler(new ClickHandler()
+        submitButton.addClickHandler(new ClickHandler()
         {
             @Override
             public void onClick(ClickEvent event)
@@ -89,16 +89,16 @@ public class ItemNew extends Composite
             }
         });
 
-		resultsHTML.setHTML("");
+        resultsHTML.setHTML("");
 
-		VerticalPanel vp = new VerticalPanel();
-		vp.add(table);
-		vp.add(submitButton);
-		vp.add(resultsHTML);
+        VerticalPanel vp = new VerticalPanel();
+        vp.add(table);
+        vp.add(submitButton);
+        vp.add(resultsHTML);
 
-		DecoratorPanel p = new DecoratorPanel();
-		p.add(vp);
+        DecoratorPanel p = new DecoratorPanel();
+        p.add(vp);
 
-		initWidget(p);
-	}
+        initWidget(p);
+    }
 }

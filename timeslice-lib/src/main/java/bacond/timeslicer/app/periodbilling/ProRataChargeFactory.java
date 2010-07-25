@@ -9,67 +9,67 @@ import java.util.List;
 
 public class ProRataChargeFactory implements IChargeFactory
 {
-	public static class Component
-	{
-		private final IChargeFactory chargeFactory;
-		private final int weight;
+    public static class Component
+    {
+        private final IChargeFactory chargeFactory;
+        private final int weight;
 
-		public Component(IChargeFactory chargeFactory, int weight)
-		{
-			this.chargeFactory = chargeFactory;
-			this.weight = weight;
-		}
+        public Component(IChargeFactory chargeFactory, int weight)
+        {
+            this.chargeFactory = chargeFactory;
+            this.weight = weight;
+        }
 
-		public IChargeFactory getChargeFactory()
-		{
-			return chargeFactory;
-		}
+        public IChargeFactory getChargeFactory()
+        {
+            return chargeFactory;
+        }
 
-		public int getWeight()
-		{
-			return weight;
-		}
-	}
+        public int getWeight()
+        {
+            return weight;
+        }
+    }
 
-	private final List<Component> components = new ArrayList<Component>();
+    private final List<Component> components = new ArrayList<Component>();
 
-	public ProRataChargeFactory addComponent(Component component)
-	{
-		components.add(component);
-		return this;
-	}
+    public ProRataChargeFactory addComponent(Component component)
+    {
+        components.add(component);
+        return this;
+    }
 
-	private int calculateTotalWeight()
-	{
-		int total = 0;
+    private int calculateTotalWeight()
+    {
+        int total = 0;
 
-		for (Component component: components)
-		{
-			total += component.weight;
-		}
+        for (Component component: components)
+        {
+            total += component.weight;
+        }
 
-		return total;
-	}
+        return total;
+    }
 
-	@Override
-	public List<Charge> createCharges(long millis)
-	{
-		List<Charge> result = new ArrayList<Charge>();
+    @Override
+    public List<Charge> createCharges(long millis)
+    {
+        List<Charge> result = new ArrayList<Charge>();
 
-		int totalWeight = calculateTotalWeight();
+        int totalWeight = calculateTotalWeight();
 
-		for (Component component: components)
-		{
-			result.addAll(component.chargeFactory.createCharges(
-					new BigDecimal(millis)
-						.multiply(
-								BigDecimal.valueOf(component.weight)
-									.divide(BigDecimal.valueOf(totalWeight), MathContext.DECIMAL64))
-						.setScale(0, RoundingMode.HALF_UP)
-						.longValueExact()
-				));
-		}
+        for (Component component: components)
+        {
+            result.addAll(component.chargeFactory.createCharges(
+                    new BigDecimal(millis)
+                        .multiply(
+                                BigDecimal.valueOf(component.weight)
+                                    .divide(BigDecimal.valueOf(totalWeight), MathContext.DECIMAL64))
+                        .setScale(0, RoundingMode.HALF_UP)
+                        .longValueExact()
+                ));
+        }
 
-		return result;
-	}
+        return result;
+    }
 }

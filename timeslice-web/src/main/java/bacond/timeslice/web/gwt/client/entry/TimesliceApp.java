@@ -48,122 +48,122 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class TimesliceApp implements EntryPoint
 {
-	public static final String IssuesUrl = "http://code.google.com/p/timeslice/issues/list";
+    public static final String IssuesUrl = "http://code.google.com/p/timeslice/issues/list";
 
-	public static final class Defaults
-	{
-		public static final String BaseUri = "http://localhost:8082";
-		public static final int MaxResults = 10;
-		public static final int AutoRefreshMs = 500;
-	}
+    public static final class Defaults
+    {
+        public static final String BaseUri = "http://localhost:8082";
+        public static final int MaxResults = 10;
+        public static final int AutoRefreshMs = 500;
+    }
 
-	private final IController controller = new GwtRpcController(); // new Controller();
+    private final IController controller = new GwtRpcController(); // new Controller();
 
-	private final HistoryPanel historyPanel = new HistoryPanel();
-	private final MultiWordSuggestOracle suggestSource = new MultiWordSuggestOracle();
+    private final HistoryPanel historyPanel = new HistoryPanel();
+    private final MultiWordSuggestOracle suggestSource = new MultiWordSuggestOracle();
 
-	private final SuggestBox taskDescriptionEntry = new SuggestBox(suggestSource);
+    private final SuggestBox taskDescriptionEntry = new SuggestBox(suggestSource);
 
-	private final HorizontalPanel entryPanel = new HorizontalPanel();
+    private final HorizontalPanel entryPanel = new HorizontalPanel();
 
-	private final Anchor updateLink = new Anchor("[u]");
+    private final Anchor updateLink = new Anchor("[u]");
 
-	private final HotlistPanel hotlistPanel = new HotlistPanel();
-	private final Anchor addHotlink = new Anchor("Add to hotlist");
-	private final Anchor enterLink = new Anchor("Enter");
-	private final VerticalPanel actionPanel = new VerticalPanel();
-	private final Anchor bulkLink = new Anchor("bulk");
-	private final VerticalPanel idleActionPanel = new VerticalPanel();
-	private String originalWindowTitle;
-	private final Label serverInfoLabel = new Label("[querying]");
+    private final HotlistPanel hotlistPanel = new HotlistPanel();
+    private final Anchor addHotlink = new Anchor("Add to hotlist");
+    private final Anchor enterLink = new Anchor("Enter");
+    private final VerticalPanel actionPanel = new VerticalPanel();
+    private final Anchor bulkLink = new Anchor("bulk");
+    private final VerticalPanel idleActionPanel = new VerticalPanel();
+    private String originalWindowTitle;
+    private final Label serverInfoLabel = new Label("[querying]");
 
-	private void updateStartTag(StartTag editedStartTag)
-	{
-		controller.startEditDescription(editedStartTag);
-	}
+    private void updateStartTag(StartTag editedStartTag)
+    {
+        controller.startEditDescription(editedStartTag);
+    }
 
-	private void enterNewStartTag(String description)
-	{
-		enterNewStartTag(null, description);
-	}
+    private void enterNewStartTag(String description)
+    {
+        enterNewStartTag(null, description);
+    }
 
-	private void enterNewStartTag(String instantString, String description)
-	{
-		if (description.trim().isEmpty())
-		{
-			scheduleRefresh();
-		}
-		else
-		{
-			controller.startAddItem(instantString, description);
-		}
-	}
+    private void enterNewStartTag(String instantString, String description)
+    {
+        if (description.trim().isEmpty())
+        {
+            scheduleRefresh();
+        }
+        else
+        {
+            controller.startAddItem(instantString, description);
+        }
+    }
 
-	private void scheduleHotlinkValidation()
-	{
-		DeferredCommand.addCommand(new Command()
-		{
-			public void execute()
-			{
-				boolean descriptionIsEmpty = taskDescriptionEntry.getText().trim().isEmpty();
+    private void scheduleHotlinkValidation()
+    {
+        DeferredCommand.addCommand(new Command()
+        {
+            public void execute()
+            {
+                boolean descriptionIsEmpty = taskDescriptionEntry.getText().trim().isEmpty();
                 actionPanel.setVisible(!descriptionIsEmpty);
-				idleActionPanel.setVisible(descriptionIsEmpty);
-			}
-		});
-	}
+                idleActionPanel.setVisible(descriptionIsEmpty);
+            }
+        });
+    }
 
-	private void scheduleHotlistValidation()
-	{
-		DeferredCommand.addCommand(new Command()
-		{
-			public void execute()
-			{
-				hotlistPanel.setVisible(0 < hotlistPanel.getHotlistItemCount());
-			}
-		});
-	}
+    private void scheduleHotlistValidation()
+    {
+        DeferredCommand.addCommand(new Command()
+        {
+            public void execute()
+            {
+                hotlistPanel.setVisible(0 < hotlistPanel.getHotlistItemCount());
+            }
+        });
+    }
 
-	public void onModuleLoad()
-	{
-		originalWindowTitle = Window.getTitle();
+    public void onModuleLoad()
+    {
+        originalWindowTitle = Window.getTitle();
 
-	    OptionsPanel optionsPanel = new OptionsPanel();
-		optionsPanel.addOptionsListener(new OptionsPanel.IOptionsListener()
-		{
-			public void optionsChanged(OptionsPanel source)
-			{
-			    timer.cancel();
-				if (options.isAutoRefresh())
-				{
-				    timer.scheduleRepeating(options.getAutoRefreshMs());
-				}
+        OptionsPanel optionsPanel = new OptionsPanel();
+        optionsPanel.addOptionsListener(new OptionsPanel.IOptionsListener()
+        {
+            public void optionsChanged(OptionsPanel source)
+            {
+                timer.cancel();
+                if (options.isAutoRefresh())
+                {
+                    timer.scheduleRepeating(options.getAutoRefreshMs());
+                }
 
-				scheduleRefresh();
-			}
-		});
+                scheduleRefresh();
+            }
+        });
         options = optionsPanel;
 
-		historyPanel.addHistoryPanelListener(new HistoryPanel.IHistoryPanelListener()
-		{
-			public void interestingThing(String p)
-			{
-				enterNewStartTag(p);
-			}
+        historyPanel.addHistoryPanelListener(new HistoryPanel.IHistoryPanelListener()
+        {
+            public void interestingThing(String p)
+            {
+                enterNewStartTag(p);
+            }
 
-			public void fireEdited(StartTag editedStartTag)
-			{
-				updateStartTag(editedStartTag);
-			}
+            public void fireEdited(StartTag editedStartTag)
+            {
+                updateStartTag(editedStartTag);
+            }
 
-			public void fireTimeEdited(StartTag startTag)
-			{
-				enterNewStartTag(startTag.getInstantString(), startTag.getDescription());
-			}
+            public void fireTimeEdited(StartTag startTag)
+            {
+                enterNewStartTag(startTag.getInstantString(), startTag.getDescription());
+            }
 
-			public void hotlisted(String name, String description)
-			{
-				hotlistPanel.addAsHotlistItem(name, description);
-			}
+            public void hotlisted(String name, String description)
+            {
+                hotlistPanel.addAsHotlistItem(name, description);
+            }
 
             @Override
             public void editModeEntered()
@@ -176,13 +176,13 @@ public class TimesliceApp implements EntryPoint
             {
                 if (options.isAutoRefresh()) timer.scheduleRepeating(options.getAutoRefreshMs());
             }
-		});
+        });
 
-		addHotlink.addClickHandler(new ClickHandler()
-		{
-			@Override
-			public void onClick(ClickEvent event)
-			{
+        addHotlink.addClickHandler(new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
                 if (!taskDescriptionEntry.getText().trim().isEmpty())
                 {
                     hotlistPanel.addAsHotlistItem(taskDescriptionEntry.getText(), taskDescriptionEntry.getText());
@@ -190,15 +190,15 @@ public class TimesliceApp implements EntryPoint
                     scheduleHotlistValidation();
                     scheduleHotlinkValidation();
                 }
-			}
-		});
+            }
+        });
 
-		taskDescriptionEntry.setWidth("30em");
-		taskDescriptionEntry.setAccessKey('t');
-		scheduleHotlinkValidation();
+        taskDescriptionEntry.setWidth("30em");
+        taskDescriptionEntry.setAccessKey('t');
+        scheduleHotlinkValidation();
 
 
-		taskDescriptionEntry.getTextBox().addKeyPressHandler(new KeyPressHandler()
+        taskDescriptionEntry.getTextBox().addKeyPressHandler(new KeyPressHandler()
         {
             @Override
             public void onKeyPress(KeyPressEvent event)
@@ -221,9 +221,9 @@ public class TimesliceApp implements EntryPoint
             }
         });
 
-		updateLink.setAccessKey('u');
-		updateLink.setHref("#");
-		updateLink.addClickHandler(new ClickHandler()
+        updateLink.setAccessKey('u');
+        updateLink.setHref("#");
+        updateLink.addClickHandler(new ClickHandler()
         {
             @Override
             public void onClick(ClickEvent event)
@@ -232,21 +232,21 @@ public class TimesliceApp implements EntryPoint
             }
         });
 
-		enterLink.addClickHandler(new ClickHandler()
-		{
-			@Override
-			public void onClick(ClickEvent event)
-			{
-				enterNewStartTag(taskDescriptionEntry.getText());
-				GWT.log("enter link clicked");
-			}
-		});
+        enterLink.addClickHandler(new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                enterNewStartTag(taskDescriptionEntry.getText());
+                GWT.log("enter link clicked");
+            }
+        });
 
-		actionPanel.add(enterLink);
-		actionPanel.add(addHotlink);
-		actionPanel.setStyleName("ts-actionPanel");
+        actionPanel.add(enterLink);
+        actionPanel.add(addHotlink);
+        actionPanel.setStyleName("ts-actionPanel");
 
-		bulkLink.addClickHandler(new ClickHandler()
+        bulkLink.addClickHandler(new ClickHandler()
         {
             @Override
             public void onClick(ClickEvent event)
@@ -262,43 +262,43 @@ public class TimesliceApp implements EntryPoint
             }
         });
 
-		idleActionPanel.add(bulkLink);
-		idleActionPanel.setStyleName("ts-idlePanel");
+        idleActionPanel.add(bulkLink);
+        idleActionPanel.setStyleName("ts-idlePanel");
 
-		entryPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
-		entryPanel.setSpacing(5);
-		entryPanel.add(updateLink);
-		entryPanel.add(new HTML("<u>T</u>ask:", false));
-		entryPanel.add(taskDescriptionEntry);
-		entryPanel.add(actionPanel);
-		entryPanel.add(idleActionPanel);
+        entryPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
+        entryPanel.setSpacing(5);
+        entryPanel.add(updateLink);
+        entryPanel.add(new HTML("<u>T</u>ask:", false));
+        entryPanel.add(taskDescriptionEntry);
+        entryPanel.add(actionPanel);
+        entryPanel.add(idleActionPanel);
 
-		scheduleHotlistValidation();
-		hotlistPanel.addHotlistPanelListener(new IHotlistPanelListener()
-		{
-			public void hotlistItemClicked(String description)
-			{
-				enterNewStartTag(description);
-			}
+        scheduleHotlistValidation();
+        hotlistPanel.addHotlistPanelListener(new IHotlistPanelListener()
+        {
+            public void hotlistItemClicked(String description)
+            {
+                enterNewStartTag(description);
+            }
 
-			public void hotlistChanged()
-			{
-				scheduleHotlistValidation();
-			}
-		});
+            public void hotlistChanged()
+            {
+                scheduleHotlistValidation();
+            }
+        });
 
-		DockLayoutPanel mainEntryPanel = new DockLayoutPanel(Unit.EM);
+        DockLayoutPanel mainEntryPanel = new DockLayoutPanel(Unit.EM);
 
-	    //VerticalPanel mainEntryPanel = new VerticalPanel();
-		mainEntryPanel.addSouth(hotlistPanel, 4);
-		mainEntryPanel.addSouth(entryPanel, 3);
-		mainEntryPanel.add(historyPanel);
+        //VerticalPanel mainEntryPanel = new VerticalPanel();
+        mainEntryPanel.addSouth(hotlistPanel, 4);
+        mainEntryPanel.addSouth(entryPanel, 3);
+        mainEntryPanel.add(historyPanel);
 
-		//historyPanel.setHeight("30em");
-		//historyPanel.setWidth("50em");
+        //historyPanel.setHeight("30em");
+        //historyPanel.setWidth("50em");
 
-		final ReportPanel reportPanel = new ReportPanel();
-		reportPanel.addReportPanelListener(new ReportPanel.IReportPanelListener()
+        final ReportPanel reportPanel = new ReportPanel();
+        reportPanel.addReportPanelListener(new ReportPanel.IReportPanelListener()
         {
             @Override
             public void refreshRequested(String startingTimeText, String endingTimeText, List<String> allowWords, List<String> ignoreWords)
@@ -328,22 +328,22 @@ public class TimesliceApp implements EntryPoint
             }
         });
 
-		final TabLayoutPanel tp = new TabLayoutPanel(2, Unit.EM);
-		//final DecoratedTabPanel tp = new DecoratedTabPanel();
-		Anchor inputlink = new Anchor("<u>I</u>nput", true);
-		inputlink.setAccessKey('i');
-		tp.add(mainEntryPanel, inputlink);
-		Anchor reportslink = new Anchor("<u>R</u>eports", true);
-		reportslink.setAccessKey('r');
-		tp.add(reportPanel, reportslink);
-		Anchor optionslink = new Anchor("<u>O</u>ptions", true);
-		optionslink.setAccessKey('o');
-		tp.add(optionsPanel, optionslink);
-		tp.selectTab(0);
-//		tp.setAnimationEnabled(true);
+        final TabLayoutPanel tp = new TabLayoutPanel(2, Unit.EM);
+        //final DecoratedTabPanel tp = new DecoratedTabPanel();
+        Anchor inputlink = new Anchor("<u>I</u>nput", true);
+        inputlink.setAccessKey('i');
+        tp.add(mainEntryPanel, inputlink);
+        Anchor reportslink = new Anchor("<u>R</u>eports", true);
+        reportslink.setAccessKey('r');
+        tp.add(reportPanel, reportslink);
+        Anchor optionslink = new Anchor("<u>O</u>ptions", true);
+        optionslink.setAccessKey('o');
+        tp.add(optionsPanel, optionslink);
+        tp.selectTab(0);
+//        tp.setAnimationEnabled(true);
 
-		Anchor logoutAnchor = new Anchor("Logout");
-		logoutAnchor.addClickHandler(new ClickHandler()
+        Anchor logoutAnchor = new Anchor("Logout");
+        logoutAnchor.addClickHandler(new ClickHandler()
         {
             @Override
             public void onClick(ClickEvent event)
@@ -352,7 +352,7 @@ public class TimesliceApp implements EntryPoint
             }
         });
 
-		serverInfoLabel.addClickHandler(new ClickHandler()
+        serverInfoLabel.addClickHandler(new ClickHandler()
         {
             @Override
             public void onClick(ClickEvent event)
@@ -361,23 +361,23 @@ public class TimesliceApp implements EntryPoint
                 controller.serverInfo();
             }
         });
-		controller.serverInfo();
+        controller.serverInfo();
 
-		HorizontalPanel buildLabelBox = new HorizontalPanel();
-		buildLabelBox.setSpacing(15);
-		buildLabelBox.add(new HTML("<a href=\"" + IssuesUrl + "\" target=\"_blank\">Feedback / RFEs / Bugs</a>"));
+        HorizontalPanel buildLabelBox = new HorizontalPanel();
+        buildLabelBox.setSpacing(15);
+        buildLabelBox.add(new HTML("<a href=\"" + IssuesUrl + "\" target=\"_blank\">Feedback / RFEs / Bugs</a>"));
         buildLabelBox.add(logoutAnchor);
         buildLabelBox.add(serverInfoLabel);
 
-		final DockLayoutPanel dockPanel = new DockLayoutPanel(Unit.EM);
-		dockPanel.addSouth(buildLabelBox, 4);
-		dockPanel.add(tp);
+        final DockLayoutPanel dockPanel = new DockLayoutPanel(Unit.EM);
+        dockPanel.addSouth(buildLabelBox, 4);
+        dockPanel.add(tp);
 
-		RootLayoutPanel.get().add(dockPanel);
-		//RootPanel.get().add(dockPanel);
+        RootLayoutPanel.get().add(dockPanel);
+        //RootPanel.get().add(dockPanel);
 
-		controller.addControllerListener(new IControllerListener()
-			{
+        controller.addControllerListener(new IControllerListener()
+            {
                 @Override
                 public void authenticated()
                 {
@@ -397,51 +397,51 @@ public class TimesliceApp implements EntryPoint
                 }
 
                 public void onAddItemDone(AsyncResult<Void> result)
-				{
-					handleAddItemDone(result);
-				}
+                {
+                    handleAddItemDone(result);
+                }
 
-				public void onRefreshItemsDone(AsyncResult<List<StartTag>> result)
-				{
-					handleRefreshItemsDone(result);
-				}
+                public void onRefreshItemsDone(AsyncResult<List<StartTag>> result)
+                {
+                    handleRefreshItemsDone(result);
+                }
 
-	            @Override
-	            public void onRefreshTotalsDone(AsyncResult<List<TaskTotal>> result)
-	            {
-	                if (result.isError())
-	                {
-	                    GWT.log("got error back: " + result.getThrown().getMessage(), result.getThrown());
-	                }
-	                else
-	                {
-	                    reportPanel.setResults(result.getReturned());
-	                }
-	            }
-
-	            @Override
-	            public void onPersistTotalsDone(AsyncResult<String> result)
-	            {
-	                if (result.isError())
-	                {
+                @Override
+                public void onRefreshTotalsDone(AsyncResult<List<TaskTotal>> result)
+                {
+                    if (result.isError())
+                    {
                         GWT.log("got error back: " + result.getThrown().getMessage(), result.getThrown());
-	                }
-	                else
-	                {
-	                    GWT.log(" saved report: " + result.getReturned());
-	                    // TODO: show download link in browser.
-	                    reportPanel.setPersisted(result.getReturned());
-	                }
-	            }
+                    }
+                    else
+                    {
+                        reportPanel.setResults(result.getReturned());
+                    }
+                }
+
+                @Override
+                public void onPersistTotalsDone(AsyncResult<String> result)
+                {
+                    if (result.isError())
+                    {
+                        GWT.log("got error back: " + result.getThrown().getMessage(), result.getThrown());
+                    }
+                    else
+                    {
+                        GWT.log(" saved report: " + result.getReturned());
+                        // TODO: show download link in browser.
+                        reportPanel.setPersisted(result.getReturned());
+                    }
+                }
 
                 @Override
                 public void serverInfoRecieved(String info)
                 {
                     serverInfoLabel.setText(info);
                 }
-			});
+            });
 
-		timer = new Timer()
+        timer = new Timer()
         {
             @Override
             public void run()
@@ -452,106 +452,106 @@ public class TimesliceApp implements EntryPoint
 
         if (options.isAutoRefresh()) timer.scheduleRepeating(options.getAutoRefreshMs());
 
-		scheduleRefresh();
-	}
+        scheduleRefresh();
+    }
 
-	private void handleRefreshItemsDone(AsyncResult<List<StartTag>> result)
-	{
-		if (!result.isError())
-		{
-			ArrayList<StartTag> items = new ArrayList<StartTag>(result.getReturned());
+    private void handleRefreshItemsDone(AsyncResult<List<StartTag>> result)
+    {
+        if (!result.isError())
+        {
+            ArrayList<StartTag> items = new ArrayList<StartTag>(result.getReturned());
 
-			historyPanel.clear(false);
-			historyPanel.addItems(items);
+            historyPanel.clear(false);
+            historyPanel.addItems(items);
 
-			updateSuggestSource(items);
+            updateSuggestSource(items);
 
-			Window.setTitle(
-				options.isCurrentTaskInTitlebar()
-					? renderTitlebar(Checks.mapNullTo(findCurrentStartTag(items), UnknownTag).getDescription())
-					: originalWindowTitle);
-		}
-		else
-		{
-			showError(result);
+            Window.setTitle(
+                options.isCurrentTaskInTitlebar()
+                    ? renderTitlebar(Checks.mapNullTo(findCurrentStartTag(items), UnknownTag).getDescription())
+                    : originalWindowTitle);
+        }
+        else
+        {
+            showError(result);
 
-//			messagePanel.add(new AcknowledgableMessagePanel("No refresh happened: " + result.getThrown().getMessage()));
-		}
-	}
+//            messagePanel.add(new AcknowledgableMessagePanel("No refresh happened: " + result.getThrown().getMessage()));
+        }
+    }
 
-	private static final StartTag UnknownTag = new StartTag(null, null, null, "-unknown-", false);
+    private static final StartTag UnknownTag = new StartTag(null, null, null, "-unknown-", false);
 
-	private StartTag findCurrentStartTag(ArrayList<StartTag> items)
-	{
-		String now = ParamPanel.MachineFormat.format(new Date());
+    private StartTag findCurrentStartTag(ArrayList<StartTag> items)
+    {
+        String now = ParamPanel.MachineFormat.format(new Date());
 
-		for (int i = 0; i < items.size(); ++i)
-		{
-			if (now.compareTo(items.get(i).getInstantString()) >= 0)
-			{
-				return items.get(i);
-			}
-		}
+        for (int i = 0; i < items.size(); ++i)
+        {
+            if (now.compareTo(items.get(i).getInstantString()) >= 0)
+            {
+                return items.get(i);
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	private void updateSuggestSource(ArrayList<StartTag> items)
-	{
-		suggestSource.clear();
-		for (StartTag tag: items)
-		{
-			suggestSource.add(tag.getDescription());
-		}
-	}
+    private void updateSuggestSource(ArrayList<StartTag> items)
+    {
+        suggestSource.clear();
+        for (StartTag tag: items)
+        {
+            suggestSource.add(tag.getDescription());
+        }
+    }
 
-	private void showError(AsyncResult<?> result)
-	{
-		String tmsg = "(nothing thrown)";
+    private void showError(AsyncResult<?> result)
+    {
+        String tmsg = "(nothing thrown)";
 
-		Throwable t = result.getThrown();
-		if (null != t) tmsg = t.getMessage();
+        Throwable t = result.getThrown();
+        if (null != t) tmsg = t.getMessage();
 
-		Label label = new Label(tmsg);
+        Label label = new Label(tmsg);
 
-		VerticalPanel vp = new VerticalPanel();
-		vp.add(label);
+        VerticalPanel vp = new VerticalPanel();
+        vp.add(label);
 
-		DialogBox msgBox = new DialogBox(true);
-		msgBox.setWidget(vp);
-		msgBox.show();
+        DialogBox msgBox = new DialogBox(true);
+        msgBox.setWidget(vp);
+        msgBox.show();
 
-		GWT.log("showed message: " + tmsg, null);
-	}
+        GWT.log("showed message: " + tmsg, null);
+    }
 
-	private void handleAddItemDone(AsyncResult<Void> result)
-	{
-		if (!result.isError())
-		{
-//			messagePanel.add(new AcknowledgableMessagePanel("Item added."));
-			taskDescriptionEntry.setText("");
-			scheduleRefresh();
-			scheduleHotlinkValidation();
-		}
-		else
-		{
-			showError(result);
-//			messagePanel.add(new AcknowledgableMessagePanel("No item added."));
-		}
+    private void handleAddItemDone(AsyncResult<Void> result)
+    {
+        if (!result.isError())
+        {
+//            messagePanel.add(new AcknowledgableMessagePanel("Item added."));
+            taskDescriptionEntry.setText("");
+            scheduleRefresh();
+            scheduleHotlinkValidation();
+        }
+        else
+        {
+            showError(result);
+//            messagePanel.add(new AcknowledgableMessagePanel("No item added."));
+        }
 
-//		newItemForm.setFormEnabled(true);
-	}
+//        newItemForm.setFormEnabled(true);
+    }
 
-	private void scheduleRefresh()
-	{
-		DeferredCommand.addCommand(new Command()
-		{
-			public void execute()
-			{
-				controller.startRefreshItems(options.getMaxSize());
-			}
-		});
-	}
+    private void scheduleRefresh()
+    {
+        DeferredCommand.addCommand(new Command()
+        {
+            public void execute()
+            {
+                controller.startRefreshItems(options.getMaxSize());
+            }
+        });
+    }
 
     public String renderTitlebar(String currentTaskDescription)
     {

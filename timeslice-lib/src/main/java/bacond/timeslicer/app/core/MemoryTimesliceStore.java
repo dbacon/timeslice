@@ -18,7 +18,7 @@ public class MemoryTimesliceStore implements ITimesliceStore
     private String firstTagText = "[blank]";
 
     private final Map<Instant, StartTag> store = new LinkedHashMap<Instant, StartTag>();
-	private Comparator<StartTag> sorter;
+    private Comparator<StartTag> sorter;
 
     public MemoryTimesliceStore(Instant starting, Instant ending, String firstTagText, Comparator<StartTag> sorter)
     {
@@ -148,7 +148,7 @@ public class MemoryTimesliceStore implements ITimesliceStore
             }
         }
 
-		Collections.sort(result, sorter);
+        Collections.sort(result, sorter);
         Collections.reverse(result);
 
         int si = pageIndex*pageSize;
