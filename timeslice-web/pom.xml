@@ -6,7 +6,7 @@
 	<groupId>bacond</groupId>
 	<artifactId>timeslice-web</artifactId>
 	<packaging>war</packaging>
-	<version>1.0.9-SNAPSHOT</version>
+	<version>1.0.9</version>
 
 	<properties>
 		<!--
@@ -68,7 +68,7 @@
 		<dependency>
 			<groupId>bacond</groupId>
 			<artifactId>timeslice-lib</artifactId>
-			<version>1.0.9-SNAPSHOT</version>
+			<version>1.0.9</version>
 		</dependency>
 
 		<dependency>

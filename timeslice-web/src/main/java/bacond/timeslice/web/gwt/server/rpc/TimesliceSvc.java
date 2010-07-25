@@ -50,7 +50,7 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
     @Override
     public String serverInfo()
     {
-        return "1.0.9-SNAPSHOT"; // TODO: get from resources/build
+        return "1.0.9"; // TODO: get from resources/build
     }
 
     @Override
