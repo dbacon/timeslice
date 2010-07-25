@@ -1,4 +1,4 @@
-package bacond.timeslice.web.gwt.client.widget.resultstree;
+package bacond.timeslice.web.gwt.clienttest.widget.resultstree;
 
 
 import java.util.Arrays;
