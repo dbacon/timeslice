@@ -5,14 +5,9 @@ import java.util.Comparator;
 import java.util.List;
 
 import bacond.timeslice.web.gwt.client.beans.TaskTotal;
-import bacond.timeslice.web.gwt.client.util.Split;
-import bacond.timeslice.web.gwt.client.util.TransformUtils;
-import bacond.timeslice.web.gwt.client.util.Tx;
 import bacond.timeslice.web.gwt.client.widget.resultstree.ItemsToTree;
 import bacond.timeslice.web.gwt.client.widget.resultstree.Mutable;
-import bacond.timeslice.web.gwt.client.widget.resultstree.NodeIntegrator;
 import bacond.timeslice.web.gwt.client.widget.resultstree.NodeTraverser;
-import bacond.timeslice.web.gwt.client.widget.resultstree.Pair;
 
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -25,40 +20,12 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 public class TreeTableResultsView extends ResizeComposite
 {
     private FlexTable resultsTable = new FlexTable();
+    private final TaskTotalIntegrator integrator;
 
-    public TreeTableResultsView()
+    public TreeTableResultsView(TaskTotalIntegrator integrator)
     {
+        this.integrator = integrator;
         initWidget(new ScrollPanel(resultsTable));
-    }
-
-    public static class TaskTotalIntegrator implements NodeIntegrator<String, TaskTotal, TaskTotal>
-    {
-        @Override
-        public Tx<TaskTotal, List<String>> createPathExtractor()
-        {
-            return TransformUtils.comp(
-                    new Tx<TaskTotal, String>() { @Override public String apply(TaskTotal t) { return t.getWhat(); } },
-                    new Split("/"));
-        }
-
-        @Override
-        public Tx<Pair<TaskTotal, TaskTotal>, TaskTotal> createValueCombiner()
-        {
-            return new Tx<Pair<TaskTotal,TaskTotal>, TaskTotal>()
-            {
-                @Override
-                public TaskTotal apply(Pair<TaskTotal, TaskTotal> r)
-                {
-                    if (null == r.first) return r.second;
-                    if (null == r.second) return null;
-                    return new TaskTotal(
-                            r.first.getWho(),
-                            r.first.getHours() + r.second.getHours(),
-                            r.first.getPercentage() + r.second.getPercentage(),
-                            r.first.getWhat());
-                }
-            };
-        }
     }
 
     public Integer postInc(Mutable<Integer> value)
@@ -152,6 +119,6 @@ public class TreeTableResultsView extends ResizeComposite
 
                 row.setValue(row.getValue() + 1);
             }
-        }.visit(ItemsToTree.create(new TaskTotalIntegrator()).rowsToTree(report));
+        }.visit(ItemsToTree.create(integrator).rowsToTree(report));
     }
 }

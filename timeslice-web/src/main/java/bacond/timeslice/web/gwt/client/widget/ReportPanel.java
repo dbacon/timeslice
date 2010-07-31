@@ -29,7 +29,8 @@ public class ReportPanel extends ResizeComposite
     private final TextBox persistAsName = new TextBox();
     private final Label persisted = new Label();
     private final TabularResultsView resultsView = new TabularResultsView();
-    private final TreeTableResultsView resultsTreeView = new TreeTableResultsView();
+    private final TaskTotalIntegrator integrator = new TaskTotalIntegrator("/");
+    private final TreeTableResultsView resultsTreeView = new TreeTableResultsView(integrator);
 
     private static class PrefKey
     {
