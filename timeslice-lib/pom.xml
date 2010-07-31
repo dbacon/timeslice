@@ -3,7 +3,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>bacond</groupId>
+	<groupId>com.enokinomi.timeslice</groupId>
 	<artifactId>timeslice-lib</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0.10-SNAPSHOT</version>

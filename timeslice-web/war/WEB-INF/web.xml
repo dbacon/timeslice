@@ -13,7 +13,7 @@
   <listener id="timeslice-startup">
     <description>Start-up for Timeslice</description>
     <display-name>Start-up for Timeslice</display-name>
-    <listener-class>bacond.timeslice.web.gwt.server.rpc.TimesliceStartupServletContextListener</listener-class>
+    <listener-class>com.enokinomi.timeslice.web.gwt.server.rpc.TimesliceStartupServletContextListener</listener-class>
   </listener>
 
   <context-param>
@@ -35,7 +35,7 @@
 
   <servlet>
     <servlet-name>gwt-timeslice</servlet-name>
-    <servlet-class>bacond.timeslice.web.gwt.server.rpc.TimesliceSvc</servlet-class>
+    <servlet-class>com.enokinomi.timeslice.web.gwt.server.rpc.TimesliceSvc</servlet-class>
     <load-on-startup>0</load-on-startup>
   </servlet>
 

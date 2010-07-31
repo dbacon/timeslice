@@ -3,7 +3,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>bacond</groupId>
+	<groupId>com.enokinomi.timeslice</groupId>
 	<artifactId>timeslice-host</artifactId>
 	<packaging>bundle</packaging>
 	<version>1.0.10-SNAPSHOT</version>
@@ -35,7 +35,7 @@
 						<configuration>
 							<artifactItems>
 								<artifactItem>
-									<groupId>bacond</groupId>
+									<groupId>com.enokinomi.timeslice</groupId>
 									<artifactId>timeslice-web</artifactId>
 									<version>1.0.10-SNAPSHOT</version>
 									<type>war</type>
@@ -60,7 +60,7 @@
 								<descriptorRef>jar-with-dependencies</descriptorRef>
 							</descriptorRefs>
 							<archive>
-								<manifest><mainClass>bacond.launcher.Driver</mainClass></manifest>
+								<manifest><mainClass>com.enokinomi.timeslice.launcher.Driver</mainClass></manifest>
 							</archive>
 						</configuration>
 					</execution>
