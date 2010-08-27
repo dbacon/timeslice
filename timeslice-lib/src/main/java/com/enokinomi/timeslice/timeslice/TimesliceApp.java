@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
@@ -19,8 +18,6 @@ import com.enokinomi.timeslice.app.core.StartTagIo;
 public class TimesliceApp
 {
     public static final String Key_Upgrade = "upgrade";
-
-    private final List<ITimesliceStore> stores = new LinkedList<ITimesliceStore>();
 
     public void pushFront(ITimesliceStore store)
     {
@@ -85,25 +82,20 @@ public class TimesliceApp
     private String aclFileName;
     private String safeDir;
     private String updateUrl;
-    private int tzOffset;
     private final StartTagIo startTagIo;
     private final Split splitter;
     private String reportPrefix = "";
+    private final List<ITimesliceStore> stores;
 
 
-    public TimesliceApp(String aclFilename, String safeDir, String updateUrl, StartTagIo startTagIo, Split splitter)
-    {
-        this(aclFilename, safeDir, updateUrl, 0, startTagIo, splitter);
-    }
-
-    public TimesliceApp(String aclFilename, String safeDir, String updateUrl, int tzOffset, StartTagIo startTagIo, Split splitter)
+    public TimesliceApp(String aclFilename, String safeDir, String updateUrl, StartTagIo startTagIo, Split splitter, List<ITimesliceStore> stores)
     {
         this.aclFileName = aclFilename;
         this.safeDir = safeDir;
         this.updateUrl = updateUrl;
-        this.tzOffset = tzOffset;
         this.startTagIo = startTagIo;
         this.splitter = splitter;
+        this.stores = stores;
     }
 
     public String getReportPrefix()
@@ -114,16 +106,6 @@ public class TimesliceApp
     public void setReportPrefix(String reportPrefix)
     {
         this.reportPrefix = reportPrefix;
-    }
-
-    public int getTzOffset()
-    {
-        return tzOffset;
-    }
-
-    public void setTzOffset(int tzOffset)
-    {
-        this.tzOffset = tzOffset;
     }
 
     public String getAclFileName()

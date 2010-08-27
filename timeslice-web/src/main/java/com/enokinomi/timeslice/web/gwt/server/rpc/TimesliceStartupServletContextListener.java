@@ -1,15 +1,17 @@
 package com.enokinomi.timeslice.web.gwt.server.rpc;
 
 import static com.enokinomi.timeslice.web.gwt.server.rpc.InitParamUtils.msgIfMissing;
-import static com.enokinomi.timeslice.web.gwt.server.rpc.InitParamUtils.parseIntegerOrDefault;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import com.enokinomi.timeslice.app.core.ITimesliceStore;
 import com.enokinomi.timeslice.app.core.Split;
 import com.enokinomi.timeslice.app.core.StartTagIo;
 import com.enokinomi.timeslice.timeslice.StoreManager;
@@ -40,36 +42,27 @@ public class TimesliceStartupServletContextListener implements ServletContextLis
     {
         String aclFilename = msgIfMissing(context, "timeslice.acl", "INFO: No ACL filename specified, please set init-parameter 'timeslice.acl'.");
         String safeDir = msgIfMissing(context, "timeslice.safedir", "INFO: No safe-dir specified, please set init-parameter 'timeslice.safedir'.");
-        String updateUrl = context.getInitParameter("timeslice.updateurl");
-        Integer tzOffset = parseIntegerOrDefault(context, "timeslice.tzoffset", 0);
-
-        TimesliceApp ta = new TimesliceApp(aclFilename, safeDir, updateUrl, tzOffset, new StartTagIo(), new Split());
-
         String dataDir = msgIfMissing(context, "timeslice.datadir", "INFO: No data-dir available, not configuring any stores(use init-parameter 'timeslice.datadir' to specify).");
-        if (null != dataDir) configureStores(ta, dataDir);
+        String updateUrl = context.getInitParameter("timeslice.updateurl");
 
-        System.out.println("safe-dir  : " + ta.getSafeDir());
-        System.out.println("acl-file  : " + ta.getAclFileName());
-        System.out.println("tz-offset : " + ta.getTzOffset());
+        System.out.println("safe-dir  : " + safeDir);
+        System.out.println("acl-file  : " + aclFilename);
         System.out.println("data-dir  : " + dataDir);
+
+        List<ITimesliceStore> stores = configureStores(dataDir);
+
+        TimesliceApp ta = new TimesliceApp(aclFilename, safeDir, updateUrl, new StartTagIo(), new Split(), stores);
 
         return ta;
     }
 
-    private void configureStores(TimesliceApp ta, String dataDir)
+    private ArrayList<ITimesliceStore> configureStores(String dataDir)
     {
-        try
-        {
-            new StoreManager(new File(dataDir),
-                    Arrays.asList(
-                            new StoreManager.MemoryPlugin(),
-                            new StoreManager.HsqlPlugin()
-                            )).configure(ta);
-        }
-        catch (RuntimeException e)
-        {
-            System.out.println("WARNING: store manager failed to setup stores: " + e.getMessage());
-        }
+        return new StoreManager(new File(dataDir),
+                Arrays.asList(
+                        new StoreManager.MemoryPlugin(),
+                        new StoreManager.HsqlPlugin()
+                )).configure();
     }
 
 }

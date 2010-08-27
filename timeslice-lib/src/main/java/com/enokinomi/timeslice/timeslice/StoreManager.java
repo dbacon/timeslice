@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -42,25 +43,22 @@ public class StoreManager
      * TODO: this is all wiring, move it out.
      *
      * @param tsApp
+     * @return
      */
-    public void configure(TimesliceApp tsApp)
+    public ArrayList<ITimesliceStore> configure()
     {
         if (!storeDir.isDirectory() || !storeDir.canRead())
         {
             throw new RuntimeException("Specified store directory is not a directory or not readable: " + storeDir.toString());
         }
 
-        if (null == tsApp)
-        {
-            System.err.println("WARNING: No TimesliceApp available to configure");
-            return;
-        }
+        ArrayList<ITimesliceStore> stores = new ArrayList<ITimesliceStore>();
 
         Collection<?> files = FileUtils.listFiles(storeDir, new String[] { "sd.properties", }, false);
         if (files.size() <= 0)
         {
             System.err.println("WARNING: No files found in store directory '" + storeDir.toString() + "'.");
-            return;
+            return stores;
         }
 
         for (Object o: files)
@@ -102,7 +100,7 @@ public class StoreManager
 
                 if (desc.getAutoEnable()) store.enable();
 
-                tsApp.pushFront(store);
+                stores.add(store);
             }
             catch (RuntimeException e)
             {
@@ -110,6 +108,8 @@ public class StoreManager
                 continue;
             }
         }
+
+        return stores;
     }
 
     public static class StoreDescriptor

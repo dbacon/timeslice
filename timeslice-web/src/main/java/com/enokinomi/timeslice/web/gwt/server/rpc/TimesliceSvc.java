@@ -14,7 +14,10 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import com.enokinomi.timeslice.app.core.Aggregate;
 import com.enokinomi.timeslice.app.core.Sum;
+import com.enokinomi.timeslice.timeslice.IUserInfoDao;
 import com.enokinomi.timeslice.timeslice.TimesliceApp;
+import com.enokinomi.timeslice.timeslice.TsSettings;
+import com.enokinomi.timeslice.timeslice.UserInfoDao;
 import com.enokinomi.timeslice.web.gwt.client.beans.NotAuthenticException;
 import com.enokinomi.timeslice.web.gwt.client.beans.StartTag;
 import com.enokinomi.timeslice.web.gwt.client.beans.TaskTotal;
@@ -28,9 +31,11 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
 {
     private static final long serialVersionUID = 1L;
 
-    private Sum summer = new Sum();
-    private Aggregate aggregator = new Aggregate();
-    private SessionTracker sessionTracker = new SessionTracker();
+    private final Sum summer = new Sum();
+    private final Aggregate aggregator = new Aggregate();
+    private final IUserInfoDao userInfoDao = new UserInfoDao();
+    private final SessionDataProvider sessionDataProvider = new SessionDataProvider(userInfoDao);
+    private final SessionTracker sessionTracker = new SessionTracker(sessionDataProvider);
 
     @Override
     public String serverInfo()
@@ -42,7 +47,7 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
     {
         return TimesliceStartupServletContextListener.getTimesliceApp(getServletContext());
     }
-    
+
 
     @Override
     public String authenticate(String username, String password)
@@ -60,6 +65,7 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
     public List<StartTag> refreshItems(String authToken, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant)
     {
         SessionData sd = sessionTracker.checkToken(authToken);
+        TsSettings settings = sd.getSettings();
 
         return new ArrayList<StartTag>(Transform.tr(getTimesliceApp().queryForTags(
                 sd.getUser(),
@@ -72,7 +78,7 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
                     : ISODateTimeFormat.dateTime().parseDateTime(endingInstant).toInstant(),
                 maxSize,
                 0),
-            ServerToClient.createStartTagTx(getTimesliceApp().getTzOffset())));
+            ServerToClient.createStartTagTx(settings.getTzOffset())));
     }
 
     private Collection<com.enokinomi.timeslice.app.core.TaskTotal> filterItems(Collection<com.enokinomi.timeslice.app.core.TaskTotal> items, List<String> allowWords, List<String> ignoreWords)
@@ -170,6 +176,7 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
     public String persistTotals(String authToken, String persistAsName, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
     {
         SessionData sd = sessionTracker.checkToken(authToken);
+        TsSettings settings = sd.getSettings();
 
         List<com.enokinomi.timeslice.app.core.StartTag> tags = getTimesliceApp().queryForTags(
                 sd.getUser(),
@@ -197,7 +204,7 @@ public class TimesliceSvc extends RemoteServiceServlet implements ITimesliceSvc
 
         String filename = getTimesliceApp().getReportPrefix();
         if (null != persistAsName && !persistAsName.isEmpty()) filename = filename + persistAsName;
-        String ts = new Instant().toDateTime(DateTimeZone.forOffsetHours(getTimesliceApp().getTzOffset())).toString();
+        String ts = new Instant().toDateTime(DateTimeZone.forOffsetHours(settings.getTzOffset())).toString();
         filename = filename + "." + ts + ".ts-snapshot.csv";
 
         File safeDir = new File(getTimesliceApp().getSafeDir());
