@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
 public class MemoryTimesliceStore implements ITimesliceStore
@@ -68,7 +69,7 @@ public class MemoryTimesliceStore implements ITimesliceStore
     }
 
     @Override
-    public boolean enable()
+    public boolean enable(boolean allowMigration)
     {
         ensureDisabled();
         this.enabled = true;
@@ -177,6 +178,17 @@ public class MemoryTimesliceStore implements ITimesliceStore
         if (!store.containsKey(tag.getWhen())) throw new RuntimeException("Specified tag not found.");
 
         store.put(tag.getWhen(), tag);
+    }
+
+    @Override
+    public String lookupBillee(String description, DateTime asOf)
+    {
+        return "";
+    }
+
+    @Override
+    public void assignBillee(String description, String billee, DateTime asOf)
+    {
     }
 
 }

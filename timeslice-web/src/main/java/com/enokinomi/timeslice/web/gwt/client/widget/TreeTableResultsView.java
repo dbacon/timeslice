@@ -74,7 +74,7 @@ public class TreeTableResultsView extends ResizeComposite
                 int col = 0;
                 String who = "";
                 String hours = "";
-                String totalhours = NumberFormat.getDecimalFormat().format(aggregate.getHours());
+                String totalhours = NumberFormat.getDecimalFormat().format(aggregate.getHours()); // some bug if no datastore.
                 String totalpercent = NumberFormat.getPercentFormat().format(aggregate.getPercentage());
                 String percent = "";
 //                String what = new PathRenderer<String>("/").apply(path);

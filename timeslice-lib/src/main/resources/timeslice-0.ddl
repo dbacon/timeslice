@@ -4,4 +4,3 @@ create table ts_tag
 	who varchar(32),
 	what varchar(128)
 );
-

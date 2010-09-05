@@ -5,9 +5,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-
+import com.enokinomi.timeslice.web.gwt.client.beans.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.beans.TaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.widget.ParamPanel.IParamChangedListener;
+import com.enokinomi.timeslice.web.gwt.client.widget.TabularResultsAssignedView.Listener;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -29,6 +30,7 @@ public class ReportPanel extends ResizeComposite
     private final TextBox persistAsName = new TextBox();
     private final Label persisted = new Label();
     private final TabularResultsView resultsView = new TabularResultsView();
+    private final TabularResultsAssignedView resultsAssignedView = new TabularResultsAssignedView();
     private final TaskTotalIntegrator integrator = new TaskTotalIntegrator("/");
     private final TreeTableResultsView resultsTreeView = new TreeTableResultsView(integrator);
 
@@ -44,6 +46,7 @@ public class ReportPanel extends ResizeComposite
     {
         void refreshRequested(String startingTimeText, String endingTimeText, List<String> allowWords, List<String> ignoreWords);
         void persistRequested(String persistAsName, String startingTimeText, String endingTimeText, List<String> allowWords, List<String> ignoreWords);
+        void billeeUpdateRequested(String description, String newBillee);
     }
 
     private ArrayList<IReportPanelListener> listeners = new ArrayList<IReportPanelListener>();
@@ -69,6 +72,14 @@ public class ReportPanel extends ResizeComposite
         for (IReportPanelListener listener: listeners)
         {
             listener.persistRequested(persistAsName, startingTimeText, endingTimeText, allowWords, ignoreWords);
+        }
+    }
+
+    protected void fireBilleeUpdateRequested(String description, String newBillee)
+    {
+        for (IReportPanelListener listener: listeners)
+        {
+            listener.billeeUpdateRequested(description, newBillee);
         }
     }
 
@@ -159,9 +170,19 @@ public class ReportPanel extends ResizeComposite
         vp.add(params);
         vp.add(buttonPanel);
 
+        resultsAssignedView.addListener(new Listener()
+        {
+            @Override
+            public void billeeUpdate(String description, String newBillee)
+            {
+                fireBilleeUpdateRequested(description, newBillee);
+            }
+        });
+
         TabLayoutPanel resultsTabs = new TabLayoutPanel(2, Unit.EM);
         resultsTabs.add(resultsTreeView, "Totaling");
         resultsTabs.add(resultsView, "Table");
+        resultsTabs.add(resultsAssignedView, "Assigned");
 
         SplitLayoutPanel dp = new SplitLayoutPanel();
         dp.addNorth(vp, 180);
@@ -178,6 +199,11 @@ public class ReportPanel extends ResizeComposite
         resultsTreeView.setResults(results);
     }
 
+    public void setResultsAssigned(List<AssignedTaskTotal> report)
+    {
+        resultsAssignedView.setResults(report);
+    }
+
     protected String renderPersistName()
     {
         return persistAsName.getText()
@@ -189,5 +215,10 @@ public class ReportPanel extends ResizeComposite
     public void setPersisted(String persistedName)
     {
         persisted.setText(persistedName);
+    }
+
+    public ParamPanel getParamsPanel()
+    {
+        return params;
     }
 }

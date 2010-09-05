@@ -98,7 +98,7 @@ public class StoreManager
                     throw new RuntimeException("Unrecognized store definition '" + f.toString() + "', skipping.");
                 }
 
-                if (desc.getAutoEnable()) store.enable();
+                if (desc.getAutoEnable()) store.enable(false);
 
                 stores.add(store);
             }
@@ -187,7 +187,12 @@ public class StoreManager
             if (!"hsqldb".equals(desc.getType())) return null;
 
             String name = desc.getValue("hsqldb.name", "timeslicedb/db");
+            Integer ddlVer = Integer.valueOf(desc.getValue("hsqldb.ddlversion", "0"));
+
+            String ddlResourceName = String.format("timeslice-%d.ddl", ddlVer);
+
             return new HsqldbTimesliceStore(
+                    new SchemaDuty(ddlVer, ddlResourceName),
                     desc.getStoreDir(),
                     name,
                     desc.getFirstTagText(),

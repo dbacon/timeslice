@@ -21,6 +21,8 @@ public interface IController
     void startAddItems(List<StartTag> items);
     void startRefreshItems(int maxSize, String startingInstant, String endingInstant);
     void startRefreshTotals(int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords);
+    void startRefreshTotalsAssigned(int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords);
     void startPersistTotals(String persistAsName, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords);
+    void startAssignBillee(String description, String newBillee);
 
 }

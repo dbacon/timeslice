@@ -3,6 +3,7 @@ package com.enokinomi.timeslice.app.core;
 import java.util.Collection;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
 
@@ -58,7 +59,7 @@ public interface ITimesliceStore
     /**
      * Called exactly once before any query, add, remove, or disable is called.
      */
-    boolean enable();
+    boolean enable(boolean allowAutoMigration);
 
     /**
      * No call to query, add, remove, or disable will happen after a call
@@ -102,5 +103,23 @@ public interface ITimesliceStore
      * @return
      */
     String getFirstTagText();
+
+
+    /**
+     *
+     * @param description
+     * @param asOf
+     * @return
+     */
+    String lookupBillee(String description, DateTime asOf);
+
+    /**
+     * Invalid if anything newer already exists.
+     *
+     * @param description
+     * @param billee
+     * @param asOf
+     */
+    void assignBillee(String description, String billee, DateTime asOf);
 
 }

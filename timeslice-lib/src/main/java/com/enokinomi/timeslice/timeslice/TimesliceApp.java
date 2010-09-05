@@ -79,7 +79,6 @@ public class TimesliceApp
         return stores.size();
     }
 
-    private String aclFileName;
     private String safeDir;
     private String updateUrl;
     private final StartTagIo startTagIo;
@@ -88,9 +87,8 @@ public class TimesliceApp
     private final List<ITimesliceStore> stores;
 
 
-    public TimesliceApp(String aclFilename, String safeDir, String updateUrl, StartTagIo startTagIo, Split splitter, List<ITimesliceStore> stores)
+    public TimesliceApp(String safeDir, String updateUrl, StartTagIo startTagIo, Split splitter, List<ITimesliceStore> stores)
     {
-        this.aclFileName = aclFilename;
         this.safeDir = safeDir;
         this.updateUrl = updateUrl;
         this.startTagIo = startTagIo;
@@ -106,16 +104,6 @@ public class TimesliceApp
     public void setReportPrefix(String reportPrefix)
     {
         this.reportPrefix = reportPrefix;
-    }
-
-    public String getAclFileName()
-    {
-        return aclFileName;
-    }
-
-    public void setAclFileName(String aclFileName)
-    {
-        this.aclFileName = aclFileName;
     }
 
     public String getSafeDir()

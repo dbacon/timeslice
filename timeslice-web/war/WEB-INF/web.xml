@@ -35,8 +35,12 @@
 
   <servlet>
     <servlet-name>gwt-timeslice</servlet-name>
-    <servlet-class>com.enokinomi.timeslice.web.gwt.server.rpc.TimesliceSvc</servlet-class>
-    <load-on-startup>0</load-on-startup>
+    <servlet-class>com.enokinomi.timeslice.web.gwt.server.rpc.TimesliceSvcServlet</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>gwt-timeslice-assigned</servlet-name>
+    <servlet-class>com.enokinomi.timeslice.web.gwt.server.rpc.AssignmentSvcServlet</servlet-class>
   </servlet>
 
 
@@ -44,4 +48,9 @@
     <servlet-name>gwt-timeslice</servlet-name>
     <url-pattern>/timeslice.App/timeslice</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>gwt-timeslice-assigned</servlet-name>
+    <url-pattern>/timeslice.App/timeslice-assigned</url-pattern>
+  </servlet-mapping>
+
 </web-app>

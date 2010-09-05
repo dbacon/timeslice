@@ -1,10 +1,12 @@
 package com.enokinomi.timeslice.web.gwt.client.entry;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 
+import com.enokinomi.timeslice.web.gwt.client.beans.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.beans.StartTag;
 import com.enokinomi.timeslice.web.gwt.client.beans.TaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.controller.GwtRpcController;
@@ -85,6 +87,8 @@ public class TimesliceApp implements EntryPoint
     private final DateBox specifiedDateBox = new DateBox();
     private final RadioButton modeRadioSpecify = new RadioButton("MODE", "Specify Date");
     private final RadioButton modeRadioNormal = new RadioButton("MODE", "Normal");
+    private final ReportPanel reportPanel = new ReportPanel();
+
 
     private void updateStartTag(StartTag editedStartTag)
     {
@@ -135,6 +139,37 @@ public class TimesliceApp implements EntryPoint
     {
         specifiedDateBox.setEnabled(value);
         specifiedDateBox.setVisible(value);
+    }
+
+    private void refreshTotals()
+    {
+        ParamPanel params = reportPanel.getParamsPanel();
+        refreshTotals(
+                params.getStartingTimeRendered().getText(),
+                params.getEndingTimeRendered().getText(),
+                Arrays.asList(params.getAllowWords().getText().split(",")),
+                Arrays.asList(params.getIgnoreWords().getText().split(",")));
+    }
+
+    private void refreshTotals(String startingTimeText, String endingTimeText, List<String> allowWords, List<String> ignoreWords)
+    {
+        controller.startRefreshTotals(
+                1000,
+                SortDir.desc,
+                ProcType.sumbydesc,
+                startingTimeText,
+                endingTimeText,
+                allowWords,
+                ignoreWords);
+
+        controller.startRefreshTotalsAssigned(
+                1000,
+                SortDir.desc,
+                ProcType.sumbydesc,
+                startingTimeText,
+                endingTimeText,
+                allowWords,
+                ignoreWords);
     }
 
     public void onModuleLoad()
@@ -346,20 +381,12 @@ public class TimesliceApp implements EntryPoint
         //historyPanel.setHeight("30em");
         //historyPanel.setWidth("50em");
 
-        final ReportPanel reportPanel = new ReportPanel();
         reportPanel.addReportPanelListener(new ReportPanel.IReportPanelListener()
         {
             @Override
             public void refreshRequested(String startingTimeText, String endingTimeText, List<String> allowWords, List<String> ignoreWords)
             {
-                controller.startRefreshTotals(
-                        1000,
-                        SortDir.desc,
-                        ProcType.sumbydesc,
-                        startingTimeText,
-                        endingTimeText,
-                        allowWords,
-                        ignoreWords);
+                refreshTotals(startingTimeText, endingTimeText, allowWords, ignoreWords);
             }
 
             @Override
@@ -374,6 +401,12 @@ public class TimesliceApp implements EntryPoint
                         endingTimeText,
                         allowWords,
                         ignoreWords);
+            }
+
+            @Override
+            public void billeeUpdateRequested(String description, String newBillee)
+            {
+                controller.startAssignBillee(description, newBillee);
             }
         });
 
@@ -430,7 +463,6 @@ public class TimesliceApp implements EntryPoint
                 @Override
                 public void authenticated()
                 {
-                    // do whatever restarts, ?
                     // start auto-refresh
                     if (options.isAutoRefresh()) timer.scheduleRepeating(options.getAutoRefreshMs());
                     scheduleRefresh();
@@ -469,6 +501,20 @@ public class TimesliceApp implements EntryPoint
                 }
 
                 @Override
+                public void onRefreshTotalsAssignedDone(AsyncResult<List<AssignedTaskTotal>> result)
+                {
+                    if (result.isError())
+                    {
+                        GWT.log("got error back: " + result.getThrown().getMessage(), result.getThrown());
+                    }
+                    else
+                    {
+                        GWT.log("Awesome. got some assigned stuff. (" + result.getReturned().size() + " item(s).");
+                        reportPanel.setResultsAssigned(result.getReturned());
+                    }
+                }
+
+                @Override
                 public void onPersistTotalsDone(AsyncResult<String> result)
                 {
                     if (result.isError())
@@ -487,6 +533,13 @@ public class TimesliceApp implements EntryPoint
                 public void serverInfoRecieved(String info)
                 {
                     serverInfoLabel.setText(info);
+                }
+
+                @Override
+                public void onAssignBilleeDone(AsyncResult<Void> result)
+                {
+                    GWT.log("Billee updated.");
+                    refreshTotals();
                 }
             });
 
@@ -602,14 +655,34 @@ public class TimesliceApp implements EntryPoint
 
                 if (modeRadioSpecify.getValue() && null != specifiedDateBox.getValue())
                 {
-                    starting = ParamPanel.MachineFormat.format(specifiedDateBox.getValue());
-                    ending = ParamPanel.MachineFormat.format(new Date(specifiedDateBox.getValue().getTime() + 1000*3600*24));
+                    Date specifiedDate = specifiedDateBox.getValue();
+                    Date beginningOfSpecifiedDay = floorDate(specifiedDate);
+                    Date untilEndOfSpecifiedDay = new Date(beginningOfSpecifiedDay.getTime() + 1000*3600*24);
+
+                    starting = ParamPanel.MachineFormat.format(beginningOfSpecifiedDay);
+                    ending = ParamPanel.MachineFormat.format(untilEndOfSpecifiedDay);
                 }
 
                 controller.startRefreshItems(
                         options.getMaxSize(),
                         starting,
                         ending);
+            }
+
+            /**
+             * Helps when date-pickers return noon, and you want start-of-day 00:00.
+             *
+             * @param specifiedDate
+             * @return
+             */
+            @SuppressWarnings("deprecation")
+            private Date floorDate(Date specifiedDate)
+            {
+                Date floor = new Date(specifiedDate.getTime());
+                floor.setHours(0);
+                floor.setMinutes(0);
+                floor.setSeconds(0);
+                return floor;
             }
         });
     }

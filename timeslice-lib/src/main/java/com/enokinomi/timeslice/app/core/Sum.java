@@ -2,9 +2,6 @@ package com.enokinomi.timeslice.app.core;
 
 import java.util.List;
 
-import com.enokinomi.timeslice.app.core.StartTag;
-import com.enokinomi.timeslice.app.core.TaskTotal;
-
 
 public class Sum
 {
