@@ -107,7 +107,6 @@ starting=2000-01-01T00:00:00.000Z
 ending=3000-12-31T00:00:00.000Z
 firsttagtext=[--first-partial-task--]
 hsqldb.name=hsql/default-01
-hsqldb.ddlversion=1
 autoenable=true
 EOF
             ;;

@@ -1,8 +1,6 @@
 package com.enokinomi.timeslice.timeslice;
 
-import java.io.File;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,11 +33,13 @@ public class HsqldbTimesliceStore implements ITimesliceStore
     private final Instant starting;
     private final Instant ending;
     private final String firstTagText;
-
-    private final String name;
     private Connection conn = null;
-    private final File storeDir;
-    private final SchemaDuty schemaDuty;
+    private final String filename;
+    private final int version;
+
+    private final ConnectionFactory connFactory;
+
+    private final SchemaDetector schemaDetector;
 
     protected void ensureLiveConnection()
     {
@@ -61,16 +61,6 @@ public class HsqldbTimesliceStore implements ITimesliceStore
         }
     }
 
-    public File getStoreDir()
-    {
-        return storeDir;
-    }
-
-    public SchemaDuty getSchemaDuty()
-    {
-        return schemaDuty;
-    }
-
     Connection getConn()
     {
         return conn;
@@ -81,19 +71,15 @@ public class HsqldbTimesliceStore implements ITimesliceStore
         this.conn = conn;
     }
 
-    public String getName()
+    public HsqldbTimesliceStore(String firstTagText, String filename, int version, Instant starting, Instant ending, ConnectionFactory connFactory, SchemaDetector schemaDetector)
     {
-        return name;
-    }
-
-    public HsqldbTimesliceStore(SchemaDuty schemaDuty, File storeDir, String name, String firstTagText, Instant starting, Instant ending)
-    {
-        this.schemaDuty = schemaDuty;
-        this.storeDir = storeDir;
-        this.name = name;
         this.firstTagText = firstTagText;
+        this.filename = filename;
+        this.version = version;
         this.starting = starting;
         this.ending = ending;
+        this.connFactory = connFactory;
+        this.schemaDetector = schemaDetector;
     }
 
     @Override
@@ -112,37 +98,43 @@ public class HsqldbTimesliceStore implements ITimesliceStore
         }
     }
 
-    private String generatePath()
-    {
-        File db = new File(getName());
-        if (!db.isAbsolute())
-        {
-            db = new File(getStoreDir(), getName());
-        }
-
-        return db.toString();
-    }
-
     @Override
     public boolean enable(boolean allowMigration)
     {
+        // 1. build and remember a connection,
+        // 2. ensure a schema is installed at the correct version
+
         try
         {
-            Class.forName("org.hsqldb.jdbcDriver");
-            setConn(DriverManager.getConnection("jdbc:hsqldb:file:" + generatePath() + ";shutdown=true;", "SA", ""));
-            schemaDuty.ensureSchema(getConn(), allowMigration);
+            setConn(connFactory.createConnection(filename));
 
-            return true;
+            if (schemaDetector.detectSchema(getConn()) != version)
+            {
+                return false;
+            }
         }
-        catch (SQLException e)
+        catch(Exception e)
         {
+            System.err.println("Error enabling datasource: " + e.getMessage());
+            e.printStackTrace(System.err);
+
+            if (null != getConn())
+            {
+                try
+                {
+                    getConn().close();
+                }
+                catch (SQLException e1)
+                {
+                    System.err.println("Error closing connection during enabling: " + e1.getMessage());
+                    e1.printStackTrace(System.err);
+                }
+            }
+
             return false;
         }
-        catch (ClassNotFoundException e)
-        {
-            System.err.println("Could not load HSQLDB JDBC driver.");
-            return false;
-        }
+
+        return true;
     }
 
     @Override
@@ -336,7 +328,7 @@ public class HsqldbTimesliceStore implements ITimesliceStore
 
     public void assignBillee(String description, String billee, DateTime date)
     {
-        if (schemaDuty.getThisVersion() < 1) throw new RuntimeException("Feature requires newer database.");
+        if (version < 1) throw new RuntimeException("Feature requires newer database.");
 
         endDateAnyBillee(description, date);
         insertBillee(description, billee, date);
