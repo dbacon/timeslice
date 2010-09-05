@@ -6,7 +6,7 @@
 	<groupId>com.enokinomi.timeslice</groupId>
 	<artifactId>timeslice-web</artifactId>
 	<packaging>war</packaging>
-	<version>1.0.10-SNAPSHOT</version>
+	<version>1.0.10-beta-20100905-1</version>
 
 	<properties>
 		<!--
@@ -68,7 +68,7 @@
 		<dependency>
 			<groupId>com.enokinomi.timeslice</groupId>
 			<artifactId>timeslice-lib</artifactId>
-			<version>1.0.10-SNAPSHOT</version>
+			<version>1.0.10-beta-20100905-1</version>
 		</dependency>
 
 		<dependency>
