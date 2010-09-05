@@ -4,6 +4,9 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -181,23 +184,77 @@ public class StoreManager
 
     public static class HsqlPlugin implements IParser
     {
+        private String generatePath(File storeDir, String name)
+        {
+            File db = new File(name);
+            if (!db.isAbsolute())
+            {
+                db = new File(storeDir, name);
+            }
+
+            return db.toString();
+        }
+
         @Override
         public ITimesliceStore parse(StoreDescriptor desc)
         {
             if (!"hsqldb".equals(desc.getType())) return null;
 
             String name = desc.getValue("hsqldb.name", "timeslicedb/db");
-            Integer ddlVer = Integer.valueOf(desc.getValue("hsqldb.ddlversion", "0"));
 
-            String ddlResourceName = String.format("timeslice-%d.ddl", ddlVer);
+            // TODO: we could check for old hsqldb.ddlversion and warn it's not used.
+
+            SchemaDetector schemaDetector = new SchemaDetector();
+            SchemaDuty schemaCreator = new SchemaDuty(1, "timeslice-1.ddl");
+
+            String filename = generatePath(desc.getStoreDir(), name);
+            Integer schemaVersion = detectOrCreate(filename, schemaDetector, schemaCreator);
+
+            ConnectionFactory connectionFactory = new ConnectionFactory();
 
             return new HsqldbTimesliceStore(
-                    new SchemaDuty(ddlVer, ddlResourceName),
-                    desc.getStoreDir(),
-                    name,
                     desc.getFirstTagText(),
+                    filename,
+                    schemaVersion,
                     desc.getStartingTime().toInstant(),
-                    desc.getEndingTime().toInstant());
+                    desc.getEndingTime().toInstant(),
+                    connectionFactory,
+                    schemaDetector);
+        }
+
+        private Integer detectOrCreate(String filename, SchemaDetector schemaDetector, SchemaDuty schemaCreator)
+        {
+            Connection conn = null;
+            try
+            {
+                Class.forName("org.hsqldb.jdbcDriver");
+                conn = DriverManager.getConnection("jdbc:hsqldb:file:" + filename + ";shutdown=true;", "SA", "");
+
+                Integer detectedVersion = schemaDetector.detectSchema(conn);
+
+                if (detectedVersion < 0)
+                {
+                    schemaCreator.createSchema(conn);
+                    detectedVersion = schemaDetector.detectSchema(conn);
+                }
+
+                return detectedVersion;
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException("Detecting database version: " + e.getMessage(), e);
+            }
+            finally
+            {
+                try
+                {
+                    conn.close();
+                }
+                catch (SQLException e)
+                {
+                    throw new RuntimeException("Closing connection: " + e.getMessage(), e);
+                }
+            }
         }
     }
 }

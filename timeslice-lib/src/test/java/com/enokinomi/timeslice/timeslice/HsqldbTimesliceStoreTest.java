@@ -1,7 +1,6 @@
 package com.enokinomi.timeslice.timeslice;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 
@@ -16,44 +15,11 @@ public class HsqldbTimesliceStoreTest
     @Test
     public void test1()
     {
-        SchemaDuty schemaDuty = new SchemaDuty(0, "timeslice-0.ddl");
-        HsqldbTimesliceStore store = new HsqldbTimesliceStore(schemaDuty, new File("."), "target/test-generated-data/abc", "first-task", new Instant(), new Instant());
+        ConnectionFactory connFactory = new ConnectionFactory();
+        SchemaDetector schemaDetector = new SchemaDetector();
+        HsqldbTimesliceStore store = new HsqldbTimesliceStore("first-task", "target/test-generated-data/abc", 0, new Instant(), new Instant(), connFactory, schemaDetector);
         store.enable(false);
         store.disable();
-    }
-
-    @Test(expected=RuntimeException.class)
-    public void test_upgrade_0_to_1() throws Exception
-    {
-        FileUtils.deleteDirectory(new File("target/test-generated-data/test-1-1-db"));
-
-        SchemaDuty schemaDuty = new SchemaDuty(1, "timeslice-0.ddl");
-        HsqldbTimesliceStore store = new HsqldbTimesliceStore(schemaDuty, new File("."), "target/test-generated-data/test-1-1-db/test-1", "first-task", new Instant(), new Instant());
-        store.enable(false);
-        store.disable();
-
-        schemaDuty = new SchemaDuty(1, "timeslice-1.ddl");
-        store = new HsqldbTimesliceStore(schemaDuty, new File("."), "target/test-generated-data/test-1-1-db/test-1", "first-task", new Instant(), new Instant());
-        store.enable(false);
-        fail("should be unreached");
-    }
-
-    @Test(expected=RuntimeException.class)
-    public void test_upgrade_1_to_0() throws Exception
-    {
-        String dbDir = "target/test-generated-data/test-1-2-db";
-
-        FileUtils.deleteDirectory(new File(dbDir));
-
-        SchemaDuty schemaDuty = new SchemaDuty(1, "timeslice-1.ddl");
-        HsqldbTimesliceStore store = new HsqldbTimesliceStore(schemaDuty, new File("."), dbDir + "/test-1", "first-task", new Instant(), new Instant());
-        store.enable(false);
-        store.disable();
-
-        schemaDuty = new SchemaDuty(0, "timeslice-0.ddl");
-        store = new HsqldbTimesliceStore(schemaDuty, new File("."), dbDir + "/test-1", "first-task", new Instant(), new Instant());
-        store.enable(false);
-        fail("should be unreached");
     }
 
     @Test
@@ -63,8 +29,11 @@ public class HsqldbTimesliceStoreTest
 
         FileUtils.deleteDirectory(new File(dbDir));
 
+        ConnectionFactory connFactory = new ConnectionFactory();
         SchemaDuty schemaDuty = new SchemaDuty(1, "timeslice-1.ddl");
-        HsqldbTimesliceStore store = new HsqldbTimesliceStore(schemaDuty, new File("."), dbDir + "/test-1", "first-task", new Instant(), new Instant());
+        schemaDuty.createSchema(connFactory.createConnection(dbDir + "/test-1"));
+        SchemaDetector schemaDetector = new SchemaDetector();
+        HsqldbTimesliceStore store = new HsqldbTimesliceStore("first-task", dbDir + "/test-1", 1, new Instant(), new Instant(), connFactory, schemaDetector);
         store.enable(false);
 
         DateTime asOf = new DateTime(2010, 5, 5, 14, 32, 0, 0);
@@ -82,8 +51,11 @@ public class HsqldbTimesliceStoreTest
 
         FileUtils.deleteDirectory(new File(dbDir));
 
+        ConnectionFactory connFactory = new ConnectionFactory();
         SchemaDuty schemaDuty = new SchemaDuty(1, "timeslice-1.ddl");
-        HsqldbTimesliceStore store = new HsqldbTimesliceStore(schemaDuty, new File("."), dbDir + "/test-1", "first-task", new Instant(), new Instant());
+        schemaDuty.createSchema(connFactory.createConnection(dbDir + "/test-2"));
+        SchemaDetector schemaDetector = new SchemaDetector();
+        HsqldbTimesliceStore store = new HsqldbTimesliceStore("first-task", dbDir + "/test-2", 1, new Instant(), new Instant(), connFactory, schemaDetector);
         store.enable(false);
 
         String description1 = "desc1";
