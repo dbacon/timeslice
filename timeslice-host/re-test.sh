@@ -2,7 +2,7 @@
 set -e
 set -x
 
-version="1.0.10"
+version="1.0.11-SNAPSHOT"
 
 rm -rf "$HOME"/.timeslice*
 rm -rf tmp-deploy

@@ -6,7 +6,7 @@
 	<groupId>bacond</groupId>
 	<artifactId>timeslice</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0.10</version>
+	<version>1.0.11-SNAPSHOT</version>
 
 	<modules>
 		<module>timeslice-lib</module>
