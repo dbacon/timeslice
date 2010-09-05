@@ -24,7 +24,7 @@ public class AuthenticatedTimesliceSvc implements ITimesliceSvc
     @Override
     public String serverInfo()
     {
-        return "1.0.10-SNAPSHOT"; // TODO: get from resources/build
+        return "1.0.10"; // TODO: get from resources/build
     }
 
     @Override

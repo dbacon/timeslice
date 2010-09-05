@@ -6,7 +6,7 @@
 	<groupId>com.enokinomi.timeslice</groupId>
 	<artifactId>timeslice-web</artifactId>
 	<packaging>war</packaging>
-	<version>1.0.10-SNAPSHOT</version>
+	<version>1.0.10</version>
 
 	<properties>
 		<!--
