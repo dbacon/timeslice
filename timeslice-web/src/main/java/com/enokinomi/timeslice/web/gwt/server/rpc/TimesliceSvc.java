@@ -12,8 +12,9 @@ import org.joda.time.Instant;
 import org.joda.time.format.ISODateTimeFormat;
 
 import com.enokinomi.timeslice.app.core.Aggregate;
+import com.enokinomi.timeslice.app.core.ITimesliceStore;
+import com.enokinomi.timeslice.app.core.Split;
 import com.enokinomi.timeslice.app.core.Sum;
-import com.enokinomi.timeslice.timeslice.TimesliceApp;
 import com.enokinomi.timeslice.web.gwt.client.beans.StartTag;
 import com.enokinomi.timeslice.web.gwt.client.beans.TaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.server.ProcType;
@@ -22,20 +23,36 @@ import com.enokinomi.timeslice.web.gwt.server.beantx.ServerToClient;
 
 public class TimesliceSvc
 {
-    private final TimesliceApp timesliceApp;
+    private String reportPrefix = "";
+    private String safeDir = ".";
+    private final ITimesliceStore store;
     private final Sum summer;
     private final Aggregate aggregator;
+    private final Split splitter;
 
-    public TimesliceSvc(TimesliceApp timesliceApp, Sum summer, Aggregate aggregate)
+    public TimesliceSvc(ITimesliceStore store, Sum summer, Aggregate aggregate, Split splitter)
     {
-        this.timesliceApp = timesliceApp;
+        this.store = store;
         this.summer = summer;
         this.aggregator = aggregate;
+        this.splitter = splitter;
+    }
+
+    public List<com.enokinomi.timeslice.app.core.StartTag> queryForTags(String who, Boolean sortReverse, Instant minDate, Instant maxDate, int pageSize, int pageIndex)
+    {
+        return splitter.split(
+                store.query(
+                        who,
+                        minDate,
+                        maxDate,
+                        pageSize,
+                        pageIndex),
+                new Instant()); // TODO: change to now-provider
     }
 
     public List<StartTag> refreshItems(String user, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, int tzOffset)
     {
-        return new ArrayList<StartTag>(Transform.tr(timesliceApp.queryForTags(
+        return new ArrayList<StartTag>(Transform.tr(queryForTags(
                 user,
                 sortDir == SortDir.desc, // check this
                 startingInstant == null
@@ -118,7 +135,7 @@ public class TimesliceSvc
 
     public List<TaskTotal> refreshTotals(String user, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
     {
-        List<com.enokinomi.timeslice.app.core.StartTag> tags = timesliceApp.queryForTags(
+        List<com.enokinomi.timeslice.app.core.StartTag> tags = queryForTags(
                 user,
                 sortDir == SortDir.asc,
                 startingInstant == null
@@ -139,7 +156,7 @@ public class TimesliceSvc
 
     public String persistTotals(String persistAsName, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords, int tzOffset, String user)
     {
-        List<com.enokinomi.timeslice.app.core.StartTag> tags = timesliceApp.queryForTags(
+        List<com.enokinomi.timeslice.app.core.StartTag> tags = queryForTags(
                 user,
                 sortDir == SortDir.asc,
                 startingInstant == null
@@ -163,14 +180,14 @@ public class TimesliceSvc
             lines.add(String.format("%s,%s,%.6f", row.getWho(), row.getWhat(), row.getHours()));
         }
 
-        String filename = timesliceApp.getReportPrefix();
+        String filename = reportPrefix;
         if (null != persistAsName && !persistAsName.isEmpty()) filename = filename + persistAsName;
         String ts = new Instant().toDateTime(DateTimeZone.forOffsetHours(tzOffset)).toString();
         filename = filename + "." + ts + ".ts-snapshot.csv";
 
-        File safeDir = new File(timesliceApp.getSafeDir());
+        File safeDirFile = new File(safeDir);
         filename = filename.replaceAll(":", "-"); // armor the filename for filesystems which don't support ':'
-        File report = new File(safeDir, filename);
+        File report = new File(safeDirFile, filename);
         try
         {
             FileUtils.writeLines(report, lines);
@@ -188,35 +205,21 @@ public class TimesliceSvc
 
     public void addItem(String instantString, String taskDescription, String user)
     {
-        throwIfNoAvailableStore();
-
-        timesliceApp.getFrontStore().add(new com.enokinomi.timeslice.app.core.StartTag(user, instantString, taskDescription, null));
+        store.add(new com.enokinomi.timeslice.app.core.StartTag(user, instantString, taskDescription, null));
     }
 
     public void addItems(String user, List<StartTag> items)
     {
-        throwIfNoAvailableStore();
-
         for (StartTag item: items)
         {
-            timesliceApp.getFrontStore().add(new com.enokinomi.timeslice.app.core.StartTag(user, item.getInstantString(), item.getDescription(), null));
-        }
-    }
-
-    private void throwIfNoAvailableStore()
-    {
-        if (null == timesliceApp.getFrontStore())
-        {
-            throw new RuntimeException("No store.");
+            store.add(new com.enokinomi.timeslice.app.core.StartTag(user, item.getInstantString(), item.getDescription(), null));
         }
     }
 
     public void update(String user, StartTag editedStartTag)
     {
-        throwIfNoAvailableStore();
-
         com.enokinomi.timeslice.app.core.StartTag edited = new com.enokinomi.timeslice.app.core.StartTag(user, editedStartTag.getInstantString(), editedStartTag.getDescription(), null);
 
-        timesliceApp.getFrontStore().updateText(edited);
+        store.updateText(edited);
     }
 }

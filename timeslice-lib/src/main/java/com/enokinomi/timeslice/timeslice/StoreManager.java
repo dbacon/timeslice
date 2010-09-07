@@ -21,6 +21,7 @@ import com.enokinomi.timeslice.app.core.ITimesliceStore;
 import com.enokinomi.timeslice.app.core.MemoryTimesliceStore;
 
 
+@Deprecated
 public class StoreManager
 {
     private final File storeDir;
@@ -101,7 +102,7 @@ public class StoreManager
                     throw new RuntimeException("Unrecognized store definition '" + f.toString() + "', skipping.");
                 }
 
-                if (desc.getAutoEnable()) store.enable(false);
+//                if (desc.getAutoEnable()) store.enable(false);
 
                 stores.add(store);
             }
@@ -208,18 +209,20 @@ public class StoreManager
             SchemaDuty schemaCreator = new SchemaDuty(1, "timeslice-1.ddl");
 
             String filename = generatePath(desc.getStoreDir(), name);
-            Integer schemaVersion = detectOrCreate(filename, schemaDetector, schemaCreator);
+            detectOrCreate(filename, schemaDetector, schemaCreator);
 
             ConnectionFactory connectionFactory = new ConnectionFactory();
+            Connection conn = null;
+            try
+            {
+                conn = connectionFactory.createConnection(filename);
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException("Wrapped checked-exception: " + e.getMessage(), e);
+            }
 
-            return new HsqldbTimesliceStore(
-                    desc.getFirstTagText(),
-                    filename,
-                    schemaVersion,
-                    desc.getStartingTime().toInstant(),
-                    desc.getEndingTime().toInstant(),
-                    connectionFactory,
-                    schemaDetector);
+            return new HsqldbTimesliceStore(conn);
         }
 
         private Integer detectOrCreate(String filename, SchemaDetector schemaDetector, SchemaDuty schemaCreator)

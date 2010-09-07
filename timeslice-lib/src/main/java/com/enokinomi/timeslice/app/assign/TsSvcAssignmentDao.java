@@ -1,28 +1,28 @@
 package com.enokinomi.timeslice.app.assign;
 
-import com.enokinomi.timeslice.timeslice.TimesliceApp;
+import com.enokinomi.timeslice.app.core.ITagStore;
 
 public class TsSvcAssignmentDao implements IAssignmentDao
 {
-    private final TimesliceApp tsApp;
     private final INowProvider nowProvider;
+    private final ITagStore tagStore;
 
-    public TsSvcAssignmentDao(TimesliceApp tsApp, INowProvider nowProvider)
+    public TsSvcAssignmentDao(ITagStore tagStore, INowProvider nowProvider)
     {
-        this.tsApp = tsApp;
+        this.tagStore = tagStore;
         this.nowProvider = nowProvider;
     }
 
     @Override
     public void assign(String description, String billTo)
     {
-        tsApp.getFrontStore().assignBillee(description, billTo, nowProvider.getNow());
+        tagStore.assignBillee(description, billTo, nowProvider.getNow());
     }
 
     @Override
     public String getBillee(String description, String valueIfNotAssigned)
     {
-        return tsApp.getFrontStore().lookupBillee(description, nowProvider.getNow());
+        return tagStore.lookupBillee(description, nowProvider.getNow());
     }
 
 }
