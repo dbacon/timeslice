@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.enokinomi.timeslice.web.gwt.client.beans.AssignedTaskTotal;
+import com.enokinomi.timeslice.web.gwt.client.beans.BrandInfo;
 import com.enokinomi.timeslice.web.gwt.client.beans.StartTag;
 import com.enokinomi.timeslice.web.gwt.client.beans.TaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.entry.AsyncResult;
@@ -123,5 +124,12 @@ public abstract class BaseController implements IController
         }
     }
 
+    protected void fireBranded(AsyncResult<BrandInfo> result)
+    {
+        for (IControllerListener listener: listeners)
+        {
+            listener.onBranded(result);
+        }
+    }
 
 }

@@ -3,6 +3,7 @@ package com.enokinomi.timeslice.web.gwt.client.server;
 import java.util.List;
 
 
+import com.enokinomi.timeslice.web.gwt.client.beans.BrandInfo;
 import com.enokinomi.timeslice.web.gwt.client.beans.StartTag;
 import com.enokinomi.timeslice.web.gwt.client.beans.TaskTotal;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -18,4 +19,5 @@ public interface ITimesliceSvcAsync
     void addItems(String authToken, List<StartTag> items, AsyncCallback<Void> callback);
     void update(String authToken, StartTag editedStartTag, AsyncCallback<Void> callback);
     void persistTotals(String authToken, String persistAsName, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords, AsyncCallback<String> callback);
+    void getBrandInfo(AsyncCallback<BrandInfo> callback);
 }

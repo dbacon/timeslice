@@ -2,7 +2,9 @@ package com.enokinomi.timeslice.web.gwt.server.rpc;
 
 import java.util.List;
 
+import com.enokinomi.timeslice.launcher.IBranding;
 import com.enokinomi.timeslice.timeslice.TsSettings;
+import com.enokinomi.timeslice.web.gwt.client.beans.BrandInfo;
 import com.enokinomi.timeslice.web.gwt.client.beans.NotAuthenticException;
 import com.enokinomi.timeslice.web.gwt.client.beans.StartTag;
 import com.enokinomi.timeslice.web.gwt.client.beans.TaskTotal;
@@ -15,12 +17,14 @@ public class AuthenticatedTimesliceSvc implements ITimesliceSvc
 {
     private final SessionTracker sessionTracker;
     private final TimesliceSvc timesliceSvc;
+    private final IBranding branding;
 
     @Inject
-    public AuthenticatedTimesliceSvc(TimesliceSvc timesliceSvc, SessionTracker sessionTracker)
+    public AuthenticatedTimesliceSvc(TimesliceSvc timesliceSvc, SessionTracker sessionTracker, IBranding branding)
     {
         this.timesliceSvc = timesliceSvc;
         this.sessionTracker = sessionTracker;
+        this.branding = branding;
     }
 
     @Override
@@ -83,5 +87,11 @@ public class AuthenticatedTimesliceSvc implements ITimesliceSvc
     {
         SessionData sd = sessionTracker.checkToken(authToken);
         timesliceSvc.update(sd.getUser(), editedStartTag);
+    }
+
+    @Override
+    public BrandInfo getBrandInfo()
+    {
+        return new BrandInfo(branding.projectHref(), branding.issueHref());
     }
 }

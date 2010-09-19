@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.enokinomi.timeslice.web.gwt.client.beans.AssignedTaskTotal;
+import com.enokinomi.timeslice.web.gwt.client.beans.BrandInfo;
 import com.enokinomi.timeslice.web.gwt.client.beans.StartTag;
 import com.enokinomi.timeslice.web.gwt.client.beans.TaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.controller.ErrorBox;
@@ -459,7 +460,8 @@ public class TimesliceApp implements EntryPoint
 
         HorizontalPanel buildLabelBox = new HorizontalPanel();
         buildLabelBox.setSpacing(15);
-        buildLabelBox.add(new HTML("<a href=\"" + IssuesUrl + "\" target=\"_blank\">Feedback / RFEs / Bugs</a>"));
+        updateIssuesLink("#");
+        buildLabelBox.add(issuesLink);
         buildLabelBox.add(logoutAnchor);
         buildLabelBox.add(serverInfoLabel);
 
@@ -599,6 +601,19 @@ public class TimesliceApp implements EntryPoint
                         GWT.log("Server-side job done: " + result.getReturned());
                     }
                 }
+
+                @Override
+                public void onBranded(AsyncResult<BrandInfo> result)
+                {
+                    if (!result.isError())
+                    {
+                        handleBrandInfo(result.getReturned());
+                    }
+                    else
+                    {
+                        GWT.log("Leaving unbranded.");
+                    }
+                }
             });
 
         appJobPanel.addListener(new Listener()
@@ -629,6 +644,17 @@ public class TimesliceApp implements EntryPoint
 
         scheduleRefresh();
         scheduleJobListUpdate();
+        scheduleBrandingUpdate();
+    }
+
+    private void updateIssuesLink(String issuesHref)
+    {
+        issuesLink.setHTML("<a href=\"" + issuesHref + "\" target=\"_blank\">Feedback / RFEs / Bugs</a>");
+    }
+
+    protected void handleBrandInfo(BrandInfo brandInfo)
+    {
+        updateIssuesLink(brandInfo.getIssueHref());
     }
 
     private void handleRefreshItemsDone(AsyncResult<List<StartTag>> result)
@@ -728,7 +754,18 @@ public class TimesliceApp implements EntryPoint
                 controller.startListAvailableJobs();
             }
         });
+    }
 
+    private void scheduleBrandingUpdate()
+    {
+        DeferredCommand.addCommand(new Command()
+        {
+            @Override
+            public void execute()
+            {
+                controller.startGetBranding();
+            }
+        });
     }
 
     private void scheduleRefresh()
@@ -781,5 +818,7 @@ public class TimesliceApp implements EntryPoint
 
     private IOptionsProvider options = new EmptyOptionsProvider();
     private Timer timer;
+
+    private HTML issuesLink = new HTML();
 
 }

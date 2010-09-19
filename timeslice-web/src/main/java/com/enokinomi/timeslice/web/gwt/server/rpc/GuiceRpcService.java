@@ -1,8 +1,14 @@
 package com.enokinomi.timeslice.web.gwt.server.rpc;
 
+import java.util.Iterator;
+import java.util.ServiceConfigurationError;
+import java.util.ServiceLoader;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
+import com.enokinomi.timeslice.launcher.BrandingAbstractModule;
+import com.enokinomi.timeslice.launcher.DefaultBrandingModule;
 import com.enokinomi.timeslice.launcher.TimesliceModule;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.SerializationException;
@@ -12,6 +18,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Module;
 import com.google.inject.Singleton;
 
 /**
@@ -53,7 +60,41 @@ public class GuiceRpcService extends RemoteServiceServlet
             String db = getServletContext().getInitParameter("timeslice.db");
             if (null == db) throw new RuntimeException("No database base-path given in context-param 'timeslice.db'.");
 
-            this.injector = Guice.createInjector(new TimesliceModule(db, acl));
+
+            Module brandCompositeModule = new DefaultBrandingModule();
+
+            try
+            {
+                System.out.println("Loading brandings...");
+                //
+                // Note, this doesn't really work when in normal servlet/container mode,
+                // the branding module would need to be in the webapp's classpath - system classpath won't be searched.
+                //
+                ServiceLoader<BrandingAbstractModule> stringService = ServiceLoader.load(BrandingAbstractModule.class, ClassLoader.getSystemClassLoader());
+                Iterator<BrandingAbstractModule> brandModuleItor = stringService.iterator();
+                if (brandModuleItor.hasNext())
+                {
+                    BrandingAbstractModule brandModule = brandModuleItor.next();
+                    System.out.println("    overriding brand: " + brandModule.getClass().getCanonicalName());
+                    brandCompositeModule = brandModule;
+                }
+
+                if (brandModuleItor.hasNext())
+                {
+                    System.out.println("Found more branding modules; only the first module found is applied.");
+                }
+                System.out.println(" ... branding done.");
+            }
+            catch (Exception e)
+            {
+                System.out.println(" ... branding failed (will use default): " + e.getMessage());
+            }
+            catch (ServiceConfigurationError e)
+            {
+                System.out.println(" ... branding failed (will use default): " + e.getMessage());
+            }
+
+            this.injector = Guice.createInjector(new TimesliceModule(db, acl), brandCompositeModule);
         }
     }
 

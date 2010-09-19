@@ -4,6 +4,8 @@ package com.enokinomi.timeslice.launcher;
 import static com.enokinomi.timeslice.lib.util.Check.mapNullTo;
 
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.ServiceLoader;
 
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionParser;
@@ -12,6 +14,7 @@ import joptsimple.OptionSet;
 import com.enokinomi.timeslice.web.gwt.server.rpc.GuiceRpcService;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
+import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.servlet.ServletModule;
 
@@ -64,6 +67,25 @@ public class Driver
         System.out.println("  data     : " + db);
         System.out.flush();
 
+
+        Module brandCompositeModule = new DefaultBrandingModule();
+
+        System.out.println("Loading brandings...");
+        ServiceLoader<BrandingAbstractModule> stringService = ServiceLoader.load(BrandingAbstractModule.class, ClassLoader.getSystemClassLoader());
+        Iterator<BrandingAbstractModule> brandModuleItor = stringService.iterator();
+        if (brandModuleItor.hasNext())
+        {
+            BrandingAbstractModule brandModule = brandModuleItor.next();
+            System.out.println("    overriding brand: " + brandModule.getClass().getCanonicalName());
+            brandCompositeModule = brandModule;
+        }
+        System.out.println(" ... branding done.");
+
+        if (brandModuleItor.hasNext())
+        {
+            System.out.println("Found more branding modules; only the first module found is applied.");
+        }
+
         Guice.createInjector(
                 new ServletModule()
                 {
@@ -86,7 +108,8 @@ public class Driver
                     {
                         return new Driver(port, res);
                     }
-                }
+                },
+                brandCompositeModule
             )
             .getInstance(Driver.class)
             .run();

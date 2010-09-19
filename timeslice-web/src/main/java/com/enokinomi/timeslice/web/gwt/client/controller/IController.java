@@ -16,6 +16,7 @@ public interface IController
     void logout();
 
     void serverInfo();
+    void startGetBranding();
     void startEditDescription(StartTag editedStartTag);
     void startAddItem(String instantString, String taskDescription);
     void startAddItems(List<StartTag> items);

@@ -16,6 +16,7 @@ import com.enokinomi.timeslice.app.core.ITagStore;
 import com.enokinomi.timeslice.app.core.ITimesliceStore;
 import com.enokinomi.timeslice.app.core.Split;
 import com.enokinomi.timeslice.app.core.Sum;
+import com.enokinomi.timeslice.launcher.DefaultBranding;
 import com.enokinomi.timeslice.timeslice.ConnectionFactory;
 import com.enokinomi.timeslice.timeslice.HsqldbTagStore;
 import com.enokinomi.timeslice.timeslice.HsqldbTimesliceStore;
@@ -88,7 +89,7 @@ public class TimesliceStartupServletContextListener implements ServletContextLis
 
         TimesliceSvc timesliceSvc = new TimesliceSvc(store, summer, aggregator, splitter);
 
-        AuthenticatedTimesliceSvc authenticatedTimesliceSvc = new AuthenticatedTimesliceSvc(timesliceSvc, sessionTracker);
+        AuthenticatedTimesliceSvc authenticatedTimesliceSvc = new AuthenticatedTimesliceSvc(timesliceSvc, sessionTracker, new DefaultBranding());
 
         INowProvider nowProvider = new RealtimeNowProvider();
         IAssignmentDao assignmentDao = new TsSvcAssignmentDao(tagStore, nowProvider);

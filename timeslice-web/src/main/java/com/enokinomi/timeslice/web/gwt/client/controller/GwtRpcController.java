@@ -4,6 +4,7 @@ package com.enokinomi.timeslice.web.gwt.client.controller;
 import java.util.List;
 
 import com.enokinomi.timeslice.web.gwt.client.beans.AssignedTaskTotal;
+import com.enokinomi.timeslice.web.gwt.client.beans.BrandInfo;
 import com.enokinomi.timeslice.web.gwt.client.beans.NotAuthenticException;
 import com.enokinomi.timeslice.web.gwt.client.beans.StartTag;
 import com.enokinomi.timeslice.web.gwt.client.beans.TaskTotal;
@@ -85,6 +86,25 @@ public class GwtRpcController extends BaseController
             public void onSuccess(String result)
             {
                 fireServerInfoRecieved(result);
+            }
+        });
+    }
+
+    public void startGetBranding()
+    {
+        getSvc().getBrandInfo(new AsyncCallback<BrandInfo>()
+        {
+            @Override
+            public void onSuccess(BrandInfo result)
+            {
+                fireBranded(new AsyncResult<BrandInfo>(result, null));
+            }
+
+            @Override
+            public void onFailure(Throwable caught)
+            {
+                GWT.log("Could not get branding: " + caught.getMessage());
+                fireBranded(new AsyncResult<BrandInfo>(null, caught));
             }
         });
     }

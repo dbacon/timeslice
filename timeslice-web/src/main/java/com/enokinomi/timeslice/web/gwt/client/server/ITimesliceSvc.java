@@ -2,7 +2,7 @@ package com.enokinomi.timeslice.web.gwt.client.server;
 
 import java.util.List;
 
-
+import com.enokinomi.timeslice.web.gwt.client.beans.BrandInfo;
 import com.enokinomi.timeslice.web.gwt.client.beans.NotAuthenticException;
 import com.enokinomi.timeslice.web.gwt.client.beans.StartTag;
 import com.enokinomi.timeslice.web.gwt.client.beans.TaskTotal;
@@ -12,6 +12,8 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("gwtrpc")
 public interface ITimesliceSvc extends RemoteService
 {
+    BrandInfo getBrandInfo();
+
     // TODO: move these into a separate service, since others now also use it.
     String serverInfo();
     String authenticate(String username, String password);

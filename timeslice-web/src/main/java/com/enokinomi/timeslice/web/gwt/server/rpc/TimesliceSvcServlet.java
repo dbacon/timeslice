@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 
 import org.eclipse.jetty.util.log.Log;
 
+import com.enokinomi.timeslice.web.gwt.client.beans.BrandInfo;
 import com.enokinomi.timeslice.web.gwt.client.beans.NotAuthenticException;
 import com.enokinomi.timeslice.web.gwt.client.beans.StartTag;
 import com.enokinomi.timeslice.web.gwt.client.beans.TaskTotal;
@@ -132,5 +133,11 @@ public class TimesliceSvcServlet extends RemoteServiceServlet implements ITimesl
     public void inject(AuthenticatedTimesliceSvc authenticatedTimesliceSvc, AssignmentSvcSession assignmentSvcSession)
     {
         setTimesliceSvc(authenticatedTimesliceSvc);
+    }
+
+    @Override
+    public BrandInfo getBrandInfo()
+    {
+        return getTimesliceSvc().getBrandInfo();
     }
 }
