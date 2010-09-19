@@ -6,7 +6,7 @@
 	<groupId>com.enokinomi.timeslice</groupId>
 	<artifactId>timeslice-web</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.10-beta-20100905-2-SNAPSHOT</version>
+	<version>1.0.10-beta-3-20100920-SNAPSHOT</version>
 
 	<name>timeslice-web</name>
 
@@ -91,7 +91,7 @@
 		<dependency>
 			<groupId>com.enokinomi.timeslice</groupId>
 			<artifactId>timeslice-lib</artifactId>
-			<version>1.0.10-beta-20100905-2-SNAPSHOT</version>
+			<version>1.0.10-beta-3-20100920-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
