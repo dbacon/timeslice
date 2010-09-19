@@ -19,4 +19,8 @@ shift "$(($OPTIND - 1))"
 set -e
 set -x
 
-java -cp "$cp" com.enokinomi.timeslice.launcher.Driver "$@"
+JAVA=java
+[ -n "$JAVA_HOME" ] && JAVA="$JAVA_HOME/bin/java"
+
+
+"$JAVA" -cp "$cp" com.enokinomi.timeslice.launcher.Driver "$@"
