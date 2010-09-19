@@ -270,13 +270,13 @@ public class OptionsPanel extends Composite implements IOptionsProvider
 
     private void writePrefs()
     {
-//        Cookies.setCookie(PrefKeys.User, username.getText());
-        Cookies.setCookie(PrefKeys.PageSize, maxSize.getText());
-        Cookies.setCookie(PrefKeys.PageSizeSeconds, maxSeconds.getText());
-        Cookies.setCookie(PrefKeys.CtrlSpaceSends, (controlSpaceSends.getValue() ? "true" : "false"));
-        Cookies.setCookie(PrefKeys.AutoRefresh, autoRefresh.getValue() ? "true" : "false");
-        Cookies.setCookie(PrefKeys.AutoRefreshMs, autoRefreshMs.getText());
-        Cookies.setCookie(PrefKeys.CurrentTaskInTitlebar, (currentTaskInTitlebar.getValue() ? "true" : "false"));
-        Cookies.setCookie(PrefKeys.TitlebarTemplate, titleBarTemplate.getText());
+//        Cookies.setCookie(PrefKeys.User, username.getText(), HotlistPanel.createDateSufficientlyInTheFuture());
+        Cookies.setCookie(PrefKeys.PageSize, maxSize.getText(), HotlistPanel.createDateSufficientlyInTheFuture());
+        Cookies.setCookie(PrefKeys.PageSizeSeconds, maxSeconds.getText(), HotlistPanel.createDateSufficientlyInTheFuture());
+        Cookies.setCookie(PrefKeys.CtrlSpaceSends, (controlSpaceSends.getValue() ? "true" : "false"), HotlistPanel.createDateSufficientlyInTheFuture());
+        Cookies.setCookie(PrefKeys.AutoRefresh, autoRefresh.getValue() ? "true" : "false", HotlistPanel.createDateSufficientlyInTheFuture());
+        Cookies.setCookie(PrefKeys.AutoRefreshMs, autoRefreshMs.getText(), HotlistPanel.createDateSufficientlyInTheFuture());
+        Cookies.setCookie(PrefKeys.CurrentTaskInTitlebar, (currentTaskInTitlebar.getValue() ? "true" : "false"), HotlistPanel.createDateSufficientlyInTheFuture());
+        Cookies.setCookie(PrefKeys.TitlebarTemplate, titleBarTemplate.getText(), HotlistPanel.createDateSufficientlyInTheFuture());
     }
 }

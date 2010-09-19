@@ -166,7 +166,7 @@ public class HotlistPanel extends Composite
     }
 
     @SuppressWarnings("deprecation")
-    private Date createDateSufficientlyInTheFuture()
+    public static Date createDateSufficientlyInTheFuture()
     {
         return new Date(2099, 0, 1);
     }
