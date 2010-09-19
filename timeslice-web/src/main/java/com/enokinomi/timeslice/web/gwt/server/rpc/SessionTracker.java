@@ -65,7 +65,7 @@ public class SessionTracker
         return sd.getUuid();
     }
 
-    public synchronized SessionData checkToken(String authenticationToken)
+    public synchronized SessionData checkToken(String authenticationToken) throws NotAuthenticException
     {
         if (!validSessions.containsKey(authenticationToken))
         {
