@@ -1,0 +1,56 @@
+<?xml version="1.0" ?>
+
+<assembly>
+	<id>dist</id>
+
+	<formats>
+		<format>zip</format>
+	</formats>
+
+	<fileSets>
+		<fileSet>
+			<includes>
+				<include>${project.basedir}/README*</include>
+				<include>${project.basedir}/LICENSE*</include>
+				<include>${project.basedir}/NOTICE*</include>
+			</includes>
+			<fileMode>0644</fileMode>
+			<directoryMode>0755</directoryMode>
+		</fileSet>
+        <fileSet>
+            <directory>${project.build.directory}</directory>
+            <includes><include>*.jar</include></includes>
+            <outputDirectory>/lib</outputDirectory>
+            <fileMode>0644</fileMode>
+            <directoryMode>0755</directoryMode>
+        </fileSet>
+        <fileSet>
+            <directory>${project.build.directory}/deps</directory>
+            <includes><include>*.jar</include></includes>
+            <outputDirectory>/lib</outputDirectory>
+            <fileMode>0644</fileMode>
+            <directoryMode>0755</directoryMode>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/src/main/script</directory>
+            <filtered>true</filtered>
+            <outputDirectory>/bin</outputDirectory>
+            <fileMode>0755</fileMode>
+            <directoryMode>0755</directoryMode>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/src/main/share</directory>
+            <filtered>true</filtered>
+            <outputDirectory>/share</outputDirectory>
+            <fileMode>0644</fileMode>
+            <directoryMode>0755</directoryMode>
+        </fileSet>
+		<fileSet>
+			<directory>${basedir}/war</directory>
+			<outputDirectory>/webapp</outputDirectory>
+			<fileMode>0644</fileMode>
+			<directoryMode>0755</directoryMode>
+		</fileSet>
+	</fileSets>
+
+</assembly>

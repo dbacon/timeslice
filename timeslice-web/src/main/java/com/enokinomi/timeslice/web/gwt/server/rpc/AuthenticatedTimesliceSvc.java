@@ -9,12 +9,14 @@ import com.enokinomi.timeslice.web.gwt.client.beans.TaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.server.ITimesliceSvc;
 import com.enokinomi.timeslice.web.gwt.client.server.ProcType;
 import com.enokinomi.timeslice.web.gwt.client.server.SortDir;
+import com.google.inject.Inject;
 
 public class AuthenticatedTimesliceSvc implements ITimesliceSvc
 {
     private final SessionTracker sessionTracker;
     private final TimesliceSvc timesliceSvc;
 
+    @Inject
     public AuthenticatedTimesliceSvc(TimesliceSvc timesliceSvc, SessionTracker sessionTracker)
     {
         this.timesliceSvc = timesliceSvc;

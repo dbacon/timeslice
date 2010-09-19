@@ -1,5 +1,6 @@
 package com.enokinomi.timeslice.web.gwt.server.rpc;
 
+@Deprecated
 public class Injector
 {
     private final AuthenticatedTimesliceSvc authenticatedTimesliceSvc;

@@ -7,37 +7,24 @@ import java.sql.SQLException;
 
 import org.apache.commons.io.IOUtils;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 public class SchemaDuty
 {
-    private final Integer thisVersion;
     private final String schemaResourceName;
 
-    public SchemaDuty(Integer thisVersion, String schemaResourceName)
+    @Inject
+    public SchemaDuty(@Named("schemaResource") String schemaResourceName)
     {
-        this.thisVersion = thisVersion;
         this.schemaResourceName = schemaResourceName;
-    }
-
-    public Integer getThisVersion()
-    {
-        return thisVersion;
-    }
-
-    protected void autoMigrate(Integer ddlVersion, Integer thisVersion)
-    {
-        unsupportedMigration(ddlVersion, thisVersion);
-    }
-
-    protected final void unsupportedMigration(Integer ddlVersion, Integer thisVersion)
-    {
-        throw new RuntimeException("Unsupported automatic migration from version " + ddlVersion + " to " + thisVersion + ".");
     }
 
     public void createSchema(Connection conn)
     {
         try
         {
-            InputStream schemaDdlStream = HsqldbTimesliceStore.class.getClassLoader().getResourceAsStream(schemaResourceName);
+            InputStream schemaDdlStream = ClassLoader.getSystemResourceAsStream(schemaResourceName);
             if (null != schemaDdlStream)
             {
                 String schemaDdl = IOUtils.toString(schemaDdlStream);

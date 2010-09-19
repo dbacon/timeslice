@@ -9,7 +9,7 @@ import com.enokinomi.timeslice.web.gwt.client.beans.TaskTotal;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-@RemoteServiceRelativePath("timeslice")
+@RemoteServiceRelativePath("gwtrpc")
 public interface ITimesliceSvc extends RemoteService
 {
     // TODO: move these into a separate service, since others now also use it.

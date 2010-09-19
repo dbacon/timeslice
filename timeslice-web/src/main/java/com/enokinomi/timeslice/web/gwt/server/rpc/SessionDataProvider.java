@@ -6,11 +6,13 @@ import org.joda.time.DateTime;
 
 import com.enokinomi.timeslice.timeslice.IUserInfoDao;
 import com.enokinomi.timeslice.timeslice.TsSettings;
+import com.google.inject.Inject;
 
 public class SessionDataProvider
 {
     private final IUserInfoDao userInfoDao;
 
+    @Inject
     public SessionDataProvider(IUserInfoDao userInfoDao)
     {
         this.userInfoDao = userInfoDao;

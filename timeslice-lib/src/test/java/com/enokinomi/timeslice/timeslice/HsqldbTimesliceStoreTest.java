@@ -28,8 +28,8 @@ public class HsqldbTimesliceStoreTest
         ConnectionFactory connFactory = new ConnectionFactory();
         HsqldbTagStore store = new HsqldbTagStore(connFactory.createConnection(dbDir + "/test-1"));
 
-//        SchemaDuty schemaDuty = new SchemaDuty(1, "timeslice-1.ddl");
-//        schemaDuty.createSchema(connFactory.createConnection(dbDir + "/test-1"));
+        SchemaDuty schemaDuty = new SchemaDuty("timeslice-1.ddl");
+        schemaDuty.createSchema(connFactory.createConnection(dbDir + "/test-1"));
 //        SchemaDetector schemaDetector = new SchemaDetector();
 
         DateTime asOf = new DateTime(2010, 5, 5, 14, 32, 0, 0);
@@ -49,8 +49,8 @@ public class HsqldbTimesliceStoreTest
         ConnectionFactory connFactory = new ConnectionFactory();
         HsqldbTagStore store = new HsqldbTagStore(connFactory.createConnection(dbDir + "/test-2"));
 
-//        SchemaDuty schemaDuty = new SchemaDuty(1, "timeslice-1.ddl");
-//        schemaDuty.createSchema(connFactory.createConnection(dbDir + "/test-2"));
+        SchemaDuty schemaDuty = new SchemaDuty("timeslice-1.ddl");
+        schemaDuty.createSchema(connFactory.createConnection(dbDir + "/test-2"));
 //        SchemaDetector schemaDetector = new SchemaDetector();
 //        HsqldbTimesliceStore store = new HsqldbTimesliceStore("first-task", dbDir + "/test-2", 1, new Instant(), new Instant(), connFactory, schemaDetector);
 //        store.enable(false);

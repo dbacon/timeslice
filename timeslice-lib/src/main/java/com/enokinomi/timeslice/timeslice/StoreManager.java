@@ -206,7 +206,7 @@ public class StoreManager
             // TODO: we could check for old hsqldb.ddlversion and warn it's not used.
 
             SchemaDetector schemaDetector = new SchemaDetector();
-            SchemaDuty schemaCreator = new SchemaDuty(1, "timeslice-1.ddl");
+            SchemaDuty schemaCreator = new SchemaDuty("timeslice-1.ddl");
 
             String filename = generatePath(desc.getStoreDir(), name);
             detectOrCreate(filename, schemaDetector, schemaCreator);
@@ -222,7 +222,7 @@ public class StoreManager
                 throw new RuntimeException("Wrapped checked-exception: " + e.getMessage(), e);
             }
 
-            return new HsqldbTimesliceStore(conn);
+            return new HsqldbTimesliceStore(conn, null); // TODO: didnt fix, - deperecate this clalsss
         }
 
         private Integer detectOrCreate(String filename, SchemaDetector schemaDetector, SchemaDuty schemaCreator)

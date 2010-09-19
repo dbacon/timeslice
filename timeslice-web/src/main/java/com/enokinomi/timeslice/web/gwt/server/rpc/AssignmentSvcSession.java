@@ -6,12 +6,14 @@ import com.enokinomi.timeslice.web.gwt.client.beans.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.server.IAssignmentSvc;
 import com.enokinomi.timeslice.web.gwt.client.server.ProcType;
 import com.enokinomi.timeslice.web.gwt.client.server.SortDir;
+import com.google.inject.Inject;
 
 public class AssignmentSvcSession implements IAssignmentSvc
 {
     public final SessionTracker sessionTracker;
     private final AssignmentSvc assignmentSvc;
 
+    @Inject
     public AssignmentSvcSession(SessionTracker sessionTracker, AssignmentSvc assignmentSvc)
     {
         this.sessionTracker = sessionTracker;

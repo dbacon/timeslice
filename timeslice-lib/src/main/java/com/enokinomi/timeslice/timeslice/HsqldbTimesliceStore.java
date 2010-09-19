@@ -12,20 +12,43 @@ import org.joda.time.Instant;
 
 import com.enokinomi.timeslice.app.core.ITimesliceStore;
 import com.enokinomi.timeslice.app.core.StartTag;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 
 public class HsqldbTimesliceStore implements ITimesliceStore
 {
     private final Connection conn;
+    private final SchemaManager schemaManager;
 
-    public HsqldbTimesliceStore(Connection conn)
+    private Integer version = null;
+
+    @Inject
+    public HsqldbTimesliceStore(@Named("tsConnection") Connection conn, SchemaManager schemaManager)
     {
         this.conn = conn;
+        this.schemaManager = schemaManager;
+    }
+
+    private synchronized void check(int minversion)
+    {
+        if (null == version)
+        {
+            version = schemaManager.findVersion(conn);
+        }
+
+        if (version < minversion)
+        {
+            String version2 = Integer.MIN_VALUE == version ? "(unrecognized)" : ("" + version);
+            throw new RuntimeException(String.format("Insufficient database version %s, need %s.", version2, minversion));
+        }
     }
 
     @Override
-    public void add(StartTag tag)
+    public synchronized void add(StartTag tag)
     {
+        check(0);
+
         try
         {
             PreparedStatement statement = conn.prepareStatement("insert into ts_tag (whenstamp, who, what) values (?, ?, ?)");
@@ -43,14 +66,16 @@ public class HsqldbTimesliceStore implements ITimesliceStore
     }
 
     @Override
-    public void addAll(Collection<? extends StartTag> tags, boolean strict)
+    public synchronized void addAll(Collection<? extends StartTag> tags, boolean strict)
     {
         throw new RuntimeException("TODO: need to implement addAll"); // TODO: addAll()
     }
 
     @Override
-    public List<StartTag> query(String owner, Instant starting, Instant ending, int pageSize, int pageIndex)
+    public synchronized List<StartTag> query(String owner, Instant starting, Instant ending, int pageSize, int pageIndex)
     {
+        check(0);
+
         // TODO: use page-size and page-index
         try
         {
@@ -82,8 +107,10 @@ public class HsqldbTimesliceStore implements ITimesliceStore
     }
 
     @Override
-    public void remove(StartTag tag)
+    public synchronized void remove(StartTag tag)
     {
+        check(0);
+
         try
         {
             PreparedStatement statement = conn.prepareStatement("delete from ts_tag where whenstamp = ?");
@@ -99,8 +126,10 @@ public class HsqldbTimesliceStore implements ITimesliceStore
     }
 
     @Override
-    public void updateText(StartTag tag)
+    public synchronized void updateText(StartTag tag)
     {
+        check(0);
+
         try
         {
             PreparedStatement statement = conn.prepareStatement("update ts_tag set what = ? where whenstamp = ?");

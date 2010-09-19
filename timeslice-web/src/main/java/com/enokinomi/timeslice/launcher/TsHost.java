@@ -1,8 +1,5 @@
 package com.enokinomi.timeslice.launcher;
 
-import java.io.File;
-import java.util.Map;
-
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
@@ -10,9 +7,8 @@ import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.log.Logger;
-import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.resource.Resource;
 
 import com.google.inject.servlet.GuiceFilter;
 
@@ -24,8 +20,6 @@ import com.google.inject.servlet.GuiceFilter;
  */
 public class TsHost
 {
-    private static final Logger log = Log.getLogger(TsHost.class.getName());
-
     private final int port;
 
     private HandlerList handler;
@@ -92,31 +86,19 @@ public class TsHost
         server.setHandler(handler);
     }
 
-    public TsHost createGuiceContext()
+    public TsHost createGuiceContext(String contextPath, String resourceUrlOrFilename)
     {
-        ServletContextHandler context = new ServletContextHandler(server, "/", true, false);
-        context.addServlet(DefaultServlet.class, "/");
-        context.addFilter(new FilterHolder(new GuiceFilter()), "/*", 0);
-
-        handler.addHandler(context);
-
-        return this;
-    }
-
-    public TsHost createWarHandler(String warFileName, String contextPath, Map<String, String> initParams)
-    {
-        // do a quick pre-check on the war-file
-        File f = new File(warFileName);
-        if (!f.canRead() || !f.isFile())
+        ServletContextHandler context = new ServletContextHandler(server, contextPath, true, false);
+        try
         {
-            log.warn("Could not find a decent war(not a file, or no permissions to read): '" + warFileName + "'");
-            return this;
+            context.setBaseResource(Resource.newResource(resourceUrlOrFilename));
         }
-
-        WebAppContext context = new WebAppContext();
-        context.setWar(warFileName);
-        context.setContextPath(contextPath);
-        context.setInitParams(initParams);
+        catch(Exception e)
+        {
+            throw new RuntimeException("Wrapped checked-exception: " + e.getMessage(), e);
+        }
+        context.addServlet(new ServletHolder(new DefaultServlet()), "/");
+        context.addFilter(new FilterHolder(new GuiceFilter()), "/*", 0);
 
         handler.addHandler(context);
 

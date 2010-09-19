@@ -3,6 +3,7 @@ package com.enokinomi.timeslice.timeslice;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
+@Deprecated
 public class ConnectionFactory
 {
     public Connection createConnection(String filename)
@@ -10,7 +11,9 @@ public class ConnectionFactory
         try
         {
             Class.forName("org.hsqldb.jdbcDriver");
-            return DriverManager.getConnection("jdbc:hsqldb:file:" + filename + ";shutdown=true;", "SA", "");
+            Connection conn = DriverManager.getConnection("jdbc:hsqldb:file:" + filename + ";shutdown=true;", "SA", "");
+//            conn.setAutoCommit(false);
+            return conn;
         }
         catch (Exception e)
         {

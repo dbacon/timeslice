@@ -6,7 +6,7 @@ import com.enokinomi.timeslice.web.gwt.client.beans.AssignedTaskTotal;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-@RemoteServiceRelativePath("timeslice-assigned")
+@RemoteServiceRelativePath("gwtrpc")
 public interface IAssignmentSvc extends RemoteService
 {
     void assign(String authToken, String description, String billTo);

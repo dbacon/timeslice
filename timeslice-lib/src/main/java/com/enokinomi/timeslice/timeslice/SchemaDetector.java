@@ -41,6 +41,7 @@ public class SchemaDetector
             if (!foundTagTable) msgs.add("No tag table");
             if (Integer.MIN_VALUE == ddlVersion) msgs.add("No version table");
 
+            // version is at least 0 if tag-table is there.
             if (foundTagTable) ddlVersion = Math.max(0, ddlVersion);
         }
         catch (SQLException e1)

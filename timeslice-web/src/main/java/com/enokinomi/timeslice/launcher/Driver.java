@@ -1,5 +1,7 @@
 package com.enokinomi.timeslice.launcher;
 
+
+import com.enokinomi.timeslice.web.gwt.server.rpc.GuiceRpcService;
 import com.google.inject.Guice;
 import com.google.inject.servlet.ServletModule;
 
@@ -30,21 +32,20 @@ public class Driver
     {
         TsHostSettingsManager sm = new TsHostSettingsManager(System.getProperties()).pushSettings(args, true);
 
-        Guice.createInjector(new ServletModule()
-        {
-            @Override
-            protected void configureServlets()
-            {
-//                serve("/hello").with();
-            }
-        });
+        Guice.createInjector(
+                new ServletModule()
+                {
+                    @Override
+                    protected void configureServlets()
+                    {
+                        serve("/timeslice.App/gwtrpc").with(GuiceRpcService.class);
+                    }
+                },
+                new TimesliceModule(sm.getDatabaseBasePath(), sm.getAclFilename())
+            );
 
         new TsHost(sm.getPort())
-            .createWarHandler(
-                sm.getWarFileName(),
-                sm.getContextPath(),
-                sm.createInitParams())
-             .createGuiceContext()
+            .createGuiceContext("/", sm.getResourceUrlOrFilename())
             .run();
     }
 }

@@ -5,6 +5,8 @@ import java.util.List;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
+import org.eclipse.jetty.util.log.Log;
+
 import com.enokinomi.timeslice.web.gwt.client.beans.NotAuthenticException;
 import com.enokinomi.timeslice.web.gwt.client.beans.StartTag;
 import com.enokinomi.timeslice.web.gwt.client.beans.TaskTotal;
@@ -12,7 +14,11 @@ import com.enokinomi.timeslice.web.gwt.client.server.ITimesliceSvc;
 import com.enokinomi.timeslice.web.gwt.client.server.ProcType;
 import com.enokinomi.timeslice.web.gwt.client.server.SortDir;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
+@Deprecated
+@Singleton
 public class TimesliceSvcServlet extends RemoteServiceServlet implements ITimesliceSvc, INeedsInjectionHelp
 {
     public static final String TIMESLICE_SERVLET_TIMESLICE = "timeslice.servlet.timeslice";
@@ -20,6 +26,16 @@ public class TimesliceSvcServlet extends RemoteServiceServlet implements ITimesl
     private static final long serialVersionUID = 1L;
 
     private ITimesliceSvc timesliceSvc;
+
+    public TimesliceSvcServlet()
+    {
+    }
+
+    @Inject
+    public TimesliceSvcServlet(ITimesliceSvc timesliceSvc)
+    {
+        this.timesliceSvc = timesliceSvc;
+    }
 
     public ITimesliceSvc getTimesliceSvc()
     {
@@ -36,8 +52,15 @@ public class TimesliceSvcServlet extends RemoteServiceServlet implements ITimesl
     {
         super.init(config);
 
-        Injector injector = (Injector) config.getServletContext().getAttribute(TimesliceStartupServletContextListener.INJECTOR_SVC);
-        injector.inject(this);
+        if (null == timesliceSvc)
+        {
+            Injector injector = (Injector) config.getServletContext().getAttribute(TimesliceStartupServletContextListener.INJECTOR_SVC);
+            injector.inject(this);
+        }
+        else
+        {
+            Log.info(" servlet.init found servlet already injected! great!");
+        }
     }
 
     @Override
@@ -73,7 +96,6 @@ public class TimesliceSvcServlet extends RemoteServiceServlet implements ITimesl
             List<String> ignoreWords) throws NotAuthenticException
     {
         return getTimesliceSvc().refreshTotals(authToken, maxSize, sortDir, procType, startingInstant, endingInstant, allowWords, ignoreWords);
-
     }
 
     @Override

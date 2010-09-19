@@ -22,9 +22,11 @@ import com.enokinomi.timeslice.timeslice.HsqldbTimesliceStore;
 import com.enokinomi.timeslice.timeslice.IUserInfoDao;
 import com.enokinomi.timeslice.timeslice.SchemaDetector;
 import com.enokinomi.timeslice.timeslice.SchemaDuty;
+import com.enokinomi.timeslice.timeslice.SchemaManager;
 import com.enokinomi.timeslice.timeslice.UserInfoDao;
 
 
+@Deprecated
 public class TimesliceStartupServletContextListener implements ServletContextListener
 {
     public static final String INJECTOR_SVC = "injectorSvc";
@@ -50,7 +52,7 @@ public class TimesliceStartupServletContextListener implements ServletContextLis
         SessionTracker sessionTracker = new SessionTracker(sessionDataProvider, aclFilename);
 
         ConnectionFactory connectionFactory = new ConnectionFactory();
-        final Connection conn = connectionFactory.createConnection(dataDir + "/tsdb");
+        final Connection conn = connectionFactory.createConnection(dataDir + "/default-01");
         Runtime.getRuntime().addShutdownHook(new Thread()
         {
             @Override
@@ -70,13 +72,13 @@ public class TimesliceStartupServletContextListener implements ServletContextLis
         });
 
         Integer schemaVersion = new SchemaDetector().detectSchema(conn);
-        SchemaDuty schemaCreator = new SchemaDuty(1, "timeslice-1.ddl");
+        SchemaDuty schemaCreator = new SchemaDuty("timeslice-1.ddl");
         if (schemaVersion < 0)
         {
             schemaCreator.createSchema(conn);
         }
 
-        ITimesliceStore store = new HsqldbTimesliceStore(conn);
+        ITimesliceStore store = new HsqldbTimesliceStore(conn, new SchemaManager(new SchemaDetector(), new SchemaDuty("timeslice-1.ddl")));
         ITagStore tagStore = new HsqldbTagStore(conn);
 
         Split splitter = new Split();

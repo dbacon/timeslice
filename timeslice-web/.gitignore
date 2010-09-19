@@ -6,8 +6,10 @@ target
 tomcat
 datadir
 
-war/WEB-INF/classes
-war/WEB-INF/lib
-war/com.enokinomi.timeslice.web.gwt.Timeslice
-war/timeslice.App
+src/main/webapp/com.enokinomi.timeslice.web.gwt.Timeslice
+src/main/webapp/timeslice.App
+
+war
+
+src/test/input/db/*
 

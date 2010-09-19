@@ -11,6 +11,7 @@ import com.enokinomi.timeslice.web.gwt.client.server.ProcType;
 import com.enokinomi.timeslice.web.gwt.client.server.SortDir;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
+@Deprecated
 public class AssignmentSvcServlet extends RemoteServiceServlet implements IAssignmentSvc, INeedsInjectionHelp
 {
     public static final String TIMESLICE_SERVLET_ASSIGNMENT = "timeslice.servlet.assignment";

@@ -8,6 +8,8 @@ import com.enokinomi.timeslice.web.gwt.client.beans.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.beans.TaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.server.ProcType;
 import com.enokinomi.timeslice.web.gwt.client.server.SortDir;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 public class AssignmentSvc
 {
@@ -15,7 +17,8 @@ public class AssignmentSvc
     private final TimesliceSvc timesliceSvc;
     private final String valueIfNotAssigned;
 
-    public AssignmentSvc(IAssignmentDao assignmentDao, TimesliceSvc timesliceSvc, String valueIfNotAssigned)
+    @Inject
+    public AssignmentSvc(IAssignmentDao assignmentDao, TimesliceSvc timesliceSvc, @Named("assignDefault") String valueIfNotAssigned)
     {
         this.assignmentDao = assignmentDao;
         this.timesliceSvc = timesliceSvc;

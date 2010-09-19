@@ -10,6 +10,8 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import com.enokinomi.timeslice.app.core.ITagStore;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 public class HsqldbTagStore implements ITagStore
 {
@@ -27,7 +29,8 @@ public class HsqldbTagStore implements ITagStore
 
     private final Connection conn;
 
-    public HsqldbTagStore(Connection conn)
+    @Inject
+    public HsqldbTagStore(@Named("tsConnection") Connection conn)
     {
         this.conn = conn;
     }

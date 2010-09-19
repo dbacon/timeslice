@@ -20,6 +20,7 @@ import com.enokinomi.timeslice.web.gwt.client.beans.TaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.server.ProcType;
 import com.enokinomi.timeslice.web.gwt.client.server.SortDir;
 import com.enokinomi.timeslice.web.gwt.server.beantx.ServerToClient;
+import com.google.inject.Inject;
 
 public class TimesliceSvc
 {
@@ -30,6 +31,7 @@ public class TimesliceSvc
     private final Aggregate aggregator;
     private final Split splitter;
 
+    @Inject
     public TimesliceSvc(ITimesliceStore store, Sum summer, Aggregate aggregate, Split splitter)
     {
         this.store = store;
