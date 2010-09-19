@@ -8,6 +8,8 @@
 	<packaging>jar</packaging>
 	<version>1.0.10-beta-20100905-2-SNAPSHOT</version>
 
+	<name>timeslice-lib</name>
+
 	<build>
 		<resources>
 			<resource>

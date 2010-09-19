@@ -8,6 +8,8 @@
 	<packaging>jar</packaging>
 	<version>1.0.10-beta-20100905-2-SNAPSHOT</version>
 
+	<name>timeslice-web</name>
+
 	<properties>
 		<!--
 		<gwt.version>1.6.4</gwt.version>
@@ -202,6 +204,7 @@
 						<version>1.2</version>
 						<executions>
 							<execution>
+                                <phase>generate-resources</phase>
 								<goals><goal>compile</goal></goals>
 							</execution>
 						</executions>

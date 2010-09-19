@@ -8,9 +8,10 @@
 	<packaging>pom</packaging>
 	<version>1.0.10-beta-20100905-2-SNAPSHOT</version>
 
+	<name>timeslice-project</name>
+
 	<modules>
 		<module>timeslice-lib</module>
 		<module>timeslice-web</module>
-		<module>timeslice-host</module>
 	</modules>
 </project>
