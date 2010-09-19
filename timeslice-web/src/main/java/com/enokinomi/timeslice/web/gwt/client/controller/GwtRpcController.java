@@ -14,14 +14,16 @@ import com.enokinomi.timeslice.web.gwt.client.server.ITimesliceSvc;
 import com.enokinomi.timeslice.web.gwt.client.server.ITimesliceSvcAsync;
 import com.enokinomi.timeslice.web.gwt.client.server.ProcType;
 import com.enokinomi.timeslice.web.gwt.client.server.SortDir;
+import com.enokinomi.timeslice.web.gwt.client.widget.HotlistPanel;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class GwtRpcController extends BaseController
 {
     private final ITimesliceSvcAsync svc = GWT.create(ITimesliceSvc.class);
     private final IAssignmentSvcAsync assignedSvc = GWT.create(IAssignmentSvc.class);
-    private String authToken = null;
+    private String authToken = Cookies.getCookie("timeslice.authtoken");
     private LoginDialog loginDialog = null;
 
     public ITimesliceSvcAsync getSvc()
@@ -92,6 +94,7 @@ public class GwtRpcController extends BaseController
                     public void onSuccess(String result)
                     {
                         setAuthToken(result);
+                        Cookies.setCookie("timeslice.authtoken", result, HotlistPanel.createDateSufficientlyInTheFuture());
                         fireAuthenticated();
                         if (null != action) action.startRetry();
                     }
