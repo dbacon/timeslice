@@ -2,6 +2,7 @@ package com.enokinomi.timeslice.web.gwt.client.controller;
 
 import java.util.List;
 
+import com.enokinomi.timeslice.web.gwt.client.beans.AppJobCompletion;
 import com.enokinomi.timeslice.web.gwt.client.beans.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.beans.BrandInfo;
 import com.enokinomi.timeslice.web.gwt.client.beans.StartTag;
@@ -23,5 +24,5 @@ public interface IControllerListener
     void onAssignBilleeDone(AsyncResult<Void> result);
 
     void onListAvailableJobsDone(AsyncResult<List<String>> result);
-    void onPerformJobDone(AsyncResult<String> result);
+    void onPerformJobDone(AsyncResult<AppJobCompletion> asyncResult);
 }

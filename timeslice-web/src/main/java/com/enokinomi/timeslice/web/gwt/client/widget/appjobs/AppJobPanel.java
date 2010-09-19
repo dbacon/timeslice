@@ -9,6 +9,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ResizeComposite;
@@ -40,9 +41,12 @@ public class AppJobPanel extends ResizeComposite
             @Override
             public void onClick(ClickEvent event)
             {
-                results.clear();
+                results.removeAllRows();
+                addHeaders();
             }
         }));
+
+        addHeaders();
 
         DockLayoutPanel dp = new DockLayoutPanel(Unit.EM);
         dp.addNorth(hp, 2);
@@ -52,11 +56,19 @@ public class AppJobPanel extends ResizeComposite
         initWidget(dp);
     }
 
-    public void addResult(String jobId, String result)
+    protected void addHeaders()
+    {
+        results.setWidget(0, 0, new HTML("<b><u>Job ID</u></b>", false));
+        results.setWidget(0, 1, new HTML("<b><u>Status</u></b>", false));
+        results.setWidget(0, 2, new HTML("<b><u>Description</b></u>", false));
+    }
+
+    public void addResult(String jobId, String status, String result)
     {
         int row = results.getRowCount();
         results.setWidget(row, 0, new Label(jobId));
-        results.setWidget(row, 1, new Label(result));
+        results.setWidget(row, 1, new Label(status));
+        results.setWidget(row, 2, new Label(result));
 
         resultScroller.scrollToBottom();
     }

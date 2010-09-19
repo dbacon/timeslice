@@ -2,6 +2,7 @@ package com.enokinomi.timeslice.web.gwt.client.server;
 
 import java.util.List;
 
+import com.enokinomi.timeslice.web.gwt.client.beans.AppJobCompletion;
 import com.enokinomi.timeslice.web.gwt.client.beans.NotAuthenticException;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -10,5 +11,5 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface IAppJobSvc extends RemoteService
 {
     List<String> getAvailableJobIds(String authToken) throws NotAuthenticException;
-    String performJob(String jobId) throws NotAuthenticException;
+    AppJobCompletion performJob(String jobId) throws NotAuthenticException;
 }

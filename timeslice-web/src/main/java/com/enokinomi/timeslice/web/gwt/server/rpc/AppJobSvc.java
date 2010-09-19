@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.enokinomi.timeslice.web.gwt.client.beans.AppJobCompletion;
 import com.enokinomi.timeslice.web.gwt.client.beans.NotAuthenticException;
 import com.enokinomi.timeslice.web.gwt.client.server.IAppJobSvc;
 import com.google.inject.Inject;
@@ -39,7 +40,7 @@ public class AppJobSvc implements IAppJobSvc
     }
 
     @Override
-    public String performJob(String jobId) throws NotAuthenticException
+    public AppJobCompletion performJob(String jobId) throws NotAuthenticException
     {
         AppJob requestedJob = jobsById.get(jobId);
 
@@ -47,16 +48,16 @@ public class AppJobSvc implements IAppJobSvc
         {
             try
             {
-                return "job returned: " + requestedJob.perform();
+                return new AppJobCompletion(jobId, "ok", requestedJob.perform());
             }
             catch (Exception e)
             {
-                return "job raised exception: " + e.getMessage();
+                return new AppJobCompletion(jobId, "failed", e.getMessage());
             }
         }
         else
         {
-            return "job not found";
+            return new AppJobCompletion("-", "not run", "job not found");
         }
     }
 

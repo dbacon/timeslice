@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import com.enokinomi.timeslice.web.gwt.client.beans.AppJobCompletion;
 import com.enokinomi.timeslice.web.gwt.client.beans.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.beans.BrandInfo;
 import com.enokinomi.timeslice.web.gwt.client.beans.StartTag;
@@ -588,16 +589,17 @@ public class TimesliceApp implements EntryPoint
                 }
 
                 @Override
-                public void onPerformJobDone(AsyncResult<String> result)
+                public void onPerformJobDone(AsyncResult<AppJobCompletion> result)
                 {
                     if (result.isError())
                     {
-                        appJobPanel.addResult("?? [todo]", result.getThrown().getMessage());
+                        appJobPanel.addResult("-", "call failed", result.getThrown().getMessage());
                         GWT.log("Server-side job failed: " + result.getThrown().getMessage());
                     }
                     else
                     {
-                        appJobPanel.addResult("?? [todo]", result.getReturned());
+                        AppJobCompletion returned = result.getReturned();
+                        appJobPanel.addResult(returned.getJobId(), returned.getStatus(), returned.getDescription());
                         GWT.log("Server-side job done: " + result.getReturned());
                     }
                 }

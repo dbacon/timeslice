@@ -3,6 +3,7 @@ package com.enokinomi.timeslice.web.gwt.client.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.enokinomi.timeslice.web.gwt.client.beans.AppJobCompletion;
 import com.enokinomi.timeslice.web.gwt.client.beans.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.beans.BrandInfo;
 import com.enokinomi.timeslice.web.gwt.client.beans.StartTag;
@@ -116,11 +117,11 @@ public abstract class BaseController implements IController
         }
     }
 
-    protected void firePerformJobDone(AsyncResult<String> result)
+    protected void firePerformJobDone(AsyncResult<AppJobCompletion> asyncResult)
     {
         for (IControllerListener listener: listeners)
         {
-            listener.onPerformJobDone(result);
+            listener.onPerformJobDone(asyncResult);
         }
     }
 

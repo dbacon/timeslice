@@ -3,6 +3,7 @@ package com.enokinomi.timeslice.web.gwt.client.controller;
 
 import java.util.List;
 
+import com.enokinomi.timeslice.web.gwt.client.beans.AppJobCompletion;
 import com.enokinomi.timeslice.web.gwt.client.beans.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.beans.BrandInfo;
 import com.enokinomi.timeslice.web.gwt.client.beans.NotAuthenticException;
@@ -604,12 +605,12 @@ public class GwtRpcController extends BaseController
         }
         else
         {
-            jobSvc.performJob(jobId, new AsyncCallback<String>()
+            jobSvc.performJob(jobId, new AsyncCallback<AppJobCompletion>()
             {
                 @Override
-                public void onSuccess(String result)
+                public void onSuccess(AppJobCompletion result)
                 {
-                    firePerformJobDone(new AsyncResult<String>(result, null));
+                    firePerformJobDone(new AsyncResult<AppJobCompletion>(result, null));
                 }
 
                 @Override
@@ -621,7 +622,7 @@ public class GwtRpcController extends BaseController
                     }
                     else
                     {
-                        firePerformJobDone(new AsyncResult<String>(null, caught));
+                        firePerformJobDone(new AsyncResult<AppJobCompletion>(null, caught));
                     }
                 }
             });
