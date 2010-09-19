@@ -78,8 +78,9 @@ public class TimesliceStartupServletContextListener implements ServletContextLis
             schemaCreator.createSchema(conn);
         }
 
-        ITimesliceStore store = new HsqldbTimesliceStore(conn, new SchemaManager(new SchemaDetector(), new SchemaDuty("timeslice-1.ddl")));
-        ITagStore tagStore = new HsqldbTagStore(conn);
+        SchemaManager schemaManager = new SchemaManager(new SchemaDetector(), new SchemaDuty("timeslice-1.ddl"));
+        ITimesliceStore store = new HsqldbTimesliceStore(conn, schemaManager);
+        ITagStore tagStore = new HsqldbTagStore(conn, schemaManager);
 
         Split splitter = new Split();
         Sum summer = new Sum();

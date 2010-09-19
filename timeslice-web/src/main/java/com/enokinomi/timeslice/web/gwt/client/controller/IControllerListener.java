@@ -19,4 +19,7 @@ public interface IControllerListener
     void onPersistTotalsDone(AsyncResult<String> result);
     void onRefreshTotalsAssignedDone(AsyncResult<List<AssignedTaskTotal>> result);
     void onAssignBilleeDone(AsyncResult<Void> result);
+
+    void onListAvailableJobsDone(AsyncResult<List<String>> result);
+    void onPerformJobDone(AsyncResult<String> result);
 }

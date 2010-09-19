@@ -1,3 +1,5 @@
+create table ts_version_1 ( nothing char(1));
+
 create table ts_tag
 (
 	whenstamp varchar(64),
@@ -14,4 +16,4 @@ create table ts_assign
     billee varchar(128)
 )
 
-create table ts_version_1 ( nothing char(1));
+create table ts_version_1_done ( nothing char(1));

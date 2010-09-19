@@ -1,13 +1,26 @@
 package com.enokinomi.timeslice.launcher;
 
 
+import static com.enokinomi.timeslice.lib.util.Check.mapNullTo;
+
+import java.util.Arrays;
+
+import joptsimple.ArgumentAcceptingOptionSpec;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+
 import com.enokinomi.timeslice.web.gwt.server.rpc.GuiceRpcService;
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
+import com.google.inject.Provides;
 import com.google.inject.servlet.ServletModule;
 
 
 public class Driver
 {
+    private final Integer port;
+    private final String res;
+
     /**
      * Any argument present is taken as the name of settings to be loaded,
      * each having higher precedence than the previous.  System properties
@@ -30,7 +43,26 @@ public class Driver
      */
     public static void main(String[] args)
     {
-        TsHostSettingsManager sm = new TsHostSettingsManager(System.getProperties()).pushSettings(args, true);
+        OptionParser parser = new OptionParser();
+
+        ArgumentAcceptingOptionSpec<Integer> portSpec = parser.acceptsAll(Arrays.asList("p", "port"), "Port for web server.").withRequiredArg().ofType(Integer.class);
+        ArgumentAcceptingOptionSpec<String> dbSpec = parser.acceptsAll(Arrays.asList("d", "data"), "Base-path for database.").withRequiredArg().ofType(String.class);
+        ArgumentAcceptingOptionSpec<String> aclSpec = parser.acceptsAll(Arrays.asList("a", "acl"), "ACL file.").withRequiredArg().ofType(String.class);
+        ArgumentAcceptingOptionSpec<String> resSpec = parser.acceptsAll(Arrays.asList("w", "web-root"), "Base folder of web resources.").withRequiredArg().ofType(String.class);
+
+        OptionSet detectedOptions = parser.parse(args);
+
+        String acl = mapNullTo(aclSpec.value(detectedOptions), "ts.acl");
+        String db = mapNullTo(dbSpec.value(detectedOptions), "ts-data");
+        final String res = mapNullTo(resSpec.value(detectedOptions), "ts-web-root");
+        final Integer port = mapNullTo(portSpec.value(detectedOptions), 9080);
+
+        System.out.println("Configuration:");
+        System.out.println("  port     : " + port);
+        System.out.println("  web-root : " + res);
+        System.out.println("  ACL      : " + acl);
+        System.out.println("  data     : " + db);
+        System.out.flush();
 
         Guice.createInjector(
                 new ServletModule()
@@ -41,11 +73,35 @@ public class Driver
                         serve("/timeslice.App/gwtrpc").with(GuiceRpcService.class);
                     }
                 },
-                new TimesliceModule(sm.getDatabaseBasePath(), sm.getAclFilename())
-            );
+                new TimesliceModule(db, acl),
+                new AbstractModule()
+                {
+                    @Override
+                    protected void configure()
+                    {
+                    }
 
-        new TsHost(sm.getPort())
-            .createGuiceContext("/", sm.getResourceUrlOrFilename())
+                    @SuppressWarnings("unused")
+                    @Provides Driver createDriver()
+                    {
+                        return new Driver(port, res);
+                    }
+                }
+            )
+            .getInstance(Driver.class)
+            .run();
+    }
+
+    public Driver(Integer port, String res)
+    {
+        this.port = port;
+        this.res = res;
+    }
+
+    public void run()
+    {
+        new TsHost(port)
+            .createGuiceContext("/", res)
             .run();
     }
 }

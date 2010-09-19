@@ -5,10 +5,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-
 import com.enokinomi.timeslice.web.gwt.client.beans.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.beans.StartTag;
 import com.enokinomi.timeslice.web.gwt.client.beans.TaskTotal;
+import com.enokinomi.timeslice.web.gwt.client.controller.ErrorBox;
 import com.enokinomi.timeslice.web.gwt.client.controller.GwtRpcController;
 import com.enokinomi.timeslice.web.gwt.client.controller.IController;
 import com.enokinomi.timeslice.web.gwt.client.controller.IControllerListener;
@@ -19,11 +19,13 @@ import com.enokinomi.timeslice.web.gwt.client.util.Checks;
 import com.enokinomi.timeslice.web.gwt.client.widget.EmptyOptionsProvider;
 import com.enokinomi.timeslice.web.gwt.client.widget.HistoryPanel;
 import com.enokinomi.timeslice.web.gwt.client.widget.HotlistPanel;
+import com.enokinomi.timeslice.web.gwt.client.widget.HotlistPanel.IHotlistPanelListener;
 import com.enokinomi.timeslice.web.gwt.client.widget.IOptionsProvider;
 import com.enokinomi.timeslice.web.gwt.client.widget.OptionsPanel;
 import com.enokinomi.timeslice.web.gwt.client.widget.ParamPanel;
 import com.enokinomi.timeslice.web.gwt.client.widget.ReportPanel;
-import com.enokinomi.timeslice.web.gwt.client.widget.HotlistPanel.IHotlistPanelListener;
+import com.enokinomi.timeslice.web.gwt.client.widget.appjobs.AppJobPanel;
+import com.enokinomi.timeslice.web.gwt.client.widget.appjobs.AppJobPanel.Listener;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -65,6 +67,8 @@ public class TimesliceApp implements EntryPoint
         public static final int AutoRefreshMs = 500;
     }
 
+    private boolean assignsEnabled = true;
+
     private final IController controller = new GwtRpcController(); // new Controller();
 
     private final HistoryPanel historyPanel = new HistoryPanel();
@@ -88,6 +92,7 @@ public class TimesliceApp implements EntryPoint
     private final RadioButton modeRadioSpecify = new RadioButton("MODE", "Specify Date");
     private final RadioButton modeRadioNormal = new RadioButton("MODE", "Normal");
     private final ReportPanel reportPanel = new ReportPanel();
+    private final AppJobPanel appJobPanel = new AppJobPanel();
 
 
     private void updateStartTag(StartTag editedStartTag)
@@ -162,14 +167,17 @@ public class TimesliceApp implements EntryPoint
                 allowWords,
                 ignoreWords);
 
-        controller.startRefreshTotalsAssigned(
-                1000,
-                SortDir.desc,
-                ProcType.sumbydesc,
-                startingTimeText,
-                endingTimeText,
-                allowWords,
-                ignoreWords);
+        if (assignsEnabled)
+        {
+            controller.startRefreshTotalsAssigned(
+                    1000,
+                    SortDir.desc,
+                    ProcType.sumbydesc,
+                    startingTimeText,
+                    endingTimeText,
+                    allowWords,
+                    ignoreWords);
+        }
     }
 
     public void onModuleLoad()
@@ -421,6 +429,10 @@ public class TimesliceApp implements EntryPoint
         Anchor optionslink = new Anchor("<u>O</u>ptions", true);
         optionslink.setAccessKey('o');
         tp.add(optionsPanel, optionslink);
+        Anchor jobsLink = new Anchor("<u>J</u>obs", true);
+        jobsLink.setAccessKey('j');
+        tp.add(appJobPanel, jobsLink);
+
         tp.selectTab(0);
 //        tp.setAnimationEnabled(true);
 
@@ -505,6 +517,11 @@ public class TimesliceApp implements EntryPoint
                 {
                     if (result.isError())
                     {
+                        if (assignsEnabled)
+                        {
+                            assignsEnabled = false; // auto-disable assigned stuff
+                            new ErrorBox("Assign services problem", result.getThrown().getMessage() + " - disabling assigned services - upgrade your database and reload the page to retry.").show();
+                        }
                         GWT.log("got error back: " + result.getThrown().getMessage(), result.getThrown());
                     }
                     else
@@ -538,10 +555,66 @@ public class TimesliceApp implements EntryPoint
                 @Override
                 public void onAssignBilleeDone(AsyncResult<Void> result)
                 {
-                    GWT.log("Billee updated.");
-                    refreshTotals();
+                    if (result.isError())
+                    {
+                        if (assignsEnabled)
+                        {
+                            new ErrorBox("Assign services problem", result.getThrown().getMessage() + " - disabling assigned services - upgrade your database and reload the page to retry.").show();
+                            assignsEnabled = false; // auto-disable assigns stuff
+                        }
+                    }
+                    else
+                    {
+                        GWT.log("Billee updated.");
+                        refreshTotals();
+                    }
+                }
+
+                @Override
+                public void onListAvailableJobsDone(AsyncResult<List<String>> result)
+                {
+                    if (result.isError())
+                    {
+                        GWT.log("Listing server-side jobs failed: " + result.getThrown().getMessage());
+                        appJobPanel.redisplayJobIds(new ArrayList<String>());
+                    }
+                    else
+                    {
+                        GWT.log("Listing server-side jobs done: " + result.getReturned().size() + " item(s).");
+                        appJobPanel.redisplayJobIds(result.getReturned());
+                    }
+                }
+
+                @Override
+                public void onPerformJobDone(AsyncResult<String> result)
+                {
+                    if (result.isError())
+                    {
+                        appJobPanel.addResult("?? [todo]", result.getThrown().getMessage());
+                        GWT.log("Server-side job failed: " + result.getThrown().getMessage());
+                    }
+                    else
+                    {
+                        appJobPanel.addResult("?? [todo]", result.getReturned());
+                        GWT.log("Server-side job done: " + result.getReturned());
+                    }
                 }
             });
+
+        appJobPanel.addListener(new Listener()
+        {
+            @Override
+            public void appJobRequested(String jobId)
+            {
+                controller.startPerformJob(jobId);
+            }
+
+            @Override
+            public void appJobListRefreshRequested()
+            {
+                scheduleJobListUpdate();
+            }
+        });
 
         timer = new Timer()
         {
@@ -555,6 +628,7 @@ public class TimesliceApp implements EntryPoint
         if (options.isAutoRefresh()) timer.scheduleRepeating(options.getAutoRefreshMs());
 
         scheduleRefresh();
+        scheduleJobListUpdate();
     }
 
     private void handleRefreshItemsDone(AsyncResult<List<StartTag>> result)
@@ -642,6 +716,19 @@ public class TimesliceApp implements EntryPoint
         }
 
 //        newItemForm.setFormEnabled(true);
+    }
+
+    private void scheduleJobListUpdate()
+    {
+        DeferredCommand.addCommand(new Command()
+        {
+            @Override
+            public void execute()
+            {
+                controller.startListAvailableJobs();
+            }
+        });
+
     }
 
     private void scheduleRefresh()

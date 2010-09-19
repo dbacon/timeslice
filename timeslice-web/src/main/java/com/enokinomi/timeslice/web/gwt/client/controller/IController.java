@@ -25,4 +25,7 @@ public interface IController
     void startPersistTotals(String persistAsName, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords);
     void startAssignBillee(String description, String newBillee);
 
+    void startListAvailableJobs();
+    void startPerformJob(String jobId);
+
 }

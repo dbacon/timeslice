@@ -107,4 +107,21 @@ public abstract class BaseController implements IController
         }
     }
 
+    protected void fireListAvailableJobsDone(AsyncResult<List<String>> result)
+    {
+        for (IControllerListener listener: listeners)
+        {
+            listener.onListAvailableJobsDone(result);
+        }
+    }
+
+    protected void firePerformJobDone(AsyncResult<String> result)
+    {
+        for (IControllerListener listener: listeners)
+        {
+            listener.onPerformJobDone(result);
+        }
+    }
+
+
 }

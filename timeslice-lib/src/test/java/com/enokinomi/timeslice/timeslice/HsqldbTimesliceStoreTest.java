@@ -3,6 +3,7 @@ package com.enokinomi.timeslice.timeslice;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.sql.Connection;
 
 import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
@@ -18,6 +19,24 @@ public class HsqldbTimesliceStoreTest
 //        HsqldbTimesliceStore store = new HsqldbTimesliceStore(connFactory.createConnection("target/test-generated-data/abc"));
 //    }
 
+    private static final class MockSchemaManager extends SchemaManager
+    {
+        private final int version;
+
+        private MockSchemaManager(int version)
+        {
+            super(null, null);
+
+            this.version = version;
+        }
+
+        @Override
+        public Integer findVersion(Connection conn)
+        {
+            return version;
+        }
+    }
+
     @Test
     public void test_billee_1() throws Exception
     {
@@ -25,8 +44,10 @@ public class HsqldbTimesliceStoreTest
 
         FileUtils.deleteDirectory(new File(dbDir));
 
+        final int version = 1;
+
         ConnectionFactory connFactory = new ConnectionFactory();
-        HsqldbTagStore store = new HsqldbTagStore(connFactory.createConnection(dbDir + "/test-1"));
+        HsqldbTagStore store = new HsqldbTagStore(connFactory.createConnection(dbDir + "/test-1"), new MockSchemaManager(version));
 
         SchemaDuty schemaDuty = new SchemaDuty("timeslice-1.ddl");
         schemaDuty.createSchema(connFactory.createConnection(dbDir + "/test-1"));
@@ -46,8 +67,9 @@ public class HsqldbTimesliceStoreTest
 
         FileUtils.deleteDirectory(new File(dbDir));
 
+        final int version = 1;
         ConnectionFactory connFactory = new ConnectionFactory();
-        HsqldbTagStore store = new HsqldbTagStore(connFactory.createConnection(dbDir + "/test-2"));
+        HsqldbTagStore store = new HsqldbTagStore(connFactory.createConnection(dbDir + "/test-2"), new MockSchemaManager(version));
 
         SchemaDuty schemaDuty = new SchemaDuty("timeslice-1.ddl");
         schemaDuty.createSchema(connFactory.createConnection(dbDir + "/test-2"));

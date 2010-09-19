@@ -29,10 +29,15 @@ public class HsqldbTagStore implements ITagStore
 
     private final Connection conn;
 
+    private final SchemaManager schemaManager;
+
+    private Integer version;
+
     @Inject
-    public HsqldbTagStore(@Named("tsConnection") Connection conn)
+    public HsqldbTagStore(@Named("tsConnection") Connection conn, SchemaManager schemaManager)
     {
         this.conn = conn;
+        this.schemaManager = schemaManager;
     }
 
     public Connection getConn()
@@ -40,9 +45,25 @@ public class HsqldbTagStore implements ITagStore
         return conn;
     }
 
+    private synchronized void check(int minversion)
+    {
+        if (null == version)
+        {
+            version = schemaManager.findVersion(conn);
+        }
+
+        if (version < minversion)
+        {
+            String version2 = Integer.MIN_VALUE == version ? "(unrecognized)" : ("" + version);
+            throw new RuntimeException(String.format("Insufficient database version %s, need %s.", version2, minversion));
+        }
+    }
+
     @Override
     public String lookupBillee(String description, DateTime asOf)
     {
+        check(1);
+
         PreparedStatement statement = null;
         ResultSet rs = null;
 
@@ -106,6 +127,8 @@ public class HsqldbTagStore implements ITagStore
 
     public void endDateAnyBillee(String description, DateTime untilDate)
     {
+        check(1);
+
         // todo: should ensure that no effective records exist for after untilDate
 
         PreparedStatement statement = null;
@@ -149,6 +172,8 @@ public class HsqldbTagStore implements ITagStore
 
     protected void insertBillee(String description, String billee, DateTime asOf)
     {
+        check(1);
+
         PreparedStatement statement = null;
 
         // todo really need check of not closing / clobbering existing range

@@ -8,6 +8,8 @@ import com.enokinomi.timeslice.web.gwt.client.beans.NotAuthenticException;
 import com.enokinomi.timeslice.web.gwt.client.beans.StartTag;
 import com.enokinomi.timeslice.web.gwt.client.beans.TaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.entry.AsyncResult;
+import com.enokinomi.timeslice.web.gwt.client.server.IAppJobSvc;
+import com.enokinomi.timeslice.web.gwt.client.server.IAppJobSvcAsync;
 import com.enokinomi.timeslice.web.gwt.client.server.IAssignmentSvc;
 import com.enokinomi.timeslice.web.gwt.client.server.IAssignmentSvcAsync;
 import com.enokinomi.timeslice.web.gwt.client.server.ITimesliceSvc;
@@ -23,6 +25,8 @@ public class GwtRpcController extends BaseController
 {
     private final ITimesliceSvcAsync svc = GWT.create(ITimesliceSvc.class);
     private final IAssignmentSvcAsync assignedSvc = GWT.create(IAssignmentSvc.class);
+    private final IAppJobSvcAsync jobSvc = GWT.create(IAppJobSvc.class);
+
     private String authToken = Cookies.getCookie("timeslice.authtoken");
     private LoginDialog loginDialog = null;
 
@@ -418,7 +422,9 @@ public class GwtRpcController extends BaseController
                     }
                     else
                     {
-                        throw new RuntimeException("Service error: " + caught.getMessage(), caught);
+                        fireAssignBilleeDone(new AsyncResult<Void>(null, caught));
+//                        new ErrorBox("authentication", caught.getMessage()).show();
+//                        throw new RuntimeException("Service error: " + caught.getMessage(), caught);
                     }
                 }
             });
@@ -457,13 +463,16 @@ public class GwtRpcController extends BaseController
                 public void onFailure(Throwable caught)
                 {
                     GWT.log("got back error for assigned totals: " + caught.getMessage());
+
                     if (caught instanceof NotAuthenticException)
                     {
                         authenticate(caught.getMessage(), retryAction);
                     }
                     else
                     {
-                        throw new RuntimeException("Service error: " + caught.getMessage(), caught);
+                        fireRefreshTotalsAssignedDone(new AsyncResult<List<AssignedTaskTotal>>(null, caught));
+//                        new ErrorBox("authentication", caught.getMessage()).show();
+//                        throw new RuntimeException("Service error: " + caught.getMessage(), caught);
                     }
                 }
             });
@@ -507,6 +516,92 @@ public class GwtRpcController extends BaseController
                     else
                     {
                         firePersistTotalsDone(new AsyncResult<String>(null, caught));
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void startListAvailableJobs()
+    {
+        final IOnAuthenticated retryAction = new IOnAuthenticated()
+        {
+            @Override
+            public void startRetry()
+            {
+                startListAvailableJobs();
+            }
+        };
+
+        String authToken = getAuthToken();
+        if (null == authToken)
+        {
+            authenticate(retryAction);
+        }
+        else
+        {
+            jobSvc.getAvailableJobIds(authToken, new AsyncCallback<List<String>>()
+            {
+                @Override
+                public void onSuccess(List<String> result)
+                {
+                    fireListAvailableJobsDone(new AsyncResult<List<String>>(result, null));
+                }
+
+                @Override
+                public void onFailure(Throwable caught)
+                {
+                    if (caught instanceof NotAuthenticException)
+                    {
+                        authenticate(caught.getMessage(), retryAction);
+                    }
+                    else
+                    {
+                        fireListAvailableJobsDone(new AsyncResult<List<String>>(null, caught));
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void startPerformJob(final String jobId)
+    {
+        final IOnAuthenticated retryAction = new IOnAuthenticated()
+        {
+            @Override
+            public void startRetry()
+            {
+                startPerformJob(jobId);
+            }
+        };
+
+        String authToken = getAuthToken();
+        if (null == authToken)
+        {
+            authenticate(retryAction);
+        }
+        else
+        {
+            jobSvc.performJob(jobId, new AsyncCallback<String>()
+            {
+                @Override
+                public void onSuccess(String result)
+                {
+                    firePerformJobDone(new AsyncResult<String>(result, null));
+                }
+
+                @Override
+                public void onFailure(Throwable caught)
+                {
+                    if (caught instanceof NotAuthenticException)
+                    {
+                        authenticate(caught.getMessage(), retryAction);
+                    }
+                    else
+                    {
+                        firePerformJobDone(new AsyncResult<String>(null, caught));
                     }
                 }
             });

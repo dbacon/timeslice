@@ -45,4 +45,10 @@ public class Check
 
         return t;
     }
+
+    public static <T> T mapNullTo(T t, T valueWhenNull)
+    {
+        if (null == t) return valueWhenNull;
+        return t;
+    }
 }

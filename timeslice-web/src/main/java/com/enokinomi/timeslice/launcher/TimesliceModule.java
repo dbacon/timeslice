@@ -12,8 +12,11 @@ import com.enokinomi.timeslice.timeslice.HsqldbTagStore;
 import com.enokinomi.timeslice.timeslice.HsqldbTimesliceStore;
 import com.enokinomi.timeslice.timeslice.IUserInfoDao;
 import com.enokinomi.timeslice.timeslice.UserInfoDao;
+import com.enokinomi.timeslice.web.gwt.client.server.IAppJobSvc;
 import com.enokinomi.timeslice.web.gwt.client.server.IAssignmentSvc;
 import com.enokinomi.timeslice.web.gwt.client.server.ITimesliceSvc;
+import com.enokinomi.timeslice.web.gwt.server.rpc.AppJob;
+import com.enokinomi.timeslice.web.gwt.server.rpc.AppJobSvc;
 import com.enokinomi.timeslice.web.gwt.server.rpc.AssignmentSvcSession;
 import com.enokinomi.timeslice.web.gwt.server.rpc.AuthenticatedTimesliceSvc;
 import com.enokinomi.timeslice.web.gwt.server.rpc.RealtimeNowProvider;
@@ -22,6 +25,7 @@ import com.enokinomi.timeslice.web.gwt.server.rpc.SessionTracker;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
+import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
 
 public final class TimesliceModule extends AbstractModule
@@ -52,6 +56,19 @@ public final class TimesliceModule extends AbstractModule
             bind(String.class).annotatedWith(Names.named("assignDefault")).toInstance("");
             bind(INowProvider.class).to(RealtimeNowProvider.class);
             bind(ITagStore.class).to(HsqldbTagStore.class);
+
+            bind(IAppJobSvc.class).to(AppJobSvc.class);
+
+            Multibinder<AppJob> appJobSetBinder = Multibinder.newSetBinder(binder(), AppJob.class);
+//            appJobSetBinder.addBinding().toInstance(new TestJob1("test-job-1-succeeds"));
+//            appJobSetBinder.addBinding().toInstance(new TestJob1("test-job-2-succeeds"));
+//            appJobSetBinder.addBinding().toInstance(new FailingTestJob("test-job-2-fails"));
+//            appJobSetBinder.addBinding().to(SchemaOpAppJob.class);
+//            appJobSetBinder.addBinding().to(DowngradeSchema1To0AppJob.class);
+            appJobSetBinder.addBinding().to(ListTablesAppJob.class);
+            appJobSetBinder.addBinding().to(DetectSchemaVersionAppJob.class);
+            appJobSetBinder.addBinding().to(UpgradeSchema0To1AppJob.class);
+
         }
 
         @Provides Connection getConnection()

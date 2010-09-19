@@ -7,8 +7,9 @@ import java.util.Properties;
  * creating a {@link TsHost}.
  *
  * @author dbacon
- *
+ * @deprecated
  */
+@Deprecated
 public class TsHostSettingsManager extends SettingsManager<TsHostSettingsManager>
 {
     public static class Key

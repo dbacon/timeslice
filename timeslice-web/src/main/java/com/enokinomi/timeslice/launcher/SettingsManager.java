@@ -11,7 +11,9 @@ import java.util.Properties;
  * @param <D> Derived type which {@code this} should be down-cast before returning when used for supporting
  * factory methods, such as {@code pushSettings}.
  *
+ * @deprecated
  */
+@Deprecated
 public class SettingsManager<D extends SettingsManager<?>>
 {
     private Properties settings;
