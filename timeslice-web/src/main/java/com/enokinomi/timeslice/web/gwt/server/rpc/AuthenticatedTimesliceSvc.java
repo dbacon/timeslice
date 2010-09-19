@@ -1,6 +1,9 @@
 package com.enokinomi.timeslice.web.gwt.server.rpc;
 
+import java.io.InputStream;
 import java.util.List;
+
+import org.apache.commons.io.IOUtils;
 
 import com.enokinomi.timeslice.launcher.IBranding;
 import com.enokinomi.timeslice.timeslice.TsSettings;
@@ -30,7 +33,22 @@ public class AuthenticatedTimesliceSvc implements ITimesliceSvc
     @Override
     public String serverInfo()
     {
-        return "1.0.10-beta-3-20100920-SNAPSHOT"; // TODO: get from resources/build
+        String version = "version-unknown";
+
+        InputStream versionIs = ClassLoader.getSystemResourceAsStream("timeslice-version");
+
+        if (null != versionIs)
+        {
+            try
+            {
+                version = IOUtils.toString(versionIs, "UTF-8");
+            }
+            catch (Exception e)
+            {
+            }
+        }
+
+        return version;
     }
 
     @Override
