@@ -10,6 +10,7 @@
     <name>timeslice-project</name>
 
     <modules>
+        <module>timeslice-parent</module>
         <module>timeslice-lib</module>
         <module>timeslice-web</module>
     </modules>
