@@ -55,7 +55,27 @@ public class Driver
         ArgumentAcceptingOptionSpec<Integer> defPortSpec = parser.acceptsAll(Arrays.asList("P", "default-port"), "Port for web server.").withRequiredArg().ofType(Integer.class);
         ArgumentAcceptingOptionSpec<String> defResSpec = parser.acceptsAll(Arrays.asList("W", "default-web-root"), "Base folder of web resources.").withRequiredArg().ofType(String.class);
 
-        OptionSet detectedOptions = parser.parse(args);
+        OptionSet detectedOptions = null;
+        try
+        {
+            detectedOptions = parser.parse(args);
+        }
+        catch (Exception e)
+        {
+            System.err.println();
+            System.err.println("Bad arguments: " + e.getMessage());
+            System.err.println();
+            try
+            {
+                parser.printHelpOn(System.err);
+            }
+            catch (Exception e1)
+            {
+                throw new RuntimeException("Could not print option help: " + e.getMessage());
+            }
+            System.err.println();
+            System.exit(1);
+        }
 
         String userHome = System.getProperty("user.home", ".");
 
