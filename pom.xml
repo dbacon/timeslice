@@ -14,4 +14,8 @@
 		<module>timeslice-lib</module>
 		<module>timeslice-web</module>
 	</modules>
+
+	<scm>
+		<developerConnection>scm:git:file:///Users/dbacon/ts-related/timeslice-project</developerConnection>
+	</scm>
 </project>
