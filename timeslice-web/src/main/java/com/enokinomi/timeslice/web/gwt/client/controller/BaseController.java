@@ -3,12 +3,12 @@ package com.enokinomi.timeslice.web.gwt.client.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.enokinomi.timeslice.web.gwt.client.beans.AppJobCompletion;
-import com.enokinomi.timeslice.web.gwt.client.beans.AssignedTaskTotal;
-import com.enokinomi.timeslice.web.gwt.client.beans.BrandInfo;
-import com.enokinomi.timeslice.web.gwt.client.beans.StartTag;
-import com.enokinomi.timeslice.web.gwt.client.beans.TaskTotal;
-import com.enokinomi.timeslice.web.gwt.client.entry.AsyncResult;
+import com.enokinomi.timeslice.web.gwt.client.appjob.core.AppJobCompletion;
+import com.enokinomi.timeslice.web.gwt.client.assigned.core.AssignedTaskTotal;
+import com.enokinomi.timeslice.web.gwt.client.core.AsyncResult;
+import com.enokinomi.timeslice.web.gwt.client.core.BrandInfo;
+import com.enokinomi.timeslice.web.gwt.client.task.core.StartTag;
+import com.enokinomi.timeslice.web.gwt.client.task.core.TaskTotal;
 
 
 /**

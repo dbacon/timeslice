@@ -1,6 +1,6 @@
 package com.enokinomi.timeslice.launcher;
 
-import com.enokinomi.timeslice.web.gwt.server.rpc.AppJob;
+import com.enokinomi.timeslice.web.gwt.server.appjob.AppJob;
 
 public class FailingTestJob implements AppJob
 {

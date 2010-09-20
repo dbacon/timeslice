@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.enokinomi.timeslice.web.gwt.server.rpc.AppJob;
+import com.enokinomi.timeslice.web.gwt.server.appjob.AppJob;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 

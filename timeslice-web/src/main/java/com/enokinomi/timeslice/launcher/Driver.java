@@ -11,7 +11,7 @@ import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
-import com.enokinomi.timeslice.web.gwt.server.rpc.GuiceRpcService;
+import com.enokinomi.timeslice.web.gwt.server.task.GuiceRpcService;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Module;

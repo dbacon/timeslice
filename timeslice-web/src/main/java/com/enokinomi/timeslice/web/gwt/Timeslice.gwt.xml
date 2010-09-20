@@ -11,6 +11,6 @@
 
 	<stylesheet src="ts-default.css" />
 
-    <entry-point class="com.enokinomi.timeslice.web.gwt.client.entry.EmptyEntryPoint" />
+    <entry-point class="com.enokinomi.timeslice.web.gwt.client.ui.EmptyEntryPoint" />
 
 </module>
