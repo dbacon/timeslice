@@ -5,7 +5,7 @@
 	<groupId>com.enokinomi.timeslice</groupId>
 	<artifactId>timeslice-lib</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.10-beta-5-20100920-SNAPSHOT</version>
+	<version>1.0.10-beta-5</version>
 
 	<name>timeslice-lib</name>
 
