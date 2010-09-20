@@ -217,6 +217,9 @@
 
 		<profile>
 			<id>gwt-build</id>
+			<activation>
+                <property><name>performRelease</name></property>
+			</activation>
 			<build>
 				<plugins>
 					<plugin>

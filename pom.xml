@@ -25,7 +25,6 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <configuration>
                     <goals>install</goals>
-                    <releaseProfiles>gwt-build</releaseProfiles>
                 </configuration>
             </plugin>
         </plugins>
