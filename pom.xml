@@ -15,6 +15,6 @@
 	</modules>
 
 	<scm>
-		<developerConnection>scm:git:file:///Users/dbacon/ts-related/timeslice-project</developerConnection>
+		<developerConnection>scm:git:file://${user.home}/ts-related/timeslice-project</developerConnection>
 	</scm>
 </project>
