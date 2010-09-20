@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.web.gwt.server.task;
+package com.enokinomi.timeslice.web.gwt.server.guice;
 
 import java.util.Iterator;
 import java.util.ServiceConfigurationError;
@@ -7,9 +7,9 @@ import java.util.ServiceLoader;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
-import com.enokinomi.timeslice.launcher.BrandingAbstractModule;
-import com.enokinomi.timeslice.launcher.DefaultBrandingModule;
-import com.enokinomi.timeslice.launcher.TimesliceModule;
+import com.enokinomi.timeslice.branding.BrandingAbstractModule;
+import com.enokinomi.timeslice.branding.DefaultBrandingModule;
+import com.enokinomi.timeslice.core.TimesliceModule;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.SerializationException;
 import com.google.gwt.user.server.rpc.RPC;

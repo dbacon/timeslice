@@ -1,15 +1,13 @@
 package com.enokinomi.timeslice.app.todo;
 
 import org.joda.time.Instant;
-import org.joda.time.format.ISODateTimeFormat;
 
-import com.enokinomi.timeslice.app.generic.IHasWhen;
-import com.enokinomi.timeslice.app.generic.IListable;
+import com.enokinomi.timeslice.lib.generic.IHasWhen;
 
 
 
 
-public class TodoItem implements IListable, IHasWhen
+public class TodoItem implements IHasWhen
 {
     private final Instant when;
     private final String description;
@@ -28,17 +26,5 @@ public class TodoItem implements IListable, IHasWhen
     public String getDescription()
     {
         return description;
-    }
-
-    @Override
-    public String getListableHref()
-    {
-        return ISODateTimeFormat.dateTime().print(getWhen());
-    }
-
-    @Override
-    public String getListableName()
-    {
-        return getDescription();
     }
 }

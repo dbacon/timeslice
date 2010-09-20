@@ -1,0 +1,108 @@
+package com.enokinomi.timeslice.lib.assign;
+
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.sql.Connection;
+
+import org.apache.commons.io.FileUtils;
+import org.joda.time.DateTime;
+import org.junit.Test;
+
+import com.enokinomi.timeslice.lib.commondatautil.SchemaDuty;
+import com.enokinomi.timeslice.lib.commondatautil.SchemaManager;
+
+
+public class HsqldbTagStoreTest
+{
+//    @Test
+//    public void test1()
+//    {
+//        ConnectionFactory connFactory = new ConnectionFactory();
+//        HsqldbTimesliceStore store = new HsqldbTimesliceStore(connFactory.createConnection("target/test-generated-data/abc"));
+//    }
+
+    private static final class MockSchemaManager extends SchemaManager
+    {
+        private final int version;
+
+        private MockSchemaManager(int version)
+        {
+            super(null, null);
+
+            this.version = version;
+        }
+
+        @Override
+        public Integer findVersion(Connection conn)
+        {
+            return version;
+        }
+    }
+
+    @Test
+    public void test_billee_1() throws Exception
+    {
+        String dbDir = "target/test-generated-data/test-1-3-db";
+
+        FileUtils.deleteDirectory(new File(dbDir));
+
+        final int version = 1;
+
+        ConnectionFactory connFactory = new ConnectionFactory();
+        HsqldbTagStore store = new HsqldbTagStore(connFactory.createConnection(dbDir + "/test-1"), new MockSchemaManager(version));
+
+        SchemaDuty schemaDuty = new SchemaDuty("timeslice-1.ddl");
+        schemaDuty.createSchema(connFactory.createConnection(dbDir + "/test-1"));
+//        SchemaDetector schemaDetector = new SchemaDetector();
+
+        DateTime asOf = new DateTime(2010, 5, 5, 14, 32, 0, 0);
+        String billee = store.lookupBillee("desc1", asOf, "unassigned");
+
+        assertEquals("unassigned", billee);
+
+    }
+
+    @Test
+    public void test_billee_2() throws Exception
+    {
+        String dbDir = "target/test-generated-data/test-1-3-db";
+
+        FileUtils.deleteDirectory(new File(dbDir));
+
+        final int version = 1;
+        ConnectionFactory connFactory = new ConnectionFactory();
+        HsqldbTagStore store = new HsqldbTagStore(connFactory.createConnection(dbDir + "/test-2"), new MockSchemaManager(version));
+
+        SchemaDuty schemaDuty = new SchemaDuty("timeslice-1.ddl");
+        schemaDuty.createSchema(connFactory.createConnection(dbDir + "/test-2"));
+//        SchemaDetector schemaDetector = new SchemaDetector();
+//        HsqldbTimesliceStore store = new HsqldbTimesliceStore("first-task", dbDir + "/test-2", 1, new Instant(), new Instant(), connFactory, schemaDetector);
+//        store.enable(false);
+
+        String description1 = "desc1";
+
+        DateTime eff1 = new DateTime(2010, 5, 4, 14, 32, 0, 0);
+        store.assignBillee(description1, "billee1", eff1);
+
+        DateTime eff2 = new DateTime(2010, 5, 7, 14, 32, 0, 0);
+        store.assignBillee(description1, "billee2", eff2);
+
+
+        DateTime asOfBefore = new DateTime(2010, 5, 3, 14, 32, 0, 0);
+        String billeeBefore = store.lookupBillee(description1, asOfBefore, "unassigned");
+
+        DateTime asOfDuring1 = new DateTime(2010, 5, 5, 14, 32, 0, 0);
+        String billeeDuring1 = store.lookupBillee(description1, asOfDuring1, "unassigned");
+
+        DateTime asOfDuring2 = new DateTime(2010, 5, 7, 14, 32, 0, 0);
+        String billeeDuring2 = store.lookupBillee(description1, asOfDuring2, "unassigned");
+
+//        store.disable();
+
+        assertEquals("unassigned", billeeBefore);
+        assertEquals("billee1", billeeDuring1);
+        assertEquals("billee2", billeeDuring2);
+    }
+
+}

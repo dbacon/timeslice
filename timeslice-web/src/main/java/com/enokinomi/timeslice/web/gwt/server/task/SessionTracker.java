@@ -3,7 +3,6 @@ package com.enokinomi.timeslice.web.gwt.server.task;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.enokinomi.timeslice.app.core.AclFile;
 import com.enokinomi.timeslice.web.gwt.client.core.NotAuthenticException;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;

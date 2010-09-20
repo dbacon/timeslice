@@ -1,9 +1,9 @@
-package com.enokinomi.timeslice.launcher;
+package com.enokinomi.timeslice.appjob.stockjobs;
 
 import java.sql.Connection;
 
-import com.enokinomi.timeslice.timeslice.SchemaDetector;
-import com.enokinomi.timeslice.timeslice.SchemaDuty;
+import com.enokinomi.timeslice.lib.commondatautil.SchemaDetector;
+import com.enokinomi.timeslice.lib.commondatautil.SchemaDuty;
 import com.enokinomi.timeslice.web.gwt.server.appjob.AppJob;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -14,7 +14,7 @@ public class SchemaOpAppJob implements AppJob
     private final Connection conn;
 
     @Inject
-    public SchemaOpAppJob(@Named("tsConnection") Connection conn)
+    SchemaOpAppJob(@Named("tsConnection") Connection conn)
     {
         this.conn = conn;
     }

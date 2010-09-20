@@ -11,10 +11,10 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.enokinomi.timeslice.app.core.Aggregate;
-import com.enokinomi.timeslice.app.core.ITimesliceStore;
-import com.enokinomi.timeslice.app.core.Split;
-import com.enokinomi.timeslice.app.core.Sum;
+import com.enokinomi.timeslice.lib.task.Aggregate;
+import com.enokinomi.timeslice.lib.task.ITimesliceStore;
+import com.enokinomi.timeslice.lib.task.Split;
+import com.enokinomi.timeslice.lib.task.Sum;
 import com.enokinomi.timeslice.web.gwt.client.core.ProcType;
 import com.enokinomi.timeslice.web.gwt.client.core.SortDir;
 import com.enokinomi.timeslice.web.gwt.client.task.core.StartTag;
@@ -40,7 +40,7 @@ public class TimesliceSvc
         this.splitter = splitter;
     }
 
-    public List<com.enokinomi.timeslice.app.core.StartTag> queryForTags(String who, Boolean sortReverse, Instant minDate, Instant maxDate, int pageSize, int pageIndex)
+    public List<com.enokinomi.timeslice.lib.task.StartTag> queryForTags(String who, Boolean sortReverse, Instant minDate, Instant maxDate, int pageSize, int pageIndex)
     {
         return splitter.split(
                 store.query(
@@ -68,12 +68,12 @@ public class TimesliceSvc
             ServerToClient.createStartTagTx(tzOffset)));
     }
 
-    private Collection<com.enokinomi.timeslice.app.core.TaskTotal> filterItems(Collection<com.enokinomi.timeslice.app.core.TaskTotal> items, List<String> allowWords, List<String> ignoreWords)
+    private Collection<com.enokinomi.timeslice.lib.task.TaskTotal> filterItems(Collection<com.enokinomi.timeslice.lib.task.TaskTotal> items, List<String> allowWords, List<String> ignoreWords)
     {
-        ArrayList<com.enokinomi.timeslice.app.core.TaskTotal> result = new ArrayList<com.enokinomi.timeslice.app.core.TaskTotal>();
+        ArrayList<com.enokinomi.timeslice.lib.task.TaskTotal> result = new ArrayList<com.enokinomi.timeslice.lib.task.TaskTotal>();
 
         boolean allowfilter = !allowWords.isEmpty();
-        for (com.enokinomi.timeslice.app.core.TaskTotal item: items)
+        for (com.enokinomi.timeslice.lib.task.TaskTotal item: items)
         {
             if (allowfilter)
             {
@@ -106,23 +106,23 @@ public class TimesliceSvc
         return result;
     }
 
-    private Double calcTotal(List<com.enokinomi.timeslice.app.core.TaskTotal> items)
+    private Double calcTotal(List<com.enokinomi.timeslice.lib.task.TaskTotal> items)
     {
         Double total = 0.;
-        for (com.enokinomi.timeslice.app.core.TaskTotal item: items)
+        for (com.enokinomi.timeslice.lib.task.TaskTotal item: items)
         {
             total += item.getMillis();
         }
         return total;
     }
 
-    public List<TaskTotal> createReport(List<com.enokinomi.timeslice.app.core.TaskTotal> items)
+    public List<TaskTotal> createReport(List<com.enokinomi.timeslice.lib.task.TaskTotal> items)
     {
         ArrayList<TaskTotal> result = new ArrayList<TaskTotal>();
 
         Double total = calcTotal(items);
 
-        for(com.enokinomi.timeslice.app.core.TaskTotal item: items)
+        for(com.enokinomi.timeslice.lib.task.TaskTotal item: items)
         {
             result.add(new TaskTotal(
                     item.getWho(),
@@ -137,7 +137,7 @@ public class TimesliceSvc
 
     public List<TaskTotal> refreshTotals(String user, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
     {
-        List<com.enokinomi.timeslice.app.core.StartTag> tags = queryForTags(
+        List<com.enokinomi.timeslice.lib.task.StartTag> tags = queryForTags(
                 user,
                 sortDir == SortDir.asc,
                 startingInstant == null
@@ -149,7 +149,7 @@ public class TimesliceSvc
                 maxSize,
                 0);
 
-        return createReport(new ArrayList<com.enokinomi.timeslice.app.core.TaskTotal>(
+        return createReport(new ArrayList<com.enokinomi.timeslice.lib.task.TaskTotal>(
                filterItems(
                        aggregator.sumThem(summer, aggregator.aggregate(tags)).values(),
                        allowWords,
@@ -158,7 +158,7 @@ public class TimesliceSvc
 
     public String persistTotals(String persistAsName, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords, int tzOffset, String user)
     {
-        List<com.enokinomi.timeslice.app.core.StartTag> tags = queryForTags(
+        List<com.enokinomi.timeslice.lib.task.StartTag> tags = queryForTags(
                 user,
                 sortDir == SortDir.asc,
                 startingInstant == null
@@ -170,7 +170,7 @@ public class TimesliceSvc
                 maxSize,
                 0);
 
-        List<TaskTotal> rows = createReport(new ArrayList<com.enokinomi.timeslice.app.core.TaskTotal>(
+        List<TaskTotal> rows = createReport(new ArrayList<com.enokinomi.timeslice.lib.task.TaskTotal>(
                     filterItems(
                         aggregator.sumThem(summer, aggregator.aggregate(tags)).values(),
                         allowWords,
@@ -207,20 +207,20 @@ public class TimesliceSvc
 
     public void addItem(String instantString, String taskDescription, String user)
     {
-        store.add(new com.enokinomi.timeslice.app.core.StartTag(user, instantString, taskDescription, null));
+        store.add(new com.enokinomi.timeslice.lib.task.StartTag(user, instantString, taskDescription, null));
     }
 
     public void addItems(String user, List<StartTag> items)
     {
         for (StartTag item: items)
         {
-            store.add(new com.enokinomi.timeslice.app.core.StartTag(user, item.getInstantString(), item.getDescription(), null));
+            store.add(new com.enokinomi.timeslice.lib.task.StartTag(user, item.getInstantString(), item.getDescription(), null));
         }
     }
 
     public void update(String user, StartTag editedStartTag)
     {
-        com.enokinomi.timeslice.app.core.StartTag edited = new com.enokinomi.timeslice.app.core.StartTag(user, editedStartTag.getInstantString(), editedStartTag.getDescription(), null);
+        com.enokinomi.timeslice.lib.task.StartTag edited = new com.enokinomi.timeslice.lib.task.StartTag(user, editedStartTag.getInstantString(), editedStartTag.getDescription(), null);
 
         store.updateText(edited);
     }

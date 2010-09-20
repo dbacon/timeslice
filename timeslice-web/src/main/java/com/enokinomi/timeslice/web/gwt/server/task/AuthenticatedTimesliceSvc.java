@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
-import com.enokinomi.timeslice.launcher.IBranding;
-import com.enokinomi.timeslice.timeslice.TsSettings;
+import com.enokinomi.timeslice.branding.IBranding;
+import com.enokinomi.timeslice.lib.userinfo.TsSettings;
 import com.enokinomi.timeslice.web.gwt.client.core.BrandInfo;
 import com.enokinomi.timeslice.web.gwt.client.core.NotAuthenticException;
 import com.enokinomi.timeslice.web.gwt.client.core.ProcType;

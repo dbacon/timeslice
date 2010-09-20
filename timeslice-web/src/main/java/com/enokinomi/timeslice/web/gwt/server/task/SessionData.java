@@ -2,7 +2,7 @@ package com.enokinomi.timeslice.web.gwt.server.task;
 
 import org.joda.time.DateTime;
 
-import com.enokinomi.timeslice.timeslice.TsSettings;
+import com.enokinomi.timeslice.lib.userinfo.TsSettings;
 
 public class SessionData
 {

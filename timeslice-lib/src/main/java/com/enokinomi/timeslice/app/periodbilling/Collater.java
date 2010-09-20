@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.enokinomi.timeslice.app.core.Bucket;
+import com.enokinomi.timeslice.lib.task.Bucket;
 import com.enokinomi.timeslice.lib.util.ITransform;
 import com.enokinomi.timeslice.lib.util.Transforms;
 

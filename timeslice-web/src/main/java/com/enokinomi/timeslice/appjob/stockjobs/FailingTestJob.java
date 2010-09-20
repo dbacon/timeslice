@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.launcher;
+package com.enokinomi.timeslice.appjob.stockjobs;
 
 import com.enokinomi.timeslice.web.gwt.server.appjob.AppJob;
 
@@ -6,7 +6,7 @@ public class FailingTestJob implements AppJob
 {
     private final String jobId;
 
-    public FailingTestJob(String jobId)
+    FailingTestJob(String jobId)
     {
         this.jobId = jobId;
     }

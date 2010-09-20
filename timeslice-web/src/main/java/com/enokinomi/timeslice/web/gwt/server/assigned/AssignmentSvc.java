@@ -3,7 +3,8 @@ package com.enokinomi.timeslice.web.gwt.server.assigned;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.enokinomi.timeslice.app.assign.IAssignmentDao;
+import com.enokinomi.timeslice.lib.assign.INowProvider;
+import com.enokinomi.timeslice.lib.assign.ITagStore;
 import com.enokinomi.timeslice.web.gwt.client.assigned.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.core.ProcType;
 import com.enokinomi.timeslice.web.gwt.client.core.SortDir;
@@ -14,26 +15,28 @@ import com.google.inject.name.Named;
 
 public class AssignmentSvc
 {
-    private final IAssignmentDao assignmentDao;
     private final TimesliceSvc timesliceSvc;
     private final String valueIfNotAssigned;
+    private final ITagStore tagStore;
+    private final INowProvider nowProvider;
 
     @Inject
-    public AssignmentSvc(IAssignmentDao assignmentDao, TimesliceSvc timesliceSvc, @Named("assignDefault") String valueIfNotAssigned)
+    public AssignmentSvc(ITagStore tagStore, INowProvider nowProvider, TimesliceSvc timesliceSvc, @Named("assignDefault") String valueIfNotAssigned)
     {
-        this.assignmentDao = assignmentDao;
+        this.tagStore = tagStore;
+        this.nowProvider = nowProvider;
         this.timesliceSvc = timesliceSvc;
         this.valueIfNotAssigned = valueIfNotAssigned;
     }
 
     public void assign(String description, String billTo)
     {
-        assignmentDao.assign(description, billTo);
+        tagStore.assignBillee(description, billTo, nowProvider.getNow());
     }
 
     public String lookup(String description, String valueWhenAssignmentNotFound)
     {
-        return assignmentDao.getBillee(description, valueWhenAssignmentNotFound);
+        return tagStore.lookupBillee(description, nowProvider.getNow(), valueWhenAssignmentNotFound);
     }
 
     public List<AssignedTaskTotal> refreshTotals(String user, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
@@ -47,7 +50,7 @@ public class AssignmentSvc
 
         for (TaskTotal taskTotal: taskTotals)
         {
-            String billedTo = assignmentDao.getBillee(taskTotal.getWhat(), valueIfNotAssigned);
+            String billedTo = tagStore.lookupBillee(taskTotal.getWhat(), nowProvider.getNow(), valueIfNotAssigned);
             results.add(
                     new AssignedTaskTotal(
                             taskTotal.getWho(),

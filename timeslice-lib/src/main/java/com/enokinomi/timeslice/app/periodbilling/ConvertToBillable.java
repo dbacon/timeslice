@@ -3,7 +3,7 @@ package com.enokinomi.timeslice.app.periodbilling;
 
 import java.util.Collection;
 
-import com.enokinomi.timeslice.app.core.TaskTotal;
+import com.enokinomi.timeslice.lib.task.TaskTotal;
 
 
 /**

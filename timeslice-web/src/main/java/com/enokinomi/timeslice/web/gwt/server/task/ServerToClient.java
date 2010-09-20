@@ -3,7 +3,7 @@ package com.enokinomi.timeslice.web.gwt.server.task;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 
-import com.enokinomi.timeslice.app.core.StartTag;
+import com.enokinomi.timeslice.lib.task.StartTag;
 import com.enokinomi.timeslice.lib.util.ITransform;
 
 

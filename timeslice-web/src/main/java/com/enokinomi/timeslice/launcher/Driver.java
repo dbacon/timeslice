@@ -11,19 +11,17 @@ import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
-import com.enokinomi.timeslice.web.gwt.server.task.GuiceRpcService;
-import com.google.inject.AbstractModule;
+import com.enokinomi.timeslice.appjob.stockjobs.StockJobsModule;
+import com.enokinomi.timeslice.branding.BrandingAbstractModule;
+import com.enokinomi.timeslice.branding.DefaultBrandingModule;
+import com.enokinomi.timeslice.core.TimesliceModule;
+import com.enokinomi.timeslice.web.gwt.server.guice.GuiceRpcModule;
 import com.google.inject.Guice;
 import com.google.inject.Module;
-import com.google.inject.Provides;
-import com.google.inject.servlet.ServletModule;
 
 
 public class Driver
 {
-    private final Integer port;
-    private final String res;
-
     /**
      * Any argument present is taken as the name of settings to be loaded,
      * each having higher precedence than the previous.  System properties
@@ -91,7 +89,19 @@ public class Driver
         System.out.println("  data     : " + db);
         System.out.flush();
 
+        Guice.createInjector(
+                new TimesliceModule(db, acl),
+                new TsWebLaunchModule(port, res),
+                new GuiceRpcModule(),
+                new StockJobsModule(),
+                figureOutBrandingModule()
+            )
+            .getInstance(TsHost.class)
+            .run();
+    }
 
+    private static Module figureOutBrandingModule()
+    {
         Module brandCompositeModule = new DefaultBrandingModule();
 
         ServiceLoader<BrandingAbstractModule> stringService = ServiceLoader.load(BrandingAbstractModule.class, ClassLoader.getSystemClassLoader());
@@ -108,45 +118,7 @@ public class Driver
             System.out.println("Found more branding modules; only the first module found is applied.");
         }
 
-        Guice.createInjector(
-                new ServletModule()
-                {
-                    @Override
-                    protected void configureServlets()
-                    {
-                        serve("/timeslice.App/gwtrpc").with(GuiceRpcService.class);
-                    }
-                },
-                new TimesliceModule(db, acl),
-                new AbstractModule()
-                {
-                    @Override
-                    protected void configure()
-                    {
-                    }
-
-                    @SuppressWarnings("unused")
-                    @Provides Driver createDriver()
-                    {
-                        return new Driver(port, res);
-                    }
-                },
-                brandCompositeModule
-            )
-            .getInstance(Driver.class)
-            .run();
+        return brandCompositeModule;
     }
 
-    public Driver(Integer port, String res)
-    {
-        this.port = port;
-        this.res = res;
-    }
-
-    public void run()
-    {
-        new TsHost(port)
-            .createGuiceContext("/", res)
-            .run();
-    }
 }

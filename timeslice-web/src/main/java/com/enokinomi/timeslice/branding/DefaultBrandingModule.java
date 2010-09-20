@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.launcher;
+package com.enokinomi.timeslice.branding;
 
 
 public class DefaultBrandingModule extends BrandingAbstractModule

@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.launcher;
+package com.enokinomi.timeslice.appjob.stockjobs;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -15,7 +15,7 @@ public class ListTablesAppJob implements AppJob
     private final Connection conn;
 
     @Inject
-    public ListTablesAppJob(@Named("tsConnection") Connection conn)
+    ListTablesAppJob(@Named("tsConnection") Connection conn)
     {
         this.conn = conn;
     }
