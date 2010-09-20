@@ -1,7 +1,17 @@
 #! /bin/bash
 
-bindir="$(dirname "$0")"
-libdir="$bindir/../lib"
+#set -e
+#set -x
+
+# use the cd/pwd method to get explicit paths if needed.
+#bindir="$(cd $(dirname -- "$0") && pwd)"
+
+# leave as relative (however the script was launched).
+bindir="$(dirname -- "$0")"
+
+topdir="$(dirname -- "$bindir")"
+libdir="$topdir/lib"
+webdir="$topdir/webapp"
 
 cp="$(fs=("$libdir"/*.jar); export IFS=:; echo "${fs[*]}" )"
 
@@ -16,11 +26,14 @@ shift "$(($OPTIND - 1))"
 
 [ -n "$RES" ] && cp="$RES:$cp"
 
-set -e
-set -x
+[ "$TIMESLICE_PORT" ] && PORTARG="--default-port $TIMESLICE_PORT"
+
+WEBARG="--default-web-root $webdir"
 
 JAVA=java
 [ -n "$JAVA_HOME" ] && JAVA="$JAVA_HOME/bin/java"
 
+set -e
+set -x
 
-"$JAVA" -cp "$cp" com.enokinomi.timeslice.launcher.Driver "$@"
+"$JAVA" -cp "$cp" com.enokinomi.timeslice.launcher.Driver $PORTARG $WEBARG "$@"

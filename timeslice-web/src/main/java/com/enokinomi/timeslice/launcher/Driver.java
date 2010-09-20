@@ -52,13 +52,17 @@ public class Driver
         ArgumentAcceptingOptionSpec<String> dbSpec = parser.acceptsAll(Arrays.asList("d", "data"), "Base-path for database.").withRequiredArg().ofType(String.class);
         ArgumentAcceptingOptionSpec<String> aclSpec = parser.acceptsAll(Arrays.asList("a", "acl"), "ACL file.").withRequiredArg().ofType(String.class);
         ArgumentAcceptingOptionSpec<String> resSpec = parser.acceptsAll(Arrays.asList("w", "web-root"), "Base folder of web resources.").withRequiredArg().ofType(String.class);
+        ArgumentAcceptingOptionSpec<Integer> defPortSpec = parser.acceptsAll(Arrays.asList("P", "default-port"), "Port for web server.").withRequiredArg().ofType(Integer.class);
+        ArgumentAcceptingOptionSpec<String> defResSpec = parser.acceptsAll(Arrays.asList("W", "default-web-root"), "Base folder of web resources.").withRequiredArg().ofType(String.class);
 
         OptionSet detectedOptions = parser.parse(args);
 
-        String acl = mapNullTo(aclSpec.value(detectedOptions), "ts.acl");
-        String db = mapNullTo(dbSpec.value(detectedOptions), "ts-data");
-        final String res = mapNullTo(resSpec.value(detectedOptions), "ts-web-root");
-        final Integer port = mapNullTo(portSpec.value(detectedOptions), 9080);
+        String userHome = System.getProperty("user.home", ".");
+
+        String acl = mapNullTo(aclSpec.value(detectedOptions), userHome + "/.timeslice.acl");
+        String db = mapNullTo(dbSpec.value(detectedOptions), userHome + "/.timeslice-data/hsql/default-01");
+        final String res = mapNullTo(resSpec.value(detectedOptions), mapNullTo(defResSpec.value(detectedOptions), "webapp"));
+        final Integer port = mapNullTo(portSpec.value(detectedOptions), mapNullTo(defPortSpec.value(detectedOptions), 9080));
 
         System.out.println("Configuration:");
         System.out.println("  port     : " + port);
@@ -70,16 +74,14 @@ public class Driver
 
         Module brandCompositeModule = new DefaultBrandingModule();
 
-        System.out.println("Loading brandings...");
         ServiceLoader<BrandingAbstractModule> stringService = ServiceLoader.load(BrandingAbstractModule.class, ClassLoader.getSystemClassLoader());
         Iterator<BrandingAbstractModule> brandModuleItor = stringService.iterator();
         if (brandModuleItor.hasNext())
         {
             BrandingAbstractModule brandModule = brandModuleItor.next();
-            System.out.println("    overriding brand: " + brandModule.getClass().getCanonicalName());
+            System.out.println("Found branding to use: " + brandModule.getClass().getCanonicalName());
             brandCompositeModule = brandModule;
         }
-        System.out.println(" ... branding done.");
 
         if (brandModuleItor.hasNext())
         {
