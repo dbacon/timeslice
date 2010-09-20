@@ -10,6 +10,7 @@
 
 	<groupId>com.enokinomi.timeslice</groupId>
 	<artifactId>timeslice-lib</artifactId>
+        <version>1.0.10-beta-6-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>timeslice-lib</name>
