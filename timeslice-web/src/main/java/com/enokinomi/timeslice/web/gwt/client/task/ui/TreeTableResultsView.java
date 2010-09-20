@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-
 import com.enokinomi.timeslice.web.gwt.client.task.core.TaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.task.ui_tree.ItemsToTree;
 import com.enokinomi.timeslice.web.gwt.client.task.ui_tree.Mutable;

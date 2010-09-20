@@ -15,18 +15,17 @@ import com.enokinomi.timeslice.web.gwt.client.controller.IController;
 import com.enokinomi.timeslice.web.gwt.client.controller.IControllerListener;
 import com.enokinomi.timeslice.web.gwt.client.core.AsyncResult;
 import com.enokinomi.timeslice.web.gwt.client.core.BrandInfo;
-import com.enokinomi.timeslice.web.gwt.client.core.ProcType;
 import com.enokinomi.timeslice.web.gwt.client.core.SortDir;
 import com.enokinomi.timeslice.web.gwt.client.task.core.StartTag;
 import com.enokinomi.timeslice.web.gwt.client.task.core.TaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.task.ui.EmptyOptionsProvider;
 import com.enokinomi.timeslice.web.gwt.client.task.ui.HistoryPanel;
 import com.enokinomi.timeslice.web.gwt.client.task.ui.HotlistPanel;
+import com.enokinomi.timeslice.web.gwt.client.task.ui.HotlistPanel.IHotlistPanelListener;
 import com.enokinomi.timeslice.web.gwt.client.task.ui.IOptionsProvider;
 import com.enokinomi.timeslice.web.gwt.client.task.ui.OptionsPanel;
 import com.enokinomi.timeslice.web.gwt.client.task.ui.ParamPanel;
 import com.enokinomi.timeslice.web.gwt.client.task.ui.ReportPanel;
-import com.enokinomi.timeslice.web.gwt.client.task.ui.HotlistPanel.IHotlistPanelListener;
 import com.enokinomi.timeslice.web.gwt.client.ui.ImportBulkItemsDialog.BulkItemListener;
 import com.enokinomi.timeslice.web.gwt.client.util.Checks;
 import com.google.gwt.core.client.EntryPoint;
@@ -164,7 +163,6 @@ public class TimesliceApp implements EntryPoint
         controller.startRefreshTotals(
                 1000,
                 SortDir.desc,
-                ProcType.sumbydesc,
                 startingTimeText,
                 endingTimeText,
                 allowWords,
@@ -175,7 +173,6 @@ public class TimesliceApp implements EntryPoint
             controller.startRefreshTotalsAssigned(
                     1000,
                     SortDir.desc,
-                    ProcType.sumbydesc,
                     startingTimeText,
                     endingTimeText,
                     allowWords,
@@ -407,7 +404,6 @@ public class TimesliceApp implements EntryPoint
                         persistAsName,
                         1000,
                         SortDir.desc,
-                        ProcType.sumbydesc,
                         startingTimeText,
                         endingTimeText,
                         allowWords,

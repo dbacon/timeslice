@@ -5,7 +5,6 @@ import static com.enokinomi.timeslice.web.gwt.client.task.ui.HumanReadableTimeHe
 import java.util.ArrayList;
 import java.util.List;
 
-
 import com.enokinomi.timeslice.web.gwt.client.task.core.StartTag;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.BlurEvent;

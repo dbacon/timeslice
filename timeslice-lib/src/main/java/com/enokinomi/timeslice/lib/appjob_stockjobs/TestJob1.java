@@ -1,6 +1,6 @@
-package com.enokinomi.timeslice.appjob.stockjobs;
+package com.enokinomi.timeslice.lib.appjob_stockjobs;
 
-import com.enokinomi.timeslice.web.gwt.server.appjob.AppJob;
+import com.enokinomi.timeslice.lib.appjob.AppJob;
 
 public class TestJob1 implements AppJob
 {

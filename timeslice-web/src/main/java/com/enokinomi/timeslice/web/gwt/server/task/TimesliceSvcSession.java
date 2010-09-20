@@ -9,21 +9,22 @@ import com.enokinomi.timeslice.branding.IBranding;
 import com.enokinomi.timeslice.lib.userinfo.TsSettings;
 import com.enokinomi.timeslice.web.gwt.client.core.BrandInfo;
 import com.enokinomi.timeslice.web.gwt.client.core.NotAuthenticException;
-import com.enokinomi.timeslice.web.gwt.client.core.ProcType;
 import com.enokinomi.timeslice.web.gwt.client.core.SortDir;
 import com.enokinomi.timeslice.web.gwt.client.task.core.ITimesliceSvc;
 import com.enokinomi.timeslice.web.gwt.client.task.core.StartTag;
 import com.enokinomi.timeslice.web.gwt.client.task.core.TaskTotal;
+import com.enokinomi.timeslice.web.gwt.server.session.SessionData;
+import com.enokinomi.timeslice.web.gwt.server.session.SessionTracker;
 import com.google.inject.Inject;
 
-public class AuthenticatedTimesliceSvc implements ITimesliceSvc
+public class TimesliceSvcSession implements ITimesliceSvc
 {
     private final SessionTracker sessionTracker;
-    private final TimesliceSvc timesliceSvc;
+    private final TimesliceSvcWebWrapper timesliceSvc;
     private final IBranding branding;
 
     @Inject
-    public AuthenticatedTimesliceSvc(TimesliceSvc timesliceSvc, SessionTracker sessionTracker, IBranding branding)
+    public TimesliceSvcSession(TimesliceSvcWebWrapper timesliceSvc, SessionTracker sessionTracker, IBranding branding)
     {
         this.timesliceSvc = timesliceSvc;
         this.sessionTracker = sessionTracker;
@@ -64,26 +65,27 @@ public class AuthenticatedTimesliceSvc implements ITimesliceSvc
     }
 
     @Override
-    public List<StartTag> refreshItems(String authToken, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant)
+    public List<StartTag> refreshItems(String authToken, int maxSize, SortDir sortDir, String startingInstant, String endingInstant)
     {
         SessionData sd = sessionTracker.checkToken(authToken);
         TsSettings settings = sd.getSettings();
-        return timesliceSvc.refreshItems(sd.getUser(), maxSize, sortDir, procType, startingInstant, endingInstant, settings.getTzOffset());
+        return timesliceSvc.refreshItems(sd.getUser(), maxSize, sortDir, startingInstant, endingInstant, settings.getTzOffset());
     }
 
     @Override
-    public List<TaskTotal> refreshTotals(String authToken, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
-    {
-        SessionData sd = sessionTracker.checkToken(authToken);
-        return timesliceSvc.refreshTotals(sd.getUser(), maxSize, sortDir, procType, startingInstant, endingInstant, allowWords, ignoreWords);
-    }
-
-    @Override
-    public String persistTotals(String authToken, String persistAsName, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
+    public List<TaskTotal> refreshTotals(String authToken, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
     {
         SessionData sd = sessionTracker.checkToken(authToken);
         TsSettings settings = sd.getSettings();
-        return timesliceSvc.persistTotals(persistAsName, maxSize, sortDir, procType, startingInstant, endingInstant, allowWords, ignoreWords, settings.getTzOffset(), sd.getUser());
+        return timesliceSvc.refreshTotals(sd.getUser(), maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, settings.getTzOffset());
+    }
+
+    @Override
+    public String persistTotals(String authToken, String persistAsName, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
+    {
+        SessionData sd = sessionTracker.checkToken(authToken);
+        TsSettings settings = sd.getSettings();
+        return timesliceSvc.persistTotals(persistAsName, maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, settings.getTzOffset(), sd.getUser());
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.web.gwt.server.task;
+package com.enokinomi.timeslice.lib.task;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,33 +11,25 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.enokinomi.timeslice.lib.task.Aggregate;
-import com.enokinomi.timeslice.lib.task.ITimesliceStore;
-import com.enokinomi.timeslice.lib.task.Split;
-import com.enokinomi.timeslice.lib.task.Sum;
-import com.enokinomi.timeslice.web.gwt.client.core.ProcType;
-import com.enokinomi.timeslice.web.gwt.client.core.SortDir;
-import com.enokinomi.timeslice.web.gwt.client.task.core.StartTag;
-import com.enokinomi.timeslice.web.gwt.client.task.core.TaskTotal;
-import com.enokinomi.timeslice.web.gwt.server.util.Transform;
 import com.google.inject.Inject;
 
 public class TimesliceSvc
 {
     private String reportPrefix = "";
-    private String safeDir = ".";
     private final ITimesliceStore store;
     private final Sum summer;
     private final Aggregate aggregator;
     private final Split splitter;
+    private final ISafeDirProvider safeDirProvider;
 
     @Inject
-    public TimesliceSvc(ITimesliceStore store, Sum summer, Aggregate aggregate, Split splitter)
+    public TimesliceSvc(ITimesliceStore store, Sum summer, Aggregate aggregate, Split splitter, ISafeDirProvider safeDirProvider)
     {
         this.store = store;
         this.summer = summer;
         this.aggregator = aggregate;
         this.splitter = splitter;
+        this.safeDirProvider = safeDirProvider;
     }
 
     public List<com.enokinomi.timeslice.lib.task.StartTag> queryForTags(String who, Boolean sortReverse, Instant minDate, Instant maxDate, int pageSize, int pageIndex)
@@ -52,9 +44,9 @@ public class TimesliceSvc
                 new Instant()); // TODO: change to now-provider
     }
 
-    public List<StartTag> refreshItems(String user, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, int tzOffset)
+    public List<StartTag> refreshItems(String user, int maxSize, SortDir sortDir, String startingInstant, String endingInstant)
     {
-        return new ArrayList<StartTag>(Transform.tr(queryForTags(
+        return queryForTags(
                 user,
                 sortDir == SortDir.desc, // check this
                 startingInstant == null
@@ -64,8 +56,7 @@ public class TimesliceSvc
                     ? new Instant(Long.MAX_VALUE)
                     : ISODateTimeFormat.dateTime().parseDateTime(endingInstant).toInstant(),
                 maxSize,
-                0),
-            ServerToClient.createStartTagTx(tzOffset)));
+                0);
     }
 
     private Collection<com.enokinomi.timeslice.lib.task.TaskTotal> filterItems(Collection<com.enokinomi.timeslice.lib.task.TaskTotal> items, List<String> allowWords, List<String> ignoreWords)
@@ -116,26 +107,26 @@ public class TimesliceSvc
         return total;
     }
 
-    public List<TaskTotal> createReport(List<com.enokinomi.timeslice.lib.task.TaskTotal> items)
+    public List<TaskTotalMember> createReport(List<com.enokinomi.timeslice.lib.task.TaskTotal> items)
     {
-        ArrayList<TaskTotal> result = new ArrayList<TaskTotal>();
+        ArrayList<TaskTotalMember> result = new ArrayList<TaskTotalMember>();
 
         Double total = calcTotal(items);
 
         for(com.enokinomi.timeslice.lib.task.TaskTotal item: items)
         {
-            result.add(new TaskTotal(
+            result.add(new TaskTotalMember(
                     item.getWho(),
-                    item.getMillis() / 1000. / 60. / 60.,
-                    item.getMillis() / total,
-                    item.getWhat()
+                    item.getMillis(),
+                    item.getWhat(),
+                    item.getMillis() / total
                     ));
         }
 
         return result;
     }
 
-    public List<TaskTotal> refreshTotals(String user, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
+    public List<TaskTotalMember> refreshTotals(String user, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
     {
         List<com.enokinomi.timeslice.lib.task.StartTag> tags = queryForTags(
                 user,
@@ -156,7 +147,7 @@ public class TimesliceSvc
                        ignoreWords)));
     }
 
-    public String persistTotals(String persistAsName, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords, int tzOffset, String user)
+    public String persistTotals(String persistAsName, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords, int tzOffset, String user)
     {
         List<com.enokinomi.timeslice.lib.task.StartTag> tags = queryForTags(
                 user,
@@ -170,16 +161,16 @@ public class TimesliceSvc
                 maxSize,
                 0);
 
-        List<TaskTotal> rows = createReport(new ArrayList<com.enokinomi.timeslice.lib.task.TaskTotal>(
+        List<TaskTotalMember> rows = createReport(new ArrayList<com.enokinomi.timeslice.lib.task.TaskTotal>(
                     filterItems(
                         aggregator.sumThem(summer, aggregator.aggregate(tags)).values(),
                         allowWords,
                         ignoreWords)));
 
         ArrayList<String> lines = new ArrayList<String>();
-        for (TaskTotal row: rows)
+        for (TaskTotalMember row: rows)
         {
-            lines.add(String.format("%s,%s,%.6f", row.getWho(), row.getWhat(), row.getHours()));
+            lines.add(String.format("%s,%s,%.6f", row.getWho(), row.getWhat(), row.getMillis() / 1000. / 60. / 60.));
         }
 
         String filename = reportPrefix;
@@ -187,9 +178,8 @@ public class TimesliceSvc
         String ts = new Instant().toDateTime(DateTimeZone.forOffsetHours(tzOffset)).toString();
         filename = filename + "." + ts + ".ts-snapshot.csv";
 
-        File safeDirFile = new File(safeDir);
         filename = filename.replaceAll(":", "-"); // armor the filename for filesystems which don't support ':'
-        File report = new File(safeDirFile, filename);
+        File report = new File(safeDirProvider.getSafeDir(), filename);
         try
         {
             FileUtils.writeLines(report, lines);
@@ -207,21 +197,19 @@ public class TimesliceSvc
 
     public void addItem(String instantString, String taskDescription, String user)
     {
-        store.add(new com.enokinomi.timeslice.lib.task.StartTag(user, instantString, taskDescription, null));
+        store.add(new StartTag(user, instantString, taskDescription, null));
     }
 
     public void addItems(String user, List<StartTag> items)
     {
         for (StartTag item: items)
         {
-            store.add(new com.enokinomi.timeslice.lib.task.StartTag(user, item.getInstantString(), item.getDescription(), null));
+            store.add(item);
         }
     }
 
     public void update(String user, StartTag editedStartTag)
     {
-        com.enokinomi.timeslice.lib.task.StartTag edited = new com.enokinomi.timeslice.lib.task.StartTag(user, editedStartTag.getInstantString(), editedStartTag.getDescription(), null);
-
-        store.updateText(edited);
+        store.updateText(editedStartTag);
     }
 }

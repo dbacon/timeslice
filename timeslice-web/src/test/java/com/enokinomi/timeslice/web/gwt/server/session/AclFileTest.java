@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.web.gwt.server.task;
+package com.enokinomi.timeslice.web.gwt.server.session;
 
 import org.junit.Assert;
 import org.junit.Test;

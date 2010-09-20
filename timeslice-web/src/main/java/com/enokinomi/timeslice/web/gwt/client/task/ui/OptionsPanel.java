@@ -3,7 +3,6 @@ package com.enokinomi.timeslice.web.gwt.client.task.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import com.enokinomi.timeslice.web.gwt.client.ui.TimesliceApp.Defaults;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;

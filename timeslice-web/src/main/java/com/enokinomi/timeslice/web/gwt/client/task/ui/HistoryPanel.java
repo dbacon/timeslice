@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
 import com.enokinomi.timeslice.web.gwt.client.task.core.StartTag;
 import com.enokinomi.timeslice.web.gwt.client.task.ui.TaskPanel.ITaskPanelListener;
 import com.google.gwt.user.client.ui.FlowPanel;

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 import com.enokinomi.timeslice.web.gwt.client.util.Checks;
 import com.enokinomi.timeslice.web.gwt.client.util.IReadableValue;
 import com.enokinomi.timeslice.web.gwt.client.util.IWritableValue;

@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.web.gwt.server.appjob;
+package com.enokinomi.timeslice.lib.appjob;
 
 public interface AppJob
 {

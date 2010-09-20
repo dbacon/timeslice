@@ -9,7 +9,7 @@ import javax.servlet.ServletException;
 
 import com.enokinomi.timeslice.branding.BrandingAbstractModule;
 import com.enokinomi.timeslice.branding.DefaultBrandingModule;
-import com.enokinomi.timeslice.core.TimesliceModule;
+import com.enokinomi.timeslice.core.TimesliceWebModule;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.SerializationException;
 import com.google.gwt.user.server.rpc.RPC;
@@ -60,6 +60,9 @@ public class GuiceRpcService extends RemoteServiceServlet
             String db = getServletContext().getInitParameter("timeslice.db");
             if (null == db) throw new RuntimeException("No database base-path given in context-param 'timeslice.db'.");
 
+            String sd = getServletContext().getInitParameter("timeslice.safedir");
+            if (null == sd) sd = "."; // throw new RuntimeException("No safe-dir given in context-param 'timeslice.safedir'.");
+
 
             Module brandCompositeModule = new DefaultBrandingModule();
 
@@ -94,7 +97,7 @@ public class GuiceRpcService extends RemoteServiceServlet
                 System.out.println(" ... branding failed (will use default): " + e.getMessage());
             }
 
-            this.injector = Guice.createInjector(new TimesliceModule(db, acl), brandCompositeModule);
+            this.injector = Guice.createInjector(new TimesliceWebModule(db, acl, "."), brandCompositeModule);
         }
     }
 

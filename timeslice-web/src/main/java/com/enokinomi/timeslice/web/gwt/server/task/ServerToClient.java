@@ -4,7 +4,9 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 
 import com.enokinomi.timeslice.lib.task.StartTag;
+import com.enokinomi.timeslice.lib.task.TaskTotalMember;
 import com.enokinomi.timeslice.lib.util.ITransform;
+import com.enokinomi.timeslice.web.gwt.client.task.core.TaskTotal;
 
 
 public class ServerToClient
@@ -23,6 +25,22 @@ public class ServerToClient
                         r.getWhat(),
                         r.getWhen().isBeforeNow()
                         );
+            }
+        };
+    }
+
+    public static ITransform<TaskTotalMember, TaskTotal> createTaskTotal(final int tzoffset)
+    {
+        return new ITransform<TaskTotalMember, TaskTotal>()
+        {
+            @Override
+            public TaskTotal apply(TaskTotalMember r)
+            {
+                return new TaskTotal(
+                        r.getWho(),
+                        r.getMillis() / 1000. / 60. / 60.,
+                        r.getPercentage(),
+                        r.getWhat());
             }
         };
     }

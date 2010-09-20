@@ -1,11 +1,9 @@
 package com.enokinomi.timeslice.web.gwt.server.appjob;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
+import com.enokinomi.timeslice.lib.appjob.AppJobProcessor;
+import com.enokinomi.timeslice.lib.util.ITransform;
 import com.enokinomi.timeslice.web.gwt.client.appjob.core.AppJobCompletion;
 import com.enokinomi.timeslice.web.gwt.client.appjob.core.IAppJobSvc;
 import com.enokinomi.timeslice.web.gwt.client.core.NotAuthenticException;
@@ -13,52 +11,31 @@ import com.google.inject.Inject;
 
 public class AppJobSvc implements IAppJobSvc
 {
-    private final Set<AppJob> appJobs;
-
-    private final Map<String, AppJob> jobsById = new LinkedHashMap<String, AppJob>();
+    private final AppJobProcessor appJobSvc;
 
     @Inject
-    public AppJobSvc(Set<AppJob> appJobs)
+    public AppJobSvc(AppJobProcessor appJobSvc)
     {
-        this.appJobs = appJobs;
-
-        for (AppJob job: appJobs)
-        {
-            jobsById.put(job.getJobId(), job);
-        }
+        this.appJobSvc = appJobSvc;
     }
 
     @Override
     public List<String> getAvailableJobIds(String authToken) throws NotAuthenticException
     {
-        List<String> ids = new ArrayList<String>(appJobs.size());
-        for (AppJob job: appJobs)
-        {
-            ids.add(job.getJobId());
-        }
-        return ids;
+        return appJobSvc.getAvailableJobIds();
     }
 
     @Override
-    public AppJobCompletion performJob(String jobId) throws NotAuthenticException
+    public AppJobCompletion performJob(String authToken, String jobId) throws NotAuthenticException
     {
-        AppJob requestedJob = jobsById.get(jobId);
-
-        if (null != requestedJob)
+        return new ITransform<com.enokinomi.timeslice.lib.appjob.AppJobCompletion, AppJobCompletion>()
         {
-            try
+            @Override
+            public AppJobCompletion apply(com.enokinomi.timeslice.lib.appjob.AppJobCompletion r)
             {
-                return new AppJobCompletion(jobId, "ok", requestedJob.perform());
+                return new AppJobCompletion(r.getJobId(), r.getStatus(), r.getDescription());
             }
-            catch (Exception e)
-            {
-                return new AppJobCompletion(jobId, "failed", e.getMessage());
-            }
-        }
-        else
-        {
-            return new AppJobCompletion("-", "not run", "job not found");
-        }
+        }.apply(appJobSvc.performJob(jobId));
     }
 
 }

@@ -12,7 +12,6 @@ import com.enokinomi.timeslice.web.gwt.client.assigned.core.IAssignmentSvcAsync;
 import com.enokinomi.timeslice.web.gwt.client.core.AsyncResult;
 import com.enokinomi.timeslice.web.gwt.client.core.BrandInfo;
 import com.enokinomi.timeslice.web.gwt.client.core.NotAuthenticException;
-import com.enokinomi.timeslice.web.gwt.client.core.ProcType;
 import com.enokinomi.timeslice.web.gwt.client.core.SortDir;
 import com.enokinomi.timeslice.web.gwt.client.task.core.ITimesliceSvc;
 import com.enokinomi.timeslice.web.gwt.client.task.core.ITimesliceSvcAsync;
@@ -337,7 +336,7 @@ public class GwtRpcController extends BaseController
         }
         else
         {
-            getSvc().refreshItems(token, maxSize, SortDir.desc, null, startingInstant, endingInstant, new AsyncCallback<List<StartTag>>()
+            getSvc().refreshItems(token, maxSize, SortDir.desc, startingInstant, endingInstant, new AsyncCallback<List<StartTag>>()
                     {
                         @Override
                         public void onSuccess(List<StartTag> result)
@@ -362,14 +361,14 @@ public class GwtRpcController extends BaseController
     }
 
     @Override
-    public void startRefreshTotals(final int maxSize, final SortDir sortDir, final ProcType procType, final String startingInstant, final String endingInstant, final List<String> allowWords, final List<String> ignoreWords)
+    public void startRefreshTotals(final int maxSize, final SortDir sortDir, final String startingInstant, final String endingInstant, final List<String> allowWords, final List<String> ignoreWords)
     {
         final IOnAuthenticated retryAction = new IOnAuthenticated()
         {
             @Override
             public void startRetry()
             {
-                startRefreshTotals(maxSize, sortDir, procType, startingInstant, endingInstant, allowWords, ignoreWords);
+                startRefreshTotals(maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords);
             }
         };
 
@@ -381,7 +380,7 @@ public class GwtRpcController extends BaseController
         }
         else
         {
-            getSvc().refreshTotals(token, maxSize, sortDir, procType, startingInstant, endingInstant, allowWords, ignoreWords, new AsyncCallback<List<TaskTotal>>()
+            getSvc().refreshTotals(token, maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, new AsyncCallback<List<TaskTotal>>()
                     {
                         @Override
                         public void onFailure(Throwable caught)
@@ -453,14 +452,14 @@ public class GwtRpcController extends BaseController
     }
 
     @Override
-    public void startRefreshTotalsAssigned(final int maxSize, final SortDir sortDir, final ProcType procType, final String startingInstant, final String endingInstant, final List<String> allowWords, final List<String> ignoreWords)
+    public void startRefreshTotalsAssigned(final int maxSize, final SortDir sortDir, final String startingInstant, final String endingInstant, final List<String> allowWords, final List<String> ignoreWords)
     {
         final IOnAuthenticated retryAction = new IOnAuthenticated()
         {
             @Override
             public void startRetry()
             {
-                startRefreshTotalsAssigned(maxSize, sortDir, procType, startingInstant, endingInstant, allowWords, ignoreWords);
+                startRefreshTotalsAssigned(maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords);
             }
         };
 
@@ -471,7 +470,7 @@ public class GwtRpcController extends BaseController
         }
         else
         {
-            getAssignedSvc().refreshTotals(token, maxSize, sortDir, procType, startingInstant, endingInstant, allowWords, ignoreWords, new AsyncCallback<List<AssignedTaskTotal>>()
+            getAssignedSvc().refreshTotals(token, maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, new AsyncCallback<List<AssignedTaskTotal>>()
             {
                 @Override
                 public void onSuccess(List<AssignedTaskTotal> result)
@@ -501,14 +500,14 @@ public class GwtRpcController extends BaseController
     }
 
     @Override
-    public void startPersistTotals(final String persistAsName, final int maxSize, final SortDir sortDir, final ProcType procType, final String startingInstant, final String endingInstant, final List<String> allowWords, final List<String> ignoreWords)
+    public void startPersistTotals(final String persistAsName, final int maxSize, final SortDir sortDir, final String startingInstant, final String endingInstant, final List<String> allowWords, final List<String> ignoreWords)
     {
         final IOnAuthenticated retryAction = new IOnAuthenticated()
         {
             @Override
             public void startRetry()
             {
-                startPersistTotals(persistAsName, maxSize, sortDir, procType, startingInstant, endingInstant, allowWords, ignoreWords);
+                startPersistTotals(persistAsName, maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords);
             }
         };
 
@@ -519,7 +518,7 @@ public class GwtRpcController extends BaseController
         }
         else
         {
-            getSvc().persistTotals(authToken, persistAsName, maxSize, sortDir, procType, startingInstant, endingInstant, allowWords, ignoreWords, new AsyncCallback<String>()
+            getSvc().persistTotals(authToken, persistAsName, maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, new AsyncCallback<String>()
             {
                 @Override
                 public void onSuccess(String result)
@@ -605,7 +604,7 @@ public class GwtRpcController extends BaseController
         }
         else
         {
-            jobSvc.performJob(jobId, new AsyncCallback<AppJobCompletion>()
+            jobSvc.performJob(authToken, jobId, new AsyncCallback<AppJobCompletion>()
             {
                 @Override
                 public void onSuccess(AppJobCompletion result)

@@ -4,10 +4,9 @@ import java.util.List;
 
 import com.enokinomi.timeslice.web.gwt.client.assigned.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.assigned.core.IAssignmentSvc;
-import com.enokinomi.timeslice.web.gwt.client.core.ProcType;
 import com.enokinomi.timeslice.web.gwt.client.core.SortDir;
-import com.enokinomi.timeslice.web.gwt.server.task.SessionData;
-import com.enokinomi.timeslice.web.gwt.server.task.SessionTracker;
+import com.enokinomi.timeslice.web.gwt.server.session.SessionData;
+import com.enokinomi.timeslice.web.gwt.server.session.SessionTracker;
 import com.google.inject.Inject;
 
 public class AssignmentSvcSession implements IAssignmentSvc
@@ -37,9 +36,9 @@ public class AssignmentSvcSession implements IAssignmentSvc
     }
 
     @Override
-    public List<AssignedTaskTotal> refreshTotals(String authToken, int maxSize, SortDir sortDir, ProcType procType, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
+    public List<AssignedTaskTotal> refreshTotals(String authToken, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
     {
         SessionData sessionData = sessionTracker.checkToken(authToken);
-        return assignmentSvc.refreshTotals(sessionData.getUser(), maxSize, sortDir, procType, startingInstant, endingInstant, allowWords, ignoreWords);
+        return assignmentSvc.refreshTotals(sessionData.getUser(), maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords);
     }
 }

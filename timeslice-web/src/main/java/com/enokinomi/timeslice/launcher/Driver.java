@@ -11,10 +11,14 @@ import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
-import com.enokinomi.timeslice.appjob.stockjobs.StockJobsModule;
 import com.enokinomi.timeslice.branding.BrandingAbstractModule;
 import com.enokinomi.timeslice.branding.DefaultBrandingModule;
-import com.enokinomi.timeslice.core.TimesliceModule;
+import com.enokinomi.timeslice.core.SessionModule;
+import com.enokinomi.timeslice.core.TimesliceWebModule;
+import com.enokinomi.timeslice.lib.appjob_stockjobs.StockJobsModule;
+import com.enokinomi.timeslice.lib.assign.AssignModule;
+import com.enokinomi.timeslice.lib.task.TaskModule;
+import com.enokinomi.timeslice.lib.userinfo.UserInfoModule;
 import com.enokinomi.timeslice.web.gwt.server.guice.GuiceRpcModule;
 import com.google.inject.Guice;
 import com.google.inject.Module;
@@ -52,6 +56,7 @@ public class Driver
         ArgumentAcceptingOptionSpec<String> resSpec = parser.acceptsAll(Arrays.asList("w", "web-root"), "Base folder of web resources.").withRequiredArg().ofType(String.class);
         ArgumentAcceptingOptionSpec<Integer> defPortSpec = parser.acceptsAll(Arrays.asList("P", "default-port"), "Port for web server.").withRequiredArg().ofType(Integer.class);
         ArgumentAcceptingOptionSpec<String> defResSpec = parser.acceptsAll(Arrays.asList("W", "default-web-root"), "Base folder of web resources.").withRequiredArg().ofType(String.class);
+        ArgumentAcceptingOptionSpec<String> safeDirSpec = parser.acceptsAll(Arrays.asList("s", "safe-dir"), "Safe-dir to save server-side files.").withRequiredArg().ofType(String.class);
 
         OptionSet detectedOptions = null;
         try
@@ -81,16 +86,22 @@ public class Driver
         String db = mapNullTo(dbSpec.value(detectedOptions), userHome + "/.timeslice-data/hsql/default-01");
         final String res = mapNullTo(resSpec.value(detectedOptions), mapNullTo(defResSpec.value(detectedOptions), "webapp"));
         final Integer port = mapNullTo(portSpec.value(detectedOptions), mapNullTo(defPortSpec.value(detectedOptions), 9080));
+        final String safeDir = mapNullTo(safeDirSpec.value(detectedOptions), ".");
 
         System.out.println("Configuration:");
         System.out.println("  port     : " + port);
         System.out.println("  web-root : " + res);
         System.out.println("  ACL      : " + acl);
         System.out.println("  data     : " + db);
+        System.out.println("  safedir  : " + safeDir);
         System.out.flush();
 
         Guice.createInjector(
-                new TimesliceModule(db, acl),
+                new TaskModule(),
+                new AssignModule(),
+                new UserInfoModule(),
+                new TimesliceWebModule(db, acl, safeDir),
+                new SessionModule(),
                 new TsWebLaunchModule(port, res),
                 new GuiceRpcModule(),
                 new StockJobsModule(),

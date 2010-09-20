@@ -10,5 +10,5 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface IAppJobSvc extends RemoteService
 {
     List<String> getAvailableJobIds(String authToken) throws NotAuthenticException;
-    AppJobCompletion performJob(String jobId) throws NotAuthenticException;
+    AppJobCompletion performJob(String authToken, String jobId) throws NotAuthenticException;
 }
