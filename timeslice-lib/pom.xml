@@ -2,10 +2,15 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>com.enokinomi.timeslice</groupId>
+        <artifactId>timeslice-parent</artifactId>
+        <version>1.0.10-beta-6-SNAPSHOT</version>
+    </parent>
+
 	<groupId>com.enokinomi.timeslice</groupId>
 	<artifactId>timeslice-lib</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.10-beta-6-SNAPSHOT</version>
 
 	<name>timeslice-lib</name>
 

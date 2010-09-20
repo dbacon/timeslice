@@ -1,3 +1,6 @@
 .DS_Store
 timeslice-mobile/bin
 timeslice-mobile/gen
+target
+.project
+.settings
