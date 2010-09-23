@@ -6,12 +6,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 public class SchemaDuty
 {
+    private static final Logger log = Logger.getLogger(SchemaDuty.class);
+
     private final String schemaResourceName;
 
     @Inject
@@ -29,7 +32,7 @@ public class SchemaDuty
             {
                 String schemaDdl = IOUtils.toString(schemaDdlStream);
                 conn.createStatement().executeUpdate(schemaDdl);
-                System.out.println("created database");
+                log.debug("created database");
             }
             else
             {

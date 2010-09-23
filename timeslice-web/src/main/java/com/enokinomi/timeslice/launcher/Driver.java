@@ -11,6 +11,8 @@ import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
+import org.apache.log4j.Logger;
+
 import com.enokinomi.timeslice.branding.BrandingAbstractModule;
 import com.enokinomi.timeslice.branding.DefaultBrandingModule;
 import com.enokinomi.timeslice.core.SessionModule;
@@ -26,6 +28,8 @@ import com.google.inject.Module;
 
 public class Driver
 {
+    private static final Logger log = Logger.getLogger(Driver.class);
+
     /**
      * Any argument present is taken as the name of settings to be loaded,
      * each having higher precedence than the previous.  System properties
@@ -88,13 +92,14 @@ public class Driver
         final Integer port = mapNullTo(portSpec.value(detectedOptions), mapNullTo(defPortSpec.value(detectedOptions), 9080));
         final String safeDir = mapNullTo(safeDirSpec.value(detectedOptions), ".");
 
-        System.out.println("Configuration:");
-        System.out.println("  port     : " + port);
-        System.out.println("  web-root : " + res);
-        System.out.println("  ACL      : " + acl);
-        System.out.println("  data     : " + db);
-        System.out.println("  safedir  : " + safeDir);
-        System.out.flush();
+        if (log.isInfoEnabled())
+        {
+            log.info("config: port     : " + port);
+            log.info("config: web-root : " + res);
+            log.info("config: ACL      : " + acl);
+            log.info("config: data     : " + db);
+            log.info("config: safedir  : " + safeDir);
+        }
 
         Guice.createInjector(
                 new TaskModule(),
@@ -120,13 +125,13 @@ public class Driver
         if (brandModuleItor.hasNext())
         {
             BrandingAbstractModule brandModule = brandModuleItor.next();
-            System.out.println("Found branding to use: " + brandModule.getClass().getCanonicalName());
+            if (log.isInfoEnabled()) log.info("Found branding to use: " + brandModule.getClass().getCanonicalName());
             brandCompositeModule = brandModule;
         }
 
         if (brandModuleItor.hasNext())
         {
-            System.out.println("Found more branding modules; only the first module found is applied.");
+            log.warn("Found more branding modules; only the first module found is applied.");
         }
 
         return brandCompositeModule;

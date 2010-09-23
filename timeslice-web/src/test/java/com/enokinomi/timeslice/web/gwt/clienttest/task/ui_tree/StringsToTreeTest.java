@@ -1,6 +1,7 @@
 package com.enokinomi.timeslice.web.gwt.clienttest.task.ui_tree;
 
 
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -65,10 +66,17 @@ public class StringsToTreeTest
 
     public static class PrintNestedTableRowFullPath extends NodeTraverser<String, Row, Row>
     {
+        private final PrintStream ps;
+
+        public PrintNestedTableRowFullPath(PrintStream ps)
+        {
+            this.ps = ps;
+        }
+
         @Override
         protected void visit(List<String> path, Row item, Row aggregate)
         {
-            System.out.printf("%3s %3s : %s\n",
+            ps.printf("%3s %3s : %s\n",
                     item == null ? "" : ("" + item.count),
                             aggregate.count,
                             new PathRenderer<String>("/").apply(path)
@@ -78,13 +86,20 @@ public class StringsToTreeTest
 
     public static class PrintNestedTableRow extends NodeTraverser<String, Row, Row>
     {
+        private final PrintStream ps;
+
+        public PrintNestedTableRow(PrintStream ps)
+        {
+            this.ps = ps;
+        }
+
         @Override
         protected void visit(List<String> path, Row item, Row aggregate)
         {
             char[] buf = new char[path.size()*2];
             Arrays.fill(buf, ' ');
 
-            System.out.printf("%3s %3s : %s%s\n",
+            ps.printf("%3s %3s : %s%s\n",
                     item == null ? "" : ("" + item.count),
                             aggregate.count,
                             new String(buf),
@@ -96,7 +111,7 @@ public class StringsToTreeTest
     @Test
     public void test0()
     {
-        new PrintNestedTableRow()
+        new PrintNestedTableRow(System.out)
             .visit(ItemsToTree.create(new TotalIntegrator("/"))
                     .rowsToTree(
                         Arrays.asList(

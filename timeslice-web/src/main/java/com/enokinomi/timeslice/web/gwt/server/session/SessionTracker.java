@@ -3,6 +3,8 @@ package com.enokinomi.timeslice.web.gwt.server.session;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.enokinomi.timeslice.web.gwt.client.core.NotAuthenticException;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -10,6 +12,8 @@ import com.google.inject.name.Named;
 
 public class SessionTracker
 {
+    private static final Logger log = Logger.getLogger(SessionTracker.class);
+
     private static final long serialVersionUID = 1L;
 
     protected Map<String, SessionData> validSessions = new LinkedHashMap<String, SessionData>();
@@ -30,33 +34,35 @@ public class SessionTracker
         validSessions.remove(authenticationToken);
     }
 
+    private String mkMsg(String username, String msg)
+    {
+        return "authenticate(" + username + ") - " + this.toString() + ": " + msg;
+    }
     public synchronized String authenticate(String username, String password)
     {
-        System.out.println("authenticate(" + username + ") - " + this.toString());
-
         // TODO: implement hashing the pw, lookup in db, applying authorization.
         // for now, just make sure it matches what's in their acl.
         String aclFileName = aclFilename;
         if (null == aclFileName)
         {
-            System.out.println("  No ACL filename");
+            log.warn(mkMsg(username, "No ACL filename"));
             return null;
         }
 
         String realPw = new AclFile(aclFileName).lookupPassword(username);
         if (null == realPw)
         {
-            System.out.println("  No password-entry for '" + username + "' in ACL file '" + aclFileName + "'.");
+            log.info(mkMsg(username, "No password-entry for '" + username + "' in ACL file '" + aclFileName + "'."));
             return null;
         }
 
         if (!realPw.equals(password))
         {
-            System.out.println("  Password mis-match for  '" + username + "' in ACL file '" + aclFileName + "'.");
+            log.info(mkMsg(username, "Password mis-match for  '" + username + "' in ACL file '" + aclFileName + "'."));
             return null;
         }
 
-        System.out.println("  Authentication match for  '" + username + "' in ACL file '" + aclFileName + "', generating session and token.");
+        log.info(mkMsg(username, "Authentication match for  '" + username + "' in ACL file '" + aclFileName + "', generating session and token."));
 
         SessionData sd = sessionDataProvider.createSessionForAuthenticatedUser(username);
         validSessions.put(sd.getUuid(), sd);

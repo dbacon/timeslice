@@ -6,8 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -17,6 +19,8 @@ import com.google.inject.name.Named;
 
 public class HsqldbTagStore implements ITagStore
 {
+    private static final Logger log = Logger.getLogger(HsqldbTagStore.class);
+
     private static final Timestamp END_OF_TIME = new Timestamp(new DateTime(9999, 12, 31, 0, 0, 0, 0, DateTimeZone.UTC).getMillis());
 
     private static final String SQL_BilleeLookup = "" +
@@ -42,14 +46,21 @@ public class HsqldbTagStore implements ITagStore
         this.schemaManager = schemaManager;
     }
 
-    private synchronized void check(int minversion)
+    private synchronized boolean versionIsAtLeast(int minversion)
     {
         if (null == version)
         {
             version = schemaManager.findVersion(conn);
         }
 
-        if (version < minversion)
+        if (log.isDebugEnabled()) log.debug("schema version-check: " + minversion + " <= " + version);
+
+        return minversion <= version;
+    }
+
+    private synchronized void require(int minversion)
+    {
+        if (!versionIsAtLeast(minversion))
         {
             String version2 = Integer.MIN_VALUE == version ? "(unrecognized)" : ("" + version);
             throw new RuntimeException(String.format("Insufficient database version %s, need %s.", version2, minversion));
@@ -59,72 +70,80 @@ public class HsqldbTagStore implements ITagStore
     @Override
     public String lookupBillee(String description, DateTime asOf, String valueOnMiss)
     {
-        check(1);
-
-        PreparedStatement statement = null;
-        ResultSet rs = null;
-
-        try
+        if (versionIsAtLeast(1))
         {
-            statement = conn.prepareStatement(SQL_BilleeLookup);
+            PreparedStatement statement = null;
+            ResultSet rs = null;
 
-            Timestamp asOfTs = new Timestamp(asOf.getMillis());
-
-            statement.setTimestamp(1, asOfTs);
-            statement.setTimestamp(2, asOfTs);
-            statement.setString(3, description);
-
-            rs = statement.executeQuery();
-            if (!rs.next())
+            try
             {
-                return valueOnMiss;
-            }
-            else
-            {
-                String result = rs.getString(1);
+                statement = conn.prepareStatement(SQL_BilleeLookup);
 
-                if (rs.next())
+                Timestamp asOfTs = new Timestamp(asOf.getMillis());
+
+                statement.setTimestamp(1, asOfTs);
+                statement.setTimestamp(2, asOfTs);
+                statement.setString(3, description);
+
+                rs = statement.executeQuery();
+                if (!rs.next())
                 {
-                    throw new RuntimeException("Found >1 row for description.");
+                    return valueOnMiss;
                 }
+                else
+                {
+                    String result = rs.getString(1);
 
-                return result;
-            }
-        }
-        catch (SQLException e)
-        {
-            throw new RuntimeException("looking up billee failed: " + e.getMessage(), e);
-        }
-        finally
-        {
-            try
-            {
-                if (null != statement) statement.close();
+                    if (rs.next())
+                    {
+                        throw new RuntimeException("Found >1 row for description.");
+                    }
+
+                    return result;
+                }
             }
             catch (SQLException e)
             {
-                throw new RuntimeException("closing statement failed: " + e.getMessage(), e);
+                throw new RuntimeException("looking up billee failed: " + e.getMessage(), e);
             }
-            try
+            finally
             {
-                if (null != rs) rs.close();
+                try
+                {
+                    if (null != statement) statement.close();
+                }
+                catch (SQLException e)
+                {
+                    throw new RuntimeException("closing statement failed: " + e.getMessage(), e);
+                }
+                try
+                {
+                    if (null != rs) rs.close();
+                }
+                catch (SQLException e)
+                {
+                    throw new RuntimeException("closing result-set failed: " + e.getMessage(), e);
+                }
             }
-            catch (SQLException e)
-            {
-                throw new RuntimeException("closing result-set failed: " + e.getMessage(), e);
-            }
+        }
+        else
+        {
+            return "";
         }
     }
 
     public void assignBillee(String description, String billee, DateTime date)
     {
-        endDateAnyBillee(description, date);
-        insertBillee(description, billee, date);
+        if (versionIsAtLeast(1))
+        {
+            endDateAnyBillee(description, date);
+            insertBillee(description, billee, date);
+        }
     }
 
-    public void endDateAnyBillee(String description, DateTime untilDate)
+    protected void endDateAnyBillee(String description, DateTime untilDate)
     {
-        check(1);
+        require(1);
 
         // todo: should ensure that no effective records exist for after untilDate
 
@@ -169,7 +188,7 @@ public class HsqldbTagStore implements ITagStore
 
     protected void insertBillee(String description, String billee, DateTime asOf)
     {
-        check(1);
+        require(1);
 
         PreparedStatement statement = null;
 
@@ -214,47 +233,52 @@ public class HsqldbTagStore implements ITagStore
     @Override
     public List<String> getAllBillees()
     {
-        check(1);
-
-        List<String> result = new ArrayList<String>();
-
-        PreparedStatement statement = null;
-        ResultSet rs = null;
-
-        try
+        if (versionIsAtLeast(1))
         {
-            statement = conn.prepareStatement("select distinct billee from ts_assign");
+            List<String> result = new ArrayList<String>();
 
-            rs = statement.executeQuery();
-            while (rs.next())
-            {
-                result.add(rs.getString(1));
-            }
+            PreparedStatement statement = null;
+            ResultSet rs = null;
 
-            return result;
-        }
-        catch (SQLException e)
-        {
-            throw new RuntimeException("looking up billee failed: " + e.getMessage(), e);
-        }
-        finally
-        {
             try
             {
-                if (null != statement) statement.close();
+                statement = conn.prepareStatement("select distinct billee from ts_assign");
+
+                rs = statement.executeQuery();
+                while (rs.next())
+                {
+                    result.add(rs.getString(1));
+                }
+
+                return result;
             }
             catch (SQLException e)
             {
-                throw new RuntimeException("closing statement failed: " + e.getMessage(), e);
+                throw new RuntimeException("looking up billee failed: " + e.getMessage(), e);
             }
-            try
+            finally
             {
-                if (null != rs) rs.close();
+                try
+                {
+                    if (null != statement) statement.close();
+                }
+                catch (SQLException e)
+                {
+                    throw new RuntimeException("closing statement failed: " + e.getMessage(), e);
+                }
+                try
+                {
+                    if (null != rs) rs.close();
+                }
+                catch (SQLException e)
+                {
+                    throw new RuntimeException("closing result-set failed: " + e.getMessage(), e);
+                }
             }
-            catch (SQLException e)
-            {
-                throw new RuntimeException("closing result-set failed: " + e.getMessage(), e);
-            }
+        }
+        else
+        {
+            return Collections.emptyList();
         }
     }
 }

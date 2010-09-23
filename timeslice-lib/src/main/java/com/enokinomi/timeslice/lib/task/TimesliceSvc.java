@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.joda.time.format.ISODateTimeFormat;
@@ -15,6 +16,8 @@ import com.google.inject.Inject;
 
 public class TimesliceSvc
 {
+    private static final Logger log = Logger.getLogger(TimesliceSvc.class);
+
     private String reportPrefix = "";
     private final ITimesliceStore store;
     private final Sum summer;
@@ -183,7 +186,7 @@ public class TimesliceSvc
         try
         {
             FileUtils.writeLines(report, lines);
-            System.out.println("Wrote report to '" + report.getAbsolutePath() + "'.");
+            if (log.isInfoEnabled()) log.info("Wrote report to '" + report.getAbsolutePath() + "'.");
         }
         catch (IOException e)
         {

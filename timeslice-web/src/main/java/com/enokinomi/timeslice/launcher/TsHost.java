@@ -1,5 +1,6 @@
 package com.enokinomi.timeslice.launcher;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
@@ -9,6 +10,7 @@ import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
+import org.mortbay.log.Log;
 
 import com.google.inject.servlet.GuiceFilter;
 
@@ -20,6 +22,8 @@ import com.google.inject.servlet.GuiceFilter;
  */
 public class TsHost
 {
+    private static final Logger log = Logger.getLogger(TsHost.class);
+
     private final int port;
 
     private HandlerList handler;
@@ -48,13 +52,14 @@ public class TsHost
         try
         {
             server.join();
-            System.out.println("Server exited unsolicted by TsHost.");
+            log.info("Server exited unsolicited by TsHost.");
         }
         catch (InterruptedException e)
         {
+            log.info("Host process caught interrupt, stopping the server.");
+
             // doesn't really work.  needs testing/fixing/axing.
 
-            System.out.println("Host process caught interrupt, stopping the server.");
             try
             {
                 server.stop();
@@ -67,11 +72,11 @@ public class TsHost
             try
             {
                 server.join();
-                System.out.println("Server exited cleanly.");
+                log.info("Server exited cleanly.");
             }
             catch(InterruptedException e2)
             {
-                System.out.println("Force killed.");
+                log.warn("Force killed.");
             }
         }
     }

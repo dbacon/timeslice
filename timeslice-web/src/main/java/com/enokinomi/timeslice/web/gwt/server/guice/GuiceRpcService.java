@@ -72,7 +72,6 @@ public class GuiceRpcService extends RemoteServiceServlet
 
             try
             {
-                System.out.println("Loading brandings...");
                 //
                 // Note, this doesn't really work when in normal servlet/container mode,
                 // the branding module would need to be in the webapp's classpath - system classpath won't be searched.
@@ -82,23 +81,22 @@ public class GuiceRpcService extends RemoteServiceServlet
                 if (brandModuleItor.hasNext())
                 {
                     BrandingAbstractModule brandModule = brandModuleItor.next();
-                    System.out.println("    overriding brand: " + brandModule.getClass().getCanonicalName());
+                    log("overriding brand: " + brandModule.getClass().getCanonicalName());
                     brandCompositeModule = brandModule;
                 }
 
                 if (brandModuleItor.hasNext())
                 {
-                    System.out.println("Found more branding modules; only the first module found is applied.");
+                    log("WARNING: Found more branding modules; only the first module found is applied.");
                 }
-                System.out.println(" ... branding done.");
             }
             catch (Exception e)
             {
-                System.out.println(" ... branding failed (will use default): " + e.getMessage());
+                log("WARNING: branding failed (will use default): " + e.getMessage());
             }
             catch (ServiceConfigurationError e)
             {
-                System.out.println(" ... branding failed (will use default): " + e.getMessage());
+                log("WARNING: branding failed (will use default): " + e.getMessage());
             }
 
             this.injector = Guice.createInjector(
