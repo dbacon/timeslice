@@ -308,14 +308,17 @@ public class TimesliceApp implements EntryPoint
             @Override
             public void onClick(ClickEvent event)
             {
-                new ImportBulkItemsDialog(new BulkItemListener()
-                {
-                    @Override
-                    public void addItems(List<StartTag> items)
+                ImportBulkItemsDialog d = new ImportBulkItemsDialog();
+                d.addBulkItemListener(
+                    new BulkItemListener()
                     {
-                        controller.startAddItems(items);
-                    }
-                }).show();
+                        @Override
+                        public void addItems(List<StartTag> items)
+                        {
+                            controller.startAddItems(items);
+                        }
+                    });
+                d.show();
             }
         });
 

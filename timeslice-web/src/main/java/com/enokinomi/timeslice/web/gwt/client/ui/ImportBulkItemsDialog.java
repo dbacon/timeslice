@@ -48,14 +48,7 @@ public class ImportBulkItemsDialog extends DialogBox
 
     public ImportBulkItemsDialog()
     {
-        this(null);
-    }
-
-    public ImportBulkItemsDialog(BulkItemListener firstListener)
-    {
         super(false, true);
-
-        if (null != firstListener) listeners.add(firstListener);
 
         setText("Bulk entry");
         setGlassEnabled(true);
