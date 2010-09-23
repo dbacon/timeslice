@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class AppJobPanel extends ResizeComposite
 {
@@ -48,10 +49,13 @@ public class AppJobPanel extends ResizeComposite
 
         addHeaders();
 
+        VerticalPanel vp = new VerticalPanel();
+        vp.add(tab);
+
         DockLayoutPanel dp = new DockLayoutPanel(Unit.EM);
         dp.addNorth(hp, 2);
         dp.addSouth(resultScroller, 30);
-        dp.add(tab);
+        dp.add(vp);
 
         initWidget(dp);
     }
