@@ -58,7 +58,6 @@ public class GuiceRpcService extends RemoteServiceServlet
          */
         if (null == injector)
         {
-            // TODO: here's where we'd need to rely on init params to get our config.
             String acl = getServletContext().getInitParameter("timeslice.acl");
             if (null == acl) throw new RuntimeException("No ACL given in context-param 'timeslice.acl'.");
 

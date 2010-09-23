@@ -75,7 +75,6 @@ public class HsqldbTimesliceStore implements ITimesliceStore
     {
         check(0);
 
-        // TODO: use page-size and page-index
         try
         {
             ArrayList<StartTag> result = new ArrayList<StartTag>(100);
