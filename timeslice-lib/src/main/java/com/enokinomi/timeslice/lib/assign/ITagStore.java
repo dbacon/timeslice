@@ -1,5 +1,7 @@
 package com.enokinomi.timeslice.lib.assign;
 
+import java.util.List;
+
 import org.joda.time.DateTime;
 
 public interface ITagStore
@@ -20,5 +22,7 @@ public interface ITagStore
     * @param asOf
     */
    void assignBillee(String description, String billee, DateTime asOf);
+
+   List<String> getAllBillees();
 
 }

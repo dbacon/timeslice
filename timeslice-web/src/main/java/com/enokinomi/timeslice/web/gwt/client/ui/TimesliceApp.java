@@ -526,7 +526,7 @@ public class TimesliceApp implements EntryPoint
                     }
                     else
                     {
-                        GWT.log("Awesome. got some assigned stuff. (" + result.getReturned().size() + " item(s).");
+                        GWT.log("Assigned totals done: " + result.getReturned().size() + " item(s).");
                         reportPanel.setResultsAssigned(result.getReturned());
                     }
                 }
@@ -567,6 +567,20 @@ public class TimesliceApp implements EntryPoint
                     {
                         GWT.log("Billee updated.");
                         refreshTotals();
+                    }
+                }
+
+                @Override
+                public void onAllBilleesDone(AsyncResult<List<String>> asyncResult)
+                {
+                    if (asyncResult.isError())
+                    {
+                        GWT.log("Error during refreshing all billees: " + asyncResult.getThrown().getMessage());
+                    }
+                    else
+                    {
+                        GWT.log("Updated billees: " + asyncResult.getReturned().size() + " billee(s).");
+                        reportPanel.setBillees(asyncResult.getReturned());
                     }
                 }
 
@@ -626,7 +640,7 @@ public class TimesliceApp implements EntryPoint
             @Override
             public void appJobListRefreshRequested()
             {
-                scheduleJobListUpdate();
+                controller.startListAvailableJobs();
             }
         });
 
@@ -642,8 +656,9 @@ public class TimesliceApp implements EntryPoint
         if (options.isAutoRefresh()) timer.scheduleRepeating(options.getAutoRefreshMs());
 
         scheduleRefresh();
-        scheduleJobListUpdate();
-        scheduleBrandingUpdate();
+        controller.startListAvailableJobs();
+        controller.startGetBranding();
+        controller.startGetAllBillees();
     }
 
     private void updateIssuesLink(String issuesHref)
@@ -741,30 +756,6 @@ public class TimesliceApp implements EntryPoint
         }
 
 //        newItemForm.setFormEnabled(true);
-    }
-
-    private void scheduleJobListUpdate()
-    {
-        DeferredCommand.addCommand(new Command()
-        {
-            @Override
-            public void execute()
-            {
-                controller.startListAvailableJobs();
-            }
-        });
-    }
-
-    private void scheduleBrandingUpdate()
-    {
-        DeferredCommand.addCommand(new Command()
-        {
-            @Override
-            public void execute()
-            {
-                controller.startGetBranding();
-            }
-        });
     }
 
     private void scheduleRefresh()

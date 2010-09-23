@@ -67,4 +67,9 @@ public class AssignmentSvc
 
         return results;
     }
+
+    public List<String> getAllBillees()
+    {
+        return tagStore.getAllBillees();
+    }
 }

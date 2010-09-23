@@ -133,4 +133,12 @@ public abstract class BaseController implements IController
         }
     }
 
+    protected void fireAllBilleesDone(AsyncResult<List<String>> asyncResult)
+    {
+        for (IControllerListener listener: listeners)
+        {
+            listener.onAllBilleesDone(asyncResult);
+        }
+    }
+
 }

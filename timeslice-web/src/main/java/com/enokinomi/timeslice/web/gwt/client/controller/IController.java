@@ -24,6 +24,7 @@ public interface IController
     void startRefreshTotalsAssigned(int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords);
     void startPersistTotals(String persistAsName, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords);
     void startAssignBillee(String description, String newBillee);
+    void startGetAllBillees();
 
     void startListAvailableJobs();
     void startPerformJob(String jobId);

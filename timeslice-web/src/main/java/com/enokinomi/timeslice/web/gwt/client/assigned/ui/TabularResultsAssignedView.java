@@ -6,20 +6,29 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.enokinomi.timeslice.web.gwt.client.assigned.core.AssignedTaskTotal;
+import com.enokinomi.timeslice.web.gwt.client.controller.EditableLabel;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.NumberFormat;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.SuggestBox;
 
 public class TabularResultsAssignedView extends ResizeComposite
 {
+    private static final String ColumnLabel_Billee = "Billee";
+    private static final String ColumnLabel_Code = "Code";
+    private static final String ColumnLabel_What = "What";
+    private static final String ColumnLabel_Percent = "%";
+    private static final String ColumnLabel_Hours = "Hours";
+    private static final String ColumnLabel_Who = "Who";
+
+    private static final String Label_Updating = "Updating...";
+
     private FlexTable resultsTable = new FlexTable();
+    private final MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 
     public TabularResultsAssignedView()
     {
@@ -78,15 +87,14 @@ public class TabularResultsAssignedView extends ResizeComposite
         resultsTable.setCellSpacing(5);
         int row = 0;
 
+        // TODO: move column header style to CSS
         int col = 0;
-        resultsTable.setWidget(row, col++, new HTML("<b><u>Who</u></b>", false));
-        resultsTable.setWidget(row, col++, new HTML("<b><u>Hours</u></b>", false));
-        resultsTable.setWidget(row, col++, new HTML("<b><u>%</u></b>", false));
-        resultsTable.setWidget(row, col++, new HTML("<b><u>What</u></b>", false));
-        resultsTable.setWidget(row, col++, new HTML("<b><u>Code</u></b>", false));
-        resultsTable.setWidget(row, col++, new HTML("<b><u>Billee</u></b>", false));
-        resultsTable.setWidget(row, col++, new HTML("<b><u>New billee</u></b>", false));
-        resultsTable.setWidget(row, col++, new HTML("<b><u>U</u></b>", false));
+        resultsTable.setWidget(row, col++, new HTML("<b><u>" + ColumnLabel_Who + "</u></b>", false));
+        resultsTable.setWidget(row, col++, new HTML("<b><u>" + ColumnLabel_Hours + "</u></b>", false));
+        resultsTable.setWidget(row, col++, new HTML("<b><u>" + ColumnLabel_Percent + "</u></b>", false));
+        resultsTable.setWidget(row, col++, new HTML("<b><u>" + ColumnLabel_What + "</u></b>", false));
+        resultsTable.setWidget(row, col++, new HTML("<b><u>" + ColumnLabel_Code + "</u></b>", false));
+        resultsTable.setWidget(row, col++, new HTML("<b><u>" + ColumnLabel_Billee + "</u></b>", false));
 
         ++row;
 
@@ -100,33 +108,59 @@ public class TabularResultsAssignedView extends ResizeComposite
             resultsTable.setText(row, col++, NumberFormat.getPercentFormat().format(reportRow.getPercentage()));
             resultsTable.setText(row, col++, reportRow.getWhat());
             resultsTable.setText(row, col++, "" + reportRow.getWhat().hashCode());
-            resultsTable.setText(row, col++, reportRow.getBilledTo());
 
-            final TextBox textBox = new TextBox();
-            textBox.setText(reportRow.getBilledTo());
-            resultsTable.setWidget(row, col++, textBox);
+            // TODO: set style for edited editable-label
 
-            Anchor updateLink = new Anchor("[u]");
-            updateLink.addClickHandler(new ClickHandler()
+            final SuggestBox suggestBox = new SuggestBox(oracle);
+            final EditableLabel label = new EditableLabel(suggestBox, reportRow.getBilledTo());
+            label.addListener(new EditableLabel.Listener()
             {
                 @Override
-                public void onClick(ClickEvent event)
+                public void editCanceled()
                 {
-                    sendBilleeUpdate(reportRow, textBox);
+                }
+
+                @Override
+                public void editBegun()
+                {
+                }
+
+                @Override
+                public void editAccepted(String oldValue, String newValue)
+                {
+                    if (!oldValue.equals(newValue))
+                    {
+                        label.getLabel().setText(Label_Updating);
+                        sendBilleeUpdate(reportRow, newValue);
+                    }
                 }
             });
 
-            resultsTable.setWidget(row, col++, updateLink);
+            label.setWidth("20em"); // TODO: assigned label width to CSS ?
+            resultsTable.setWidget(row, col++, label);
+
+            // TODO: provide way to escape, reverting the text to its original.
+            // TODO: provide way to focus 1st unassigned text box
+            // TODO: put editable box in same cell as label, only showing 1-at-a-time when clicked/entered.
+            // TODO: add style for unassigned items.
 
             row++;
         }
     }
 
-    protected void sendBilleeUpdate(AssignedTaskTotal reportRow, TextBox textBox)
+    private void sendBilleeUpdate(AssignedTaskTotal reportRow, String newValue)
     {
-        String description = reportRow.getWhat();
-        String newBillee = textBox.getText();
+        onBilleeUpdate(reportRow.getWhat(), newValue);
+    }
 
+    protected void onBilleeUpdate(String description, String newBillee)
+    {
         fireBilleeUpdate(description, newBillee);
+    }
+
+    public void setBillees(List<String> billees)
+    {
+        oracle.clear();
+        oracle.addAll(billees);
     }
 }

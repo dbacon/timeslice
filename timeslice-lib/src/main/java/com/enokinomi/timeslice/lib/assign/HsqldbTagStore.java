@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -205,6 +207,53 @@ public class HsqldbTagStore implements ITagStore
                 {
                     throw new RuntimeException("Closing statement failed: " + e.getMessage(), e);
                 }
+            }
+        }
+    }
+
+    @Override
+    public List<String> getAllBillees()
+    {
+        check(1);
+
+        List<String> result = new ArrayList<String>();
+
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+
+        try
+        {
+            statement = conn.prepareStatement("select distinct billee from ts_assign");
+
+            rs = statement.executeQuery();
+            while (rs.next())
+            {
+                result.add(rs.getString(1));
+            }
+
+            return result;
+        }
+        catch (SQLException e)
+        {
+            throw new RuntimeException("looking up billee failed: " + e.getMessage(), e);
+        }
+        finally
+        {
+            try
+            {
+                if (null != statement) statement.close();
+            }
+            catch (SQLException e)
+            {
+                throw new RuntimeException("closing statement failed: " + e.getMessage(), e);
+            }
+            try
+            {
+                if (null != rs) rs.close();
+            }
+            catch (SQLException e)
+            {
+                throw new RuntimeException("closing result-set failed: " + e.getMessage(), e);
             }
         }
     }

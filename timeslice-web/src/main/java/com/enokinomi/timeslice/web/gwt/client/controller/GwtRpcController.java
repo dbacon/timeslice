@@ -430,6 +430,8 @@ public class GwtRpcController extends BaseController
                 {
                     GWT.log("success - assign billee");
                     fireAssignBilleeDone(new AsyncResult<Void>(result, null));
+
+                    startGetAllBillees();
                 }
 
                 @Override
@@ -445,6 +447,49 @@ public class GwtRpcController extends BaseController
                         fireAssignBilleeDone(new AsyncResult<Void>(null, caught));
 //                        new ErrorBox("authentication", caught.getMessage()).show();
 //                        throw new RuntimeException("Service error: " + caught.getMessage(), caught);
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void startGetAllBillees()
+    {
+        final IOnAuthenticated retryAction = new IOnAuthenticated()
+        {
+            @Override
+            public void startRetry()
+            {
+                startGetAllBillees();
+            }
+        };
+
+        String authToken = getAuthToken();
+        if (null == authToken)
+        {
+            authenticate(retryAction);
+        }
+        else
+        {
+            assignedSvc.getAllBillees(authToken, new AsyncCallback<List<String>>()
+            {
+                @Override
+                public void onSuccess(List<String> result)
+                {
+                    fireAllBilleesDone(new AsyncResult<List<String>>(result, null));
+                }
+
+                @Override
+                public void onFailure(Throwable caught)
+                {
+                    if (caught instanceof NotAuthenticException)
+                    {
+                        authenticate(caught.getMessage(), retryAction);
+                    }
+                    else
+                    {
+                        fireAllBilleesDone(new AsyncResult<List<String>>(null, caught));
                     }
                 }
             });

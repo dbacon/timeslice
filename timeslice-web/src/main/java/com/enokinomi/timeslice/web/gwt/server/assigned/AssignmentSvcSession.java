@@ -41,4 +41,11 @@ public class AssignmentSvcSession implements IAssignmentSvc
         SessionData sessionData = sessionTracker.checkToken(authToken);
         return assignmentSvc.refreshTotals(sessionData.getUser(), maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords);
     }
+
+    @Override
+    public List<String> getAllBillees(String authToken)
+    {
+        sessionTracker.checkToken(authToken);
+        return assignmentSvc.getAllBillees();
+    }
 }

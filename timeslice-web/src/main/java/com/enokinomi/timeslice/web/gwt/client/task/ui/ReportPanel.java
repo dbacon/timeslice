@@ -30,7 +30,6 @@ public class ReportPanel extends ResizeComposite
     private final Button persistButton = new Button("Persist");
     private final TextBox persistAsName = new TextBox();
     private final Label persisted = new Label();
-    private final TabularResultsView resultsView = new TabularResultsView();
     private final TabularResultsAssignedView resultsAssignedView = new TabularResultsAssignedView();
     private final TaskTotalIntegrator integrator = new TaskTotalIntegrator("/");
     private final TreeTableResultsView resultsTreeView = new TreeTableResultsView(integrator);
@@ -182,7 +181,6 @@ public class ReportPanel extends ResizeComposite
 
         TabLayoutPanel resultsTabs = new TabLayoutPanel(2, Unit.EM);
         resultsTabs.add(resultsTreeView, "Totaling");
-        resultsTabs.add(resultsView, "Table");
         resultsTabs.add(resultsAssignedView, "Assigned");
 
         SplitLayoutPanel dp = new SplitLayoutPanel();
@@ -196,7 +194,6 @@ public class ReportPanel extends ResizeComposite
 
     public void setResults(List<TaskTotal> results)
     {
-        resultsView.setResults(results);
         resultsTreeView.setResults(results);
     }
 
@@ -221,5 +218,10 @@ public class ReportPanel extends ResizeComposite
     public ParamPanel getParamsPanel()
     {
         return params;
+    }
+
+    public void setBillees(List<String> billees)
+    {
+        resultsAssignedView.setBillees(billees);
     }
 }
