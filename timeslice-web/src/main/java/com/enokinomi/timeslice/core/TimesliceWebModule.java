@@ -3,6 +3,9 @@ package com.enokinomi.timeslice.core;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.Statement;
+
+import org.apache.log4j.Logger;
 
 import com.enokinomi.timeslice.web.gwt.client.appjob.core.IAppJobSvc;
 import com.enokinomi.timeslice.web.gwt.client.assigned.core.IAssignmentSvc;
@@ -16,6 +19,8 @@ import com.google.inject.name.Names;
 
 public final class TimesliceWebModule extends AbstractModule
 {
+    private static final Logger log = Logger.getLogger(TimesliceWebModule.class);
+
     private final String dbFilename;
     private final String aclFilename;
     private final String safeDir;
@@ -50,7 +55,12 @@ public final class TimesliceWebModule extends AbstractModule
         {
             Class.forName("org.hsqldb.jdbcDriver");
             Connection conn = DriverManager.getConnection("jdbc:hsqldb:file:" + dbFilename + ";shutdown=true;", "SA", "");
-//                    conn.setAutoCommit(false);
+
+            Statement st = conn.createStatement();
+            st.execute("SET WRITE_DELAY 500 MILLIS");
+            st.close();
+            log.debug("Set write-delay to 500ms");
+
             return conn;
         }
         catch (Exception e)
