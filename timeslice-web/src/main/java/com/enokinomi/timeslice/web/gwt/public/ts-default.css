@@ -22,18 +22,18 @@
 
 .ts-project-nonempty
 {
-    background: #dfd;
+    /* background: #dfd; */
 }
 
 .ts-project-empty
 {
     background: #fdd;
     color: gray;
+    border: solid 1px black;
 }
 
 .ts-project
 {
-	border: solid 1px black;
 	padding-left: 0.5em;
 }
 
