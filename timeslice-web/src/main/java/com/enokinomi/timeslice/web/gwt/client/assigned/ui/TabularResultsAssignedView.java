@@ -113,6 +113,7 @@ public class TabularResultsAssignedView extends ResizeComposite
 
             final SuggestBox suggestBox = new SuggestBox(oracle);
             final EditableLabel label = new EditableLabel(suggestBox, reportRow.getBilledTo());
+            label.setLabelStylePrimaryName("ts-project");
             label.addListener(new EditableLabel.Listener()
             {
                 @Override
@@ -139,9 +140,7 @@ public class TabularResultsAssignedView extends ResizeComposite
             label.setWidth("20em"); // TODO: assigned label width to CSS ?
             resultsTable.setWidget(row, col++, label);
 
-            // TODO: provide way to escape, reverting the text to its original.
             // TODO: provide way to focus 1st unassigned text box
-            // TODO: put editable box in same cell as label, only showing 1-at-a-time when clicked/entered.
             // TODO: add style for unassigned items.
 
             row++;

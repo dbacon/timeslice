@@ -17,7 +17,25 @@
 .ts-task-future
 {
 	color: gray;
+	font-style: italic;
 }
+
+.ts-project-nonempty
+{
+    background: #dfd;
+}
+
+.ts-project-empty
+{
+    background: #fdd;
+}
+
+.ts-project
+{
+	border: solid 1px black;
+	padding-left: 0.5em;
+}
+
 
 .resultTree-Empty
 {

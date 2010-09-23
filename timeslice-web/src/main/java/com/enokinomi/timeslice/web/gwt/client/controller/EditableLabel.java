@@ -84,10 +84,14 @@ public class EditableLabel extends Composite
         if (label.getText().trim().length() > 0)
         {
             deckPanel.showWidget(0);
+            removeStyleDependentName("empty");
+            addStyleDependentName("nonempty");
         }
         else
         {
             deckPanel.showWidget(2);
+            removeStyleDependentName("nonempty");
+            addStyleDependentName("empty");
         }
     }
 
@@ -183,7 +187,29 @@ public class EditableLabel extends Composite
         deckPanel.add(label);
         deckPanel.add(editor);
         deckPanel.add(empty);
-        switchToLabel();
         initWidget(deckPanel);
+
+        setLabelStylePrimaryName("ts-editable-label");
+
+        switchToLabel();
     }
+
+    public void setLabelStylePrimaryName(String primaryName)
+    {
+        label.setStylePrimaryName(primaryName);
+        empty.setStylePrimaryName(primaryName);
+    }
+
+    public void addStyleDependentName(String styleSuffix)
+    {
+        label.addStyleDependentName(styleSuffix);
+        empty.addStyleDependentName(styleSuffix);
+    }
+
+    public void removeStyleDependentName(String styleSuffix)
+    {
+        label.removeStyleDependentName(styleSuffix);
+        empty.removeStyleDependentName(styleSuffix);
+    }
+
 }
