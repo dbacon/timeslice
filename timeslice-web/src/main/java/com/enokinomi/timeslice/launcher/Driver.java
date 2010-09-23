@@ -10,7 +10,9 @@ import java.util.ServiceLoader;
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import joptsimple.OptionSpecBuilder;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.enokinomi.timeslice.branding.BrandingAbstractModule;
@@ -61,6 +63,7 @@ public class Driver
         ArgumentAcceptingOptionSpec<Integer> defPortSpec = parser.acceptsAll(Arrays.asList("P", "default-port"), "Port for web server.").withRequiredArg().ofType(Integer.class);
         ArgumentAcceptingOptionSpec<String> defResSpec = parser.acceptsAll(Arrays.asList("W", "default-web-root"), "Base folder of web resources.").withRequiredArg().ofType(String.class);
         ArgumentAcceptingOptionSpec<String> safeDirSpec = parser.acceptsAll(Arrays.asList("s", "safe-dir"), "Safe-dir to save server-side files.").withRequiredArg().ofType(String.class);
+        OptionSpecBuilder debugSpec = parser.acceptsAll(Arrays.asList("D", "debug"), "Set log-level to DEBUG");
 
         OptionSet detectedOptions = null;
         try
@@ -83,6 +86,8 @@ public class Driver
             System.err.println();
             System.exit(1);
         }
+
+        Logger.getRootLogger().setLevel(detectedOptions.has(debugSpec) ? Level.DEBUG : Level.INFO);
 
         String userHome = System.getProperty("user.home", ".");
 
