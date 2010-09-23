@@ -96,6 +96,8 @@ public class TimesliceApp implements EntryPoint
     private final ReportPanel reportPanel = new ReportPanel();
     private final AppJobPanel appJobPanel = new AppJobPanel();
 
+    private final CoreConstants constants = GWT.create(CoreConstants.class);
+
 
     private void updateStartTag(StartTag editedStartTag)
     {
@@ -438,7 +440,7 @@ public class TimesliceApp implements EntryPoint
         tp.selectTab(0);
 //        tp.setAnimationEnabled(true);
 
-        Anchor logoutAnchor = new Anchor("Logout");
+        Anchor logoutAnchor = new Anchor(constants.login());
         logoutAnchor.addClickHandler(new ClickHandler()
         {
             @Override
