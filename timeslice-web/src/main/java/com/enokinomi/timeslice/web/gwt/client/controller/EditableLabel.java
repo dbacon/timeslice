@@ -21,7 +21,7 @@ import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
 
 public class EditableLabel extends Composite
 {
-    private static final String Label_Empty = "- empty -";
+    private static final String Label_Empty = "(empty)";
 
     private final DeckPanel deckPanel = new DeckPanel();
     private Label label = new Label();
