@@ -4,6 +4,6 @@ import com.google.gwt.i18n.client.Constants;
 
 public interface CoreConstants extends Constants
 {
-    @DefaultStringValue("Login i18n!")
+    @DefaultStringValue("Login")
     String login();
 }
