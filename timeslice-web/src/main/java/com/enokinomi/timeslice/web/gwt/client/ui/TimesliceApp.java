@@ -92,7 +92,7 @@ public class TimesliceApp implements EntryPoint
     private final Label serverInfoLabel = new Label("[querying]");
     private final DateBox specifiedDateBox = new DateBox();
     private final RadioButton modeRadioSpecify = new RadioButton("MODE", "Specify Date");
-    private final RadioButton modeRadioNormal = new RadioButton("MODE", "Normal");
+    private final RadioButton modeRadioNormal = new RadioButton("MODE", "Current");
     private final ReportPanel reportPanel = new ReportPanel();
     private final AppJobPanel appJobPanel = new AppJobPanel();
 
