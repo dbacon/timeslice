@@ -10,7 +10,6 @@ import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
-import org.mortbay.log.Log;
 
 import com.google.inject.servlet.GuiceFilter;
 
