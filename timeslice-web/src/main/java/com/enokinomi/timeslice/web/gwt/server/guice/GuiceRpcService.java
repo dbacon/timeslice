@@ -9,7 +9,12 @@ import javax.servlet.ServletException;
 
 import com.enokinomi.timeslice.branding.BrandingAbstractModule;
 import com.enokinomi.timeslice.branding.DefaultBrandingModule;
+import com.enokinomi.timeslice.core.SessionModule;
 import com.enokinomi.timeslice.core.TimesliceWebModule;
+import com.enokinomi.timeslice.lib.appjob_stockjobs.StockJobsModule;
+import com.enokinomi.timeslice.lib.assign.AssignModule;
+import com.enokinomi.timeslice.lib.task.TaskModule;
+import com.enokinomi.timeslice.lib.userinfo.UserInfoModule;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.SerializationException;
 import com.google.gwt.user.server.rpc.RPC;
@@ -97,7 +102,15 @@ public class GuiceRpcService extends RemoteServiceServlet
                 System.out.println(" ... branding failed (will use default): " + e.getMessage());
             }
 
-            this.injector = Guice.createInjector(new TimesliceWebModule(db, acl, "."), brandCompositeModule);
+            this.injector = Guice.createInjector(
+                    new TaskModule(),
+                    new AssignModule(),
+                    new UserInfoModule(),
+                    new SessionModule(),
+                    new GuiceRpcModule(),
+                    new StockJobsModule(),
+                    new TimesliceWebModule(db, acl, "."),
+                    brandCompositeModule);
         }
     }
 
