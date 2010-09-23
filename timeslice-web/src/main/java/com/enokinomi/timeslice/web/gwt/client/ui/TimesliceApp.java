@@ -526,7 +526,6 @@ public class TimesliceApp implements EntryPoint
                     }
                     else
                     {
-                        GWT.log("Assigned totals done: " + result.getReturned().size() + " item(s).");
                         reportPanel.setResultsAssigned(result.getReturned());
                     }
                 }
@@ -540,7 +539,6 @@ public class TimesliceApp implements EntryPoint
                     }
                     else
                     {
-                        GWT.log(" saved report: " + result.getReturned());
                         // TODO: show download link in browser.
                         reportPanel.setPersisted(result.getReturned());
                     }
@@ -565,7 +563,6 @@ public class TimesliceApp implements EntryPoint
                     }
                     else
                     {
-                        GWT.log("Billee updated.");
                         refreshTotals();
                     }
                 }
@@ -579,7 +576,6 @@ public class TimesliceApp implements EntryPoint
                     }
                     else
                     {
-                        GWT.log("Updated billees: " + asyncResult.getReturned().size() + " billee(s).");
                         reportPanel.setBillees(asyncResult.getReturned());
                     }
                 }
@@ -594,7 +590,6 @@ public class TimesliceApp implements EntryPoint
                     }
                     else
                     {
-                        GWT.log("Listing server-side jobs done: " + result.getReturned().size() + " item(s).");
                         appJobPanel.redisplayJobIds(result.getReturned());
                     }
                 }
@@ -611,7 +606,6 @@ public class TimesliceApp implements EntryPoint
                     {
                         AppJobCompletion returned = result.getReturned();
                         appJobPanel.addResult(returned.getJobId(), returned.getStatus(), returned.getDescription());
-                        GWT.log("Server-side job done: " + result.getReturned());
                     }
                 }
 

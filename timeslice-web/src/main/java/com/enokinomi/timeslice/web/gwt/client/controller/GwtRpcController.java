@@ -428,7 +428,6 @@ public class GwtRpcController extends BaseController
                 @Override
                 public void onSuccess(Void result)
                 {
-                    GWT.log("success - assign billee");
                     fireAssignBilleeDone(new AsyncResult<Void>(result, null));
 
                     startGetAllBillees();
@@ -520,7 +519,6 @@ public class GwtRpcController extends BaseController
                 @Override
                 public void onSuccess(List<AssignedTaskTotal> result)
                 {
-                    GWT.log("got back success for assigned totals");
                     fireRefreshTotalsAssignedDone(new AsyncResult<List<AssignedTaskTotal>>(result, null));
                 }
 

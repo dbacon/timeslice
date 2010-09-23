@@ -108,7 +108,8 @@ public class StringsToTreeTest
                             new Row("a/b/d", 3),
                             new Row("a/c", 3),
                             new Row("bc", 3),
-                            new Row("a/g", 3))));
+                            new Row("a/g", 3)),
+                        new Row("", 0)));
     }
 
 }

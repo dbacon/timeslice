@@ -23,9 +23,9 @@ public class ItemsToTree<PC, V, A>
         return new ItemsToTree<PC, V, A>(integrator);
     }
 
-    public Node<PC,V,A> rowsToTree(List<V> lines)
+    public Node<PC,V,A> rowsToTree(List<V> lines, A emptyAggregate)
     {
-        Node<PC,V,A> root = new Node<PC,V,A>();
+        Node<PC,V,A> root = new Node<PC,V,A>(emptyAggregate);
 
         for (V value: lines)
         {

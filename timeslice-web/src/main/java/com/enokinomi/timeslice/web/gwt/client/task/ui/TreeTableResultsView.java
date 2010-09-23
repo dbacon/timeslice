@@ -118,6 +118,6 @@ public class TreeTableResultsView extends ResizeComposite
 
                 row.setValue(row.getValue() + 1);
             }
-        }.visit(ItemsToTree.create(integrator).rowsToTree(report));
+        }.visit(ItemsToTree.create(integrator).rowsToTree(report, new TaskTotal()));
     }
 }

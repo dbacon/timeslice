@@ -8,17 +8,20 @@ import com.enokinomi.timeslice.web.gwt.client.util.Checks;
 import com.enokinomi.timeslice.web.gwt.client.util.IReadableValue;
 import com.enokinomi.timeslice.web.gwt.client.util.IWritableValue;
 import com.enokinomi.timeslice.web.gwt.client.util.ValueUtil;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.datepicker.client.DateBox;
@@ -200,7 +203,6 @@ public class ParamPanel extends Composite
                 Date d1 = dateChopTime(d);
                 Date d2 = new Date(d1.getTime() + 1000 * 60 * 60 *24);
 
-                GWT.log("selected date: " + d.toString());
                 startingTime.setText(HumanFormat.format(d1));
                 endingTime.setText(HumanFormat.format(d2));
                 update();
@@ -212,12 +214,30 @@ public class ParamPanel extends Composite
         ignoreWords.addChangeHandler(commonChangeHandler);
         allowWords.addChangeHandler(commonChangeHandler);
 
+        HorizontalPanel datePickerPanel = new HorizontalPanel();
+        datePickerPanel.add(new Button("\u226a", new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                dateBox.setValue(new Date(dateBox.getValue().getTime() - 24 * 60 * 60 * 1000), true);
+            }
+        }));
+        datePickerPanel.add(dateBox);
+        datePickerPanel.add(new Button("\u226b", new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                dateBox.setValue(new Date(dateBox.getValue().getTime() + 24 * 60 * 60 * 1000), true);
+            }
+        }));
+
         FlexTable table = new FlexTable();
         table.setCellSpacing(3);
         int row = 0;
-
         table.setWidget(  row, 0, new Label("For full-day: "));
-        table.setWidget(  row, 1, dateBox);
+        table.setWidget(  row, 1, datePickerPanel);
         table.setWidget(++row, 0, new Label("Starting"));
         table.setWidget(  row, 1, getStartingTime());
         table.setWidget(  row, 2, getStartingTimeRendered());
