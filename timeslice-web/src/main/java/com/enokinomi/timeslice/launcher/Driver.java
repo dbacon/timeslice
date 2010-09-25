@@ -21,6 +21,7 @@ import com.enokinomi.timeslice.core.SessionModule;
 import com.enokinomi.timeslice.core.TimesliceWebModule;
 import com.enokinomi.timeslice.lib.appjob_stockjobs.StockJobsModule;
 import com.enokinomi.timeslice.lib.assign.AssignModule;
+import com.enokinomi.timeslice.lib.prorata.ProRataModule;
 import com.enokinomi.timeslice.lib.task.TaskModule;
 import com.enokinomi.timeslice.lib.userinfo.UserInfoModule;
 import com.enokinomi.timeslice.web.gwt.server.guice.GuiceRpcModule;
@@ -115,6 +116,7 @@ public class Driver
                 new TsWebLaunchModule(port, res),
                 new GuiceRpcModule(),
                 new StockJobsModule(),
+                new ProRataModule(),
                 figureOutBrandingModule()
             )
             .getInstance(TsHost.class)

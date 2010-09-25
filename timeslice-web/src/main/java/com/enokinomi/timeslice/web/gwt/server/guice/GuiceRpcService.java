@@ -13,6 +13,7 @@ import com.enokinomi.timeslice.core.SessionModule;
 import com.enokinomi.timeslice.core.TimesliceWebModule;
 import com.enokinomi.timeslice.lib.appjob_stockjobs.StockJobsModule;
 import com.enokinomi.timeslice.lib.assign.AssignModule;
+import com.enokinomi.timeslice.lib.prorata.ProRataModule;
 import com.enokinomi.timeslice.lib.task.TaskModule;
 import com.enokinomi.timeslice.lib.userinfo.UserInfoModule;
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -106,6 +107,7 @@ public class GuiceRpcService extends RemoteServiceServlet
                     new SessionModule(),
                     new GuiceRpcModule(),
                     new StockJobsModule(),
+                    new ProRataModule(),
                     new TimesliceWebModule(db, acl, "."),
                     brandCompositeModule);
         }

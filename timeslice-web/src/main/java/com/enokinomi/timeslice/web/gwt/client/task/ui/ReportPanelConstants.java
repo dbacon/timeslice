@@ -20,4 +20,7 @@ public interface ReportPanelConstants extends Constants
     @DefaultStringValue("Billing")
     String assigned();
 
+    @DefaultStringValue("Projects")
+    String projectList();
+
 }

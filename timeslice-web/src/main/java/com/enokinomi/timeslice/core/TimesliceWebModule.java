@@ -9,9 +9,11 @@ import org.apache.log4j.Logger;
 
 import com.enokinomi.timeslice.web.gwt.client.appjob.core.IAppJobSvc;
 import com.enokinomi.timeslice.web.gwt.client.assigned.core.IAssignmentSvc;
+import com.enokinomi.timeslice.web.gwt.client.prorata.core.IProRataSvc;
 import com.enokinomi.timeslice.web.gwt.client.task.core.ITimesliceSvc;
 import com.enokinomi.timeslice.web.gwt.server.appjob.AppJobSvc;
 import com.enokinomi.timeslice.web.gwt.server.assigned.AssignmentSvcSession;
+import com.enokinomi.timeslice.web.gwt.server.prorata.ProRataSvc;
 import com.enokinomi.timeslice.web.gwt.server.task.TimesliceSvcSession;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -45,6 +47,7 @@ public final class TimesliceWebModule extends AbstractModule
         bind(String.class).annotatedWith(Names.named("assignDefault")).toInstance("");
 
         bind(IAppJobSvc.class).to(AppJobSvc.class);
+        bind(IProRataSvc.class).to(ProRataSvc.class);
 
         bind(File.class).annotatedWith(Names.named("safeDir")).toInstance(new File(safeDir));
     }

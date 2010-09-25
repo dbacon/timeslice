@@ -3,14 +3,12 @@ package com.enokinomi.timeslice.lib.assign;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.sql.Connection;
 
 import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
 import com.enokinomi.timeslice.lib.commondatautil.SchemaDuty;
-import com.enokinomi.timeslice.lib.commondatautil.SchemaManager;
 
 
 public class HsqldbTagStoreTest
@@ -21,24 +19,6 @@ public class HsqldbTagStoreTest
 //        ConnectionFactory connFactory = new ConnectionFactory();
 //        HsqldbTimesliceStore store = new HsqldbTimesliceStore(connFactory.createConnection("target/test-generated-data/abc"));
 //    }
-
-    private static final class MockSchemaManager extends SchemaManager
-    {
-        private final int version;
-
-        private MockSchemaManager(int version)
-        {
-            super(null, null);
-
-            this.version = version;
-        }
-
-        @Override
-        public Integer findVersion(Connection conn)
-        {
-            return version;
-        }
-    }
 
     @Test
     public void test_billee_1() throws Exception

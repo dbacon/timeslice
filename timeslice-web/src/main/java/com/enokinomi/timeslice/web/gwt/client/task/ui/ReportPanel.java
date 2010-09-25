@@ -36,6 +36,9 @@ public class ReportPanel extends ResizeComposite
     private final TabularResultsAssignedView resultsAssignedView = new TabularResultsAssignedView();
     private final TaskTotalIntegrator integrator = new TaskTotalIntegrator("/");
     private final TreeTableResultsView resultsTreeView = new TreeTableResultsView(integrator);
+    private final ProjectListPanel projectListPanel = new ProjectListPanel();
+
+    private IAuthTokenHolder authTokenHolder = null;
 
     private static class PrefKey
     {
@@ -84,6 +87,18 @@ public class ReportPanel extends ResizeComposite
         {
             listener.billeeUpdateRequested(description, newBillee);
         }
+    }
+
+    public void setAuthTokenHolder(IAuthTokenHolder authTokenHolder)
+    {
+        this.authTokenHolder = authTokenHolder;
+
+        projectListPanel.setAuthTokenHolder(authTokenHolder);
+    }
+
+    public IAuthTokenHolder getAuthTokenHolder()
+    {
+        return authTokenHolder;
     }
 
     private void readPrefs()
@@ -185,6 +200,7 @@ public class ReportPanel extends ResizeComposite
         TabLayoutPanel resultsTabs = new TabLayoutPanel(2, Unit.EM);
         resultsTabs.add(resultsTreeView, constants.totaling());
         resultsTabs.add(resultsAssignedView, constants.assigned());
+        resultsTabs.add(projectListPanel, constants.projectList());
 
         SplitLayoutPanel dp = new SplitLayoutPanel();
         dp.addNorth(vp, 180);
@@ -203,6 +219,7 @@ public class ReportPanel extends ResizeComposite
     public void setResultsAssigned(List<AssignedTaskTotal> report)
     {
         resultsAssignedView.setResults(report);
+        projectListPanel.update(report);
     }
 
     protected String renderPersistName()

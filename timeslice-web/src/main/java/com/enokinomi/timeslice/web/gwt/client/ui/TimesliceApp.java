@@ -393,6 +393,8 @@ public class TimesliceApp implements EntryPoint
         //historyPanel.setHeight("30em");
         //historyPanel.setWidth("50em");
 
+        reportPanel.setAuthTokenHolder(controller);
+
         reportPanel.addReportPanelListener(new ReportPanel.IReportPanelListener()
         {
             @Override
