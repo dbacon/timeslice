@@ -1,0 +1,11 @@
+package com.enokinomi.timeslice.web.gwt.client.ui;
+
+import com.google.gwt.i18n.client.Messages;
+
+public interface ImportBulkItemsDialogMessages extends Messages
+{
+
+    @DefaultMessage("Import {0} item(s)")
+    String importNItems(int size);
+
+}

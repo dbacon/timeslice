@@ -18,14 +18,9 @@ import com.google.gwt.user.client.ui.SuggestBox;
 
 public class TabularResultsAssignedView extends ResizeComposite
 {
-    private static final String ColumnLabel_Billee = "Billee";
-    private static final String ColumnLabel_Code = "Code";
-    private static final String ColumnLabel_What = "What";
-    private static final String ColumnLabel_Percent = "%";
-    private static final String ColumnLabel_Hours = "Hours";
-    private static final String ColumnLabel_Who = "Who";
+    private final TabularResultsAssignedViewConstants constants = GWT.create(TabularResultsAssignedViewConstants.class);
 
-    private static final String Label_Updating = "Updating...";
+    private  String Label_Updating = constants.updating();
 
     private FlexTable resultsTable = new FlexTable();
     private final MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
@@ -89,12 +84,12 @@ public class TabularResultsAssignedView extends ResizeComposite
 
         // TODO: move column header style to CSS
         int col = 0;
-        resultsTable.setWidget(row, col++, new HTML("<b><u>" + ColumnLabel_Who + "</u></b>", false));
-        resultsTable.setWidget(row, col++, new HTML("<b><u>" + ColumnLabel_Hours + "</u></b>", false));
-        resultsTable.setWidget(row, col++, new HTML("<b><u>" + ColumnLabel_Percent + "</u></b>", false));
-        resultsTable.setWidget(row, col++, new HTML("<b><u>" + ColumnLabel_What + "</u></b>", false));
-        resultsTable.setWidget(row, col++, new HTML("<b><u>" + ColumnLabel_Code + "</u></b>", false));
-        resultsTable.setWidget(row, col++, new HTML("<b><u>" + ColumnLabel_Billee + "</u></b>", false));
+        resultsTable.setWidget(row, col++, new HTML("<b><u>" + constants.who() + "</u></b>", false));
+        resultsTable.setWidget(row, col++, new HTML("<b><u>" + constants.hours() + "</u></b>", false));
+        resultsTable.setWidget(row, col++, new HTML("<b><u>" + constants.percent() + "</u></b>", false));
+        resultsTable.setWidget(row, col++, new HTML("<b><u>" + constants.what() + "</u></b>", false));
+        resultsTable.setWidget(row, col++, new HTML("<b><u>" + constants.code() + "</u></b>", false));
+        resultsTable.setWidget(row, col++, new HTML("<b><u>" + constants.billee() + "</u></b>", false));
 
         ++row;
 

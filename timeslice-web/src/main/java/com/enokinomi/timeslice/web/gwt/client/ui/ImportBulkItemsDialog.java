@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.enokinomi.timeslice.web.gwt.client.task.core.StartTag;
 import com.enokinomi.timeslice.web.gwt.client.task.ui_compat.Ts107Reader;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -18,6 +19,9 @@ import com.google.gwt.user.client.ui.TextArea;
 
 public class ImportBulkItemsDialog extends DialogBox
 {
+    private final ImportBulkItemsDialogConstants constants = GWT.create(ImportBulkItemsDialogConstants.class);
+    private final ImportBulkItemsDialogMessages messages = GWT.create(ImportBulkItemsDialogMessages.class);
+
     private final ArrayList<StartTag> parsedItems = new ArrayList<StartTag>();
 
     public static interface BulkItemListener
@@ -50,7 +54,7 @@ public class ImportBulkItemsDialog extends DialogBox
     {
         super(false, true);
 
-        setText("Bulk entry");
+        setText(constants.bulkEntry());
         setGlassEnabled(true);
         setAnimationEnabled(true);
 
@@ -67,12 +71,12 @@ public class ImportBulkItemsDialog extends DialogBox
 
                 parsedItems.clear();
                 textArea.setText("");
-                importButton.setText("No items to import.");
+                importButton.setText(constants.noItemsToImport());
                 importButton.setEnabled(false);
             }
         });
         updateImportButton();
-        importButton.setText("No items to import.");
+        importButton.setText(constants.noItemsToImport());
         importButton.setEnabled(false);
 
         textArea.addChangeHandler(new ChangeHandler()
@@ -90,7 +94,7 @@ public class ImportBulkItemsDialog extends DialogBox
         HorizontalPanel bp = new HorizontalPanel();
 
         bp.add(importButton);
-        bp.add(new Button("Close", new ClickHandler()
+        bp.add(new Button(constants.close(), new ClickHandler()
         {
             @Override
             public void onClick(ClickEvent event)
@@ -113,12 +117,12 @@ public class ImportBulkItemsDialog extends DialogBox
     {
         if (parsedItems.size() > 0)
         {
-            importButton.setText("Import " + parsedItems.size() + " item(s)");
+            importButton.setText(messages.importNItems(parsedItems.size()));
             importButton.setEnabled(true);
         }
         else
         {
-            importButton.setText("No items to import.");
+            importButton.setText(constants.noItemsToImport());
             importButton.setEnabled(false);
         }
     }

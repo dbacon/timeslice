@@ -8,6 +8,7 @@ import com.enokinomi.timeslice.web.gwt.client.util.Checks;
 import com.enokinomi.timeslice.web.gwt.client.util.IReadableValue;
 import com.enokinomi.timeslice.web.gwt.client.util.IWritableValue;
 import com.enokinomi.timeslice.web.gwt.client.util.ValueUtil;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -33,6 +34,8 @@ public class ParamPanel extends Composite
 
     public static final DateTimeFormat HumanFormat = DateTimeFormat.getFormat("yyyy/MM/dd HH:mm:ss");
 
+    private final ParamPanelConstants constants = GWT.create(ParamPanelConstants.class);
+
     private final DateBox dateBox = new DateBox();
     private final TextBox startingTime = new TextBox();
     private final Label startingTimeRendered = new Label("", false);
@@ -40,9 +43,9 @@ public class ParamPanel extends Composite
     private final TextBox endingTime = new TextBox();
     private final Label endingTimeRendered = new Label("", false);
     private final Label endingTimeError = new Label("", false);
-    private final Label allowWordsOn = new Label("Allow words containing:");
+    private final Label allowWordsOn = new Label(constants.allowWordsContaining());
     private final TextBox allowWords = new TextBox();
-    private final Label ignoreWordsOn = new Label("Ignore words containing:");
+    private final Label ignoreWordsOn = new Label(constants.ignoreWordsContaining());
     private final TextBox ignoreWords = new TextBox();
 
     public static interface IParamChangedListener
@@ -215,7 +218,7 @@ public class ParamPanel extends Composite
         allowWords.addChangeHandler(commonChangeHandler);
 
         HorizontalPanel datePickerPanel = new HorizontalPanel();
-        datePickerPanel.add(new Button("\u226a", new ClickHandler()
+        datePickerPanel.add(new Button(constants.dateReverse(), new ClickHandler()
         {
             @Override
             public void onClick(ClickEvent event)
@@ -224,7 +227,7 @@ public class ParamPanel extends Composite
             }
         }));
         datePickerPanel.add(dateBox);
-        datePickerPanel.add(new Button("\u226b", new ClickHandler()
+        datePickerPanel.add(new Button(constants.dateForward(), new ClickHandler()
         {
             @Override
             public void onClick(ClickEvent event)
@@ -236,13 +239,13 @@ public class ParamPanel extends Composite
         FlexTable table = new FlexTable();
         table.setCellSpacing(3);
         int row = 0;
-        table.setWidget(  row, 0, new Label("For full-day: "));
+        table.setWidget(  row, 0, new Label(constants.forFullDay()));
         table.setWidget(  row, 1, datePickerPanel);
-        table.setWidget(++row, 0, new Label("Starting"));
+        table.setWidget(++row, 0, new Label(constants.starting()));
         table.setWidget(  row, 1, getStartingTime());
         table.setWidget(  row, 2, getStartingTimeRendered());
         table.setWidget(  row, 3, getStartingTimeError());
-        table.setWidget(++row, 0, new Label("Ending"));
+        table.setWidget(++row, 0, new Label(constants.ending()));
         table.setWidget(  row, 1, getEndingTime());
         table.setWidget(  row, 2, getEndingTimeRendered());
         table.setWidget(  row, 3, getEndingTimeError());

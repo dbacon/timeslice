@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.enokinomi.timeslice.web.gwt.client.ui.TimesliceApp.Defaults;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -33,6 +34,8 @@ public class OptionsPanel extends Composite implements IOptionsProvider
 
     public static final String DefaultTitlebarTemplate = "[TS] " + IOptionsProvider.CurrentTaskToken;
 
+    private final OptionsConstants constants = GWT.create(OptionsConstants.class);
+
     private final TextBox maxSize = new TextBox();
     private final TextBox maxSeconds = new TextBox();
 //    private final TextBox baseUri = new TextBox();
@@ -40,10 +43,10 @@ public class OptionsPanel extends Composite implements IOptionsProvider
 //    private final TextBox username = new TextBox();
 //    private final PasswordTextBox password = new PasswordTextBox();
 
-    private final CheckBox controlSpaceSends = new CheckBox("Control-space also sends.");
-    private final CheckBox currentTaskInTitlebar = new CheckBox("Show current task in page title.");
+    private final CheckBox controlSpaceSends = new CheckBox(constants.controlSpaceAlsoSends());
+    private final CheckBox currentTaskInTitlebar = new CheckBox(constants.showCurrentTaskInPageTitle());
     private final TextBox titleBarTemplate = new TextBox();
-    private final CheckBox autoRefresh = new CheckBox("Auto-refresh");
+    private final CheckBox autoRefresh = new CheckBox(constants.autoRefresh());
     private final TextBox autoRefreshMs = new TextBox();
 
     public static interface IOptionsListener
@@ -93,9 +96,9 @@ public class OptionsPanel extends Composite implements IOptionsProvider
 //        optionsTable.setWidget(row++, 1, username);
 //        optionsTable.setWidget(row,   0, createTitledLabel("Password", "Your password."));
 //        optionsTable.setWidget(row++, 1, password);
-        optionsTable.setWidget(row,   0, createTitledLabel("Max results", "Number of items to show in history and include in word-completion."));
+        optionsTable.setWidget(row,   0, createTitledLabel(constants.maxResults(), constants.maxResultsHint()));
         optionsTable.setWidget(row++, 1, maxSize);
-        optionsTable.setWidget(row,   0, createTitledLabel("Max hours", "Number of hours (decimal ok) to show in history and include in word-completion."));
+        optionsTable.setWidget(row,   0, createTitledLabel(constants.maxHours(), constants.maxHoursHint()));
         optionsTable.setWidget(row++, 1, maxSeconds);
         optionsTable.setWidget(row++, 0, controlSpaceSends);
         optionsTable.setWidget(row,   0, currentTaskInTitlebar);

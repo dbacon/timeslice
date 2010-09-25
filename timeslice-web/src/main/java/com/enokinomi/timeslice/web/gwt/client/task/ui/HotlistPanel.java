@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Cookies;
@@ -16,15 +17,17 @@ public class HotlistPanel extends Composite
 {
     public static final class Mode
     {
-        public static final String EditSingle = "Hotlist [delete-single]";
-        public static final String EditMulti = "Hotlist [delete-multi]";
-        public static final String Hotlist = "Hotlist";
+//        public static final String EditSingle = "Hotlist [delete-single]";
+//        public static final String EditMulti = "Hotlist [delete-multi]";
+//        public static final String Hotlist = "Hotlist";
     }
 
     private static final String CookieNamePrefix = "timeslice.hotlist.";
 
+    private final HotlistPanelConstants constants = GWT.create(HotlistPanelConstants.class);
+
     private final FlowPanel vp = new FlowPanel();
-    private final Anchor mode = new Anchor(Mode.Hotlist, true);
+    private final Anchor mode = new Anchor(constants.hotlist(), true);
 
     public static interface IHotlistPanelListener
     {
@@ -71,21 +74,21 @@ public class HotlistPanel extends Composite
             @Override
             public void onClick(ClickEvent event)
             {
-                if (Mode.Hotlist.equals(mode.getText()) && 1 < vp.getWidgetCount())
+                if (constants.hotlist().equals(mode.getText()) && 1 < vp.getWidgetCount())
                 {
-                    mode.setText(Mode.EditSingle);
+                    mode.setText(constants.editDeleteSingle());
                 }
-                else if (Mode.EditSingle.equals(mode.getText()))
+                else if (constants.editDeleteSingle().equals(mode.getText()))
                 {
-                    mode.setText(Mode.EditMulti);
+                    mode.setText(constants.editDeleteMulti());
                 }
-                else if (Mode.EditMulti.equals(mode.getText()))
+                else if (constants.editDeleteMulti().equals(mode.getText()))
                 {
-                    mode.setText(Mode.Hotlist);
+                    mode.setText(constants.hotlist());
                 }
                 else
                 {
-                    mode.setText(Mode.Hotlist);
+                    mode.setText(constants.hotlist());
                 }
             }
         });
@@ -114,7 +117,7 @@ public class HotlistPanel extends Composite
                     @Override
                     public void onClick(ClickEvent event)
                     {
-                        if (Mode.Hotlist.equals(mode.getText()))
+                        if (constants.hotlist().equals(mode.getText()))
                         {
                             fireHotlistItemClicked(description);
                         }
@@ -122,9 +125,9 @@ public class HotlistPanel extends Composite
                         {
                             Cookies.removeCookie(name);
 
-                            if (Mode.EditSingle.equals(mode.getText()))
+                            if (constants.editDeleteSingle().equals(mode.getText()))
                             {
-                                mode.setText(Mode.Hotlist);
+                                mode.setText(constants.hotlist());
                             }
 
                             repopulate();
@@ -149,7 +152,7 @@ public class HotlistPanel extends Composite
 
         if (added <= 0)
         {
-            mode.setText(Mode.Hotlist);
+            mode.setText(constants.hotlist());
         }
     }
 

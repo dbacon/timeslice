@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.enokinomi.timeslice.web.gwt.client.task.core.StartTag;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -31,6 +32,8 @@ public class TaskPanel extends ResizeComposite
         void editModeEntered(StartTag tag);
         void editModeLeft(StartTag tag);
     }
+
+    private final TaskPanelConstants constants = GWT.create(TaskPanelConstants.class);
 
     private final List<ITaskPanelListener> listeners = new ArrayList<ITaskPanelListener>();
     private final HorizontalPanel descriptionContainer= new HorizontalPanel();
@@ -155,8 +158,8 @@ public class TaskPanel extends ResizeComposite
 
     public TaskPanel(final StartTag startTag)
     {
-        Anchor resumeLink = new Anchor("[R]");
-        resumeLink.setTitle("Resume this task");
+        Anchor resumeLink = new Anchor(constants.resumeTextIcon());
+        resumeLink.setTitle(constants.resumeHint());
         resumeLink.addClickHandler(new ClickHandler()
         {
             @Override
@@ -255,10 +258,14 @@ public class TaskPanel extends ResizeComposite
         DockLayoutPanel dp = new DockLayoutPanel(Unit.EM);
         dp.setTitle(startTag.getInstantString());
         dp.setSize("100%", "1.5em");
-        dp.addWest(resumeLink, 1.5);
         dp.addEast(timeContainer, 20);
         timeContainer.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
-        dp.add(descriptionContainer);
+
+        HorizontalPanel hp = new HorizontalPanel();
+        hp.setSpacing(5);
+        hp.add(resumeLink);
+        hp.add(descriptionContainer);
+        dp.add(hp);
 
         initWidget(dp);
 

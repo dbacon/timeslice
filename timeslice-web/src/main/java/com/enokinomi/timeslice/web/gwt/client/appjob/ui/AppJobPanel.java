@@ -3,6 +3,7 @@ package com.enokinomi.timeslice.web.gwt.client.appjob.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -18,6 +19,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class AppJobPanel extends ResizeComposite
 {
+    private final AppJobPanelConstants constants = GWT.create(AppJobPanelConstants.class);
+
     private final FlexTable tab = new FlexTable();
     private final FlexTable results = new FlexTable();
     private final ScrollPanel resultScroller = new ScrollPanel(results);
@@ -28,7 +31,7 @@ public class AppJobPanel extends ResizeComposite
     {
         HorizontalPanel hp = new HorizontalPanel();
 
-        hp.add(new Button("Refresh Job List", new ClickHandler()
+        hp.add(new Button(constants.refreshJobList(), new ClickHandler()
         {
             @Override
             public void onClick(ClickEvent event)
@@ -37,7 +40,7 @@ public class AppJobPanel extends ResizeComposite
             }
         }));
 
-        hp.add(new Button("Clear Results", new ClickHandler()
+        hp.add(new Button(constants.clearResults(), new ClickHandler()
         {
             @Override
             public void onClick(ClickEvent event)
@@ -62,9 +65,9 @@ public class AppJobPanel extends ResizeComposite
 
     protected void addHeaders()
     {
-        results.setWidget(0, 0, new HTML("<b><u>Job ID</u></b>", false));
-        results.setWidget(0, 1, new HTML("<b><u>Status</u></b>", false));
-        results.setWidget(0, 2, new HTML("<b><u>Description</b></u>", false));
+        results.setWidget(0, 0, new HTML("<b><u>" + constants.jobId() + "</u></b>", false));
+        results.setWidget(0, 1, new HTML("<b><u>" + constants.status() + "</u></b>", false));
+        results.setWidget(0, 2, new HTML("<b><u>" + constants.description() + "</b></u>", false));
     }
 
     public void addResult(String jobId, String status, String result)
@@ -119,7 +122,7 @@ public class AppJobPanel extends ResizeComposite
             int col = 0;
 
             tab.setWidget(row, col++, new Label(jobId));
-            tab.setWidget(row, col++, new Button("Do", new ClickHandler()
+            tab.setWidget(row, col++, new Button(constants.execute(), new ClickHandler()
             {
                 @Override
                 public void onClick(ClickEvent event)

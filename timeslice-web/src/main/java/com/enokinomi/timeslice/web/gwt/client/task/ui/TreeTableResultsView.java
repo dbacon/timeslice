@@ -8,6 +8,7 @@ import com.enokinomi.timeslice.web.gwt.client.task.core.TaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.task.ui_tree.ItemsToTree;
 import com.enokinomi.timeslice.web.gwt.client.task.ui_tree.Mutable;
 import com.enokinomi.timeslice.web.gwt.client.task.ui_tree.NodeTraverser;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -18,6 +19,8 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 
 public class TreeTableResultsView extends ResizeComposite
 {
+    private final TreeTableResultsViewConstants constants = GWT.create(TreeTableResultsViewConstants.class);
+
     private FlexTable resultsTable = new FlexTable();
     private final TaskTotalIntegrator integrator;
 
@@ -55,13 +58,13 @@ public class TreeTableResultsView extends ResizeComposite
         final Mutable<Integer> row = new Mutable<Integer>(0);
 
         int col = 0;
-        resultsTable.setWidget(row.getValue(), col++, new HTML("<b><u>Who</u></b>", false));
-        resultsTable.setWidget(row.getValue(), col++, new HTML("<b><u>(Total Hours)</u></b>", false));
-        resultsTable.setWidget(row.getValue(), col++, new HTML("<b><u>(Total %)</u></b>", false));
-        resultsTable.setWidget(row.getValue(), col++, new HTML("<b><u>Hours</u></b>", false));
-        resultsTable.setWidget(row.getValue(), col++, new HTML("<b><u>%</u></b>", false));
+        resultsTable.setWidget(row.getValue(), col++, new HTML("<b><u>" + constants.who() + "</u></b>", false));
+        resultsTable.setWidget(row.getValue(), col++, new HTML("<b><u>" + constants.totalHours() + "</u></b>", false));
+        resultsTable.setWidget(row.getValue(), col++, new HTML("<b><u>" + constants.totalPercent() + "</u></b>", false));
+        resultsTable.setWidget(row.getValue(), col++, new HTML("<b><u>" + constants.hours() + "</u></b>", false));
+        resultsTable.setWidget(row.getValue(), col++, new HTML("<b><u>" + constants.percent() + "</u></b>", false));
         resultsTable.getColumnFormatter().addStyleName(col, "resultTree-What");
-        resultsTable.setWidget(row.getValue(), col++, new HTML("<b><u>What</u></b>", false));
+        resultsTable.setWidget(row.getValue(), col++, new HTML("<b><u>" + constants.what() + "</u></b>", false));
 
         row.setValue(row.getValue() + 1);
 

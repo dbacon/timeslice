@@ -10,6 +10,7 @@ import com.enokinomi.timeslice.web.gwt.client.assigned.ui.TabularResultsAssigned
 import com.enokinomi.timeslice.web.gwt.client.assigned.ui.TabularResultsAssignedView.Listener;
 import com.enokinomi.timeslice.web.gwt.client.task.core.TaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.task.ui.ParamPanel.IParamChangedListener;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -25,9 +26,11 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class ReportPanel extends ResizeComposite
 {
+    private final ReportPanelConstants constants = GWT.create(ReportPanelConstants.class);
+
     private final ParamPanel params = new ParamPanel();
-    private final Button refreshButton = new Button("Refresh");
-    private final Button persistButton = new Button("Persist");
+    private final Button refreshButton = new Button(constants.refresh());
+    private final Button persistButton = new Button(constants.persist());
     private final TextBox persistAsName = new TextBox();
     private final Label persisted = new Label();
     private final TabularResultsAssignedView resultsAssignedView = new TabularResultsAssignedView();
@@ -157,7 +160,7 @@ public class ReportPanel extends ResizeComposite
         });
 
         persistAsName.setText("full-day-%D");
-        persistAsName.setTitle("%D - selected full day;  %S - starting date/time;  %E - ending date/time");
+        persistAsName.setTitle(constants.persistedNameSubstitutionHint());
         HorizontalPanel buttonPanel = new HorizontalPanel();
         buttonPanel.add(refreshButton);
         buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
@@ -180,8 +183,8 @@ public class ReportPanel extends ResizeComposite
         });
 
         TabLayoutPanel resultsTabs = new TabLayoutPanel(2, Unit.EM);
-        resultsTabs.add(resultsTreeView, "Totaling");
-        resultsTabs.add(resultsAssignedView, "Assigned");
+        resultsTabs.add(resultsTreeView, constants.totaling());
+        resultsTabs.add(resultsAssignedView, constants.assigned());
 
         SplitLayoutPanel dp = new SplitLayoutPanel();
         dp.addNorth(vp, 180);

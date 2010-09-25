@@ -19,7 +19,7 @@ public interface TimesliceAppConstants extends Constants
     @DefaultStringValue("Jobs")
     String jobs();
 
-    @DefaultStringValue("<u>O</u>ptions")
+    @DefaultStringValue("<u>S</u>ettings")
     String options();
 
     @DefaultStringValue("Current")
@@ -39,5 +39,8 @@ public interface TimesliceAppConstants extends Constants
 
     @DefaultStringValue("Add to hotlist")
     String addToHotlist();
+
+    @DefaultStringValue("[u]")
+    String updateLabel();
 
 }

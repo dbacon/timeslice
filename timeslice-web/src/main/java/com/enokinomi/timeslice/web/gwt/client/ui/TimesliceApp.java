@@ -82,7 +82,7 @@ public class TimesliceApp implements EntryPoint
 
     private final HorizontalPanel entryPanel = new HorizontalPanel();
 
-    private final Anchor updateLink = new Anchor("[u]");
+    private final Anchor updateLink = new Anchor(constants.updateLabel());
 
     private final HotlistPanel hotlistPanel = new HotlistPanel();
     private final Anchor addHotlink = new Anchor(constants.addToHotlist());
