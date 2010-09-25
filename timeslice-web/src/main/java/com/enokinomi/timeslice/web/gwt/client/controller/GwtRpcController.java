@@ -18,6 +18,7 @@ import com.enokinomi.timeslice.web.gwt.client.task.core.ITimesliceSvcAsync;
 import com.enokinomi.timeslice.web.gwt.client.task.core.StartTag;
 import com.enokinomi.timeslice.web.gwt.client.task.core.TaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.task.ui.HotlistPanel;
+import com.enokinomi.timeslice.web.gwt.client.ui.TimesliceAppConstants;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -30,6 +31,8 @@ public class GwtRpcController extends BaseController
 
     private String authToken = Cookies.getCookie("timeslice.authtoken");
     private LoginDialog loginDialog = null;
+
+    private final TimesliceAppConstants constants = GWT.create(TimesliceAppConstants.class);
 
     public ITimesliceSvcAsync getSvc()
     {
@@ -144,12 +147,12 @@ public class GwtRpcController extends BaseController
 
     public void authenticate(IOnAuthenticated retryAction)
     {
-        authenticate("Please login.", null, retryAction);
+        authenticate(constants.pleaseLogin(), null, retryAction);
     }
 
     public void authenticate(String subtext, IOnAuthenticated retryAction)
     {
-        authenticate("Please login.", subtext, retryAction);
+        authenticate(constants.pleaseLogin(), subtext, retryAction);
     }
 
     public static interface IOnAuthenticated

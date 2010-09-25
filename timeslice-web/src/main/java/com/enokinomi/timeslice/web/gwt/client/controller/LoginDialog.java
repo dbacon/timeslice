@@ -3,6 +3,7 @@
  */
 package com.enokinomi.timeslice.web.gwt.client.controller;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -20,10 +21,13 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class LoginDialog extends DialogBox
 {
+    private final LoginDialogConstants constants = GWT.create(LoginDialogConstants.class);
+
     private final TextBox userText = new TextBox();
     private final PasswordTextBox passwordText = new PasswordTextBox();
-    private Button loginButton = new Button("Login");
-    private Button cancelButton = new Button("Cancel");
+    private Button loginButton = new Button(constants.login());
+    private Button cancelButton = new Button(constants.cancel());
+
 
     public static interface IListener
     {
@@ -89,9 +93,9 @@ public class LoginDialog extends DialogBox
         if (null != subText) subtextLabel = new Label(subText);
 
         FlexTable table = new FlexTable();
-        table.setWidget(0, 0, new Label("User"));
+        table.setWidget(0, 0, new Label(constants.user()));
         table.setWidget(0, 1, userText);
-        table.setWidget(1, 0, new Label("Password"));
+        table.setWidget(1, 0, new Label(constants.password()));
         table.setWidget(1, 1, passwordText);
         table.setWidget(2, 0, cancelButton);
         table.setWidget(2, 1, loginButton);
@@ -150,7 +154,7 @@ public class LoginDialog extends DialogBox
             }
         });
 
-        setText("Login");
+        setText(constants.login());
         setGlassEnabled(true);
         setAnimationEnabled(true);
         setWidget(vp);

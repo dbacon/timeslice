@@ -13,4 +13,7 @@
 
     <entry-point class="com.enokinomi.timeslice.web.gwt.client.ui.EmptyEntryPoint" />
 
+    <extend-property name="locale" values="en"/>
+    <extend-property name="locale" values="ja"/>
+
 </module>

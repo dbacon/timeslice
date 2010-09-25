@@ -59,6 +59,8 @@ import com.google.gwt.user.datepicker.client.DateBox;
 
 public class TimesliceApp implements EntryPoint
 {
+    private final TimesliceAppConstants constants = GWT.create(TimesliceAppConstants.class);
+
     public static final String IssuesUrl = "http://code.google.com/p/timeslice/issues/list";
 
     public static final class Defaults
@@ -83,20 +85,18 @@ public class TimesliceApp implements EntryPoint
     private final Anchor updateLink = new Anchor("[u]");
 
     private final HotlistPanel hotlistPanel = new HotlistPanel();
-    private final Anchor addHotlink = new Anchor("Add to hotlist");
-    private final Anchor enterLink = new Anchor("Enter");
+    private final Anchor addHotlink = new Anchor(constants.addToHotlist());
+    private final Anchor enterLink = new Anchor(constants.enter());
     private final VerticalPanel actionPanel = new VerticalPanel();
-    private final Anchor bulkLink = new Anchor("bulk");
+    private final Anchor bulkLink = new Anchor(constants.bulk());
     private final VerticalPanel idleActionPanel = new VerticalPanel();
     private String originalWindowTitle;
     private final Label serverInfoLabel = new Label("[querying]");
     private final DateBox specifiedDateBox = new DateBox();
-    private final RadioButton modeRadioSpecify = new RadioButton("MODE", "Specify Date");
-    private final RadioButton modeRadioNormal = new RadioButton("MODE", "Current");
+    private final RadioButton modeRadioSpecify = new RadioButton("MODE", constants.specifyDate());
+    private final RadioButton modeRadioNormal = new RadioButton("MODE", constants.current());
     private final ReportPanel reportPanel = new ReportPanel();
     private final AppJobPanel appJobPanel = new AppJobPanel();
-
-    private final CoreConstants constants = GWT.create(CoreConstants.class);
 
 
     private void updateStartTag(StartTag editedStartTag)
@@ -297,7 +297,6 @@ public class TimesliceApp implements EntryPoint
             public void onClick(ClickEvent event)
             {
                 enterNewStartTag(taskDescriptionEntry.getText());
-                GWT.log("enter link clicked");
             }
         });
 
@@ -330,7 +329,7 @@ public class TimesliceApp implements EntryPoint
         entryPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
         entryPanel.setSpacing(5);
         entryPanel.add(updateLink);
-        entryPanel.add(new HTML("<u>T</u>ask:", false));
+        entryPanel.add(new HTML(constants.task(), false));
         entryPanel.add(taskDescriptionEntry);
         entryPanel.add(actionPanel);
         entryPanel.add(idleActionPanel);
@@ -424,16 +423,16 @@ public class TimesliceApp implements EntryPoint
 
         final TabLayoutPanel tp = new TabLayoutPanel(2, Unit.EM);
         //final DecoratedTabPanel tp = new DecoratedTabPanel();
-        Anchor inputlink = new Anchor("<u>I</u>nput", true);
+        Anchor inputlink = new Anchor(constants.input(), true);
         inputlink.setAccessKey('i');
         tp.add(mainEntryPanel, inputlink);
-        Anchor reportslink = new Anchor("<u>R</u>eports", true);
+        Anchor reportslink = new Anchor(constants.reports(), true);
         reportslink.setAccessKey('r');
         tp.add(reportPanel, reportslink);
-        Anchor optionslink = new Anchor("<u>O</u>ptions", true);
+        Anchor optionslink = new Anchor(constants.options(), true);
         optionslink.setAccessKey('o');
         tp.add(optionsPanel, optionslink);
-        Anchor jobsLink = new Anchor("<u>J</u>obs", true);
+        Anchor jobsLink = new Anchor(constants.jobs(), true);
         jobsLink.setAccessKey('j');
         tp.add(appJobPanel, jobsLink);
 
