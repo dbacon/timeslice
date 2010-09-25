@@ -4,8 +4,8 @@ import com.google.gwt.i18n.client.Constants;
 
 public interface TimesliceAppConstants extends Constants
 {
-    @DefaultStringValue("Login?")
-    String login();
+    @DefaultStringValue("Logout")
+    String logout();
 
     @DefaultStringValue("Please login.")
     String pleaseLogin();

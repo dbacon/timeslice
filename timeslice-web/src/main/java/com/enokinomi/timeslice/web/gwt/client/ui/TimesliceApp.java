@@ -439,7 +439,7 @@ public class TimesliceApp implements EntryPoint
         tp.selectTab(0);
 //        tp.setAnimationEnabled(true);
 
-        Anchor logoutAnchor = new Anchor(constants.login());
+        Anchor logoutAnchor = new Anchor(constants.logout());
         logoutAnchor.addClickHandler(new ClickHandler()
         {
             @Override
