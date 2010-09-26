@@ -31,6 +31,8 @@ public class UpgradeSchema1To2AppJob implements AppJob
         SchemaDetector detector = new SchemaDetector();
         Integer versionPreUpgrade = detector.detectSchema(conn);
 
+        if (versionPreUpgrade != 1) throw new RuntimeException("Current schema must be version 1 for this upgrade - found version " + versionPreUpgrade);
+
         SchemaDuty upgradeDuty = new SchemaDuty("migration-sql-1-to-2.sql");
 
         upgradeDuty.createSchema(conn);
