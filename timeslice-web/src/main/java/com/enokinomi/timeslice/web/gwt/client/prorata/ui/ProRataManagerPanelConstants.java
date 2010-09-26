@@ -5,13 +5,13 @@ import com.google.gwt.i18n.client.Constants;
 public interface ProRataManagerPanelConstants extends Constants
 {
 
-    @DefaultStringValue("Add New")
+    @DefaultStringValue("Add")
     String addNew();
 
     @DefaultStringValue("Add")
     String add();
 
-    @DefaultStringValue("[-]")
+    @DefaultStringValue("Remove")
     String deleteTextIcon();
 
 }

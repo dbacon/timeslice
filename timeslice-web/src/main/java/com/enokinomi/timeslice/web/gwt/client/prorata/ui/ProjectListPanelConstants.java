@@ -23,4 +23,10 @@ public interface ProjectListPanelConstants extends Constants
     @DefaultStringValue("Scale Totals")
     String scaleTotals();
 
+    @DefaultStringValue("Report")
+    String report();
+
+    @DefaultStringValue("Pro-rata Maintenance")
+    String proRataMaintenance();
+
 }

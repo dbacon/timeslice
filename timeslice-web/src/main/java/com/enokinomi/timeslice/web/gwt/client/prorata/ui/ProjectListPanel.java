@@ -29,7 +29,9 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class ProjectListPanel extends Composite
 {
@@ -82,6 +84,8 @@ public class ProjectListPanel extends Composite
             }
         });
 
+        scaleToTextBox.setWidth("3em");
+
         readPrefs();
 
         scaleToTextBox.setEnabled(scaleCheckBox.getValue());
@@ -100,11 +104,18 @@ public class ProjectListPanel extends Composite
             }
         });
 
+        VerticalPanel vp = new VerticalPanel();
+        vp.add(table);
+
         DockLayoutPanel dp = new DockLayoutPanel(Unit.EM);
         dp.addNorth(hp1, 4);
-        dp.addEast(proRataManagePanel, 30);
-        dp.add(table);
-        initWidget(dp);
+        dp.add(vp);
+
+        TabLayoutPanel tabs = new TabLayoutPanel(2, Unit.EM);
+        tabs.add(dp, constants.report());
+        tabs.add(proRataManagePanel, constants.proRataMaintenance());
+
+        initWidget(tabs);
 
         clearAndInstallHeaders();
     }
@@ -176,7 +187,6 @@ public class ProjectListPanel extends Composite
     {
         proRataManagePanel.refresh();
 
-        clearAndInstallHeaders();
         rowMap.clear();
 
         if (items != null)
@@ -233,6 +243,8 @@ public class ProjectListPanel extends Composite
 
     private void redraw()
     {
+        clearAndInstallHeaders();
+
         Double total = 0.;
         for (Row row: rowMap.values())
         {
@@ -245,6 +257,7 @@ public class ProjectListPanel extends Composite
             int col = 0;
 
             table.setWidget(rowIndex, col, new Label(row.project));
+            table.getCellFormatter().setAlignment(rowIndex, col, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP);
             col++;
 
             table.setWidget(rowIndex, col, new Label(messages.direct(row.total)));

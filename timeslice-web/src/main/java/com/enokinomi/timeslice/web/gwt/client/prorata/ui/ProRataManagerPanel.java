@@ -17,7 +17,7 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -27,6 +27,9 @@ public class ProRataManagerPanel extends Composite
 
     private final VerticalPanel prorataManagePanel = new VerticalPanel();
     private final FlexTable groupInfoTable = new FlexTable();
+    private final TextBox groupBox = new TextBox();
+    private final TextBox targetBox = new TextBox();
+    final Button b = new Button(constants.addNew());
 
     private final IProRataSvcAsync prorataSvc = GWT.create(IProRataSvc.class);
     private IAuthTokenHolder tokenHolder;
@@ -69,9 +72,7 @@ public class ProRataManagerPanel extends Composite
 
     public ProRataManagerPanel()
     {
-        final TextBox groupBox = new TextBox();
-        final TextBox targetBox = new TextBox();
-        final Button b = new Button(constants.addNew(), new ClickHandler()
+        b.addClickHandler(new ClickHandler()
         {
             @Override
             public void onClick(ClickEvent event)
@@ -116,16 +117,11 @@ public class ProRataManagerPanel extends Composite
 
         b.setEnabled(!targetBox.getText().trim().isEmpty() && !groupBox.getText().trim().isEmpty());
 
+        VerticalPanel vp = new VerticalPanel();
+        vp.add(groupInfoTable);
+        ScrollPanel scroller = new ScrollPanel(vp);
 
-        HorizontalPanel hp = new HorizontalPanel();
-        hp.add(groupBox);
-        hp.add(targetBox);
-        hp.add(b);
-
-        prorataManagePanel.add(hp);
-        prorataManagePanel.add(groupInfoTable);
-
-
+        prorataManagePanel.add(scroller);
 
         initWidget(prorataManagePanel);
     }
@@ -233,6 +229,12 @@ public class ProRataManagerPanel extends Composite
                     {
                         GWT.log("Got group back w/ no components?!");
                     }
+
+                    groupInfoTable.setWidget(row, 0, groupBox);
+                    groupInfoTable.setWidget(row, 1, targetBox);
+                    groupInfoTable.setWidget(row, 2, b);
+
+                    ++row;
                 }
 
             }
