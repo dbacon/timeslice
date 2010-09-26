@@ -235,6 +235,7 @@
 						<configuration>
 							<inplace>true</inplace>
 							<warSourceDirectory>src/main/webapp</warSourceDirectory>
+							<force>true</force>
 						</configuration>
 					</plugin>
 				</plugins>
