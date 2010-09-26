@@ -5,13 +5,13 @@ import com.google.gwt.i18n.client.Constants;
 public interface HotlistPanelConstants extends Constants
 {
 
-    @DefaultStringValue("Hotlist (E)")
+    @DefaultStringValue("Hotlist")
     String hotlist();
 
-    @DefaultStringValue("Hotlist (E) [delete-single]")
+    @DefaultStringValue("Hotlist [delete-single]")
     String editDeleteSingle();
 
-    @DefaultStringValue("Hotlist (E) [delete-multi]")
+    @DefaultStringValue("Hotlist [delete-multi]")
     String editDeleteMulti();
 
 }
