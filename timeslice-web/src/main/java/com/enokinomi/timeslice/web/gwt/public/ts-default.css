@@ -37,6 +37,12 @@
 	padding-left: 0.5em;
 }
 
+.tsTaskResumeLink
+{
+	color: gray;
+	padding-right: 0.5em;
+}
+
 .tsTableHeader
 {
 	text-align: center;

@@ -1,19 +1,32 @@
 package com.enokinomi.timeslice.web.gwt.client.task.ui;
 
+import static com.enokinomi.timeslice.web.gwt.client.task.ui.HumanReadableTimeHelper.formatDuration;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.enokinomi.timeslice.web.gwt.client.controller.EditableLabel;
+import com.enokinomi.timeslice.web.gwt.client.controller.EditableLabel.Listener;
 import com.enokinomi.timeslice.web.gwt.client.task.core.StartTag;
-import com.enokinomi.timeslice.web.gwt.client.task.ui.TaskPanel.ITaskPanelListener;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.ScrollPanel;
 
 public class HistoryPanel extends ResizeComposite
 {
-    private final FlowPanel itemsPanel = new FlowPanel();
-    private final ScrollPanel scroller = new ScrollPanel(itemsPanel);
+    TaskPanelConstants constants = GWT.create(TaskPanelConstants.class);
+
+    private final FlexTable table = new FlexTable();
+    private final ScrollPanel scroller = new ScrollPanel(table);
 
     private final List<StartTag> items = new ArrayList<StartTag>();
 
@@ -89,6 +102,9 @@ public class HistoryPanel extends ResizeComposite
 
     public HistoryPanel()
     {
+        table.setWidth("100%");
+        table.getColumnFormatter().setWidth(2, "10em");
+        table.getColumnFormatter().addStyleName(1, "tsTimeField");
         initWidget(scroller);
     }
 
@@ -122,54 +138,108 @@ public class HistoryPanel extends ResizeComposite
         }
     }
 
-    public class TaskPanelListener implements ITaskPanelListener
-    {
-        public void resumeClicked(StartTag historicStartTag)
-        {
-            fireInterestingThing(historicStartTag.getDescription());
-        }
-
-        public void itemEdited(StartTag editedTag)
-        {
-            fireEdited(editedTag);
-        }
-
-        public void timeEdited(StartTag newTag)
-        {
-            fireTimeEdited(newTag);
-        }
-
-        public void itemHotlisted(String name, String description)
-        {
-            fireHotlisted(name, description);
-        }
-
-        @Override
-        public void editModeEntered(StartTag tag)
-        {
-            fireEditModeEntered();
-        }
-
-        @Override
-        public void editModeLeft(StartTag tag)
-        {
-            fireEditModeLeft();
-        }
-
-    }
-
-    final TaskPanelListener listener = new TaskPanelListener();
-
     protected void update()
     {
         Collections.reverse(items);
 
-        itemsPanel.clear();
-        for (StartTag item: items)
+        table.removeAllRows();
+
+        int row = 0;
+
+        for (final StartTag item: items)
         {
-            TaskPanel taskPanel = new TaskPanel(item);
-            taskPanel.addTaskPanelListener(listener);
-            itemsPanel.add(taskPanel);
+            int col = 0;
+
+            Anchor resumeLink = new Anchor(constants.resumeTextIcon());
+            resumeLink.setTitle(constants.resumeHint());
+            resumeLink.setStylePrimaryName("tsTaskResumeLink");
+
+            resumeLink.addClickHandler(new ClickHandler()
+            {
+                @Override
+                public void onClick(ClickEvent event)
+                {
+                    fireInterestingThing(item.getDescription());
+                }
+            });
+
+            EditableLabel itemLabel = new EditableLabel(item.getDescription());
+            itemLabel.getEditor().setWidth("30em");
+            itemLabel.addListener(new Listener()
+            {
+                @Override
+                public void editCanceled()
+                {
+                }
+
+                @Override
+                public void editBegun()
+                {
+                }
+
+                @Override
+                public void editAccepted(String oldValue, String newValue)
+                {
+                    fireEdited(
+                            new StartTag(
+                                item.getInstantString(),
+                                item.getUntilString(),
+                                item.getDurationMillis(),
+                                newValue,
+                                null
+                                ));
+                }
+            });
+
+            final EditableLabel timeLabel = new EditableLabel(formatDuration(item.getDurationMillis().longValue()));
+            timeLabel.getEditor().setWidth("20em");
+            timeLabel.addListener(new Listener()
+            {
+                @Override
+                public void editBegun()
+                {
+                    timeLabel.getEditor().setValue(item.getInstantString());
+                }
+
+                @Override
+                public void editCanceled()
+                {
+                }
+
+                @Override
+                public void editAccepted(String oldValue, String newValue)
+                {
+                    fireTimeEdited(
+                            new StartTag(
+                                    newValue,
+                                    null,
+                                    null,
+                                    item.getDescription(),
+                                    null
+                                    ));
+                }
+            });
+
+            HorizontalPanel hp = new HorizontalPanel();
+            hp.setStylePrimaryName("tsTaskRow");
+            hp.add(resumeLink);
+            hp.add(itemLabel);
+
+            table.setWidget(row, col, hp);
+            table.getCellFormatter().setAlignment(row, col, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP);
+            ++col;
+
+            table.setWidget(row, col, timeLabel);
+            table.getCellFormatter().setAlignment(row, col, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
+            ++col;
+
+            Label spacer = new Label();
+            spacer.setWidth("2em");
+            table.setWidget(row, col, spacer);
+            table.getCellFormatter().setAlignment(row, col, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
+            ++col;
+
+            ++row;
         }
 
         scroller.scrollToBottom();
