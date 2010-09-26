@@ -21,6 +21,7 @@ public class StockJobsModule extends AbstractModule
         appJobSetBinder.addBinding().to(ListTablesAppJob.class);
         appJobSetBinder.addBinding().to(DetectSchemaVersionAppJob.class);
         appJobSetBinder.addBinding().to(UpgradeSchema0To1AppJob.class);
+        appJobSetBinder.addBinding().to(UpgradeSchema1To2AppJob.class);
     }
 
 }

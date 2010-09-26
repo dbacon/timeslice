@@ -17,7 +17,7 @@ import com.enokinomi.timeslice.web.gwt.client.task.core.ITimesliceSvc;
 import com.enokinomi.timeslice.web.gwt.client.task.core.ITimesliceSvcAsync;
 import com.enokinomi.timeslice.web.gwt.client.task.core.StartTag;
 import com.enokinomi.timeslice.web.gwt.client.task.core.TaskTotal;
-import com.enokinomi.timeslice.web.gwt.client.task.ui.HotlistPanel;
+import com.enokinomi.timeslice.web.gwt.client.ui.PrefHelper;
 import com.enokinomi.timeslice.web.gwt.client.ui.TimesliceAppConstants;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Cookies;
@@ -121,7 +121,7 @@ public class GwtRpcController extends BaseController
                     public void onSuccess(String result)
                     {
                         setAuthToken(result);
-                        Cookies.setCookie("timeslice.authtoken", result, HotlistPanel.createDateSufficientlyInTheFuture());
+                        Cookies.setCookie("timeslice.authtoken", result, PrefHelper.createDateSufficientlyInTheFuture());
                         fireAuthenticated();
                         if (null != action) action.startRetry();
                     }

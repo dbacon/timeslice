@@ -15,6 +15,15 @@ import com.google.inject.Inject;
 
 public class ProRataSvc implements IProRataSvc
 {
+    private final class ToComponent implements ITransform<com.enokinomi.timeslice.lib.prorata.GroupComponent, GroupComponent>
+    {
+        @Override
+        public GroupComponent apply(com.enokinomi.timeslice.lib.prorata.GroupComponent r)
+        {
+            return new GroupComponent(r.getGroupName(), r.getName(), r.getWeight().toString());
+        }
+    }
+
     private final SessionTracker sessionTracker;
     private final IProRataStore store;
 
@@ -44,13 +53,28 @@ public class ProRataSvc implements IProRataSvc
     {
         sessionTracker.checkToken(authToken);
         List<com.enokinomi.timeslice.lib.prorata.GroupComponent> groupComponents = store.dereferenceGroup(groupName);
-        return tr(groupComponents, new ArrayList<GroupComponent>(groupComponents.size()), new ITransform<com.enokinomi.timeslice.lib.prorata.GroupComponent, GroupComponent>()
+        return tr(groupComponents, new ArrayList<GroupComponent>(groupComponents.size()), new ToComponent());
+    }
+
+    @Override
+    public List<String> listGroups(String authToken)
+    {
+        sessionTracker.checkToken(authToken);
+        return store.listGroupNames();
+    }
+
+    @Override
+    public List<List<GroupComponent>> listAllGroupInfo(String authToken)
+    {
+        sessionTracker.checkToken(authToken);
+
+        List<List<GroupComponent>> result = new ArrayList<List<GroupComponent>>();
+        ToComponent tx = new ToComponent();
+        for (List<com.enokinomi.timeslice.lib.prorata.GroupComponent> groupComponents: store.listAllGroupsInfo())
         {
-            @Override
-            public GroupComponent apply(com.enokinomi.timeslice.lib.prorata.GroupComponent r)
-            {
-                return new GroupComponent(r.getName(), r.getWeight().toString());
-            }
-        });
+            result.add(tr(groupComponents, new ArrayList<GroupComponent>(groupComponents.size()), tx));
+        }
+
+        return result;
     }
 }

@@ -8,8 +8,11 @@ import java.util.List;
 import com.enokinomi.timeslice.web.gwt.client.assigned.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.assigned.ui.TabularResultsAssignedView;
 import com.enokinomi.timeslice.web.gwt.client.assigned.ui.TabularResultsAssignedView.Listener;
+import com.enokinomi.timeslice.web.gwt.client.controller.IAuthTokenHolder;
+import com.enokinomi.timeslice.web.gwt.client.prorata.ui.ProjectListPanel;
 import com.enokinomi.timeslice.web.gwt.client.task.core.TaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.task.ui.ParamPanel.IParamChangedListener;
+import com.enokinomi.timeslice.web.gwt.client.ui.PrefHelper;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -123,10 +126,10 @@ public class ReportPanel extends ResizeComposite
 
     private void writePrefs()
     {
-        Cookies.setCookie(PrefKey.Starting, params.getSelectedStartingTime(), HotlistPanel.createDateSufficientlyInTheFuture());
-        Cookies.setCookie(PrefKey.Ending, params.getSelectedEndingTime(), HotlistPanel.createDateSufficientlyInTheFuture());
-        Cookies.setCookie(PrefKey.IgnoreStrings, params.getIgnoreWords().getText(), HotlistPanel.createDateSufficientlyInTheFuture());
-        Cookies.setCookie(PrefKey.AllowStrings, params.getAllowWords().getText(), HotlistPanel.createDateSufficientlyInTheFuture());
+        Cookies.setCookie(PrefKey.Starting, params.getSelectedStartingTime(), PrefHelper.createDateSufficientlyInTheFuture());
+        Cookies.setCookie(PrefKey.Ending, params.getSelectedEndingTime(), PrefHelper.createDateSufficientlyInTheFuture());
+        Cookies.setCookie(PrefKey.IgnoreStrings, params.getIgnoreWords().getText(), PrefHelper.createDateSufficientlyInTheFuture());
+        Cookies.setCookie(PrefKey.AllowStrings, params.getAllowWords().getText(), PrefHelper.createDateSufficientlyInTheFuture());
     }
 
     public ReportPanel()

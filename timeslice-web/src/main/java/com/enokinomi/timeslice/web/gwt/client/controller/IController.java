@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.enokinomi.timeslice.web.gwt.client.core.SortDir;
 import com.enokinomi.timeslice.web.gwt.client.task.core.StartTag;
-import com.enokinomi.timeslice.web.gwt.client.task.ui.IAuthTokenHolder;
 
 
 public interface IController extends IAuthTokenHolder

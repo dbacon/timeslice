@@ -3,6 +3,7 @@ package com.enokinomi.timeslice.web.gwt.client.task.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.enokinomi.timeslice.web.gwt.client.ui.PrefHelper;
 import com.enokinomi.timeslice.web.gwt.client.ui.TimesliceApp.Defaults;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -272,13 +273,13 @@ public class OptionsPanel extends Composite implements IOptionsProvider
 
     private void writePrefs()
     {
-//        Cookies.setCookie(PrefKeys.User, username.getText(), HotlistPanel.createDateSufficientlyInTheFuture());
-        Cookies.setCookie(PrefKeys.PageSize, maxSize.getText(), HotlistPanel.createDateSufficientlyInTheFuture());
-        Cookies.setCookie(PrefKeys.PageSizeSeconds, maxSeconds.getText(), HotlistPanel.createDateSufficientlyInTheFuture());
-        Cookies.setCookie(PrefKeys.CtrlSpaceSends, (controlSpaceSends.getValue() ? "true" : "false"), HotlistPanel.createDateSufficientlyInTheFuture());
-        Cookies.setCookie(PrefKeys.AutoRefresh, autoRefresh.getValue() ? "true" : "false", HotlistPanel.createDateSufficientlyInTheFuture());
-        Cookies.setCookie(PrefKeys.AutoRefreshMs, autoRefreshMs.getText(), HotlistPanel.createDateSufficientlyInTheFuture());
-        Cookies.setCookie(PrefKeys.CurrentTaskInTitlebar, (currentTaskInTitlebar.getValue() ? "true" : "false"), HotlistPanel.createDateSufficientlyInTheFuture());
-        Cookies.setCookie(PrefKeys.TitlebarTemplate, titleBarTemplate.getText(), HotlistPanel.createDateSufficientlyInTheFuture());
+//        Cookies.setCookie(PrefKeys.User, username.getText(), PrefHelper.createDateSufficientlyInTheFuture());
+        Cookies.setCookie(PrefKeys.PageSize, maxSize.getText(), PrefHelper.createDateSufficientlyInTheFuture());
+        Cookies.setCookie(PrefKeys.PageSizeSeconds, maxSeconds.getText(), PrefHelper.createDateSufficientlyInTheFuture());
+        Cookies.setCookie(PrefKeys.CtrlSpaceSends, (controlSpaceSends.getValue() ? "true" : "false"), PrefHelper.createDateSufficientlyInTheFuture());
+        Cookies.setCookie(PrefKeys.AutoRefresh, autoRefresh.getValue() ? "true" : "false", PrefHelper.createDateSufficientlyInTheFuture());
+        Cookies.setCookie(PrefKeys.AutoRefreshMs, autoRefreshMs.getText(), PrefHelper.createDateSufficientlyInTheFuture());
+        Cookies.setCookie(PrefKeys.CurrentTaskInTitlebar, (currentTaskInTitlebar.getValue() ? "true" : "false"), PrefHelper.createDateSufficientlyInTheFuture());
+        Cookies.setCookie(PrefKeys.TitlebarTemplate, titleBarTemplate.getText(), PrefHelper.createDateSufficientlyInTheFuture());
     }
 }

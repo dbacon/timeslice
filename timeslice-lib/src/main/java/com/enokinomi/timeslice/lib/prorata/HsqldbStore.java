@@ -68,6 +68,18 @@ public class HsqldbStore implements IProRataStore
         }
     }
 
+    private final class ToGroupComponent implements ITransformThrowable<ResultSet, GroupComponent, SQLException>
+    {
+        @Override
+        public GroupComponent apply(ResultSet r) throws SQLException
+        {
+            return new GroupComponent(
+                    r.getString(1),
+                    r.getString(2),
+                    new BigDecimal(r.getDouble(3)));
+        }
+    }
+
     public static final class SetParam
     {
         private final Object[] values;
@@ -192,16 +204,26 @@ public class HsqldbStore implements IProRataStore
     {
         if (versionIsAtLeast(2))
         {
-            return doSomeSql("select component_name,weight from TS_PRORATA where NAME = ?", new Object[] { groupName }, new ITransformThrowable<ResultSet, GroupComponent, SQLException>()
-                    {
-                        @Override
-                        public GroupComponent apply(ResultSet r) throws SQLException
-                        {
-                            return new GroupComponent(
-                                    r.getString(1),
-                                    new BigDecimal(r.getDouble(2)));
-                        }
-                    });
+            return doSomeSql("select name, component_name,weight from TS_PRORATA where NAME = ?", new Object[] { groupName }, new ToGroupComponent());
+        }
+        else
+        {
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public List<List<GroupComponent>> listAllGroupsInfo()
+    {
+        if (versionIsAtLeast(2))
+        {
+            List<List<GroupComponent>> result = new ArrayList<List<GroupComponent>>();
+            List<String> groupNames = listGroupNames();
+            for (String groupName: groupNames)
+            {
+                result.add(dereferenceGroup(groupName));
+            }
+            return result;
         }
         else
         {

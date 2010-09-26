@@ -11,4 +11,6 @@ public interface IProRataSvc extends RemoteService
     void addGroupComponent(String authToken, String groupName, String componentName, String weight);
     void removeGroupComponent(String authToken, String groupName, String componentName);
     List<GroupComponent> expandGroup(String authToken, String groupName);
+    List<String> listGroups(String authToken);
+    List<List<GroupComponent>> listAllGroupInfo(String authToken);
 }

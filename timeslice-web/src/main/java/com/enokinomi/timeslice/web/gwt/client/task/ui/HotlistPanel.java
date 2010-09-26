@@ -1,9 +1,9 @@
 package com.enokinomi.timeslice.web.gwt.client.task.ui;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import com.enokinomi.timeslice.web.gwt.client.ui.PrefHelper;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -163,14 +163,8 @@ public class HotlistPanel extends Composite
 
     public void addAsHotlistItem(String name, String description)
     {
-        Cookies.setCookie(CookieNamePrefix  + name.hashCode(), description, createDateSufficientlyInTheFuture());
+        Cookies.setCookie(CookieNamePrefix  + name.hashCode(), description, PrefHelper.createDateSufficientlyInTheFuture());
         repopulate();
         fireHotlistChanged();
-    }
-
-    @SuppressWarnings("deprecation")
-    public static Date createDateSufficientlyInTheFuture()
-    {
-        return new Date(2099, 0, 1);
     }
 }
