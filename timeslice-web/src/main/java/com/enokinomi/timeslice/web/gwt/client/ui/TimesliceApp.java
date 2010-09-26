@@ -1,5 +1,7 @@
 package com.enokinomi.timeslice.web.gwt.client.ui;
 
+import static com.enokinomi.timeslice.web.gwt.client.util.TransformUtils.tr;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -28,6 +30,7 @@ import com.enokinomi.timeslice.web.gwt.client.task.ui.ParamPanel;
 import com.enokinomi.timeslice.web.gwt.client.task.ui.ReportPanel;
 import com.enokinomi.timeslice.web.gwt.client.ui.ImportBulkItemsDialog.BulkItemListener;
 import com.enokinomi.timeslice.web.gwt.client.util.Checks;
+import com.enokinomi.timeslice.web.gwt.client.util.ITransform;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -680,7 +683,17 @@ public class TimesliceApp implements EntryPoint
             historyPanel.clear(false);
             historyPanel.addItems(items);
 
-            updateSuggestSource(items);
+            ArrayList<String> descriptions = tr(items, new ArrayList<String>(), new ITransform<StartTag, String>()
+            {
+                @Override
+                public String apply(StartTag r)
+                {
+                    return r.getDescription();
+                }
+            });
+
+            updateSuggestSource(descriptions);
+            historyPanel.setSuggestWords(descriptions);
 
             Window.setTitle(
                 options.isCurrentTaskInTitlebar()
@@ -712,13 +725,10 @@ public class TimesliceApp implements EntryPoint
         return null;
     }
 
-    private void updateSuggestSource(ArrayList<StartTag> items)
+    private void updateSuggestSource(ArrayList<String> items)
     {
         suggestSource.clear();
-        for (StartTag tag: items)
-        {
-            suggestSource.add(tag.getDescription());
-        }
+        suggestSource.addAll(items);
     }
 
     private void showError(AsyncResult<?> result)

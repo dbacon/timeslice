@@ -18,8 +18,10 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.SuggestBox;
 
 public class HistoryPanel extends ResizeComposite
 {
@@ -29,6 +31,8 @@ public class HistoryPanel extends ResizeComposite
     private final ScrollPanel scroller = new ScrollPanel(table);
 
     private final List<StartTag> items = new ArrayList<StartTag>();
+
+    private final MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 
     public static interface IHistoryPanelListener
     {
@@ -138,6 +142,12 @@ public class HistoryPanel extends ResizeComposite
         }
     }
 
+    public void setSuggestWords(List<String> words)
+    {
+        oracle.clear();
+        oracle.addAll(words);
+    }
+
     protected void update()
     {
         Collections.reverse(items);
@@ -163,7 +173,7 @@ public class HistoryPanel extends ResizeComposite
                 }
             });
 
-            EditableLabel itemLabel = new EditableLabel(item.getDescription());
+            EditableLabel itemLabel = new EditableLabel(new SuggestBox(oracle), item.getDescription());
             itemLabel.getEditor().setWidth("30em");
             itemLabel.addListener(new Listener()
             {

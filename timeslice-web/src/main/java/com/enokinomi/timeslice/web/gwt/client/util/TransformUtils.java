@@ -1,5 +1,6 @@
 package com.enokinomi.timeslice.web.gwt.client.util;
 
+import java.util.Collection;
 
 
 public class TransformUtils
@@ -38,6 +39,16 @@ public class TransformUtils
                 return r.toString();
             }
         };
+    }
+
+    public static <R, CT extends Collection<D>, D> CT tr(Collection<R> xs, CT result, ITransform<R, D> f)
+    {
+        for (R x: xs)
+        {
+            result.add(f.apply(x));
+        }
+
+        return result;
     }
 
 }
