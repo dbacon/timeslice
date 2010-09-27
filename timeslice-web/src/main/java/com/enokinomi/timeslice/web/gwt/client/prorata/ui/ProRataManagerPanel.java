@@ -230,12 +230,13 @@ public class ProRataManagerPanel extends Composite
                         GWT.log("Got group back w/ no components?!");
                     }
 
-                    groupInfoTable.setWidget(row, 0, groupBox);
-                    groupInfoTable.setWidget(row, 1, targetBox);
-                    groupInfoTable.setWidget(row, 2, b);
-
-                    ++row;
                 }
+
+                groupInfoTable.setWidget(row, 0, groupBox);
+                groupInfoTable.setWidget(row, 1, targetBox);
+                groupInfoTable.setWidget(row, 2, b);
+
+                ++row;
 
             }
         });
