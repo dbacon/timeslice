@@ -52,13 +52,16 @@ public class AppJobPanel extends ResizeComposite
 
         addHeaders();
 
+        ScrollPanel jobScrollPanel = new ScrollPanel(tab);
+        jobScrollPanel.setHeight("15em");
+
         VerticalPanel vp = new VerticalPanel();
-        vp.add(tab);
+        vp.add(hp);
+        vp.add(jobScrollPanel);
 
         DockLayoutPanel dp = new DockLayoutPanel(Unit.EM);
-        dp.addNorth(hp, 2);
-        dp.addSouth(resultScroller, 30);
-        dp.add(vp);
+        dp.addNorth(vp, 17);
+        dp.add(resultScroller);
 
         initWidget(dp);
     }
