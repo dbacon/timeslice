@@ -12,6 +12,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ResizeComposite;
@@ -112,11 +114,23 @@ public class TreeTableResultsView extends ResizeComposite
                 }
                 hb.add(new Label(what));
 
+                // TODO: use messages for consistent numeric formatting
+
+                resultsTable.getCellFormatter().setAlignment(row.getValue(), col, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP);
                 resultsTable.setText(row.getValue(), col++, who);
+
+                resultsTable.getCellFormatter().setAlignment(row.getValue(), col, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
                 resultsTable.setText(row.getValue(), col++, totalhours);
+
+                resultsTable.getCellFormatter().setAlignment(row.getValue(), col, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
                 resultsTable.setText(row.getValue(), col++, totalpercent);
+
+                resultsTable.getCellFormatter().setAlignment(row.getValue(), col, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
                 resultsTable.setText(row.getValue(), col++, hours);
+
+                resultsTable.getCellFormatter().setAlignment(row.getValue(), col, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
                 resultsTable.setText(row.getValue(), col++, percent);
+
                 resultsTable.setWidget(row.getValue(), col++, hb);
 
                 row.setValue(row.getValue() + 1);

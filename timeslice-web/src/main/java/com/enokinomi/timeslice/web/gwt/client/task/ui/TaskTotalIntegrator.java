@@ -2,9 +2,9 @@ package com.enokinomi.timeslice.web.gwt.client.task.ui;
 
 import java.util.List;
 
+import com.enokinomi.timeslice.web.gwt.client.core.Pair;
 import com.enokinomi.timeslice.web.gwt.client.task.core.TaskTotal;
 import com.enokinomi.timeslice.web.gwt.client.task.ui_tree.NodeIntegrator;
-import com.enokinomi.timeslice.web.gwt.client.task.ui_tree.Pair;
 import com.enokinomi.timeslice.web.gwt.client.util.Split;
 import com.enokinomi.timeslice.web.gwt.client.util.TransformUtils;
 import com.enokinomi.timeslice.web.gwt.client.util.Tx;

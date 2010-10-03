@@ -11,6 +11,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -27,6 +29,8 @@ public class TabularResultsAssignedView extends ResizeComposite
 
     public TabularResultsAssignedView()
     {
+        resultsTable.setStylePrimaryName("tsMathTable");
+
         initWidget(new ScrollPanel(resultsTable));
     }
 
@@ -80,29 +84,39 @@ public class TabularResultsAssignedView extends ResizeComposite
 
         resultsTable.removeAllRows();
         resultsTable.setCellSpacing(5);
+
         int row = 0;
 
-        // TODO: move column header style to CSS
+        resultsTable.getRowFormatter().setStylePrimaryName(row, "tsTableHeader");
+
         int col = 0;
-        resultsTable.setWidget(row, col++, new HTML("<b><u>" + constants.who() + "</u></b>", false));
-        resultsTable.setWidget(row, col++, new HTML("<b><u>" + constants.hours() + "</u></b>", false));
-        resultsTable.setWidget(row, col++, new HTML("<b><u>" + constants.percent() + "</u></b>", false));
-        resultsTable.setWidget(row, col++, new HTML("<b><u>" + constants.what() + "</u></b>", false));
-        resultsTable.setWidget(row, col++, new HTML("<b><u>" + constants.code() + "</u></b>", false));
-        resultsTable.setWidget(row, col++, new HTML("<b><u>" + constants.billee() + "</u></b>", false));
+
+        resultsTable.setWidget(row, col++, new HTML(constants.who(), false));
+        resultsTable.setWidget(row, col++, new HTML(constants.hours(), false));
+        resultsTable.setWidget(row, col++, new HTML(constants.percent(), false));
+        resultsTable.setWidget(row, col++, new HTML(constants.what(), false));
+        resultsTable.setWidget(row, col++, new HTML(constants.billee(), false));
 
         ++row;
 
 
         for (final AssignedTaskTotal reportRow: report)
         {
+            resultsTable.getRowFormatter().addStyleName(row, (row % 2 == 0) ? "evenRow" : "oddRow");
+
             col = 0;
 
+            resultsTable.getCellFormatter().setAlignment(row, col, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP);
             resultsTable.setText(row, col++, reportRow.getWho());
+
+            resultsTable.getCellFormatter().setAlignment(row, col, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
             resultsTable.setText(row, col++, NumberFormat.getDecimalFormat().format(reportRow.getHours()));
+
+            resultsTable.getCellFormatter().setAlignment(row, col, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
             resultsTable.setText(row, col++, NumberFormat.getPercentFormat().format(reportRow.getPercentage()));
+
+            resultsTable.getCellFormatter().setAlignment(row, col, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP);
             resultsTable.setText(row, col++, reportRow.getWhat());
-            resultsTable.setText(row, col++, "" + reportRow.getWhat().hashCode());
 
             // TODO: set style for edited editable-label
 
@@ -136,7 +150,6 @@ public class TabularResultsAssignedView extends ResizeComposite
             resultsTable.setWidget(row, col++, label);
 
             // TODO: provide way to focus 1st unassigned text box
-            // TODO: add style for unassigned items.
 
             row++;
         }

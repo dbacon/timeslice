@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.enokinomi.timeslice.web.gwt.client.controller.IAuthTokenHolder;
+import com.enokinomi.timeslice.web.gwt.client.core.Pair;
+import com.enokinomi.timeslice.web.gwt.client.prorata.core.Group;
 import com.enokinomi.timeslice.web.gwt.client.prorata.core.GroupComponent;
 import com.enokinomi.timeslice.web.gwt.client.prorata.core.IProRataSvc;
 import com.enokinomi.timeslice.web.gwt.client.prorata.core.IProRataSvcAsync;
@@ -12,12 +14,16 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -29,7 +35,10 @@ public class ProRataManagerPanel extends Composite
     private final FlexTable groupInfoTable = new FlexTable();
     private final TextBox groupBox = new TextBox();
     private final TextBox targetBox = new TextBox();
-    final Button b = new Button(constants.addNew());
+    private final Button b = new Button(constants.addNew());
+
+    private final TextArea rulesTextArea = new TextArea();
+
 
     private final IProRataSvcAsync prorataSvc = GWT.create(IProRataSvc.class);
     private IAuthTokenHolder tokenHolder;
@@ -117,18 +126,144 @@ public class ProRataManagerPanel extends Composite
 
         b.setEnabled(!targetBox.getText().trim().isEmpty() && !groupBox.getText().trim().isEmpty());
 
-        VerticalPanel vp = new VerticalPanel();
-        vp.add(groupInfoTable);
-        ScrollPanel scroller = new ScrollPanel(vp);
+
+        Button rulesRemoveAllButton = new Button("Remove");
+        rulesRemoveAllButton.addClickHandler(new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                // TODO: keep list of groups, so we can remove them all
+                // TODO: add remove-all in svc defn
+
+                List<Pair<String,String>> parsedRules = parseRules();
+                GWT.log("Parsed " + parsedRules.size() + " rule(s).");
+
+                if (0 < parsedRules.size())
+                {
+                    // TODO: add bulk-load to service definition to avoid a bunch of calls
+                    for (final Pair<String, String> rule: parsedRules)
+                    {
+                        prorataSvc.removeGroupComponent(tokenHolder.getAuthToken(), rule.first, rule.second, new AsyncCallback<Void>()
+                            {
+                                @Override
+                                public void onFailure(Throwable caught)
+                                {
+                                    GWT.log("Failed removing rule (s" + rule.first + " -> " + rule.second + "): " + caught.getMessage());
+                                }
+
+                                @Override
+                                public void onSuccess(Void result)
+                                {
+                                    // dont refresh, we're in bulk.
+                                    GWT.log("Removed rule: " + rule.first + " -> " + rule.second);
+                                }
+                            });
+                    }
+
+                    // for now, simulate a 1-time update after bulk load
+                    new Timer()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            fireGroupsChanged();
+                        }
+                    }.schedule(500);
+                }
+            }
+        });
+
+        // TODO: set remove/load button sensitivities and a label depending on if rules are parsed.
+
+        Button rulesLoadButton = new Button("Load");
+        rulesLoadButton.addClickHandler(new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                List<Pair<String,String>> parsedRules = parseRules();
+
+                if (0 < parsedRules.size())
+                {
+                    // TODO: add bulk-load to service definition to avoid a bunch of calls
+                    for (final Pair<String, String> rule: parsedRules)
+                    {
+                        prorataSvc.addGroupComponent(tokenHolder.getAuthToken(), rule.first, rule.second, "1", new AsyncCallback<Void>()
+                            {
+                                @Override
+                                public void onFailure(Throwable caught)
+                                {
+                                    GWT.log("Failed adding rule (s" + rule.first + " -> " + rule.second + "): " + caught.getMessage());
+                                }
+
+                                @Override
+                                public void onSuccess(Void result)
+                                {
+                                    // dont refresh, we're in bulk.
+                                    GWT.log("Added rule: " + rule.first + " -> " + rule.second);
+                                }
+                            });
+                    }
+
+                    // for now, simulate a 1-time update after bulk load
+                    new Timer()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            fireGroupsChanged();
+                        }
+                    }.schedule(500);
+                }
+            }
+        });
+
+        rulesTextArea.setHeight("20em");
+        rulesTextArea.setWidth("30em");
+
+        HorizontalPanel cp = new HorizontalPanel();
+        cp.add(rulesRemoveAllButton);
+        cp.add(rulesLoadButton);
+
+        VerticalPanel dp = new VerticalPanel();
+        dp.add(rulesTextArea);
+        dp.add(cp);
+
+        DisclosurePanel loadSaveDiscl = new DisclosurePanel("Bulk/Raw Rule Editing");
+        loadSaveDiscl.add(dp);
+
+        VerticalPanel loadSavePanel = new VerticalPanel();
+        loadSavePanel.add(loadSaveDiscl);
+
+        HorizontalPanel hp = new HorizontalPanel();
+        hp.add(groupInfoTable);
+        hp.add(loadSavePanel);
+        ScrollPanel scroller = new ScrollPanel(hp);
 
         prorataManagePanel.add(scroller);
 
         initWidget(prorataManagePanel);
     }
 
+    private List<Pair<String, String>> parseRules()
+    {
+        List<Pair<String,String>> parsedRules = new ArrayList<Pair<String, String>>();
+        String[] ruleLines = rulesTextArea.getText().split("\n");
+        for (String ruleLine: ruleLines)
+        {
+            String[] parentChild = ruleLine.split("\\|");
+            if (2 == parentChild.length)
+            {
+                parsedRules.add(Pair.create(parentChild[0], parentChild[1]));
+            }
+        }
+        return parsedRules;
+    }
+
     public void refresh()
     {
-        prorataSvc.listAllGroupInfo(tokenHolder.getAuthToken(), new AsyncCallback<List<List<GroupComponent>>>()
+        prorataSvc.listAllGroupInfo(tokenHolder.getAuthToken(), new AsyncCallback<List<Group>>()
         {
             @Override
             public void onFailure(Throwable caught)
@@ -137,79 +272,31 @@ public class ProRataManagerPanel extends Composite
             }
 
             @Override
-            public void onSuccess(List<List<GroupComponent>> result)
+            public void onSuccess(List<Group> result)
             {
-                GWT.log("Building group panel.");
+                updateBulkTextArea(result);
 
                 groupInfoTable.removeAllRows();
 
                 int row = 0;
 
-                for (List<GroupComponent> groupComponents: result)
+                for (Group group: result)
                 {
-                    if (result.size() > 0)
+                    final String groupName = group.getName();
+
+                    final TextBox targetBox = new TextBox();
+
+                    final Button addButton = new Button(constants.add(), new ClickHandler()
                     {
-                        final String groupName = groupComponents.get(0).getGroupName();
-
-                        final TextBox targetBox = new TextBox();
-
-                        final Button addButton = new Button(constants.add(), new ClickHandler()
+                        @Override
+                        public void onClick(ClickEvent event)
                         {
-                            @Override
-                            public void onClick(ClickEvent event)
-                            {
-                                prorataSvc.addGroupComponent(tokenHolder.getAuthToken(), groupName, targetBox.getText(), "1", new AsyncCallback<Void>()
-                                        {
-                                            @Override
-                                            public void onFailure(Throwable caught)
-                                            {
-                                                GWT.log("Failure adding new group: " + caught.getMessage());
-                                            }
-
-                                            @Override
-                                            public void onSuccess(Void result)
-                                            {
-                                                refresh();
-                                                fireGroupsChanged();
-                                            }
-                                        });
-                            }
-                        });
-
-                        targetBox.addKeyUpHandler(new KeyUpHandler()
-                        {
-                            @Override
-                            public void onKeyUp(KeyUpEvent event)
-                            {
-                                addButton.setEnabled(!targetBox.getText().trim().isEmpty());
-                            }
-                        });
-                        addButton.setEnabled(!targetBox.getText().trim().isEmpty());
-
-
-                        groupInfoTable.setText(row, 0, groupName);
-                        groupInfoTable.setWidget(row, 1, targetBox);
-                        groupInfoTable.setWidget(row, 2, addButton);
-                        ++row;
-
-                        for (final GroupComponent component: groupComponents)
-                        {
-                            int col = 1;
-                            groupInfoTable.setText(row, col++, component.getName());
-                            groupInfoTable.setText(row, col++, component.getWeight());
-                            Anchor anchor = new Anchor(constants.deleteTextIcon());
-                            groupInfoTable.setWidget(row, col++, anchor);
-                            anchor.addClickHandler(new ClickHandler()
-                            {
-                                @Override
-                                public void onClick(ClickEvent event)
-                                {
-                                    prorataSvc.removeGroupComponent(tokenHolder.getAuthToken(), component.getGroupName(), component.getName(), new AsyncCallback<Void>()
+                            prorataSvc.addGroupComponent(tokenHolder.getAuthToken(), groupName, targetBox.getText(), "1", new AsyncCallback<Void>()
                                     {
                                         @Override
                                         public void onFailure(Throwable caught)
                                         {
-                                            GWT.log("Failed to remove group component.");
+                                            GWT.log("Failure adding new group: " + caught.getMessage());
                                         }
 
                                         @Override
@@ -219,17 +306,57 @@ public class ProRataManagerPanel extends Composite
                                             fireGroupsChanged();
                                         }
                                     });
-                                }
-                            });
-
-                            ++row;
                         }
-                    }
-                    else
-                    {
-                        GWT.log("Got group back w/ no components?!");
-                    }
+                    });
 
+                    targetBox.addKeyUpHandler(new KeyUpHandler()
+                    {
+                        @Override
+                        public void onKeyUp(KeyUpEvent event)
+                        {
+                            addButton.setEnabled(!targetBox.getText().trim().isEmpty());
+                        }
+                    });
+                    addButton.setEnabled(!targetBox.getText().trim().isEmpty());
+
+
+                    groupInfoTable.setText(row, 0, groupName);
+                    groupInfoTable.setWidget(row, 1, targetBox);
+                    groupInfoTable.setWidget(row, 2, addButton);
+                    ++row;
+
+                    for (final GroupComponent component: group.getComponents())
+                    {
+                        int col = 1;
+                        groupInfoTable.setText(row, col++, component.getName());
+                        groupInfoTable.setText(row, col++, component.getWeight());
+                        Anchor anchor = new Anchor(constants.deleteTextIcon());
+                        groupInfoTable.setWidget(row, col++, anchor);
+                        anchor.addClickHandler(new ClickHandler()
+                        {
+                            @Override
+                            public void onClick(ClickEvent event)
+                            {
+                                prorataSvc.removeGroupComponent(tokenHolder.getAuthToken(), component.getGroupName(), component.getName(), new AsyncCallback<Void>()
+                                {
+                                    @Override
+                                    public void onFailure(Throwable caught)
+                                    {
+                                        GWT.log("Failed to remove group component.");
+                                    }
+
+                                    @Override
+                                    public void onSuccess(Void result)
+                                    {
+                                        refresh();
+                                        fireGroupsChanged();
+                                    }
+                                });
+                            }
+                        });
+
+                        ++row;
+                    }
                 }
 
                 groupInfoTable.setWidget(row, 0, groupBox);
@@ -240,6 +367,20 @@ public class ProRataManagerPanel extends Composite
 
             }
         });
+    }
+
+    protected void updateBulkTextArea(List<Group> result)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (Group group: result)
+        {
+            for (GroupComponent comp: group.getComponents())
+            {
+                sb.append(group.getName()).append("|").append(comp.getName()).append('\n');
+            }
+        }
+
+        rulesTextArea.setText(sb.toString());
     }
 
 }

@@ -1,7 +1,7 @@
-package com.enokinomi.timeslice.web.gwt.client.task.ui_tree;
+package com.enokinomi.timeslice.web.gwt.client.core;
 
 
-public class Pair<T1,T2>
+public class Pair<T1, T2>
 {
     public T1 first;
     public T2 second;
@@ -12,7 +12,7 @@ public class Pair<T1,T2>
         this.second = second;
     }
 
-    public static <X,Y> Pair<X,Y> create(X x, Y y)
+    public static <X, Y> Pair<X,Y> create(X x, Y y)
     {
         return new Pair<X,Y>(x, y);
     }

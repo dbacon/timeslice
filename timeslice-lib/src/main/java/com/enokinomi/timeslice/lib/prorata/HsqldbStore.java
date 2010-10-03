@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import com.enokinomi.timeslice.lib.commondatautil.SchemaManager;
 import com.enokinomi.timeslice.lib.util.ITransformThrowable;
+import com.enokinomi.timeslice.lib.util.Pair;
 import com.google.inject.Inject;
 
 public class HsqldbStore implements IProRataStore
@@ -213,15 +214,15 @@ public class HsqldbStore implements IProRataStore
     }
 
     @Override
-    public List<List<GroupComponent>> listAllGroupsInfo()
+    public List<Pair<String, List<GroupComponent>>> listAllGroupsInfo()
     {
         if (versionIsAtLeast(2))
         {
-            List<List<GroupComponent>> result = new ArrayList<List<GroupComponent>>();
+            List<Pair<String, List<GroupComponent>>> result = new ArrayList<Pair<String, List<GroupComponent>>>();
             List<String> groupNames = listGroupNames();
             for (String groupName: groupNames)
             {
-                result.add(dereferenceGroup(groupName));
+                result.add(Pair.create(groupName, dereferenceGroup(groupName)));
             }
             return result;
         }

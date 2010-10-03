@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.enokinomi.timeslice.lib.prorata.IProRataStore;
 import com.enokinomi.timeslice.lib.util.ITransform;
+import com.enokinomi.timeslice.web.gwt.client.prorata.core.Group;
 import com.enokinomi.timeslice.web.gwt.client.prorata.core.GroupComponent;
 import com.enokinomi.timeslice.web.gwt.client.prorata.core.IProRataSvc;
 import com.enokinomi.timeslice.web.gwt.server.session.SessionTracker;
@@ -64,15 +65,15 @@ public class ProRataSvc implements IProRataSvc
     }
 
     @Override
-    public List<List<GroupComponent>> listAllGroupInfo(String authToken)
+    public List<Group> listAllGroupInfo(String authToken)
     {
         sessionTracker.checkToken(authToken);
 
-        List<List<GroupComponent>> result = new ArrayList<List<GroupComponent>>();
+        List<Group> result = new ArrayList<Group>();
         ToComponent tx = new ToComponent();
-        for (List<com.enokinomi.timeslice.lib.prorata.GroupComponent> groupComponents: store.listAllGroupsInfo())
+        for (com.enokinomi.timeslice.lib.util.Pair<String, List<com.enokinomi.timeslice.lib.prorata.GroupComponent>> group: store.listAllGroupsInfo())
         {
-            result.add(tr(groupComponents, new ArrayList<GroupComponent>(groupComponents.size()), tx));
+            result.add(new Group(group.first, tr(group.second, new ArrayList<GroupComponent>(group.second.size()), tx)));
         }
 
         return result;

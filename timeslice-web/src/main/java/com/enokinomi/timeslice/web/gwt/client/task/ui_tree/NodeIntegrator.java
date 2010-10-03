@@ -2,6 +2,7 @@ package com.enokinomi.timeslice.web.gwt.client.task.ui_tree;
 
 import java.util.List;
 
+import com.enokinomi.timeslice.web.gwt.client.core.Pair;
 import com.enokinomi.timeslice.web.gwt.client.util.Tx;
 
 

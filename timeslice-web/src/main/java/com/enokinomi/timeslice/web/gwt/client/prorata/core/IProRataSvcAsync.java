@@ -14,6 +14,6 @@ public interface IProRataSvcAsync
 
     void listGroups(String authToken, AsyncCallback<List<String>> callback);
 
-    void listAllGroupInfo(String authToken, AsyncCallback<List<List<GroupComponent>>> callback);
+    void listAllGroupInfo(String authToken, AsyncCallback<List<Group>> callback);
 
 }

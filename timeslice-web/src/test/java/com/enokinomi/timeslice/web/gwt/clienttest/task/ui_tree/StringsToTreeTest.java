@@ -7,10 +7,10 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.enokinomi.timeslice.web.gwt.client.core.Pair;
 import com.enokinomi.timeslice.web.gwt.client.task.ui_tree.ItemsToTree;
 import com.enokinomi.timeslice.web.gwt.client.task.ui_tree.NodeIntegrator;
 import com.enokinomi.timeslice.web.gwt.client.task.ui_tree.NodeTraverser;
-import com.enokinomi.timeslice.web.gwt.client.task.ui_tree.Pair;
 import com.enokinomi.timeslice.web.gwt.client.task.ui_tree.PathRenderer;
 import com.enokinomi.timeslice.web.gwt.client.util.Split;
 import com.enokinomi.timeslice.web.gwt.client.util.TransformUtils;
