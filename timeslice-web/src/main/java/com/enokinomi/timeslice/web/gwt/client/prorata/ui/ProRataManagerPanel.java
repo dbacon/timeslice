@@ -100,6 +100,7 @@ public class ProRataManagerPanel extends Composite
                     {
                         groupBox.setText("");
                         targetBox.setText("");
+                        weightBox.setText("1");
 
                         fireGroupsChanged();
                     }
@@ -125,6 +126,7 @@ public class ProRataManagerPanel extends Composite
             }
         });
 
+        weightBox.setText("1");
         weightBox.setWidth("2em");
 
         b.setEnabled(!targetBox.getText().trim().isEmpty() && !groupBox.getText().trim().isEmpty());
@@ -289,6 +291,7 @@ public class ProRataManagerPanel extends Composite
 
                     final TextBox targetBox = new TextBox();
                     final TextBox weightBox = new TextBox();
+                    weightBox.setText("1");
                     weightBox.setWidth("2em");
 
                     final Button addButton = new Button(constants.add(), new ClickHandler()
