@@ -5,12 +5,12 @@ import com.enokinomi.timeslice.web.gwt.client.prorata.core.GroupComponent;
 
 public class Leaf extends Tree
 {
-    private final String name;
     private final Double value;
 
-    public Leaf(String name, Double value)
+    public Leaf(String name, Double weight, Double value)
     {
-        this.name = name;
+        super(name, weight);
+
         this.value = value;
     }
 
@@ -19,11 +19,6 @@ public class Leaf extends Tree
     {
         return true;
     };
-
-    public String getName()
-    {
-        return name;
-    }
 
     public Double getValue()
     {
@@ -48,22 +43,31 @@ public class Leaf extends Tree
     {
         Tree result = this;
 
-        if (getValue() > precision)
+        if (Math.abs(getValue()) > precision)
         {
-            GroupComponent[] components = ruleSource.expand(name);
+            GroupComponent[] components = ruleSource.expand(getName());
 
             if (null != components && components.length > 0)
             {
-                int max = components.length;
-                double value = getValue() / max;
-
                 Tree[] children = new Tree[components.length];
+
+                Double totalWeight = 0.;
                 for (int i = 0; i < children.length; ++i)
                 {
-                    children[i] = new Leaf(components[i].getName(), value).expand(ruleSource, precision);
+                    totalWeight += components[i].getWeight();
                 }
 
-                result = new Branch(getName(), children);
+                for (int i = 0; i < children.length; ++i)
+                {
+                    double scale = components[i].getWeight() / totalWeight;
+                    children[i] = new Leaf(
+                            components[i].getName(),
+                            components[i].getWeight(),
+                            getValue() * scale)
+                        .expand(ruleSource, precision);
+                }
+
+                result = new Branch(getName(), getWeight(), children);
             }
         }
 

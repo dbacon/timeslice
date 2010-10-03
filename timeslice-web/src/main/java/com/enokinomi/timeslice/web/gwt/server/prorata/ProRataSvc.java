@@ -21,7 +21,7 @@ public class ProRataSvc implements IProRataSvc
         @Override
         public GroupComponent apply(com.enokinomi.timeslice.lib.prorata.GroupComponent r)
         {
-            return new GroupComponent(r.getGroupName(), r.getName(), r.getWeight().toString());
+            return new GroupComponent(r.getGroupName(), r.getName(), r.getWeight().doubleValue());
         }
     }
 
@@ -36,7 +36,7 @@ public class ProRataSvc implements IProRataSvc
     }
 
     @Override
-    public void addGroupComponent(String authToken, String groupName, String componentName, String weight)
+    public void addGroupComponent(String authToken, String groupName, String componentName, Double weight)
     {
         sessionTracker.checkToken(authToken);
         store.addComponent(groupName, componentName, new BigDecimal(weight));

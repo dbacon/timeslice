@@ -35,6 +35,7 @@ public class ProRataManagerPanel extends Composite
     private final FlexTable groupInfoTable = new FlexTable();
     private final TextBox groupBox = new TextBox();
     private final TextBox targetBox = new TextBox();
+    private final TextBox weightBox = new TextBox();
     private final Button b = new Button(constants.addNew());
 
     private final TextArea rulesTextArea = new TextArea();
@@ -86,7 +87,7 @@ public class ProRataManagerPanel extends Composite
             @Override
             public void onClick(ClickEvent event)
             {
-                prorataSvc.addGroupComponent(tokenHolder.getAuthToken(), groupBox.getText(), targetBox.getText(), "1", new AsyncCallback<Void>()
+                prorataSvc.addGroupComponent(tokenHolder.getAuthToken(), groupBox.getText(), targetBox.getText(), Double.valueOf(weightBox.getText()), new AsyncCallback<Void>()
                 {
                     @Override
                     public void onFailure(Throwable caught)
@@ -123,6 +124,8 @@ public class ProRataManagerPanel extends Composite
                 b.setEnabled(!targetBox.getText().trim().isEmpty() && !groupBox.getText().trim().isEmpty());
             }
         });
+
+        weightBox.setWidth("2em");
 
         b.setEnabled(!targetBox.getText().trim().isEmpty() && !groupBox.getText().trim().isEmpty());
 
@@ -189,7 +192,7 @@ public class ProRataManagerPanel extends Composite
                     // TODO: add bulk-load to service definition to avoid a bunch of calls
                     for (final Pair<String, String> rule: parsedRules)
                     {
-                        prorataSvc.addGroupComponent(tokenHolder.getAuthToken(), rule.first, rule.second, "1", new AsyncCallback<Void>()
+                        prorataSvc.addGroupComponent(tokenHolder.getAuthToken(), rule.first, rule.second, Double.valueOf(weightBox.getText()), new AsyncCallback<Void>()
                             {
                                 @Override
                                 public void onFailure(Throwable caught)
@@ -285,13 +288,15 @@ public class ProRataManagerPanel extends Composite
                     final String groupName = group.getName();
 
                     final TextBox targetBox = new TextBox();
+                    final TextBox weightBox = new TextBox();
+                    weightBox.setWidth("2em");
 
                     final Button addButton = new Button(constants.add(), new ClickHandler()
                     {
                         @Override
                         public void onClick(ClickEvent event)
                         {
-                            prorataSvc.addGroupComponent(tokenHolder.getAuthToken(), groupName, targetBox.getText(), "1", new AsyncCallback<Void>()
+                            prorataSvc.addGroupComponent(tokenHolder.getAuthToken(), groupName, targetBox.getText(), Double.valueOf(weightBox.getText()), new AsyncCallback<Void>()
                                     {
                                         @Override
                                         public void onFailure(Throwable caught)
@@ -322,14 +327,15 @@ public class ProRataManagerPanel extends Composite
 
                     groupInfoTable.setText(row, 0, groupName);
                     groupInfoTable.setWidget(row, 1, targetBox);
-                    groupInfoTable.setWidget(row, 2, addButton);
+                    groupInfoTable.setWidget(row, 2, weightBox);
+                    groupInfoTable.setWidget(row, 3, addButton);
                     ++row;
 
                     for (final GroupComponent component: group.getComponents())
                     {
                         int col = 1;
                         groupInfoTable.setText(row, col++, component.getName());
-                        groupInfoTable.setText(row, col++, component.getWeight());
+                        groupInfoTable.setText(row, col++, component.getWeight().toString());
                         Anchor anchor = new Anchor(constants.deleteTextIcon());
                         groupInfoTable.setWidget(row, col++, anchor);
                         anchor.addClickHandler(new ClickHandler()
@@ -361,7 +367,8 @@ public class ProRataManagerPanel extends Composite
 
                 groupInfoTable.setWidget(row, 0, groupBox);
                 groupInfoTable.setWidget(row, 1, targetBox);
-                groupInfoTable.setWidget(row, 2, b);
+                groupInfoTable.setWidget(row, 2, weightBox);
+                groupInfoTable.setWidget(row, 3, b);
 
                 ++row;
 

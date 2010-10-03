@@ -9,23 +9,26 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class SplitProjectDialogBox extends DialogBox
 {
     private final Label w2 = new Label("Send a piece to project ");
     private final TextBox w = new TextBox();
+    private final TextBox weightTextBox = new TextBox();
     private final Button okButton = new Button("Ok");
     private final Button cancelButton = new Button("Cancel");
-    private final HorizontalPanel hp1 = new HorizontalPanel();
     private final String projectName;
     private final SplitProjectDialogBox.Listener listener;
 
     public static interface Listener
     {
-        void added(String project, String splitTo);
+        void added(String project, String splitTo, Double weight);
     }
 
     SplitProjectDialogBox(String projectName, SplitProjectDialogBox.Listener listener)
@@ -37,12 +40,26 @@ public class SplitProjectDialogBox extends DialogBox
 
         setText("Split project '" + projectName + "'");
 
-        hp1.add(w2);
-        hp1.add(w);
+        weightTextBox.setWidth("3em");
+        weightTextBox.setValue("1");
+
+        HorizontalPanel hp1 = new HorizontalPanel();
         hp1.add(okButton);
         hp1.add(cancelButton);
 
-        add(hp1);
+        FlexTable tb = new FlexTable();
+
+        tb.setWidget(0, 0, w2);
+        tb.setWidget(0, 1, w);
+        tb.setWidget(1, 0, new Label(" of weight "));
+        tb.setWidget(1, 1, weightTextBox);
+
+        VerticalPanel vp = new VerticalPanel();
+        vp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+        vp.add(tb);
+        vp.add(hp1);
+
+        add(vp);
 
         okButton.addClickHandler(new ClickHandler()
         {
@@ -57,7 +74,8 @@ public class SplitProjectDialogBox extends DialogBox
                     {
                         SplitProjectDialogBox.this.listener.added(
                                 SplitProjectDialogBox.this.projectName,
-                                getSplitProjectName());
+                                getSplitProjectName(),
+                                getWeight());
                     }
                 }
             }
@@ -105,5 +123,10 @@ public class SplitProjectDialogBox extends DialogBox
     {
         if (isSplitProjectSelected()) return w.getText();
         return null;
+    }
+
+    public Double getWeight()
+    {
+        return Double.valueOf(weightTextBox.getValue());
     }
 }

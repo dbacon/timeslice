@@ -162,6 +162,10 @@ public class ProjectListPanel extends Composite
         ++col;
 
         table.getCellFormatter().setAlignment(0, col, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
+        table.setWidget(0, col, new HTML("Weight"));
+        ++col;
+
+        table.getCellFormatter().setAlignment(0, col, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
         table.setWidget(0, col, new HTML(constants.inherited()));
         ++col;
 
@@ -214,8 +218,8 @@ public class ProjectListPanel extends Composite
 
         for (AssignedTaskTotal item: itemsCache)
         {
-            Leaf leaf = (Leaf) Checks.mapNullTo(results.get(item.getBilledTo()), new Leaf(item.getBilledTo(), 0.));
-            Leaf newLeaf = new Leaf(leaf.getName(), leaf.getValue() + item.getHours());
+            Leaf leaf = (Leaf) Checks.mapNullTo(results.get(item.getBilledTo()), new Leaf(item.getBilledTo(), 1., 0.));
+            Leaf newLeaf = new Leaf(leaf.getName(), leaf.getWeight(), leaf.getValue() + item.getHours());
             results.put(newLeaf.getName(), newLeaf);
         }
 
@@ -424,10 +428,10 @@ public class ProjectListPanel extends Composite
                 new SplitProjectDialogBox(row.getName(), new SplitProjectDialogBox.Listener()
                 {
                     @Override
-                    public void added(String project, String splitTo)
+                    public void added(String project, String splitTo, Double weight)
                     {
                         // TODO: disallow non-devolving cycles (insid the svc would be best?)
-                        prorataSvc.addGroupComponent(tokenHolder.getAuthToken(), project, splitTo, "1", new AsyncCallback<Void>()
+                        prorataSvc.addGroupComponent(tokenHolder.getAuthToken(), project, splitTo, weight, new AsyncCallback<Void>()
                             {
                                 @Override
                                 public void onFailure(Throwable caught)
@@ -478,6 +482,10 @@ public class ProjectListPanel extends Composite
 
         table.setWidget(rowIndex, col, hp);
         table.getCellFormatter().setAlignment(rowIndex, col, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP);
+        col++;
+
+        table.getCellFormatter().setAlignment(rowIndex, col, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
+        table.setWidget(rowIndex, col, new Label(messages.direct(row.getWeight())));
         col++;
 
         table.getCellFormatter().setAlignment(rowIndex, col, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);

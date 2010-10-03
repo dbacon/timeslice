@@ -3,7 +3,25 @@ package com.enokinomi.timeslice.web.gwt.client.prorata.tree;
 
 public abstract class Tree
 {
-    public abstract String getName();
+    private final String name;
+    private final Double weight;
+
+    public Tree(String name, Double weight)
+    {
+        this.name = name;
+        this.weight = weight;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public Double getWeight()
+    {
+        return weight;
+    }
+
     public abstract Double getValue();
     public abstract Double getTotal();
     public abstract boolean isLeaf();

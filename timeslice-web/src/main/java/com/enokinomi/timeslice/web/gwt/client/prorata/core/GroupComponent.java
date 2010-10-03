@@ -8,14 +8,14 @@ public class GroupComponent implements Serializable
 
     private String groupName;
     private String name;
-    private String weight;
+    private Double weight;
 
     public GroupComponent()
     {
         this(null, null, null);
     }
 
-    public GroupComponent(String groupName, String name, String weight)
+    public GroupComponent(String groupName, String name, Double weight)
     {
         this.groupName = groupName;
         this.name = name;
@@ -27,7 +27,7 @@ public class GroupComponent implements Serializable
         return name;
     }
 
-    public String getWeight()
+    public Double getWeight()
     {
         return weight;
     }
@@ -37,7 +37,7 @@ public class GroupComponent implements Serializable
         this.name = name;
     }
 
-    public void setWeight(String weight)
+    public void setWeight(Double weight)
     {
         this.weight = weight;
     }

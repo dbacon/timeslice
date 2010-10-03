@@ -4,12 +4,11 @@ package com.enokinomi.timeslice.web.gwt.client.prorata.tree;
 
 public class Branch extends Tree
 {
-    private final String name;
     private final Tree[] children;
 
-    public Branch(String name, Tree[] children)
+    public Branch(String name, Double weight, Tree[] children)
     {
-        this.name = name;
+        super(name, weight);
         this.children = new Tree[children.length];
         for (int i = 0; i < this.children.length; ++i) this.children[i] = children[i];
     }
@@ -21,12 +20,6 @@ public class Branch extends Tree
         if (0 == children.length) return true;
         return false;
     };
-
-    @Override
-    public String getName()
-    {
-        return name;
-    }
 
     @Override
     public Double getValue()

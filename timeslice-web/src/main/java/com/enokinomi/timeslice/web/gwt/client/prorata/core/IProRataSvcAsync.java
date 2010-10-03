@@ -6,7 +6,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface IProRataSvcAsync
 {
-    void addGroupComponent(String authToken, String groupName, String componentName, String weight, AsyncCallback<Void> callback);
+    void addGroupComponent(String authToken, String groupName, String componentName, Double weight, AsyncCallback<Void> callback);
 
     void removeGroupComponent(String authToken, String groupName, String componentName, AsyncCallback<Void> callback);
 
