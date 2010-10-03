@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.enokinomi.timeslice.web.gwt.client.controller.IAuthTokenHolder;
-import com.enokinomi.timeslice.web.gwt.client.core.Pair;
 import com.enokinomi.timeslice.web.gwt.client.prorata.core.Group;
 import com.enokinomi.timeslice.web.gwt.client.prorata.core.GroupComponent;
 import com.enokinomi.timeslice.web.gwt.client.prorata.core.IProRataSvc;
@@ -141,27 +140,27 @@ public class ProRataManagerPanel extends Composite
                 // TODO: keep list of groups, so we can remove them all
                 // TODO: add remove-all in svc defn
 
-                List<Pair<String,String>> parsedRules = parseRules();
+                List<ParsedRule> parsedRules = parseRules();
                 GWT.log("Parsed " + parsedRules.size() + " rule(s).");
 
                 if (0 < parsedRules.size())
                 {
                     // TODO: add bulk-load to service definition to avoid a bunch of calls
-                    for (final Pair<String, String> rule: parsedRules)
+                    for (final ParsedRule rule: parsedRules)
                     {
-                        prorataSvc.removeGroupComponent(tokenHolder.getAuthToken(), rule.first, rule.second, new AsyncCallback<Void>()
+                        prorataSvc.removeGroupComponent(tokenHolder.getAuthToken(), rule.parent, rule.child, new AsyncCallback<Void>()
                             {
                                 @Override
                                 public void onFailure(Throwable caught)
                                 {
-                                    GWT.log("Failed removing rule (s" + rule.first + " -> " + rule.second + "): " + caught.getMessage());
+                                    GWT.log("Failed removing rule (s" + rule.parent + " -> " + rule.child + "): " + caught.getMessage());
                                 }
 
                                 @Override
                                 public void onSuccess(Void result)
                                 {
                                     // dont refresh, we're in bulk.
-                                    GWT.log("Removed rule: " + rule.first + " -> " + rule.second);
+                                    GWT.log("Removed rule: " + rule.parent + " -> " + rule.parent);
                                 }
                             });
                     }
@@ -187,26 +186,26 @@ public class ProRataManagerPanel extends Composite
             @Override
             public void onClick(ClickEvent event)
             {
-                List<Pair<String,String>> parsedRules = parseRules();
+                List<ParsedRule> parsedRules = parseRules();
 
                 if (0 < parsedRules.size())
                 {
                     // TODO: add bulk-load to service definition to avoid a bunch of calls
-                    for (final Pair<String, String> rule: parsedRules)
+                    for (final ParsedRule rule: parsedRules)
                     {
-                        prorataSvc.addGroupComponent(tokenHolder.getAuthToken(), rule.first, rule.second, Double.valueOf(weightBox.getText()), new AsyncCallback<Void>()
+                        prorataSvc.addGroupComponent(tokenHolder.getAuthToken(), rule.parent, rule.child, rule.weight, new AsyncCallback<Void>()
                             {
                                 @Override
                                 public void onFailure(Throwable caught)
                                 {
-                                    GWT.log("Failed adding rule (s" + rule.first + " -> " + rule.second + "): " + caught.getMessage());
+                                    GWT.log("Failed adding rule (s" + rule.parent + " -> " + rule.child + "): " + caught.getMessage());
                                 }
 
                                 @Override
                                 public void onSuccess(Void result)
                                 {
                                     // dont refresh, we're in bulk.
-                                    GWT.log("Added rule: " + rule.first + " -> " + rule.second);
+                                    GWT.log("Added rule: " + rule.parent + " -> " + rule.child);
                                 }
                             });
                     }
@@ -251,16 +250,30 @@ public class ProRataManagerPanel extends Composite
         initWidget(prorataManagePanel);
     }
 
-    private List<Pair<String, String>> parseRules()
+    private static class ParsedRule
     {
-        List<Pair<String,String>> parsedRules = new ArrayList<Pair<String, String>>();
+        public String parent;
+        public String child;
+        public Double weight;
+
+        public ParsedRule(String parent, String child, Double weight)
+        {
+            this.parent = parent;
+            this.child = child;
+            this.weight = weight;
+        }
+    }
+
+    private List<ParsedRule> parseRules()
+    {
+        List<ParsedRule> parsedRules = new ArrayList<ParsedRule>();
         String[] ruleLines = rulesTextArea.getText().split("\n");
         for (String ruleLine: ruleLines)
         {
             String[] parentChild = ruleLine.split("\\|");
-            if (2 == parentChild.length)
+            if (3 == parentChild.length)
             {
-                parsedRules.add(Pair.create(parentChild[0], parentChild[1]));
+                parsedRules.add(new ParsedRule(parentChild[0], parentChild[1], Double.valueOf(parentChild[2])));
             }
         }
         return parsedRules;
@@ -386,7 +399,10 @@ public class ProRataManagerPanel extends Composite
         {
             for (GroupComponent comp: group.getComponents())
             {
-                sb.append(group.getName()).append("|").append(comp.getName()).append('\n');
+                sb.append(group.getName())
+                    .append("|").append(comp.getName())
+                    .append("|").append(comp.getWeight())
+                    .append('\n');
             }
         }
 
