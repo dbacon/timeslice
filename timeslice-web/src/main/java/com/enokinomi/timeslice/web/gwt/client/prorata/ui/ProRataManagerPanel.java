@@ -132,7 +132,7 @@ public class ProRataManagerPanel extends Composite
         b.setEnabled(!targetBox.getText().trim().isEmpty() && !groupBox.getText().trim().isEmpty());
 
 
-        Button rulesRemoveAllButton = new Button("Remove");
+        Button rulesRemoveAllButton = new Button(constants.remove());
         rulesRemoveAllButton.addClickHandler(new ClickHandler()
         {
             @Override
@@ -181,7 +181,7 @@ public class ProRataManagerPanel extends Composite
 
         // TODO: set remove/load button sensitivities and a label depending on if rules are parsed.
 
-        Button rulesLoadButton = new Button("Load");
+        Button rulesLoadButton = new Button(constants.load());
         rulesLoadButton.addClickHandler(new ClickHandler()
         {
             @Override
@@ -235,7 +235,7 @@ public class ProRataManagerPanel extends Composite
         dp.add(rulesTextArea);
         dp.add(cp);
 
-        DisclosurePanel loadSaveDiscl = new DisclosurePanel("Bulk/Raw Rule Editing");
+        DisclosurePanel loadSaveDiscl = new DisclosurePanel(constants.fullRulesDescription());
         loadSaveDiscl.add(dp);
 
         VerticalPanel loadSavePanel = new VerticalPanel();

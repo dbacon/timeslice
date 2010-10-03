@@ -8,17 +8,17 @@ public interface ProjectListPanelConstants extends Constants
     @DefaultStringValue("Project")
     String project();
 
+    @DefaultStringValue("Total")
+    String total();
+
+    @DefaultStringValue("Scaled")
+    String scaled();
+
     @DefaultStringValue("Direct")
     String direct();
 
     @DefaultStringValue("Inherit")
     String inherited();
-
-    @DefaultStringValue("G.Total")
-    String grandTotal();
-
-    @DefaultStringValue("G.Total (Scaled)")
-    String grandTotalScaled();
 
     @DefaultStringValue("Scale Totals")
     String scaleTotals();
@@ -28,5 +28,14 @@ public interface ProjectListPanelConstants extends Constants
 
     @DefaultStringValue("Pro-rata Maintenance")
     String proRataMaintenance();
+
+    @DefaultStringValue("Project-breakdown")
+    String projectBreakdown();
+
+    @DefaultStringValue("All Rules")
+    String allRules();
+
+    @DefaultStringValue("Weight")
+    String weight();
 
 }

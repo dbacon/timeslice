@@ -1,5 +1,6 @@
 package com.enokinomi.timeslice.web.gwt.client.prorata.ui;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -18,11 +19,14 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class SplitProjectDialogBox extends DialogBox
 {
-    private final Label w2 = new Label("Send a piece to project ");
+    private final SplitProjectDialogBoxConstants constants = GWT.create(SplitProjectDialogBoxConstants.class);
+    private final SplitProjectDialogBoxMessages messages = GWT.create(SplitProjectDialogBoxMessages.class);
+
+    private final Label w2 = new Label(constants.targetProject());
     private final TextBox w = new TextBox();
     private final TextBox weightTextBox = new TextBox();
-    private final Button okButton = new Button("Ok");
-    private final Button cancelButton = new Button("Cancel");
+    private final Button okButton = new Button(constants.ok());
+    private final Button cancelButton = new Button(constants.cancel());
     private final String projectName;
     private final SplitProjectDialogBox.Listener listener;
 
@@ -38,7 +42,7 @@ public class SplitProjectDialogBox extends DialogBox
         this.projectName = projectName;
         this.listener = listener;
 
-        setText("Split project '" + projectName + "'");
+        setText(messages.splitProjectTitle(projectName));
 
         weightTextBox.setWidth("3em");
         weightTextBox.setValue("1");
@@ -51,7 +55,7 @@ public class SplitProjectDialogBox extends DialogBox
 
         tb.setWidget(0, 0, w2);
         tb.setWidget(0, 1, w);
-        tb.setWidget(1, 0, new Label(" of weight "));
+        tb.setWidget(1, 0, new Label(constants.weight()));
         tb.setWidget(1, 1, weightTextBox);
 
         VerticalPanel vp = new VerticalPanel();

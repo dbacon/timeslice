@@ -14,4 +14,13 @@ public interface ProRataManagerPanelConstants extends Constants
     @DefaultStringValue("Remove")
     String deleteTextIcon();
 
+    @DefaultStringValue("Remove")
+    String remove();
+
+    @DefaultStringValue("Load")
+    String load();
+
+    @DefaultStringValue("Full Rules Description")
+    String fullRulesDescription();
+
 }

@@ -124,8 +124,8 @@ public class ProjectListPanel extends Composite
 
 
         TabLayoutPanel visualizerTabs = new TabLayoutPanel(2, Unit.EM);
-        visualizerTabs.add(new ScrollPanel(table), "Project-breakdown");
-        visualizerTabs.add(new ScrollPanel(proRataManagePanel), "All Rules");
+        visualizerTabs.add(new ScrollPanel(table), constants.projectBreakdown());
+        visualizerTabs.add(new ScrollPanel(proRataManagePanel), constants.allRules());
 
         DockLayoutPanel dp = new DockLayoutPanel(Unit.EM);
         dp.addNorth(hp1, 4);
@@ -162,7 +162,7 @@ public class ProjectListPanel extends Composite
         ++col;
 
         table.getCellFormatter().setAlignment(0, col, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
-        table.setWidget(0, col, new HTML("Weight"));
+        table.setWidget(0, col, new HTML(constants.weight()));
         ++col;
 
         table.getCellFormatter().setAlignment(0, col, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
@@ -186,13 +186,13 @@ public class ProjectListPanel extends Composite
         ++col;
 
         projectTable.getCellFormatter().setAlignment(0, col, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
-        projectTable.setWidget(0, col, new HTML(constants.direct()));
+        projectTable.setWidget(0, col, new HTML(constants.total()));
         ++col;
 
         if (scaleCheckBox.getValue())
         {
             projectTable.getCellFormatter().setAlignment(0, col, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
-            projectTable.setWidget(0, col, new HTML(constants.grandTotalScaled()));
+            projectTable.setWidget(0, col, new HTML(constants.scaled()));
         }
 
         ++col;
