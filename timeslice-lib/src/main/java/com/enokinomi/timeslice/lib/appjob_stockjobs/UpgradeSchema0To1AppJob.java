@@ -10,7 +10,7 @@ import com.google.inject.name.Named;
 
 public class UpgradeSchema0To1AppJob implements AppJob
 {
-    private final String jobId = "upgrade-data-0-1";
+    private final String jobId = "Upgrade data schema at version 0 to 1";
     private final Connection conn;
     private final ISchemaDetector schemaDetector;
 

@@ -11,7 +11,7 @@ import com.google.inject.name.Named;
 
 public class ListTablesAppJob implements AppJob
 {
-    private final String jobId = "list-tables";
+    private final String jobId = "List tables";
     private final Connection conn;
 
     @Inject

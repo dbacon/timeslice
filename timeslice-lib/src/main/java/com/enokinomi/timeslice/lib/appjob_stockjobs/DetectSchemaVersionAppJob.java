@@ -9,7 +9,7 @@ import com.google.inject.name.Named;
 
 public class DetectSchemaVersionAppJob implements AppJob
 {
-    private final String jobId = "show-schema-version";
+    private final String jobId = "Show schema version";
     private final Connection conn;
     private final ISchemaDetector schemaDetector;
 
