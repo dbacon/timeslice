@@ -18,7 +18,7 @@ public class StockJobsModule extends AbstractModule
 //        appJobSetBinder.addBinding().to(SchemaOpAppJob.class);
 
 //        appJobSetBinder.addBinding().to(DowngradeSchema1To0AppJob.class);
-        appJobSetBinder.addBinding().to(Version3To2DowngradeSchemaAppJob.class);
+//        appJobSetBinder.addBinding().to(Version3To2DowngradeSchemaAppJob.class);
 
         appJobSetBinder.addBinding().to(ListTablesAppJob.class);
         appJobSetBinder.addBinding().to(DetectSchemaVersionAppJob.class);
