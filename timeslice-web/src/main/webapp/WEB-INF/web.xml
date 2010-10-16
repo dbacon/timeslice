@@ -13,7 +13,7 @@
 
   <servlet>
     <servlet-name>gwtguice</servlet-name>
-    <servlet-class>com.enokinomi.timeslice.web.gwt.server.guice.GuiceRpcService</servlet-class>
+    <servlet-class>com.enokinomi.timeslice.web.guice.GuiceRpcService</servlet-class>
   </servlet>
 
 

@@ -28,11 +28,10 @@ public class SchemaDuty
         try
         {
             InputStream schemaDdlStream = ClassLoader.getSystemResourceAsStream(schemaResourceName);
+
             if (null != schemaDdlStream)
             {
-                String schemaDdl = IOUtils.toString(schemaDdlStream);
-                conn.createStatement().executeUpdate(schemaDdl);
-                log.debug("created database");
+                createSchema(conn, IOUtils.toString(schemaDdlStream));
             }
             else
             {
@@ -42,6 +41,15 @@ public class SchemaDuty
         catch (IOException e)
         {
             throw new RuntimeException("Could not load schema resource: " + e.getMessage(), e);
+        }
+    }
+
+    public void createSchema(Connection conn, String schemaDdl)
+    {
+        try
+        {
+                conn.createStatement().executeUpdate(schemaDdl);
+                log.debug("created database");
         }
         catch (SQLException e)
         {

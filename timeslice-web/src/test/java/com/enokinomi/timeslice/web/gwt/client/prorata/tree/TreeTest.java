@@ -4,7 +4,13 @@ import java.util.Map.Entry;
 
 import org.junit.Test;
 
-import com.enokinomi.timeslice.web.gwt.client.prorata.core.GroupComponent;
+import com.enokinomi.timeslice.web.prorata.client.core.GroupComponent;
+import com.enokinomi.timeslice.web.prorata.client.tree.IRuleSource;
+import com.enokinomi.timeslice.web.prorata.client.tree.Leaf;
+import com.enokinomi.timeslice.web.prorata.client.tree.MapRuleSource;
+import com.enokinomi.timeslice.web.prorata.client.tree.TotalTotalingVisitor;
+import com.enokinomi.timeslice.web.prorata.client.tree.Tree;
+import com.enokinomi.timeslice.web.prorata.client.tree.TreePrinter;
 
 
 public class TreeTest

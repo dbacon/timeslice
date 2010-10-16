@@ -7,7 +7,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.enokinomi.timeslice.web.gwt.client.task.core.StartTag;
+import com.enokinomi.timeslice.web.task.client.core.StartTag;
+import com.enokinomi.timeslice.web.task.client.ui_compat.Ts107Reader;
 
 
 public class Ts107ReaderTest

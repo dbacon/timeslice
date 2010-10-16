@@ -13,6 +13,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.enokinomi.timeslice.lib.commondatautil.SchemaManager;
+import com.enokinomi.timeslice.lib.commondatautil.SetParam;
 import com.enokinomi.timeslice.lib.util.ITransformThrowable;
 import com.enokinomi.timeslice.lib.util.Pair;
 import com.google.inject.Inject;
@@ -81,22 +82,12 @@ public class HsqldbStore implements IProRataStore
         }
     }
 
-    public static final class SetParam
+    protected <T> List<T> doSomeSql(String sql, Object[] params, ITransformThrowable<ResultSet, T, SQLException> rowConverter)
     {
-        private final Object[] values;
-
-        public SetParam(Object[] values)
-        {
-            this.values = values;
-        }
-
-        public Object[] getValues()
-        {
-            return values;
-        }
+        return doSomeSql(conn, sql, params, rowConverter);
     }
 
-    protected <T> List<T> doSomeSql(String sql, Object[] params, ITransformThrowable<ResultSet, T, SQLException> rowConverter)
+    protected static <T> List<T> doSomeSql(Connection conn, String sql, Object[] params, ITransformThrowable<ResultSet, T, SQLException> rowConverter)
     {
         PreparedStatement statement = null;
         ResultSet rs = null;
@@ -111,6 +102,7 @@ public class HsqldbStore implements IProRataStore
                 if (null == param)
                 {
                     statement.setNull(i, Types.NULL);
+                    ++i;
                 }
                 else if (param instanceof SetParam)
                 {
@@ -124,16 +116,14 @@ public class HsqldbStore implements IProRataStore
                         {
                             statement.setObject(i, setparam);
                         }
-
                         ++i;
                     }
                 }
                 else
                 {
                     statement.setObject(i, param);
+                    ++i;
                 }
-
-                ++i;
             }
 
             List<T> result = null;

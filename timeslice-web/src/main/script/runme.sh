@@ -36,4 +36,4 @@ JAVA=java
 set -e
 set -x
 
-"$JAVA" -cp "$cp" com.enokinomi.timeslice.launcher.Driver $PORTARG $WEBARG "$@"
+"$JAVA" -cp "$cp" com.enokinomi.timeslice.web.launcher.Driver $PORTARG $WEBARG "$@"

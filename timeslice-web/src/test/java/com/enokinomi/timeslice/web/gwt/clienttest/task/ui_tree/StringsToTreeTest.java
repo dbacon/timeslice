@@ -7,14 +7,14 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.enokinomi.timeslice.web.gwt.client.core.Pair;
-import com.enokinomi.timeslice.web.gwt.client.task.ui_tree.ItemsToTree;
-import com.enokinomi.timeslice.web.gwt.client.task.ui_tree.NodeIntegrator;
-import com.enokinomi.timeslice.web.gwt.client.task.ui_tree.NodeTraverser;
-import com.enokinomi.timeslice.web.gwt.client.task.ui_tree.PathRenderer;
-import com.enokinomi.timeslice.web.gwt.client.util.Split;
-import com.enokinomi.timeslice.web.gwt.client.util.TransformUtils;
-import com.enokinomi.timeslice.web.gwt.client.util.Tx;
+import com.enokinomi.timeslice.web.core.client.util.Pair;
+import com.enokinomi.timeslice.web.core.client.util.Split;
+import com.enokinomi.timeslice.web.core.client.util.TransformUtils;
+import com.enokinomi.timeslice.web.core.client.util.Tx;
+import com.enokinomi.timeslice.web.task.client.ui_tree.ItemsToTree;
+import com.enokinomi.timeslice.web.task.client.ui_tree.NodeIntegrator;
+import com.enokinomi.timeslice.web.task.client.ui_tree.NodeTraverser;
+import com.enokinomi.timeslice.web.task.client.ui_tree.PathRenderer;
 
 
 public class StringsToTreeTest

@@ -9,8 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class SchemaDetector
+public class SchemaDetector implements ISchemaDetector
 {
+    SchemaDetector()
+    {
+    }
+
+    @Override
     public Integer detectSchema(Connection conn)
     {
         boolean foundTagTable = false;

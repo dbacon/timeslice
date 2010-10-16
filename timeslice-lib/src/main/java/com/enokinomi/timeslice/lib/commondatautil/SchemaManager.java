@@ -6,11 +6,11 @@ import com.google.inject.Inject;
 
 public class SchemaManager
 {
-    private final SchemaDetector schemaDetector;
+    private final ISchemaDetector schemaDetector;
     private final SchemaDuty schemaDuty;
 
     @Inject
-    public SchemaManager(SchemaDetector schemaDetector, SchemaDuty schemaDuty)
+    public SchemaManager(ISchemaDetector schemaDetector, SchemaDuty schemaDuty)
     {
         this.schemaDetector = schemaDetector;
         this.schemaDuty = schemaDuty;
