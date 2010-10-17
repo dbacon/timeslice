@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import com.enokinomi.timeslice.lib.util.ITransformThrowable;
 import com.google.inject.Inject;
 
-public class BaseHsqldbStore
+public final class BaseHsqldbStore
 {
     private static final Logger log = Logger.getLogger(BaseHsqldbStore.class);
 
@@ -29,7 +29,7 @@ public class BaseHsqldbStore
         this.schemaManager = schemaManager;
     }
 
-    protected synchronized boolean versionIsAtLeast(int minversion)
+    public synchronized boolean versionIsAtLeast(int minversion)
     {
         if (null == version)
         {
@@ -41,6 +41,20 @@ public class BaseHsqldbStore
         return minversion <= version;
     }
 
+    public synchronized void require(int minversion)
+    {
+        if (!versionIsAtLeast(minversion))
+        {
+            String version2 = Integer.MIN_VALUE == version ? "(unrecognized)" : ("" + version);
+            throw new RuntimeException(String.format("Insufficient database version %s, need %s.", version2, minversion));
+        }
+    }
+
+    public <T> List<T> doSomeSql(String sql, Object[] params, ITransformThrowable<ResultSet, T, SQLException> rowConverter)
+    {
+        return doSomeSql(sql, params, rowConverter, null);
+    }
+
     /**
      *
      * @param <T>
@@ -49,9 +63,9 @@ public class BaseHsqldbStore
      * @param rowConverter - pass null if statement is update/insert, pass a Transform if it's a query w/ a result-set.
      * @return
      */
-    protected <T> List<T> doSomeSql(String sql, Object[] params, ITransformThrowable<ResultSet, T, SQLException> rowConverter)
+    public <T> List<T> doSomeSql(String sql, Object[] params, ITransformThrowable<ResultSet, T, SQLException> rowConverter, Integer expectedAffectedRowCount)
     {
-        return doSomeSql(conn, sql, params, rowConverter);
+        return doSomeSql(conn, sql, params, rowConverter, expectedAffectedRowCount);
     }
 
     /**
@@ -63,7 +77,7 @@ public class BaseHsqldbStore
      * @param rowConverter - pass null if statement is update/insert, pass a Transform if it's a query w/ a result-set.
      * @return
      */
-    protected static <T> List<T> doSomeSql(Connection conn, String sql, Object[] params, ITransformThrowable<ResultSet, T, SQLException> rowConverter)
+    public static <T> List<T> doSomeSql(Connection conn, String sql, Object[] params, ITransformThrowable<ResultSet, T, SQLException> rowConverter, Integer expectedAffectedRowCount)
     {
         PreparedStatement statement = null;
         ResultSet rs = null;
@@ -106,7 +120,15 @@ public class BaseHsqldbStore
 
             if (null == rowConverter)
             {
-                statement.executeUpdate();
+                int rows = statement.executeUpdate();
+
+                if (null != expectedAffectedRowCount)
+                {
+                    if (rows != expectedAffectedRowCount)
+                    {
+                        throw new RuntimeException("Expected " + expectedAffectedRowCount + " affected rows, but found " + rows);
+                    }
+                }
             }
             else
             {

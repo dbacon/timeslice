@@ -1,11 +1,8 @@
 package com.enokinomi.timeslice.lib.assign;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -13,12 +10,24 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import com.enokinomi.timeslice.lib.commondatautil.SchemaManager;
+import com.enokinomi.timeslice.lib.commondatautil.BaseHsqldbStore;
+import com.enokinomi.timeslice.lib.util.ITransformThrowable;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 public class HsqldbTagStore implements ITagStore
 {
+    private static final String SQL_GetBillees = "select distinct billee from ts_assign";
+
+    private static final String SQL_InsertNew = " insert into ts_assign (eff_from, eff_until, what, billee) " +
+                        " values (?, ?, ?, ?)";
+
+    private static final String SQL_EndDateOne = " UPDATE ts_assign " +
+                        "   SET eff_until = ? " +
+                        " WHERE 1=1" +
+                        "   AND what = ? " +
+                        "   AND eff_until = ? " +
+                        "";
+
     private static final Logger log = Logger.getLogger(HsqldbTagStore.class);
 
     private static final Timestamp END_OF_TIME = new Timestamp(new DateTime(9999, 12, 31, 0, 0, 0, 0, DateTimeZone.UTC).getMillis());
@@ -32,109 +41,61 @@ public class HsqldbTagStore implements ITagStore
                         "\n" + "   AND eff_from <= ? AND ? < eff_until " +
                         "\n" + "   AND what = ? ";
 
-
-    private final Connection conn;
-
-    private final SchemaManager schemaManager;
-
-    private Integer version;
+    private final BaseHsqldbStore baseStore;
 
     @Inject
-    HsqldbTagStore(@Named("tsConnection") Connection conn, SchemaManager schemaManager)
+    HsqldbTagStore(BaseHsqldbStore baseStore)
     {
-        this.conn = conn;
-        this.schemaManager = schemaManager;
-    }
-
-    private synchronized boolean versionIsAtLeast(int minversion)
-    {
-        if (null == version)
-        {
-            version = schemaManager.findVersion(conn);
-        }
-
-        if (log.isDebugEnabled()) log.debug("schema version-check: " + minversion + " <= " + version);
-
-        return minversion <= version;
-    }
-
-    private synchronized void require(int minversion)
-    {
-        if (!versionIsAtLeast(minversion))
-        {
-            String version2 = Integer.MIN_VALUE == version ? "(unrecognized)" : ("" + version);
-            throw new RuntimeException(String.format("Insufficient database version %s, need %s.", version2, minversion));
-        }
+        this.baseStore = baseStore;
     }
 
     @Override
     public String lookupBillee(String description, DateTime asOf, String valueOnMiss)
     {
-        if (versionIsAtLeast(1))
+        if (baseStore.versionIsAtLeast(1))
         {
-            PreparedStatement statement = null;
-            ResultSet rs = null;
+            Timestamp asOfTs = new Timestamp(asOf.getMillis());
 
-            try
-            {
-                statement = conn.prepareStatement(SQL_BilleeLookup);
-
-                Timestamp asOfTs = new Timestamp(asOf.getMillis());
-
-                statement.setTimestamp(1, asOfTs);
-                statement.setTimestamp(2, asOfTs);
-                statement.setString(3, description);
-
-                rs = statement.executeQuery();
-                if (!rs.next())
-                {
-                    return valueOnMiss;
-                }
-                else
-                {
-                    String result = rs.getString(1);
-
-                    if (rs.next())
+            List<String> results = baseStore.doSomeSql(
+                    SQL_BilleeLookup,
+                    new Object[]
                     {
-                        throw new RuntimeException("Found >1 row for description.");
-                    }
+                            asOfTs,
+                            asOfTs,
+                            description
+                    },
+                    new ITransformThrowable<ResultSet, String, SQLException>()
+                    {
+                        @Override
+                        public String apply(ResultSet r) throws SQLException
+                        {
+                            return r.getString(1);
+                        }
+                    });
 
-                    return result;
-                }
-            }
-            catch (SQLException e)
+            if (results.size() <= 0)
             {
-                throw new RuntimeException("looking up billee failed: " + e.getMessage(), e);
+                return valueOnMiss;
             }
-            finally
+            else if (1 < results.size())
             {
-                try
-                {
-                    if (null != statement) statement.close();
-                }
-                catch (SQLException e)
-                {
-                    throw new RuntimeException("closing statement failed: " + e.getMessage(), e);
-                }
-                try
-                {
-                    if (null != rs) rs.close();
-                }
-                catch (SQLException e)
-                {
-                    throw new RuntimeException("closing result-set failed: " + e.getMessage(), e);
-                }
+                log.warn("Found more than a single result for description '" + description + "', using 1st result. ");
+                return results.get(0);
+            }
+            else
+            {
+                return results.get(0);
             }
         }
         else
         {
-            return "";
+            return valueOnMiss;
         }
     }
 
     public void assignBillee(String description, String billee, DateTime date)
     {
-        if (versionIsAtLeast(1))
+        if (baseStore.versionIsAtLeast(1))
         {
             endDateAnyBillee(description, date);
             insertBillee(description, billee, date);
@@ -143,138 +104,59 @@ public class HsqldbTagStore implements ITagStore
 
     protected void endDateAnyBillee(String description, DateTime untilDate)
     {
-        require(1);
+        baseStore.require(1);
 
         // todo: should ensure that no effective records exist for after untilDate
 
-        PreparedStatement statement = null;
-
-        try
-        {
-            statement = conn.prepareStatement(
-                    " UPDATE ts_assign " +
-                    "   SET eff_until = ? " +
-                    " WHERE 1=1" +
-                    "   AND what = ? " +
-                    "   AND eff_until = ? " +
-                    "");
-
-            statement.setTimestamp(1, new Timestamp(untilDate.getMillis()));
-            statement.setString(2, description);
-            statement.setTimestamp(3, END_OF_TIME);
-            int rows = statement.executeUpdate();
-            statement.close();
-            if (rows < 0 || 1 < rows) throw new RuntimeException("assign: 'update' did not result in exactly 1 or 0 rows.");
-        }
-        catch (SQLException e)
-        {
-            throw new RuntimeException("Could not update: " + e.getMessage());
-        }
-        finally
-        {
-            if (null != statement)
-            {
-                try
+        baseStore.doSomeSql(
+                SQL_EndDateOne,
+                new Object[]
                 {
-                    statement.close();
-                }
-                catch (SQLException e)
-                {
-                    throw new RuntimeException("Closing statement failed: " + e.getMessage(), e);
-                }
-            }
-        }
+                        new Timestamp(untilDate.getMillis()),
+                        description,
+                        END_OF_TIME
+                },
+                null);
     }
 
     protected void insertBillee(String description, String billee, DateTime asOf)
     {
-        require(1);
+        baseStore.require(1);
 
-        PreparedStatement statement = null;
+        // TODO: really need check of not closing / clobbering existing range
+        // i.e. can now check that there is no effective record.
 
-        // todo really need check of not closing / clobbering existing range
-        // i.e. can now check that there is no effecive record.
+        Timestamp asOfTs = new Timestamp(asOf.getMillis());
 
-        try
-        {
-            statement = conn.prepareStatement(
-                    " insert into ts_assign (eff_from, eff_until, what, billee) " +
-                    " values (?, ?, ?, ?)");
-
-            Timestamp asOfTs = new Timestamp(asOf.getMillis());
-            statement.setTimestamp(1, asOfTs);
-            statement.setTimestamp(2, END_OF_TIME);
-            statement.setString(3, description);
-            statement.setString(4, billee);
-            int rows = statement.executeUpdate();
-            statement.close();
-            if (1 != rows) throw new RuntimeException("assign: 'insert' did not result in exactly 1 row.");
-        }
-        catch (SQLException e)
-        {
-            throw new RuntimeException("Could not insert: " + e.getMessage());
-        }
-        finally
-        {
-            if (null != statement)
-            {
-                try
+        baseStore.doSomeSql(
+                SQL_InsertNew,
+                new Object[]
                 {
-                    statement.close();
-                }
-                catch (SQLException e)
-                {
-                    throw new RuntimeException("Closing statement failed: " + e.getMessage(), e);
-                }
-            }
-        }
+                        asOfTs,
+                        END_OF_TIME,
+                        description,
+                        billee
+                },
+                null,
+                Integer.valueOf(1));
     }
 
     @Override
     public List<String> getAllBillees()
     {
-        if (versionIsAtLeast(1))
+        if (baseStore.versionIsAtLeast(1))
         {
-            List<String> result = new ArrayList<String>();
-
-            PreparedStatement statement = null;
-            ResultSet rs = null;
-
-            try
-            {
-                statement = conn.prepareStatement("select distinct billee from ts_assign");
-
-                rs = statement.executeQuery();
-                while (rs.next())
-                {
-                    result.add(rs.getString(1));
-                }
-
-                return result;
-            }
-            catch (SQLException e)
-            {
-                throw new RuntimeException("looking up billee failed: " + e.getMessage(), e);
-            }
-            finally
-            {
-                try
-                {
-                    if (null != statement) statement.close();
-                }
-                catch (SQLException e)
-                {
-                    throw new RuntimeException("closing statement failed: " + e.getMessage(), e);
-                }
-                try
-                {
-                    if (null != rs) rs.close();
-                }
-                catch (SQLException e)
-                {
-                    throw new RuntimeException("closing result-set failed: " + e.getMessage(), e);
-                }
-            }
+            return baseStore.doSomeSql(
+                    SQL_GetBillees,
+                    new Object[] {},
+                    new ITransformThrowable<ResultSet, String, SQLException>()
+                    {
+                        @Override
+                        public String apply(ResultSet r) throws SQLException
+                        {
+                            return r.getString(1);
+                        }
+                    });
         }
         else
         {

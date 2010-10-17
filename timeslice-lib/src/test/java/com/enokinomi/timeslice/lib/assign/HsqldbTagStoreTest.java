@@ -8,6 +8,7 @@ import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
+import com.enokinomi.timeslice.lib.commondatautil.BaseHsqldbStore;
 import com.enokinomi.timeslice.lib.commondatautil.SchemaDuty;
 
 
@@ -30,7 +31,7 @@ public class HsqldbTagStoreTest
         final int version = 1;
 
         ConnectionFactory connFactory = new ConnectionFactory();
-        HsqldbTagStore store = new HsqldbTagStore(connFactory.createConnection(dbDir + "/test-1"), new MockSchemaManager(version));
+        HsqldbTagStore store = new HsqldbTagStore(new BaseHsqldbStore(connFactory.createConnection(dbDir + "/test-1"), new MockSchemaManager(version)));
 
         SchemaDuty schemaDuty = new SchemaDuty("timeslice-1.ddl");
         schemaDuty.createSchema(connFactory.createConnection(dbDir + "/test-1"));
@@ -52,7 +53,7 @@ public class HsqldbTagStoreTest
 
         final int version = 1;
         ConnectionFactory connFactory = new ConnectionFactory();
-        HsqldbTagStore store = new HsqldbTagStore(connFactory.createConnection(dbDir + "/test-2"), new MockSchemaManager(version));
+        HsqldbTagStore store = new HsqldbTagStore(new BaseHsqldbStore(connFactory.createConnection(dbDir + "/test-1"), new MockSchemaManager(version)));
 
         SchemaDuty schemaDuty = new SchemaDuty("timeslice-1.ddl");
         schemaDuty.createSchema(connFactory.createConnection(dbDir + "/test-2"));

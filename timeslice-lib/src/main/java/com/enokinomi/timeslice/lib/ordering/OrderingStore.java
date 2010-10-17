@@ -1,17 +1,17 @@
 package com.enokinomi.timeslice.lib.ordering;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 import com.enokinomi.timeslice.lib.commondatautil.BaseHsqldbStore;
-import com.enokinomi.timeslice.lib.commondatautil.SchemaManager;
 import com.enokinomi.timeslice.lib.util.ITransformThrowable;
 import com.google.inject.Inject;
 
-public class OrderingStore extends BaseHsqldbStore implements IOrderingStore<String>
+public class OrderingStore implements IOrderingStore<String>
 {
+    private final BaseHsqldbStore baseStore;
+
     public static interface Table
     {
         public static final String TS_ORDERING = "TS_ORDERING";
@@ -25,17 +25,17 @@ public class OrderingStore extends BaseHsqldbStore implements IOrderingStore<Str
     }
 
     @Inject
-    public OrderingStore(Connection conn, SchemaManager schemaManager)
+    public OrderingStore(BaseHsqldbStore baseStore)
     {
-        super(conn, schemaManager);
+        this.baseStore = baseStore;
     }
 
     @Override
     public List<String> requestOrdering(String setName, List<String> unorderedSetValues)
     {
-        if (versionIsAtLeast(3))
+        if (baseStore.versionIsAtLeast(3))
         {
-            List<String> ordering = doSomeSql(
+            List<String> ordering = baseStore.doSomeSql(
                     "select " + Field.MEMBER +
                     " from " + Table.TS_ORDERING +
                     " where " + Field.NAME + " = ?" +
@@ -61,9 +61,9 @@ public class OrderingStore extends BaseHsqldbStore implements IOrderingStore<Str
     @Override
     public void setOrdering(String setName, List<String> orderedSetMembers)
     {
-        if (versionIsAtLeast(3))
+        if (baseStore.versionIsAtLeast(3))
         {
-            doSomeSql(
+            baseStore.doSomeSql(
                     "delete from " + Table.TS_ORDERING + " where " + Field.NAME + " = ?",
                     new Object[] { setName },
                     null);
@@ -71,7 +71,7 @@ public class OrderingStore extends BaseHsqldbStore implements IOrderingStore<Str
             for (int i = 0; i < orderedSetMembers.size(); ++i)
             {
                 String member = orderedSetMembers.get(i);
-                doSomeSql(
+                baseStore.doSomeSql(
                     "insert into " + Table.TS_ORDERING + " (" +
                             Field.NAME + "," +
                             Field.MEMBER + "," +

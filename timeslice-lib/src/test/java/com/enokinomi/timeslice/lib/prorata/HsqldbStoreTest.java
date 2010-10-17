@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import com.enokinomi.timeslice.lib.assign.ConnectionFactory;
 import com.enokinomi.timeslice.lib.assign.MockSchemaManager;
+import com.enokinomi.timeslice.lib.commondatautil.BaseHsqldbStore;
 import com.enokinomi.timeslice.lib.commondatautil.SchemaDuty;
 
 
@@ -48,7 +49,7 @@ public class HsqldbStoreTest
     @Test
     public void test_1() throws Exception
     {
-        HsqldbStore store = new HsqldbStore(conn, new MockSchemaManager(2));
+        HsqldbStore store = new HsqldbStore(new BaseHsqldbStore(conn, new MockSchemaManager(2)));
 
         List<String> groupNames = store.listGroupNames();
         assertNotNull(groupNames);
@@ -58,7 +59,7 @@ public class HsqldbStoreTest
     @Test
     public void test_2() throws Exception
     {
-        HsqldbStore store = new HsqldbStore(conn, new MockSchemaManager(2));
+        HsqldbStore store = new HsqldbStore(new BaseHsqldbStore(conn, new MockSchemaManager(2)));
 
         List<GroupComponent> groupComponents = store.dereferenceGroup("no-group");
 
@@ -69,7 +70,7 @@ public class HsqldbStoreTest
     @Test
     public void test_3() throws Exception
     {
-        HsqldbStore store = new HsqldbStore(conn, new MockSchemaManager(2));
+        HsqldbStore store = new HsqldbStore(new BaseHsqldbStore(conn, new MockSchemaManager(2)));
 
         store.addComponent("group1", "project1", BigDecimal.ONE);
 
@@ -85,7 +86,7 @@ public class HsqldbStoreTest
     @Test
     public void test_add_delete() throws Exception
     {
-        HsqldbStore store = new HsqldbStore(conn, new MockSchemaManager(2));
+        HsqldbStore store = new HsqldbStore(new BaseHsqldbStore(conn, new MockSchemaManager(2)));
 
         store.addComponent("group1", "project1", BigDecimal.ONE);
 
