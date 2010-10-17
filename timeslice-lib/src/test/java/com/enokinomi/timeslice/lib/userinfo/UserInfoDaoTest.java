@@ -30,7 +30,7 @@ public class UserInfoDaoTest
         ConnectionFactory connFactory = new ConnectionFactory();
         conn = connFactory.createConnection(dbDir + "/test-1");
 
-        SchemaDuty sd = new SchemaDuty("timeslice-3.ddl");
+        SchemaDuty sd = new SchemaDuty("timeslice-4.ddl");
         sd.createSchema(conn);
     }
 
@@ -52,7 +52,7 @@ public class UserInfoDaoTest
     @Test
     public void validSettings_unsupportedSchema()
     {
-        UserInfoDao dao = createStoreUnderTest(2);
+        UserInfoDao dao = createStoreUnderTest(3);
 
         TsSettings settings = dao.loadUserSettings("junit-1", "");
 
@@ -62,7 +62,7 @@ public class UserInfoDaoTest
     @Test
     public void validSettings_noSettingsForUser()
     {
-        UserInfoDao dao = createStoreUnderTest(3);
+        UserInfoDao dao = createStoreUnderTest(4);
 
         TsSettings settings = dao.loadUserSettings("junit-1-no-settings", "");
 
@@ -72,7 +72,7 @@ public class UserInfoDaoTest
     @Test
     public void settings_saveLoadRoundtrip_scalar()
     {
-        UserInfoDao dao = createStoreUnderTest(3);
+        UserInfoDao dao = createStoreUnderTest(4);
 
         TsSettings settings = new TsSettings();
         settings.addConfValue("setting1", "custom-set-type", "custom-set-value");
@@ -88,7 +88,7 @@ public class UserInfoDaoTest
     @Test
     public void settings_saveLoadRoundtrip_vector()
     {
-        UserInfoDao dao = createStoreUnderTest(3);
+        UserInfoDao dao = createStoreUnderTest(4);
 
         TsSettings settings = new TsSettings();
         settings.addConfValue("list1", "custom-set-type", "custom-set-value-1");

@@ -11,6 +11,8 @@ import com.google.inject.Inject;
 
 public class UserInfoDao implements IUserInfoDao
 {
+    private static final int RequiredVersion = 4;
+
     private final BaseHsqldbStore baseStore;
 
     @Inject
@@ -51,7 +53,7 @@ public class UserInfoDao implements IUserInfoDao
     @Override
     public TsSettings loadUserSettings(String username, String prefix)
     {
-        if (baseStore.versionIsAtLeast(3))
+        if (baseStore.versionIsAtLeast(RequiredVersion))
         {
             List<ConfEntry> confEntries = baseStore.doSomeSql(
                     "select name, type, value from ts_conf where username = ? and name like ?",
@@ -83,7 +85,7 @@ public class UserInfoDao implements IUserInfoDao
     @Override
     public void saveUserSettings(String username, TsSettings settings)
     {
-        if (baseStore.versionIsAtLeast(3))
+        if (baseStore.versionIsAtLeast(RequiredVersion))
         {
             for (String key: settings.getKeys())
             {
