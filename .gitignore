@@ -4,3 +4,4 @@ timeslice-mobile/gen
 target
 .project
 .settings
+/timeslice-web/src/test/input/data
