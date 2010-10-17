@@ -4,6 +4,7 @@
 
   <inherits name="com.google.gwt.user.User" />
   <inherits name="com.enokinomi.timeslice.web.core.Core" />
+  <inherits name="com.enokinomi.timeslice.web.appjob.AppJob" />
 
   <inherits name="com.google.gwt.user.theme.standard.Standard" />
 

@@ -64,6 +64,7 @@ import com.google.gwt.user.datepicker.client.DateBox;
 public class TimesliceApp implements EntryPoint
 {
     private final TimesliceAppConstants constants = GWT.create(TimesliceAppConstants.class);
+    private final UiOneGinjector injector = GWT.create(UiOneGinjector.class);
 
     public static final String IssuesUrl = "http://code.google.com/p/timeslice/issues/list";
 
@@ -100,7 +101,7 @@ public class TimesliceApp implements EntryPoint
     private final RadioButton modeRadioSpecify = new RadioButton("MODE", constants.specifyDate());
     private final RadioButton modeRadioNormal = new RadioButton("MODE", constants.current());
     private final ReportPanel reportPanel = new ReportPanel();
-    private final AppJobPanel appJobPanel = new AppJobPanel();
+    private final AppJobPanel appJobPanel = injector.getAppJobPanel();
     private final SessionSettingsControlPanel sscp = new SessionSettingsControlPanel();
 
     private void updateStartTag(StartTag editedStartTag)

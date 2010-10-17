@@ -233,7 +233,7 @@
 						<version>1.2</version>
 						<executions>
 							<execution>
-                                <phase>generate-resources</phase>
+                                <phase>compile</phase>
 								<goals><goal>compile</goal></goals>
 							</execution>
 						</executions>
