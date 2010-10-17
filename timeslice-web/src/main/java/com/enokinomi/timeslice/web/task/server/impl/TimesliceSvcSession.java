@@ -69,7 +69,7 @@ public class TimesliceSvcSession implements ITimesliceSvc
     {
         SessionData sd = sessionTracker.checkToken(authToken);
         TsSettings settings = sd.getSettings();
-        return timesliceSvc.refreshItems(sd.getUser(), maxSize, sortDir, startingInstant, endingInstant, settings.getTzOffset());
+        return timesliceSvc.refreshItems(sd.getUser(), maxSize, sortDir, startingInstant, endingInstant, settings.getTzOffsetMinutes());
     }
 
     @Override

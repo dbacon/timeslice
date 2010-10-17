@@ -26,8 +26,6 @@ shift "$(($OPTIND - 1))"
 
 [ -n "$RES" ] && cp="$RES:$cp"
 
-[ "$TIMESLICE_PORT" ] && PORTARG="--default-port $TIMESLICE_PORT"
-
 WEBARG="--default-web-root $webdir"
 
 JAVA=java
@@ -36,4 +34,4 @@ JAVA=java
 set -e
 set -x
 
-"$JAVA" -cp "$cp" com.enokinomi.timeslice.web.launcher.Driver $PORTARG $WEBARG "$@"
+"$JAVA" -cp "$cp" com.enokinomi.timeslice.web.launcher.Driver $WEBARG "$@"

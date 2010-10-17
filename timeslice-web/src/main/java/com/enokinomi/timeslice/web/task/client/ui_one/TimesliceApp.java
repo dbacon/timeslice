@@ -14,6 +14,7 @@ import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.core.client.util.AsyncResult;
 import com.enokinomi.timeslice.web.core.client.util.Checks;
 import com.enokinomi.timeslice.web.core.client.util.ITransform;
+import com.enokinomi.timeslice.web.session.client.ui.SessionSettingsControlPanel;
 import com.enokinomi.timeslice.web.task.client.controller.ErrorBox;
 import com.enokinomi.timeslice.web.task.client.controller.GwtRpcController;
 import com.enokinomi.timeslice.web.task.client.controller.IController;
@@ -25,11 +26,11 @@ import com.enokinomi.timeslice.web.task.client.core_todo_move_out.SortDir;
 import com.enokinomi.timeslice.web.task.client.ui.EmptyOptionsProvider;
 import com.enokinomi.timeslice.web.task.client.ui.HistoryPanel;
 import com.enokinomi.timeslice.web.task.client.ui.HotlistPanel;
+import com.enokinomi.timeslice.web.task.client.ui.HotlistPanel.IHotlistPanelListener;
 import com.enokinomi.timeslice.web.task.client.ui.IOptionsProvider;
 import com.enokinomi.timeslice.web.task.client.ui.OptionsPanel;
 import com.enokinomi.timeslice.web.task.client.ui.ParamPanel;
 import com.enokinomi.timeslice.web.task.client.ui.ReportPanel;
-import com.enokinomi.timeslice.web.task.client.ui.HotlistPanel.IHotlistPanelListener;
 import com.enokinomi.timeslice.web.task.client.ui_one.ImportBulkItemsDialog.BulkItemListener;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -100,7 +101,7 @@ public class TimesliceApp implements EntryPoint
     private final RadioButton modeRadioNormal = new RadioButton("MODE", constants.current());
     private final ReportPanel reportPanel = new ReportPanel();
     private final AppJobPanel appJobPanel = new AppJobPanel();
-
+    private final SessionSettingsControlPanel sscp = new SessionSettingsControlPanel();
 
     private void updateStartTag(StartTag editedStartTag)
     {
@@ -426,6 +427,8 @@ public class TimesliceApp implements EntryPoint
             }
         });
 
+        sscp.setAuthTokenHolder(controller);
+
         final TabLayoutPanel tp = new TabLayoutPanel(2, Unit.EM);
         //final DecoratedTabPanel tp = new DecoratedTabPanel();
         Anchor inputlink = new Anchor(constants.input(), true);
@@ -440,6 +443,7 @@ public class TimesliceApp implements EntryPoint
         Anchor jobsLink = new Anchor(constants.jobs(), true);
         jobsLink.setAccessKey('j');
         tp.add(appJobPanel, jobsLink);
+        tp.add(sscp, "Session");
 
         tp.selectTab(0);
 //        tp.setAnimationEnabled(true);

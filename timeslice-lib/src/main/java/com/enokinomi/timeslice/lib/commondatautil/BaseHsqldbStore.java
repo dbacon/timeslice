@@ -50,6 +50,17 @@ public final class BaseHsqldbStore
         }
     }
 
+    public <T> T doSomeSqlSingleResult(String sql, Object[] params, ITransformThrowable<ResultSet, T, SQLException> rowConverter)
+    {
+        List<T> results = doSomeSql(sql, params, rowConverter);
+
+        if (results.size() <= 0) return null;
+
+        if (results.size() == 1) return results.get(0);
+
+        throw new RuntimeException("Expected single result, but " + results.size() + " were returned");
+    }
+
     public <T> List<T> doSomeSql(String sql, Object[] params, ITransformThrowable<ResultSet, T, SQLException> rowConverter)
     {
         return doSomeSql(sql, params, rowConverter, null);

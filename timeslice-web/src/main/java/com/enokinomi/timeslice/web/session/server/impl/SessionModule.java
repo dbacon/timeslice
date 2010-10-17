@@ -1,6 +1,7 @@
 package com.enokinomi.timeslice.web.session.server.impl;
 
 import com.enokinomi.timeslice.lib.userinfo.UserInfoModule;
+import com.enokinomi.timeslice.web.session.client.core.ISessionSvc;
 import com.enokinomi.timeslice.web.session.server.core.ISessionTracker;
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
@@ -24,6 +25,7 @@ public class SessionModule extends AbstractModule
 
         bind(String.class).annotatedWith(Names.named("acl")).toInstance(aclFilename);
 
+        bind(ISessionSvc.class).to(SessionSvc.class);
     }
 
 }

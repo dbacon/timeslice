@@ -11,6 +11,11 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
 
+import com.enokinomi.timeslice.lib.userinfo.TsSettings;
+import com.enokinomi.timeslice.lib.userinfo.UserInfoDao;
+import com.enokinomi.timeslice.lib.util.Check;
+import com.google.inject.Inject;
+import com.google.inject.internal.Nullable;
 import com.google.inject.servlet.GuiceFilter;
 
 /**
@@ -21,24 +26,51 @@ import com.google.inject.servlet.GuiceFilter;
  */
 public class TsHost
 {
-    private static final Logger log = Logger.getLogger(TsHost.class);
+    private static final int DefaultPort = 9080;
 
-    private final int port;
+    private static final Logger log = Logger.getLogger(TsHost.class);
 
     private HandlerList handler;
 
     private final Server server = new Server();
 
+    private final UserInfoDao userInfoDao;
 
-    TsHost(int port)
+
+    @Inject
+    TsHost(@Nullable UserInfoDao userInfoDao)
     {
-        this.port = port;
-
-        initServer();
+        this.userInfoDao = userInfoDao;
     }
 
-    public void run()
+    public void run(Integer port, String res)
     {
+        if (null == port)
+        {
+            if (null != userInfoDao)
+            {
+                TsSettings systemSettings = userInfoDao.loadUserSettings("system", "system.server.");
+                port = systemSettings.getScalar("system.server.port", DefaultPort);
+                log.info("Queried port configuration: " + port);
+            }
+
+            port = Check.mapNullTo(port, 9080);
+        }
+        else
+        {
+            if (null != userInfoDao)
+            {
+                TsSettings newSettings = new TsSettings();
+                newSettings.setConfScalar("system.server.port", port);
+                userInfoDao.saveUserSettings("system", newSettings);
+                log.info("Stored port configuration.");
+            }
+        }
+
+        initServer(port);
+
+        createGuiceContext("/", res);
+
         try
         {
             server.start();
@@ -80,7 +112,7 @@ public class TsHost
         }
     }
 
-    private void initServer()
+    private void initServer(int port)
     {
         Connector connector = new SelectChannelConnector();
         connector.setPort(port);

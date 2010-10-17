@@ -105,7 +105,7 @@ public class GuiceRpcService extends RemoteServiceServlet
             }
 
             this.injector = Guice.createInjector(
-                    new CommonDataModule("timeslice-1.ddl", db),
+                    new CommonDataModule("timeslice-3.ddl", db),
                     new SessionModule(acl),
                     new AppJobServerModule(),
                     new ProRataServerModule(),

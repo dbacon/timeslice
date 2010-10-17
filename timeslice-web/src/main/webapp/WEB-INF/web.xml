@@ -8,7 +8,7 @@
     </context-param>
     <context-param>
         <param-name>timeslice.db</param-name>
-        <param-value>../../../src/test/input/db/test1db</param-value>
+        <param-value>../../../src/test/input/db/test2db</param-value>
     </context-param>
 
   <servlet>

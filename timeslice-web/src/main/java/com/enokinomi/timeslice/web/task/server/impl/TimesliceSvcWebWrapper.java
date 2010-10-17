@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.enokinomi.timeslice.lib.task.TimesliceSvc;
+import com.enokinomi.timeslice.lib.util.Transforms;
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
 import com.enokinomi.timeslice.web.task.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.task.client.core_todo_move_out.SortDir;
-import com.enokinomi.timeslice.web.util.Transform;
 import com.google.inject.Inject;
 
 /**
@@ -28,7 +28,7 @@ public class TimesliceSvcWebWrapper
 
     public List<StartTag> refreshItems(String user, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, int tzOffset)
     {
-        return Transform.tr(timesliceSvc.refreshItems(
+        return Transforms.tr(timesliceSvc.refreshItems(
                     user,
                     maxSize,
                     com.enokinomi.timeslice.lib.task.SortDir.valueOf(sortDir.name()),
@@ -40,7 +40,7 @@ public class TimesliceSvcWebWrapper
 
     public List<TaskTotal> refreshTotals(String user, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords, int tzOffset)
     {
-        return Transform.tr(
+        return Transforms.tr(
                 timesliceSvc.refreshTotals(
                         user,
                         maxSize,
@@ -74,7 +74,7 @@ public class TimesliceSvcWebWrapper
 
     public void addItems(final String user, List<StartTag> items)
     {
-        timesliceSvc.addItems(user, Transform.tr(items, new ArrayList<com.enokinomi.timeslice.lib.task.StartTag>(), new ClientToServer(user)));
+        timesliceSvc.addItems(user, Transforms.tr(items, new ArrayList<com.enokinomi.timeslice.lib.task.StartTag>(), new ClientToServer(user)));
     }
 
     public void update(String user, StartTag editedStartTag)

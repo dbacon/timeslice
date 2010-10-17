@@ -7,6 +7,7 @@
     <inherits name="com.enokinomi.timeslice.web.appjob.AppJob" />
     <inherits name="com.enokinomi.timeslice.web.prorata.ProRata" />
     <inherits name="com.enokinomi.timeslice.web.ordering.Ordering" />
+    <inherits name="com.enokinomi.timeslice.web.session.Session" />
 
     <inherits name="com.google.gwt.inject.Inject"/>
 

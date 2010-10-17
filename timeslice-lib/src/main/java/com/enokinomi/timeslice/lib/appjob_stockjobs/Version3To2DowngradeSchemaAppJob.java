@@ -16,6 +16,7 @@ public class Version3To2DowngradeSchemaAppJob extends BaseUpgradeSchemaAppJob
                 conn, schemaDetector, 3, 2,
                 null,
                 "drop table ts_version_3_done; " +
+                "drop table ts_conf; " +
                 "drop table ts_ordering; " +
                 "drop table ts_version_3;");
     }

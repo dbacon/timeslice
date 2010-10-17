@@ -61,7 +61,6 @@ public class Driver
         ArgumentAcceptingOptionSpec<String> dbSpec = parser.acceptsAll(Arrays.asList("d", "data"), "Base-path for database.").withRequiredArg().ofType(String.class);
         ArgumentAcceptingOptionSpec<String> aclSpec = parser.acceptsAll(Arrays.asList("a", "acl"), "ACL file.").withRequiredArg().ofType(String.class);
         ArgumentAcceptingOptionSpec<String> resSpec = parser.acceptsAll(Arrays.asList("w", "web-root"), "Base folder of web resources.").withRequiredArg().ofType(String.class);
-        ArgumentAcceptingOptionSpec<Integer> defPortSpec = parser.acceptsAll(Arrays.asList("P", "default-port"), "Port for web server.").withRequiredArg().ofType(Integer.class);
         ArgumentAcceptingOptionSpec<String> defResSpec = parser.acceptsAll(Arrays.asList("W", "default-web-root"), "Base folder of web resources.").withRequiredArg().ofType(String.class);
         ArgumentAcceptingOptionSpec<String> safeDirSpec = parser.acceptsAll(Arrays.asList("s", "safe-dir"), "Safe-dir to save server-side files.").withRequiredArg().ofType(String.class);
         OptionSpecBuilder debugSpec = parser.acceptsAll(Arrays.asList("D", "debug"), "Set log-level to DEBUG");
@@ -95,12 +94,12 @@ public class Driver
         String acl = mapNullTo(aclSpec.value(detectedOptions), userHome + "/.timeslice.acl");
         String db = mapNullTo(dbSpec.value(detectedOptions), userHome + "/.timeslice-data/hsql/default-01");
         final String res = mapNullTo(resSpec.value(detectedOptions), mapNullTo(defResSpec.value(detectedOptions), "webapp"));
-        final Integer port = mapNullTo(portSpec.value(detectedOptions), mapNullTo(defPortSpec.value(detectedOptions), 9080));
+        final Integer port = portSpec.value(detectedOptions);
         final String safeDir = mapNullTo(safeDirSpec.value(detectedOptions), ".");
 
         if (log.isInfoEnabled())
         {
-            log.info("config: port     : " + port);
+            log.info("config: port     : " + mapNullTo(port, "<not-unspecified>"));
             log.info("config: web-root : " + res);
             log.info("config: ACL      : " + acl);
             log.info("config: data     : " + db);
@@ -108,19 +107,19 @@ public class Driver
         }
 
         Guice.createInjector(
-                new CommonDataModule("timeslice-1.ddl", db),
+                new CommonDataModule("timeslice-3.ddl", db),
                     new SessionModule(acl),
                     new AppJobServerModule(),
                     new ProRataServerModule(),
                     new TaskServerModule(safeDir),
                     new AssignServerModule(),
                     new OrderingServerModule(),
-                new TsWebLaunchModule(port, res),
+                new TsWebLaunchModule(),
                 new GuiceRpcModule(),
                 figureOutBrandingModule()
             )
             .getInstance(TsHost.class)
-            .run();
+            .run(port, res);
     }
 
     private static Module figureOutBrandingModule()

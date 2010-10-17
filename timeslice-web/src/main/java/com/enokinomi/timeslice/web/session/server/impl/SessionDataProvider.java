@@ -25,7 +25,7 @@ public class SessionDataProvider
         DateTime expiresAt = loggedInAt.plusDays(1);
         String uuid = UUID.randomUUID().toString();
 
-        TsSettings settings = userInfoDao.loadUserSettings(username);
+        TsSettings settings = userInfoDao.loadUserSettings(username, "usersession.");
 
         return new SessionData(username, settings, loggedInAt, expiresAt, uuid);
     }

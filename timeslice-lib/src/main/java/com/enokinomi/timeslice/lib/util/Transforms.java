@@ -1,5 +1,7 @@
 package com.enokinomi.timeslice.lib.util;
 
+import java.util.Collection;
+
 public class Transforms
 {
     public static <C, M> ITransform<C, M> member(final Class<C> classClass, final Class<M> memberClass, final String memberName)
@@ -74,4 +76,16 @@ public class Transforms
             }
         };
     }
+
+    public static <R, CT extends Collection<D>, D> CT tr(Collection<R> xs, CT result, ITransform<R, D> f)
+    {
+        // no ordering, could be parallelized.
+        for (R x: xs)
+        {
+            result.add(f.apply(x));
+        }
+
+        return result;
+    }
+
 }

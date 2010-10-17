@@ -1,6 +1,6 @@
 package com.enokinomi.timeslice.web.prorata.server.impl;
 
-import static com.enokinomi.timeslice.web.util.Transform.tr;
+import static com.enokinomi.timeslice.lib.util.Transforms.tr;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
