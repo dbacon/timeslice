@@ -100,6 +100,9 @@ public class TabularResultsAssignedView extends ResizeComposite
         ++row;
 
 
+        Double totalHours = 0.;
+        Double totalPercentage = 0.;
+
         for (final AssignedTaskTotal reportRow: report)
         {
             resultsTable.getRowFormatter().addStyleName(row, (row % 2 == 0) ? "evenRow" : "oddRow");
@@ -111,9 +114,11 @@ public class TabularResultsAssignedView extends ResizeComposite
 
             resultsTable.getCellFormatter().setAlignment(row, col, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
             resultsTable.setText(row, col++, NumberFormat.getDecimalFormat().format(reportRow.getHours()));
+            totalHours += reportRow.getHours();
 
             resultsTable.getCellFormatter().setAlignment(row, col, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
             resultsTable.setText(row, col++, NumberFormat.getPercentFormat().format(reportRow.getPercentage()));
+            totalPercentage += reportRow.getPercentage();
 
             resultsTable.getCellFormatter().setAlignment(row, col, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP);
             resultsTable.setText(row, col++, reportRow.getWhat());
@@ -153,6 +158,17 @@ public class TabularResultsAssignedView extends ResizeComposite
 
             row++;
         }
+
+        // Totals row
+
+        resultsTable.getCellFormatter().setAlignment(row, 1, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
+        resultsTable.getCellFormatter().addStyleName(row, 1, "totalsRow");
+        resultsTable.setText(row, 1, NumberFormat.getDecimalFormat().format(totalHours));
+
+        resultsTable.getCellFormatter().setAlignment(row, 2, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
+        resultsTable.getCellFormatter().addStyleName(row, 2, "totalsRow");
+        resultsTable.setText(row, 2, NumberFormat.getPercentFormat().format(totalPercentage));
+
     }
 
     private void sendBilleeUpdate(AssignedTaskTotal reportRow, String newValue)

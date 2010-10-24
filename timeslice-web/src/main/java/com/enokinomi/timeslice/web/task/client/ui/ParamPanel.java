@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.enokinomi.timeslice.web.core.client.util.Checks;
-import com.enokinomi.timeslice.web.core.client.util.IReadableValue;
-import com.enokinomi.timeslice.web.core.client.util.IWritableValue;
-import com.enokinomi.timeslice.web.core.client.util.ValueUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -33,20 +29,12 @@ public class ParamPanel extends Composite
     // 2009-03-21T13:30:42.626 -- assume +9
     public static final DateTimeFormat MachineFormat = DateTimeFormat.getFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'+09:00'");
 
-    public static final DateTimeFormat HumanFormat = DateTimeFormat.getFormat("yyyy/MM/dd HH:mm:ss");
-
     private final ParamPanelConstants constants = GWT.create(ParamPanelConstants.class);
 
     private final DateBox dateBox = new DateBox();
-    private final TextBox startingTime = new TextBox();
-    private final Label startingTimeRendered = new Label("", false);
-    private final Label startingTimeError = new Label("", false);
-    private final TextBox endingTime = new TextBox();
-    private final Label endingTimeRendered = new Label("", false);
-    private final Label endingTimeError = new Label("", false);
-    private final Label allowWordsOn = new Label(constants.allowWordsContaining());
+    private final DateBox startingTime = new DateBox();
+    private final DateBox endingTime = new DateBox();
     private final TextBox allowWords = new TextBox();
-    private final Label ignoreWordsOn = new Label(constants.ignoreWordsContaining());
     private final TextBox ignoreWords = new TextBox();
 
     public static interface IParamChangedListener
@@ -77,44 +65,14 @@ public class ParamPanel extends Composite
         }
     }
 
-    public Label getStartingTimeError()
+    public String getStartingTimeRendered()
     {
-        return startingTimeError;
+        return MachineFormat.format(startingTime.getValue());
     }
 
-    public Label getEndingTimeError()
+    public String getEndingTimeRendered()
     {
-        return endingTimeError;
-    }
-
-    public Label getStartingTimeRendered()
-    {
-        return startingTimeRendered;
-    }
-
-    public Label getEndingTimeRendered()
-    {
-        return endingTimeRendered;
-    }
-
-    public String getSelectedStartingTime()
-    {
-        return getStartingTime().getText();
-    }
-
-    public String getSelectedEndingTime()
-    {
-        return getEndingTime().getText();
-    }
-
-    public TextBox getStartingTime()
-    {
-        return startingTime;
-    }
-
-    public TextBox getEndingTime()
-    {
-        return endingTime;
+        return MachineFormat.format(endingTime.getValue());
     }
 
     public TextBox getIgnoreWords()
@@ -127,52 +85,21 @@ public class ParamPanel extends Composite
         return allowWords;
     }
 
-    public boolean hasError()
+    private final ValueChangeHandler<Date> defaultChangeHandler = new ValueChangeHandler<Date>()
     {
-        return false
-            || (!Checks.mapNullTo(getStartingTimeError().getText(), "").trim().isEmpty())
-            || (!Checks.mapNullTo(getEndingTimeError().getText(), "").trim().isEmpty());
-    }
-
-    public void update()
-    {
-        tryParseTimeWithWidgets(endingTime, endingTimeRendered, endingTimeError);
-        tryParseTimeWithWidgets(startingTime, startingTimeRendered, startingTimeError);
-
-        if (!hasError())
+        @Override
+        public void onValueChange(ValueChangeEvent<Date> event)
         {
             fireParamChanged();
         }
-    }
-
-    private void tryParseTimeWithWidgets(TextBox input, Label result, Label errorMsg)
-    {
-        tryParseTime(
-                ValueUtil.asReadableWritable(input),
-                ValueUtil.asReadableWritable(result),
-                ValueUtil.asReadableWritable(errorMsg));
-    }
-
-    private void tryParseTime(IReadableValue<String> readable, IWritableValue<String> result, IWritableValue<String> errorMessage)
-    {
-        try
-        {
-            result.setValue(MachineFormat.format(HumanFormat.parse(readable.getValue())));
-            errorMessage.setValue(null);
-        }
-        catch (Exception e)
-        {
-            result.setValue(null);
-            errorMessage.setValue("Parse failed: " + e.getMessage());
-        }
-    }
+    };
 
     private final ChangeHandler commonChangeHandler = new ChangeHandler()
     {
         @Override
         public void onChange(ChangeEvent event)
         {
-            update();
+            fireParamChanged();
         }
     };
 
@@ -207,14 +134,73 @@ public class ParamPanel extends Composite
                 Date d1 = dateChopTime(d);
                 Date d2 = new Date(d1.getTime() + 1000 * 60 * 60 *24);
 
-                startingTime.setText(HumanFormat.format(d1));
-                endingTime.setText(HumanFormat.format(d2));
-                update();
+                startingTime.setValue(d1, false);
+                endingTime.setValue(d2, false);
+
+                fireParamChanged();
             }
         });
 
-        startingTime.addChangeHandler(commonChangeHandler);
-        endingTime.addChangeHandler(commonChangeHandler);
+        startingTime.addValueChangeHandler(defaultChangeHandler);
+        HorizontalPanel startingDatePickerPanel = new HorizontalPanel();
+        startingDatePickerPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+        startingDatePickerPanel.add(new Button(constants.dateReverse(), new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                Date d = startingTime.getValue();
+                Date d1 = dateChopTime(d);
+                Date d2 = new Date(d1.getTime() - 24 * 1000 * 60 * 60);
+
+                startingTime.setValue(d2, true);
+            }
+        }));
+        startingDatePickerPanel.add(startingTime);
+        startingDatePickerPanel.add(new Button(constants.dateForward(), new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                Date d = startingTime.getValue();
+                Date d1 = dateChopTime(d);
+                Date d2 = new Date(d1.getTime() + 24 * 1000 * 60 * 60);
+
+                startingTime.setValue(d2, true);
+            }
+        }));
+
+        endingTime.addValueChangeHandler(defaultChangeHandler);
+        HorizontalPanel endingDatePickerPanel = new HorizontalPanel();
+        endingDatePickerPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+        endingDatePickerPanel.add(new Button(constants.dateReverse(), new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                Date d = endingTime.getValue();
+                Date d1 = dateChopTime(d);
+                Date d2 = new Date(d1.getTime() - 24 * 1000 * 60 * 60);
+
+                endingTime.setValue(d2, true);
+            }
+        }));
+        endingDatePickerPanel.add(endingTime);
+        endingDatePickerPanel.add(new Button(constants.dateForward(), new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                Date d = endingTime.getValue();
+                Date d1 = dateChopTime(d);
+                Date d2 = new Date(d1.getTime() + 24 * 1000 * 60 * 60);
+
+                endingTime.setValue(d2, true);
+            }
+        }));
+
+
+
         ignoreWords.addChangeHandler(commonChangeHandler);
         allowWords.addChangeHandler(commonChangeHandler);
 
@@ -243,18 +229,25 @@ public class ParamPanel extends Composite
         int row = 0;
         table.setWidget(  row, 0, new Label(constants.forFullDay()));
         table.setWidget(  row, 1, datePickerPanel);
-        table.setWidget(++row, 0, new Label(constants.starting()));
-        table.setWidget(  row, 1, getStartingTime());
-        table.setWidget(  row, 2, getStartingTimeRendered());
-        table.setWidget(  row, 3, getStartingTimeError());
-        table.setWidget(++row, 0, new Label(constants.ending()));
-        table.setWidget(  row, 1, getEndingTime());
-        table.setWidget(  row, 2, getEndingTimeRendered());
-        table.setWidget(  row, 3, getEndingTimeError());
-        table.setWidget(++row, 0, allowWordsOn);
-        table.setWidget(  row, 1, allowWords);
-        table.setWidget(++row, 0, ignoreWordsOn);
-        table.setWidget(  row, 1, ignoreWords);
+
+        ++row;
+
+        HorizontalPanel rangeParam = new HorizontalPanel();
+        rangeParam.add(startingDatePickerPanel);
+        rangeParam.add(new Label("through"));
+        rangeParam.add(endingDatePickerPanel);
+
+        table.setText(row, 0, "Range");
+        table.setWidget(row, 1, rangeParam);
+        ++row;
+
+        table.setWidget(row, 0, new Label(constants.allowWordsContaining()));
+        table.setWidget(row, 1, allowWords);
+        ++row;
+
+        table.setWidget(row, 0, new Label(constants.ignoreWordsContaining()));
+        table.setWidget(row, 1, ignoreWords);
+        ++row;
 
 
         FlowPanel fp = new FlowPanel();
@@ -269,7 +262,7 @@ public class ParamPanel extends Composite
             @Override
             public void execute()
             {
-                update();
+                fireParamChanged();
             }
         });
     }

@@ -19,6 +19,10 @@ public class SessionSettingsPanel extends Composite
     public void clear()
     {
         table.removeAllRows();
+
+        table.getRowFormatter().addStyleName(0, "tsTableHeader");
+        table.setText(0, 0, "Name");
+        table.setText(0, 1, "Value");
     }
 
     public void add(Map<String, List<String>> settings)
@@ -26,6 +30,8 @@ public class SessionSettingsPanel extends Composite
         int row = 1;
         for (Entry<String, List<String>> entry: settings.entrySet())
         {
+
+            table.getRowFormatter().addStyleName(row, (row % 2 == 0) ? "evenRow" : "oddRow");
             String key = entry.getKey();
 
             for (String value: entry.getValue())

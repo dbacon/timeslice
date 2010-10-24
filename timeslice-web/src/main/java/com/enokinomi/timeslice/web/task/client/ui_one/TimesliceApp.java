@@ -14,9 +14,7 @@ import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.core.client.util.AsyncResult;
 import com.enokinomi.timeslice.web.core.client.util.Checks;
 import com.enokinomi.timeslice.web.core.client.util.ITransform;
-import com.enokinomi.timeslice.web.session.client.ui.SessionSettingsControlPanel;
 import com.enokinomi.timeslice.web.task.client.controller.ErrorBox;
-import com.enokinomi.timeslice.web.task.client.controller.GwtRpcController;
 import com.enokinomi.timeslice.web.task.client.controller.IController;
 import com.enokinomi.timeslice.web.task.client.controller.IControllerListener;
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
@@ -32,7 +30,6 @@ import com.enokinomi.timeslice.web.task.client.ui.OptionsPanel;
 import com.enokinomi.timeslice.web.task.client.ui.ParamPanel;
 import com.enokinomi.timeslice.web.task.client.ui.ReportPanel;
 import com.enokinomi.timeslice.web.task.client.ui_one.ImportBulkItemsDialog.BulkItemListener;
-import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -55,16 +52,17 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.RadioButton;
-import com.google.gwt.user.client.ui.RootLayoutPanel;
+import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
+import com.google.inject.Inject;
 
-public class TimesliceApp implements EntryPoint
+public class TimesliceApp extends ResizeComposite
 {
     private final TimesliceAppConstants constants = GWT.create(TimesliceAppConstants.class);
-    private final UiOneGinjector injector = GWT.create(UiOneGinjector.class);
 
     public static final String IssuesUrl = "http://code.google.com/p/timeslice/issues/list";
 
@@ -78,7 +76,7 @@ public class TimesliceApp implements EntryPoint
 
     private boolean assignsEnabled = true;
 
-    private final IController controller = new GwtRpcController(); // new Controller();
+    private final IController controller;
 
     private final HistoryPanel historyPanel = new HistoryPanel();
     private final MultiWordSuggestOracle suggestSource = new MultiWordSuggestOracle();
@@ -100,9 +98,20 @@ public class TimesliceApp implements EntryPoint
     private final DateBox specifiedDateBox = new DateBox();
     private final RadioButton modeRadioSpecify = new RadioButton("MODE", constants.specifyDate());
     private final RadioButton modeRadioNormal = new RadioButton("MODE", constants.current());
-    private final ReportPanel reportPanel = new ReportPanel();
-    private final AppJobPanel appJobPanel = injector.getAppJobPanel();
-    private final SessionSettingsControlPanel sscp = new SessionSettingsControlPanel();
+    private final ReportPanel reportPanel;
+    private final AppJobPanel appJobPanel;
+    private final OptionsPanel optionsPanel;
+
+    @Inject
+    public TimesliceApp(IController controller, ReportPanel reportPanel, OptionsPanel optionsPanel, AppJobPanel appJobPanel)
+    {
+        this.controller = controller;
+        this.reportPanel = reportPanel;
+        this.optionsPanel = optionsPanel;
+        this.appJobPanel = appJobPanel;
+
+        initWidget(this.onModuleLoadNop());
+    }
 
     private void updateStartTag(StartTag editedStartTag)
     {
@@ -159,8 +168,8 @@ public class TimesliceApp implements EntryPoint
     {
         ParamPanel params = reportPanel.getParamsPanel();
         refreshTotals(
-                params.getStartingTimeRendered().getText(),
-                params.getEndingTimeRendered().getText(),
+                params.getStartingTimeRendered(),
+                params.getEndingTimeRendered(),
                 Arrays.asList(params.getAllowWords().getText().split(",")),
                 Arrays.asList(params.getIgnoreWords().getText().split(",")));
     }
@@ -187,11 +196,10 @@ public class TimesliceApp implements EntryPoint
         }
     }
 
-    public void onModuleLoad()
+    public Widget onModuleLoadNop()
     {
         originalWindowTitle = Window.getTitle();
 
-        OptionsPanel optionsPanel = new OptionsPanel();
         optionsPanel.addOptionsListener(new OptionsPanel.IOptionsListener()
         {
             public void optionsChanged(OptionsPanel source)
@@ -398,8 +406,6 @@ public class TimesliceApp implements EntryPoint
         //historyPanel.setHeight("30em");
         //historyPanel.setWidth("50em");
 
-        reportPanel.setAuthTokenHolder(controller);
-
         reportPanel.addReportPanelListener(new ReportPanel.IReportPanelListener()
         {
             @Override
@@ -428,10 +434,7 @@ public class TimesliceApp implements EntryPoint
             }
         });
 
-        sscp.setAuthTokenHolder(controller);
-
         final TabLayoutPanel tp = new TabLayoutPanel(2, Unit.EM);
-        //final DecoratedTabPanel tp = new DecoratedTabPanel();
         Anchor inputlink = new Anchor(constants.input(), true);
         inputlink.setAccessKey('i');
         tp.add(mainEntryPanel, inputlink);
@@ -444,10 +447,8 @@ public class TimesliceApp implements EntryPoint
         Anchor jobsLink = new Anchor(constants.jobs(), true);
         jobsLink.setAccessKey('j');
         tp.add(appJobPanel, jobsLink);
-        tp.add(sscp, "Session");
 
         tp.selectTab(0);
-//        tp.setAnimationEnabled(true);
 
         Anchor logoutAnchor = new Anchor(constants.logout());
         logoutAnchor.addClickHandler(new ClickHandler()
@@ -480,9 +481,6 @@ public class TimesliceApp implements EntryPoint
         final DockLayoutPanel dockPanel = new DockLayoutPanel(Unit.EM);
         dockPanel.addSouth(buildLabelBox, 4);
         dockPanel.add(tp);
-
-        RootLayoutPanel.get().add(dockPanel);
-        //RootPanel.get().add(dockPanel);
 
         controller.addControllerListener(new IControllerListener()
             {
@@ -667,6 +665,8 @@ public class TimesliceApp implements EntryPoint
         controller.startListAvailableJobs();
         controller.startGetBranding();
         controller.startGetAllBillees();
+
+        return dockPanel;
     }
 
     private void updateIssuesLink(String issuesHref)

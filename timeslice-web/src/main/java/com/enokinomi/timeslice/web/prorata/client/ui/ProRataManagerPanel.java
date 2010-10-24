@@ -25,6 +25,7 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.inject.Inject;
 
 public class ProRataManagerPanel extends Composite
 {
@@ -41,12 +42,7 @@ public class ProRataManagerPanel extends Composite
 
 
     private final IProRataSvcAsync prorataSvc = GWT.create(IProRataSvc.class);
-    private IAuthTokenHolder tokenHolder;
-
-    public void setAuthTokenHolder(IAuthTokenHolder tokenHolder)
-    {
-        this.tokenHolder = tokenHolder;
-    }
+    private final IAuthTokenHolder tokenHolder;
 
     public static interface Listener
     {
@@ -79,14 +75,17 @@ public class ProRataManagerPanel extends Composite
         }
     }
 
-    public ProRataManagerPanel()
+    @Inject
+    public ProRataManagerPanel(IAuthTokenHolder tokenHolder)
     {
+        this.tokenHolder = tokenHolder;
+
         b.addClickHandler(new ClickHandler()
         {
             @Override
             public void onClick(ClickEvent event)
             {
-                prorataSvc.addGroupComponent(tokenHolder.getAuthToken(), groupBox.getText(), targetBox.getText(), Double.valueOf(weightBox.getText()), new AsyncCallback<Void>()
+                prorataSvc.addGroupComponent(ProRataManagerPanel.this.tokenHolder.getAuthToken(), groupBox.getText(), targetBox.getText(), Double.valueOf(weightBox.getText()), new AsyncCallback<Void>()
                 {
                     @Override
                     public void onFailure(Throwable caught)
@@ -148,7 +147,7 @@ public class ProRataManagerPanel extends Composite
                     // TODO: add bulk-load to service definition to avoid a bunch of calls
                     for (final ParsedRule rule: parsedRules)
                     {
-                        prorataSvc.removeGroupComponent(tokenHolder.getAuthToken(), rule.parent, rule.child, new AsyncCallback<Void>()
+                        prorataSvc.removeGroupComponent(ProRataManagerPanel.this.tokenHolder.getAuthToken(), rule.parent, rule.child, new AsyncCallback<Void>()
                             {
                                 @Override
                                 public void onFailure(Throwable caught)
@@ -193,7 +192,7 @@ public class ProRataManagerPanel extends Composite
                     // TODO: add bulk-load to service definition to avoid a bunch of calls
                     for (final ParsedRule rule: parsedRules)
                     {
-                        prorataSvc.addGroupComponent(tokenHolder.getAuthToken(), rule.parent, rule.child, rule.weight, new AsyncCallback<Void>()
+                        prorataSvc.addGroupComponent(ProRataManagerPanel.this.tokenHolder.getAuthToken(), rule.parent, rule.child, rule.weight, new AsyncCallback<Void>()
                             {
                                 @Override
                                 public void onFailure(Throwable caught)

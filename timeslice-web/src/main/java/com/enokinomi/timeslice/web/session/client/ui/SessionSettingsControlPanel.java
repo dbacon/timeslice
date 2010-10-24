@@ -13,8 +13,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.SplitLayoutPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.inject.Inject;
 
 public class SessionSettingsControlPanel extends Composite implements ClickHandler
 {
@@ -26,29 +26,22 @@ public class SessionSettingsControlPanel extends Composite implements ClickHandl
 
     private IAuthTokenHolder authTokenHolder;
 
-    public SessionSettingsControlPanel()
+    @Inject
+    public SessionSettingsControlPanel(IAuthTokenHolder authTokenHolder)
     {
+        this.authTokenHolder = authTokenHolder;
+
         refreshButton.addClickHandler(this);
 
         HorizontalPanel hp = new HorizontalPanel();
         hp.setSpacing(10);
         hp.add(refreshButton);
 
-        SplitLayoutPanel dp = new SplitLayoutPanel();
-        dp.addNorth(hp, 40);
-        dp.add(new ScrollPanel(ssp));
+        VerticalPanel vp = new VerticalPanel();
+        vp.add(hp);
+        vp.add(ssp);
 
-        initWidget(dp);
-    }
-
-    public IAuthTokenHolder getAuthTokenHolder()
-    {
-        return authTokenHolder;
-    }
-
-    public void setAuthTokenHolder(IAuthTokenHolder authTokenHolder)
-    {
-        this.authTokenHolder = authTokenHolder;
+        initWidget(vp);
     }
 
     @Override

@@ -20,7 +20,7 @@ public interface AppJobPanelConstants extends Constants
     @DefaultStringValue("Output")
     String description();
 
-    @DefaultStringValue("Go")
+    @DefaultStringValue("\u2023")
     String execute();
 
 }

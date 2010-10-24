@@ -38,9 +38,10 @@ import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -52,6 +53,8 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.inject.Inject;
 
 public class ProjectListPanel extends Composite
 {
@@ -70,19 +73,27 @@ public class ProjectListPanel extends Composite
 
     private final CheckBox scaleCheckBox = new CheckBox(constants.scaleTotals());
     private final TextBox scaleToTextBox = new TextBox();
-    private final ProRataManagerPanel proRataManagePanel = new ProRataManagerPanel();
+    private final CheckBox orderingCheckBox = new CheckBox("Auto-apply Ordering");
+    private final Button orderButton = new Button("Order now");
+    private final ProRataManagerPanel proRataManagePanel;
 
     private final IProRataSvcAsync prorataSvc = GWT.create(IProRataSvc.class);
     private final IOrderingSvcAsync orderingSvc = GWT.create(IOrderingSvc.class);
 
-    private IAuthTokenHolder tokenHolder;
+    private final IAuthTokenHolder tokenHolder;
+
+    private int calcDelay = 1;
 
     Map<String, Tree> results = new LinkedHashMap<String, Tree>();
 
     private List<AssignedTaskTotal> itemsCache = new ArrayList<AssignedTaskTotal>();
 
-    public ProjectListPanel()
+    @Inject
+    public ProjectListPanel(IAuthTokenHolder tokenHolder, ProRataManagerPanel proRataManagePanel)
     {
+        this.tokenHolder = tokenHolder;
+        this.proRataManagePanel = proRataManagePanel;
+
         table.setStylePrimaryName("tsMathTable");
         projectTable.setStylePrimaryName("tsMathTable");
 
@@ -96,6 +107,8 @@ public class ProjectListPanel extends Composite
                 scaleToTextBox.setVisible(scaleCheckBox.getValue());
 
                 writePrefs();
+
+                onResultsExpanded(); // shouldn't be using this -- abuse.
             }
         });
 
@@ -105,6 +118,8 @@ public class ProjectListPanel extends Composite
             public void onChange(ChangeEvent event)
             {
                 writePrefs();
+
+                onResultsExpanded(); // shouldn't be using this -- abuse.
             }
         });
 
@@ -118,6 +133,22 @@ public class ProjectListPanel extends Composite
         HorizontalPanel hp1 = new HorizontalPanel();
         hp1.add(scaleCheckBox);
         hp1.add(scaleToTextBox);
+
+        orderingCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>()
+        {
+            @Override
+            public void onValueChange(ValueChangeEvent<Boolean> event)
+            {
+                orderButton.setEnabled(!orderingCheckBox.getValue());
+
+                if (event.getValue())
+                {
+                    requestOrdering(grandTotal, leafTotals);
+                }
+            }
+        });
+        orderButton.setEnabled(!orderingCheckBox.getValue());
+
 
         proRataManagePanel.addListener(new Listener()
         {
@@ -133,13 +164,34 @@ public class ProjectListPanel extends Composite
         visualizerTabs.add(new ScrollPanel(table), constants.projectBreakdown());
         visualizerTabs.add(new ScrollPanel(proRataManagePanel), constants.allRules());
 
-        DockLayoutPanel dp = new DockLayoutPanel(Unit.EM);
-        dp.addNorth(hp1, 4);
-        dp.add(visualizerTabs);
+        orderButton.addClickHandler(new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                requestOrdering(grandTotal, leafTotals);
+            }
+        });
+
+        HorizontalPanel hp2 = new HorizontalPanel();
+        hp2.add(orderingCheckBox);
+        hp2.add(orderButton);
+
+        VerticalPanel settingsVp = new VerticalPanel();
+        settingsVp.add(hp1);
+        settingsVp.add(hp2);
+
+        DisclosurePanel settingsPanel = new DisclosurePanel("Table settings");
+        settingsPanel.add(settingsVp);
+
+        VerticalPanel vp = new VerticalPanel();
+        vp.add(new ScrollPanel(projectTable));
+        vp.add(settingsPanel);
+
 
         TabLayoutPanel tabs = new TabLayoutPanel(2, Unit.EM);
-        tabs.add(new ScrollPanel(projectTable), constants.report());
-        tabs.add(dp, constants.proRataMaintenance());
+        tabs.add(vp, constants.report());
+        tabs.add(visualizerTabs, constants.proRataMaintenance());
 
         initWidget(tabs);
 
@@ -212,13 +264,6 @@ public class ProjectListPanel extends Composite
         ++col;
     }
 
-    public void setAuthTokenHolder(IAuthTokenHolder tokenHolder)
-    {
-        this.tokenHolder = tokenHolder;
-
-        proRataManagePanel.setAuthTokenHolder(tokenHolder);
-    }
-
     public void update(List<AssignedTaskTotal> items)
     {
         proRataManagePanel.refresh();
@@ -250,9 +295,6 @@ public class ProjectListPanel extends Composite
     //  results -+-> expand -+-> leaf-total --> draw-projects
     //           '-> draw    +-> draw
 
-
-    private int calcDelay = 1;
-
     protected void onResultsRefreshed()
     {
         redrawTable();
@@ -273,6 +315,11 @@ public class ProjectListPanel extends Composite
         redrawTable();
         drawProjects(grandTotal, leafTotals);
 
+        scheduleCalcLeafTotals();
+    }
+
+    private void scheduleCalcLeafTotals()
+    {
         new Timer()
         {
             @Override
@@ -287,14 +334,17 @@ public class ProjectListPanel extends Composite
     {
         drawProjects(grandTotal, leafTotals);
 
-        new Timer()
+        if (orderingCheckBox.getValue())
         {
-            @Override
-            public void run()
+            new Timer()
             {
-                requestOrdering(grandTotal, leafTotals);
-            }
-        }.schedule(calcDelay);
+                @Override
+                public void run()
+                {
+                    requestOrdering(grandTotal, leafTotals);
+                }
+            }.schedule(calcDelay);
+        }
     }
 
     protected void onLeafTotalsOrdered()
@@ -333,8 +383,10 @@ public class ProjectListPanel extends Composite
 
                 results.clear();
                 leafTotals.clear();
+                grandTotal = 0.;
                 for (Tree tree: expandedResults)
                 {
+                    grandTotal += tree.getTotal();
                     results.put(tree.getName(), tree);
                     leafTotals.put(tree.getName(), tree.getTotal());
                 }
@@ -459,6 +511,8 @@ public class ProjectListPanel extends Composite
         int rowi = 1;
         Set<Entry<String, Double>> leafTotals = projectMap.entrySet();
         int rowmax = leafTotals.size();
+        Double totalTotal = 0.;
+        Double scaledTotal = 0.;
         for (Entry<String, Double> p: leafTotals)
         {
             int coli = 0;
@@ -501,20 +555,37 @@ public class ProjectListPanel extends Composite
             projectTable.getCellFormatter().setAlignment(rowi, coli, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP);
             projectTable.setWidget(rowi, coli++, new Label(p.getKey()));
 
+            totalTotal += p.getValue();
+            projectTable.setWidget(rowi, coli, new Label(messages.direct(p.getValue())));
             projectTable.getCellFormatter().setAlignment(rowi, coli, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
-            projectTable.setWidget(rowi, coli++, new Label(messages.direct(p.getValue())));
+            projectTable.getCellFormatter().removeStyleName(rowi, coli, "totalsRow");
+            ++coli;
 
             if (scaleCheckBox.getValue())
             {
                 Double target = Double.valueOf(scaleToTextBox.getText());
-                projectTable.setWidget(rowi, coli, new Label(messages.grandTotalScaled(p.getValue() / total * target)));
+                double scaled = p.getValue() / total * target;
+                scaledTotal += scaled;
+                projectTable.setWidget(rowi, coli, new Label(messages.grandTotalScaled(scaled)));
                 projectTable.getCellFormatter().setAlignment(rowi, coli, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
+                projectTable.getCellFormatter().removeStyleName(rowi, coli, "totalsRow");
                 coli++;
             }
 
-
             ++rowi;
         }
+
+        projectTable.setWidget(rowi, 3, new Label(messages.direct(totalTotal)));
+        projectTable.getCellFormatter().setAlignment(rowi, 3, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
+        projectTable.getCellFormatter().addStyleName(rowi, 3, "totalsRow");
+
+        if (scaleCheckBox.getValue())
+        {
+            projectTable.setWidget(rowi, 4, new Label(messages.grandTotalScaled(scaledTotal)));
+            projectTable.getCellFormatter().addStyleName(rowi, 4, "totalsRow");
+            projectTable.getCellFormatter().setAlignment(rowi, 4, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
+        }
+
     }
 
     protected Map<String, Double> moveRow(Map<String, Double> map, int rowi, int rel)

@@ -3,6 +3,7 @@ package com.enokinomi.timeslice.web.task.client.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.enokinomi.timeslice.web.session.client.ui.SessionSettingsControlPanel;
 import com.enokinomi.timeslice.web.task.client.ui_one.PrefHelper;
 import com.enokinomi.timeslice.web.task.client.ui_one.TimesliceApp.Defaults;
 import com.google.gwt.core.client.GWT;
@@ -17,7 +18,9 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.inject.Inject;
 
 public class OptionsPanel extends Composite implements IOptionsProvider
 {
@@ -85,7 +88,8 @@ public class OptionsPanel extends Composite implements IOptionsProvider
         return l1;
     }
 
-    public OptionsPanel()
+    @Inject
+    public OptionsPanel(SessionSettingsControlPanel sscp)
     {
         localWidgetsInit();
 
@@ -117,6 +121,7 @@ public class OptionsPanel extends Composite implements IOptionsProvider
 
         DockLayoutPanel dp = new DockLayoutPanel(Unit.EM);
         dp.addNorth(optionsTable, 15);
+        dp.add(new ScrollPanel(sscp));
         initWidget(dp);
     }
 

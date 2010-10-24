@@ -2,14 +2,12 @@ package com.enokinomi.timeslice.web.task.client.ui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.assign.client.ui.TabularResultsAssignedView;
 import com.enokinomi.timeslice.web.assign.client.ui.TabularResultsAssignedView.Listener;
 import com.enokinomi.timeslice.web.prorata.client.ui.ProjectListPanel;
-import com.enokinomi.timeslice.web.task.client.controller.IAuthTokenHolder;
 import com.enokinomi.timeslice.web.task.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.task.client.ui.ParamPanel.IParamChangedListener;
 import com.enokinomi.timeslice.web.task.client.ui_one.PrefHelper;
@@ -27,6 +25,7 @@ import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.inject.Inject;
 
 public class ReportPanel extends ResizeComposite
 {
@@ -40,14 +39,10 @@ public class ReportPanel extends ResizeComposite
     private final TabularResultsAssignedView resultsAssignedView = new TabularResultsAssignedView();
     private final TaskTotalIntegrator integrator = new TaskTotalIntegrator("/");
     private final TreeTableResultsView resultsTreeView = new TreeTableResultsView(integrator);
-    private final ProjectListPanel projectListPanel = new ProjectListPanel();
-
-    private IAuthTokenHolder authTokenHolder = null;
+    private final ProjectListPanel projectListPanel;
 
     private static class PrefKey
     {
-        public static final String Starting = "timeslice.report.params.starting";
-        public static final String Ending = "timeslice.report.params.ending";
         public static final String IgnoreStrings = "timeslice.report.ignorestrings";
         public static final String AllowStrings = "timeslice.report.allowstrings";
     }
@@ -93,56 +88,33 @@ public class ReportPanel extends ResizeComposite
         }
     }
 
-    public void setAuthTokenHolder(IAuthTokenHolder authTokenHolder)
-    {
-        this.authTokenHolder = authTokenHolder;
-
-        projectListPanel.setAuthTokenHolder(authTokenHolder);
-    }
-
-    public IAuthTokenHolder getAuthTokenHolder()
-    {
-        return authTokenHolder;
-    }
-
     private void readPrefs()
     {
-        params.getStartingTime().setText(Cookies.getCookie(PrefKey.Starting));
-        params.getEndingTime().setText(Cookies.getCookie(PrefKey.Ending));
         params.getIgnoreWords().setText(Cookies.getCookie(PrefKey.IgnoreStrings));
         params.getAllowWords().setText(Cookies.getCookie(PrefKey.AllowStrings));
 
-        if (params.getEndingTime().getText().trim().isEmpty())
-        {
-            params.getEndingTime().setText(ParamPanel.HumanFormat.format(new Date()));
-        }
-
-        if (params.getStartingTime().getText().trim().isEmpty())
-        {
-            params.getStartingTime().setText(ParamPanel.HumanFormat.format(new Date()));
-        }
-
-        params.update();
+        params.fireParamChanged();
     }
 
     private void writePrefs()
     {
-        Cookies.setCookie(PrefKey.Starting, params.getSelectedStartingTime(), PrefHelper.createDateSufficientlyInTheFuture());
-        Cookies.setCookie(PrefKey.Ending, params.getSelectedEndingTime(), PrefHelper.createDateSufficientlyInTheFuture());
         Cookies.setCookie(PrefKey.IgnoreStrings, params.getIgnoreWords().getText(), PrefHelper.createDateSufficientlyInTheFuture());
         Cookies.setCookie(PrefKey.AllowStrings, params.getAllowWords().getText(), PrefHelper.createDateSufficientlyInTheFuture());
     }
 
-    public ReportPanel()
+    @Inject
+    public ReportPanel(ProjectListPanel projectListPanel)
     {
+        this.projectListPanel = projectListPanel;
+
         params.addParamChangedListener(new IParamChangedListener()
         {
             public void paramChanged(ParamPanel source)
             {
                 writePrefs();
                 fireRefreshRequested(
-                    params.getStartingTimeRendered().getText(),
-                    params.getEndingTimeRendered().getText(),
+                    params.getStartingTimeRendered(),
+                    params.getEndingTimeRendered(),
                     Arrays.asList(params.getAllowWords().getText().split(",")),
                     Arrays.asList(params.getIgnoreWords().getText().split(",")));
                 //reselectData();
@@ -156,8 +128,8 @@ public class ReportPanel extends ResizeComposite
             public void onClick(ClickEvent event)
             {
                 fireRefreshRequested(
-                        params.getStartingTimeRendered().getText(),
-                        params.getEndingTimeRendered().getText(),
+                        params.getStartingTimeRendered(),
+                        params.getEndingTimeRendered(),
                         Arrays.asList(params.getAllowWords().getText().split(",")),
                         Arrays.asList(params.getIgnoreWords().getText().split(",")));
             }
@@ -171,8 +143,8 @@ public class ReportPanel extends ResizeComposite
             {
                 firePersistRequested(
                         renderPersistName(),
-                        params.getStartingTimeRendered().getText(),
-                        params.getEndingTimeRendered().getText(),
+                        params.getStartingTimeRendered(),
+                        params.getEndingTimeRendered(),
                         Arrays.asList(params.getAllowWords().getText().split(",")),
                         Arrays.asList(params.getIgnoreWords().getText().split(",")));
             }
@@ -231,8 +203,8 @@ public class ReportPanel extends ResizeComposite
     {
         return persistAsName.getText()
             .replaceAll("%D", params.getFullDaySelected())
-            .replaceAll("%S", params.getStartingTimeRendered().getText())
-            .replaceAll("%E", params.getEndingTimeRendered().getText());
+            .replaceAll("%S", params.getStartingTimeRendered())
+            .replaceAll("%E", params.getEndingTimeRendered());
     }
 
     public void setPersisted(String persistedName)
