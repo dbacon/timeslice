@@ -142,6 +142,7 @@ public class ParamPanel extends Composite
         });
 
         startingTime.addValueChangeHandler(defaultChangeHandler);
+        startingTime.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getFormat("yyyy-MM-dd H:m:s.S Z")));
         HorizontalPanel startingDatePickerPanel = new HorizontalPanel();
         startingDatePickerPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
         startingDatePickerPanel.add(new Button(constants.dateReverse(), new ClickHandler()
@@ -171,6 +172,7 @@ public class ParamPanel extends Composite
         }));
 
         endingTime.addValueChangeHandler(defaultChangeHandler);
+        endingTime.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getFormat("yyyy-MM-dd H:m:s.S Z")));
         HorizontalPanel endingDatePickerPanel = new HorizontalPanel();
         endingDatePickerPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
         endingDatePickerPanel.add(new Button(constants.dateReverse(), new ClickHandler()
@@ -233,6 +235,7 @@ public class ParamPanel extends Composite
         ++row;
 
         HorizontalPanel rangeParam = new HorizontalPanel();
+        rangeParam.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
         rangeParam.add(startingDatePickerPanel);
         rangeParam.add(new Label("through"));
         rangeParam.add(endingDatePickerPanel);
