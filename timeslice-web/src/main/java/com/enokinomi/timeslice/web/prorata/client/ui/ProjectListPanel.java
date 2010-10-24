@@ -66,6 +66,7 @@ public class ProjectListPanel extends Composite
     {
         public static final String Scale = "timeslice.project.scale";
         public static final String ScaleTo = "timeslice.project.scaleto";
+        public static final String AutoOrder = "timeslice.project.autoorder";
     }
 
     private final FlexTable table = new FlexTable();
@@ -140,6 +141,8 @@ public class ProjectListPanel extends Composite
             public void onValueChange(ValueChangeEvent<Boolean> event)
             {
                 orderButton.setEnabled(!orderingCheckBox.getValue());
+
+                writePrefs();
 
                 if (event.getValue())
                 {
@@ -767,11 +770,13 @@ public class ProjectListPanel extends Composite
     {
         scaleCheckBox.setValue("true".equals(Cookies.getCookie(PrefKeys.Scale)));
         scaleToTextBox.setText(Cookies.getCookie(PrefKeys.ScaleTo));
+        orderingCheckBox.setValue("true".equals(Cookies.getCookie(PrefKeys.AutoOrder)));
     }
 
     private void writePrefs()
     {
         Cookies.setCookie(PrefKeys.Scale, scaleCheckBox.getValue() ? "true" : "false", PrefHelper.createDateSufficientlyInTheFuture());
         Cookies.setCookie(PrefKeys.ScaleTo, scaleToTextBox.getValue(), PrefHelper.createDateSufficientlyInTheFuture());
+        Cookies.setCookie(PrefKeys.AutoOrder, orderingCheckBox.getValue() ? "true" : "false", PrefHelper.createDateSufficientlyInTheFuture());
     }
 }
