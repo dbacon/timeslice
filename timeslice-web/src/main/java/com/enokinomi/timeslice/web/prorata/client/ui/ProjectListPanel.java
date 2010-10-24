@@ -132,6 +132,7 @@ public class ProjectListPanel extends Composite
         scaleToTextBox.setVisible(scaleCheckBox.getValue());
 
         HorizontalPanel hp1 = new HorizontalPanel();
+        hp1.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
         hp1.add(scaleCheckBox);
         hp1.add(scaleToTextBox);
 
@@ -177,6 +178,7 @@ public class ProjectListPanel extends Composite
         });
 
         HorizontalPanel hp2 = new HorizontalPanel();
+        hp2.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
         hp2.add(orderingCheckBox);
         hp2.add(orderButton);
 
@@ -193,7 +195,7 @@ public class ProjectListPanel extends Composite
 
 
         TabLayoutPanel tabs = new TabLayoutPanel(2, Unit.EM);
-        tabs.add(vp, constants.report());
+        tabs.add(new ScrollPanel(vp), constants.report());
         tabs.add(visualizerTabs, constants.proRataMaintenance());
 
         initWidget(tabs);
