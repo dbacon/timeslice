@@ -150,4 +150,18 @@ public class OrderingStoreImplTest
         assertEquals(Arrays.asList(green, red, nonmember, blue, orange), orderedSet1);
     }
 
+    @Test
+    public void test1_merge()
+    {
+        IOrderingStore<String> os = createStoreUnderTest();
+
+        List<String> set1 = Arrays.asList(red, orange, yellow, green, blue);
+        os.setOrdering("s1", set1);
+
+        List<String> orderedSet1 = os.requestOrdering("s2", Arrays.asList(green, red, nonmember, blue, orange));
+
+        assertEquals(5, orderedSet1.size());
+        assertEquals(Arrays.asList(green, red, nonmember, blue, orange), orderedSet1);
+    }
+
 }

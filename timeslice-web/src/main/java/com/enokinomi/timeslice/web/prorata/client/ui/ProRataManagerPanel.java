@@ -7,7 +7,7 @@ import com.enokinomi.timeslice.web.prorata.client.core.Group;
 import com.enokinomi.timeslice.web.prorata.client.core.GroupComponent;
 import com.enokinomi.timeslice.web.prorata.client.core.IProRataSvc;
 import com.enokinomi.timeslice.web.prorata.client.core.IProRataSvcAsync;
-import com.enokinomi.timeslice.web.task.client.controller.IAuthTokenHolder;
+import com.enokinomi.timeslice.web.task.client.controller.api.IAuthTokenHolder;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

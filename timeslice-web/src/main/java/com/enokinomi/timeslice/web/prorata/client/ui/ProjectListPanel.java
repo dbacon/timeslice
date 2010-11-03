@@ -1,6 +1,7 @@
 package com.enokinomi.timeslice.web.prorata.client.ui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -11,11 +12,10 @@ import java.util.TreeMap;
 
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.core.client.util.Checks;
-import com.enokinomi.timeslice.web.ordering.client.core.IOrderingSvc;
+import com.enokinomi.timeslice.web.ordering.client.core.IOrderingSvc2Async;
 import com.enokinomi.timeslice.web.ordering.client.core.IOrderingSvcAsync;
 import com.enokinomi.timeslice.web.prorata.client.core.Group;
 import com.enokinomi.timeslice.web.prorata.client.core.GroupComponent;
-import com.enokinomi.timeslice.web.prorata.client.core.IProRataSvc;
 import com.enokinomi.timeslice.web.prorata.client.core.IProRataSvcAsync;
 import com.enokinomi.timeslice.web.prorata.client.tree.Branch;
 import com.enokinomi.timeslice.web.prorata.client.tree.IVisitor;
@@ -24,8 +24,8 @@ import com.enokinomi.timeslice.web.prorata.client.tree.LeafOnlyTotalingVisitor;
 import com.enokinomi.timeslice.web.prorata.client.tree.MapRuleSource;
 import com.enokinomi.timeslice.web.prorata.client.tree.Tree;
 import com.enokinomi.timeslice.web.prorata.client.ui.ProRataManagerPanel.Listener;
-import com.enokinomi.timeslice.web.task.client.controller.IAuthTokenHolder;
-import com.enokinomi.timeslice.web.task.client.ui_one.PrefHelper;
+import com.enokinomi.timeslice.web.task.client.controller.api.IAuthTokenHolder;
+import com.enokinomi.timeslice.web.task.client.ui_one.api.PrefHelper;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -59,8 +59,6 @@ import com.google.inject.Inject;
 public class ProjectListPanel extends Composite
 {
     private static final String ORDERING__TS_PROJECTS = "ts-projects";
-    private final ProjectListPanelConstants constants = GWT.create(ProjectListPanelConstants.class);
-    private final ProjectListPanelMessages messages = GWT.create(ProjectListPanelMessages.class);
 
     public static class PrefKeys
     {
@@ -69,31 +67,54 @@ public class ProjectListPanel extends Composite
         public static final String AutoOrder = "timeslice.project.autoorder";
     }
 
-    private final FlexTable table = new FlexTable();
-    private final FlexTable projectTable = new FlexTable();
-
-    private final CheckBox scaleCheckBox = new CheckBox(constants.scaleTotals());
-    private final TextBox scaleToTextBox = new TextBox();
-    private final CheckBox orderingCheckBox = new CheckBox("Auto-apply Ordering");
-    private final Button orderButton = new Button("Order now");
+    private final IAuthTokenHolder tokenHolder;
+    private final IProRataSvcAsync prorataSvc;
+    private final IOrderingSvcAsync orderingSvc;
+    private final ProjectListPanelConstants constants;
+    private final ProjectListPanelMessages messages;
     private final ProRataManagerPanel proRataManagePanel;
 
-    private final IProRataSvcAsync prorataSvc = GWT.create(IProRataSvc.class);
-    private final IOrderingSvcAsync orderingSvc = GWT.create(IOrderingSvc.class);
-
-    private final IAuthTokenHolder tokenHolder;
+    private final FlexTable table;
+    private final FlexTable projectTable;
+    private final CheckBox scaleCheckBox;
+    private final TextBox scaleToTextBox;
+    private final CheckBox orderingCheckBox;
+    private final Button orderButton;
 
     private int calcDelay = 1;
 
     Map<String, Tree> results = new LinkedHashMap<String, Tree>();
 
     private List<AssignedTaskTotal> itemsCache = new ArrayList<AssignedTaskTotal>();
+    private final IOrderingSvc2Async orderingSvc2;
 
     @Inject
-    public ProjectListPanel(IAuthTokenHolder tokenHolder, ProRataManagerPanel proRataManagePanel)
+    public ProjectListPanel(
+            IAuthTokenHolder tokenHolder,
+            IProRataSvcAsync prorataSvc,
+            IOrderingSvcAsync orderingSvc,
+            IOrderingSvc2Async orderingSvc2,
+            ProjectListPanelConstants constants,
+            ProjectListPanelMessages messages,
+            ProRataManagerPanel proRataManagePanel)
     {
         this.tokenHolder = tokenHolder;
+        this.prorataSvc = prorataSvc;
+        this.orderingSvc = orderingSvc;
+        this.orderingSvc2 = orderingSvc2;
+        this.constants = constants;
+        this.messages = messages;
         this.proRataManagePanel = proRataManagePanel;
+
+
+        table = new FlexTable();
+        projectTable = new FlexTable();
+
+        scaleCheckBox = new CheckBox(constants.scaleTotals());
+        scaleToTextBox = new TextBox();
+        orderingCheckBox = new CheckBox("Auto-apply Ordering");
+        orderButton = new Button("Order now");
+
 
         table.setStylePrimaryName("tsMathTable");
         projectTable.setStylePrimaryName("tsMathTable");
@@ -417,7 +438,7 @@ public class ProjectListPanel extends Composite
             return;
         }
 
-        orderingSvc.requestOrdering(authToken, ORDERING__TS_PROJECTS, new ArrayList<String>(map.keySet()), new AsyncCallback<List<String>>()
+        orderingSvc2.requestOrdering(authToken, ORDERING__TS_PROJECTS, new ArrayList<String>(map.keySet()), new AsyncCallback<List<String>>()
         {
             @Override
             public void onSuccess(List<String> result)
@@ -427,7 +448,6 @@ public class ProjectListPanel extends Composite
                 {
                     indexMap.put(result.get(i), i);
                 }
-
 
                 TreeMap<String, Double> newResults = new TreeMap<String, Double>(new Comparator<String>()
                     {
@@ -451,6 +471,7 @@ public class ProjectListPanel extends Composite
 
                 onLeafTotalsOrdered();
 
+                GWT.log("ordered.");
             }
 
             @Override
@@ -533,7 +554,7 @@ public class ProjectListPanel extends Composite
                     @Override
                     public void onClick(ClickEvent event)
                     {
-                        drawProjects(total, moveRow(projectMap, fRowi - 1, 1));
+                        sendReorder(projectMap, fRowi - 1, 1);
                     }
                 });
                 projectTable.setWidget(rowi, coli, moveDownLink);
@@ -549,7 +570,7 @@ public class ProjectListPanel extends Composite
                     @Override
                     public void onClick(ClickEvent event)
                     {
-                        drawProjects(total, moveRow(projectMap, fRowi - 1, -1));
+                        sendReorder(projectMap, fRowi - 1, -1);
                     }
                 });
                 projectTable.setWidget(rowi, coli, moveUpLink);
@@ -590,6 +611,38 @@ public class ProjectListPanel extends Composite
             projectTable.getCellFormatter().addStyleName(rowi, 4, "totalsRow");
             projectTable.getCellFormatter().setAlignment(rowi, 4, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
         }
+
+    }
+
+    private void sendReorder(Map<String, Double> projectMap, int i, int j)
+    {
+        if (j < 0) --j;
+
+        List<String> keyList = new ArrayList<String>(projectMap.keySet());
+
+        String smaller = null;
+
+        if (i+j >= 0)
+        {
+            smaller = keyList.get(i+j);
+        }
+
+        String item = keyList.get(i);
+
+        orderingSvc2.setPartialOrdering(tokenHolder.getAuthToken(), ORDERING__TS_PROJECTS, smaller, Arrays.asList(item), new AsyncCallback<Void>()
+        {
+            @Override
+            public void onFailure(Throwable caught)
+            {
+                GWT.log("Setting partial order failed.");
+            }
+
+            @Override
+            public void onSuccess(Void result)
+            {
+                requestOrdering(grandTotal, leafTotals);
+            }
+        });
 
     }
 
