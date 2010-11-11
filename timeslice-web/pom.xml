@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>com.enokinomi.timeslice</groupId>
 		<artifactId>timeslice-parent</artifactId>
-		<version>1.0.10-beta-20-SNAPSHOT</version>
+		<version>1.0.10-beta-20</version>
 	</parent>
 
 	<groupId>com.enokinomi.timeslice</groupId>
 	<artifactId>timeslice-web</artifactId>
-	<version>1.0.10-beta-20-SNAPSHOT</version>
+	<version>1.0.10-beta-20</version>
 	<packaging>jar</packaging>
 
 	<name>timeslice-web</name>
