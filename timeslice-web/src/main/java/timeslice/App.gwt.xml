@@ -10,7 +10,7 @@
 
     <inherits name="com.google.gwt.inject.Inject"/>
 
-	<entry-point class="com.enokinomi.timeslice.web.task.client.ui_one.TopLevel" />
+	<entry-point class="com.enokinomi.timeslice.web.task.client.ui_one.api.TopLevel" />
 
     <inherits name="com.google.gwt.user.theme.standard.Standard" />
 

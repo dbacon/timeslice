@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
-import com.enokinomi.timeslice.web.task.client.controller.EditableLabel;
+import com.enokinomi.timeslice.web.core.client.ui.EditableLabel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.FlexTable;

@@ -1,0 +1,10 @@
+package com.enokinomi.timeslice.web.task.client.ui.api;
+
+import java.util.List;
+
+public interface IReportPanelListener
+{
+    void refreshRequested(String startingTimeText, String endingTimeText, List<String> allowWords, List<String> ignoreWords);
+    void persistRequested(String persistAsName, String startingTimeText, String endingTimeText, List<String> allowWords, List<String> ignoreWords);
+    void billeeUpdateRequested(String description, String newBillee);
+}
