@@ -97,7 +97,7 @@ public class UserInfoDao implements IUserInfoDao
                         key,
                     },
                     null,
-                    0);
+                    null);
 
                 List<String> values = settings.getRawValuesForKey(key);
 
