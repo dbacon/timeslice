@@ -4,6 +4,9 @@ public interface IOptionsProvider
 {
     public static String CurrentTaskToken = "@current.task@";
 
+    void addOptionsListener(IOptionsListener listener);
+    void removeOptionsListener(IOptionsListener listener);
+
     int getMaxSize();
     long getMaxSeconds();
     boolean isControlSpaceSends();

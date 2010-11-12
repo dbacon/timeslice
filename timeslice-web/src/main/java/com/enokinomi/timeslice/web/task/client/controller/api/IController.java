@@ -6,7 +6,7 @@ import com.enokinomi.timeslice.web.task.client.core.StartTag;
 import com.enokinomi.timeslice.web.task.client.core_todo_move_out.SortDir;
 
 
-public interface IController extends IAuthTokenHolder
+public interface IController
 {
 
     void addControllerListener(IControllerListener listener);

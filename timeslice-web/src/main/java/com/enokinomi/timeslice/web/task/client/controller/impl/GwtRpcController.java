@@ -10,6 +10,7 @@ import com.enokinomi.timeslice.web.assign.client.core.IAssignmentSvcAsync;
 import com.enokinomi.timeslice.web.core.client.ui.ErrorBox;
 import com.enokinomi.timeslice.web.core.client.util.AsyncResult;
 import com.enokinomi.timeslice.web.core.client.util.NotAuthenticException;
+import com.enokinomi.timeslice.web.task.client.controller.api.IAuthTokenHolder;
 import com.enokinomi.timeslice.web.task.client.core.ITimesliceSvcAsync;
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
 import com.enokinomi.timeslice.web.task.client.core.TaskTotal;
@@ -22,7 +23,7 @@ import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 
-public class GwtRpcController extends BaseController
+public class GwtRpcController extends BaseController implements IAuthTokenHolder
 {
     private final ITimesliceSvcAsync svc;
     private final IAssignmentSvcAsync assignedSvc;
@@ -42,35 +43,20 @@ public class GwtRpcController extends BaseController
         this.jobSvc = jobSvc;
     }
 
-    public ITimesliceSvcAsync getSvc()
-    {
-        return svc;
-    }
-
-    public IAssignmentSvcAsync getAssignedSvc()
-    {
-        return assignedSvc;
-    }
-
     public String getAuthToken()
     {
         return authToken;
     }
 
-    public void setAuthToken(String authToken)
-    {
-        this.authToken = authToken;
-    }
-
     public void logout()
     {
-        getSvc().logout(authToken, new AsyncCallback<Void>()
+        svc.logout(authToken, new AsyncCallback<Void>()
         {
             @Override
             public void onSuccess(Void result)
             {
                 GWT.log("forgetting auth token");
-                setAuthToken(null);
+                authToken = null;
                 fireUnauthenticated(false);
             }
 
@@ -85,7 +71,7 @@ public class GwtRpcController extends BaseController
 
     public void serverInfo()
     {
-        getSvc().serverInfo(new AsyncCallback<String>()
+        svc.serverInfo(new AsyncCallback<String>()
         {
             @Override
             public void onFailure(Throwable caught)
@@ -103,7 +89,7 @@ public class GwtRpcController extends BaseController
 
     public void startGetBranding()
     {
-        getSvc().getBrandInfo(new AsyncCallback<BrandInfo>()
+        svc.getBrandInfo(new AsyncCallback<BrandInfo>()
         {
             @Override
             public void onSuccess(BrandInfo result)
@@ -123,12 +109,12 @@ public class GwtRpcController extends BaseController
     private <R> void requestAuthentication(String user, String password, final IOnAuthenticated action)
     {
         GWT.log("Requesting authentication token for '" + user + "'.");
-        getSvc().authenticate(user, password, new AsyncCallback<String>()
+        svc.authenticate(user, password, new AsyncCallback<String>()
                 {
                     @Override
                     public void onSuccess(String result)
                     {
-                        setAuthToken(result);
+                        authToken = result;
                         Cookies.setCookie("timeslice.authtoken", result, PrefHelper.createDateSufficientlyInTheFuture());
                         fireAuthenticated();
                         if (null != action) action.startRetry();
@@ -146,7 +132,7 @@ public class GwtRpcController extends BaseController
 
                         new ErrorBox("authentication", caught.getMessage()).show();
 
-                        setAuthToken(null);
+                        authToken = null;
                         fireUnauthenticated(false);
                     }
                 });
@@ -208,15 +194,14 @@ public class GwtRpcController extends BaseController
             }
         };
 
-        String token = getAuthToken();
-        if (null == token)
+        if (null == authToken)
         {
             // not authenticated.
             authenticate(retryAction);
         }
         else
         {
-            getSvc().addItem(token, instantString, taskDescription, new AsyncCallback<Void>()
+            svc.addItem(authToken, instantString, taskDescription, new AsyncCallback<Void>()
                     {
                         @Override
                         public void onFailure(Throwable caught)
@@ -252,15 +237,14 @@ public class GwtRpcController extends BaseController
             }
         };
 
-        String token = getAuthToken();
-        if (null == token)
+        if (null == authToken)
         {
             // not authenticated.
             authenticate(retryAction);
         }
         else
         {
-            getSvc().addItems(token, items, new AsyncCallback<Void>()
+            svc.addItems(authToken, items, new AsyncCallback<Void>()
                     {
                         @Override
                         public void onFailure(Throwable caught)
@@ -296,14 +280,13 @@ public class GwtRpcController extends BaseController
             }
         };
 
-        String token = getAuthToken();
-        if (null == token)
+        if (null == authToken)
         {
             authenticate(retryAction);
         }
         else
         {
-            getSvc().update(token, editedStartTag, new AsyncCallback<Void>()
+            svc.update(authToken, editedStartTag, new AsyncCallback<Void>()
             {
                 @Override
                 public void onFailure(Throwable caught)
@@ -339,15 +322,14 @@ public class GwtRpcController extends BaseController
             }
         };
 
-        String token = getAuthToken();
-        if (null == token)
+        if (null == authToken)
         {
             // not authenticated.
             authenticate(retryAction);
         }
         else
         {
-            getSvc().refreshItems(token, maxSize, SortDir.desc, startingInstant, endingInstant, new AsyncCallback<List<StartTag>>()
+            svc.refreshItems(authToken, maxSize, SortDir.desc, startingInstant, endingInstant, new AsyncCallback<List<StartTag>>()
                     {
                         @Override
                         public void onSuccess(List<StartTag> result)
@@ -383,15 +365,14 @@ public class GwtRpcController extends BaseController
             }
         };
 
-        String token = getAuthToken();
-        if (null == token)
+        if (null == authToken)
         {
             // not authenticated.
             authenticate(retryAction);
         }
         else
         {
-            getSvc().refreshTotals(token, maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, new AsyncCallback<List<TaskTotal>>()
+            svc.refreshTotals(authToken, maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, new AsyncCallback<List<TaskTotal>>()
                     {
                         @Override
                         public void onFailure(Throwable caught)
@@ -427,14 +408,13 @@ public class GwtRpcController extends BaseController
             }
         };
 
-        String token = getAuthToken();
-        if (null == token)
+        if (null == authToken)
         {
             authenticate(retryAction);
         }
         else
         {
-            getAssignedSvc().assign(token, description, newBillee, new AsyncCallback<Void>()
+            assignedSvc.assign(authToken, description, newBillee, new AsyncCallback<Void>()
             {
                 @Override
                 public void onSuccess(Void result)
@@ -475,7 +455,6 @@ public class GwtRpcController extends BaseController
             }
         };
 
-        String authToken = getAuthToken();
         if (null == authToken)
         {
             authenticate(retryAction);
@@ -518,14 +497,13 @@ public class GwtRpcController extends BaseController
             }
         };
 
-        String token = getAuthToken();
-        if (null == token)
+        if (null == authToken)
         {
             authenticate(retryAction);
         }
         else
         {
-            getAssignedSvc().refreshTotals(token, maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, new AsyncCallback<List<AssignedTaskTotal>>()
+            assignedSvc.refreshTotals(authToken, maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, new AsyncCallback<List<AssignedTaskTotal>>()
             {
                 @Override
                 public void onSuccess(List<AssignedTaskTotal> result)
@@ -565,14 +543,13 @@ public class GwtRpcController extends BaseController
             }
         };
 
-        String authToken = getAuthToken();
         if (null == authToken)
         {
             authenticate(retryAction);
         }
         else
         {
-            getSvc().persistTotals(authToken, persistAsName, maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, new AsyncCallback<String>()
+            svc.persistTotals(authToken, persistAsName, maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, new AsyncCallback<String>()
             {
                 @Override
                 public void onSuccess(String result)
@@ -608,7 +585,6 @@ public class GwtRpcController extends BaseController
             }
         };
 
-        String authToken = getAuthToken();
         if (null == authToken)
         {
             authenticate(retryAction);
@@ -651,7 +627,6 @@ public class GwtRpcController extends BaseController
             }
         };
 
-        String authToken = getAuthToken();
         if (null == authToken)
         {
             authenticate(retryAction);

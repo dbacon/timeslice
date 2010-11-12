@@ -6,6 +6,7 @@ import com.enokinomi.timeslice.web.task.client.controller.impl.GwtRpcController;
 import com.enokinomi.timeslice.web.task.client.ui.api.IHistoryPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IHotlistPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsPanel;
+import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsProvider;
 import com.enokinomi.timeslice.web.task.client.ui.api.IParamPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IReportPanel;
 import com.google.gwt.inject.client.AbstractGinModule;
@@ -16,10 +17,11 @@ public class TaskClientModule extends AbstractGinModule
     @Override
     protected void configure()
     {
-        bind(OptionsPanel.class);
+        bind(OptionsPanel.class).in(Singleton.class);
 
         bind(IController.class).to(GwtRpcController.class);
         bind(IAuthTokenHolder.class).to(GwtRpcController.class);
+        bind(IOptionsProvider.class).to(OptionsPanel.class);
 
         bind(GwtRpcController.class).in(Singleton.class);
 
