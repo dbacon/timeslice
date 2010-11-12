@@ -32,8 +32,6 @@ import com.google.inject.Singleton;
 /**
  * @see http://stuffthathappens.com/blog/2009/09/14/guice-with-gwt/
  *
- * @author dbacon
- *
  */
 @Singleton
 public class GuiceRpcService extends RemoteServiceServlet

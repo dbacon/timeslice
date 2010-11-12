@@ -21,8 +21,6 @@ import com.google.inject.servlet.GuiceFilter;
 /**
  * Prepares a webapp context and HTTP listener, then starts and awaits a server.
  *
- * @author dbacon
- *
  */
 public class TsHost
 {

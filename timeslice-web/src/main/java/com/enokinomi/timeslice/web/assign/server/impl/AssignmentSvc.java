@@ -15,8 +15,6 @@ import com.google.inject.name.Named;
 /**
  * TODO: split up between app stuff and translation to web-types stuff.
  *
- * @author dbacon
- *
  */
 public class AssignmentSvc
 {

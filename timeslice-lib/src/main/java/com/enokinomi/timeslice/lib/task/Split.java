@@ -30,8 +30,6 @@ import com.enokinomi.timeslice.lib.generic.CompareByTime;
  * part of a {@code StartTag}s definition is still stored in another {@code StartTag}.
  * </p>
  *
- * @author dbacon
- *
  */
 public class Split
 {

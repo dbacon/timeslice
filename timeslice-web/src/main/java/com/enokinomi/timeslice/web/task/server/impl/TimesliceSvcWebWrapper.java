@@ -13,8 +13,6 @@ import com.google.inject.Inject;
 /**
  * Translates between server- and client- types.
  *
- * @author dbacon
- *
  */
 public class TimesliceSvcWebWrapper
 {
