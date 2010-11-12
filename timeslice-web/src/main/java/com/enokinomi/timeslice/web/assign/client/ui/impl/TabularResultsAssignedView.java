@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.web.assign.client.ui;
+package com.enokinomi.timeslice.web.assign.client.ui.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
+import com.enokinomi.timeslice.web.assign.client.ui.api.ITabularResultsAssignedView;
 import com.enokinomi.timeslice.web.core.client.ui.EditableLabel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -17,18 +18,21 @@ import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Inject;
 
-public class TabularResultsAssignedView extends ResizeComposite
+public class TabularResultsAssignedView extends ResizeComposite implements ITabularResultsAssignedView
 {
-    private final TabularResultsAssignedViewConstants constants = GWT.create(TabularResultsAssignedViewConstants.class);
-
-    private  String Label_Updating = constants.updating();
+    private final TabularResultsAssignedViewConstants constants;
 
     private FlexTable resultsTable = new FlexTable();
     private final MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 
-    public TabularResultsAssignedView()
+    @Inject
+    TabularResultsAssignedView(TabularResultsAssignedViewConstants constants)
     {
+        this.constants = constants;
+
         resultsTable.setStylePrimaryName("tsMathTable");
 
         initWidget(new ScrollPanel(resultsTable));
@@ -41,6 +45,7 @@ public class TabularResultsAssignedView extends ResizeComposite
 
     private final ArrayList<Listener> listeners = new ArrayList<Listener>();
 
+    @Override
     public void addListener(Listener listener)
     {
         if (null != listener)
@@ -49,12 +54,19 @@ public class TabularResultsAssignedView extends ResizeComposite
         }
     }
 
+    @Override
     public void removeListener(Listener listener)
     {
         if (null != listener)
         {
             listeners.remove(listener);
         }
+    }
+
+    @Override
+    public Widget asWidget()
+    {
+        return this;
     }
 
     protected void fireBilleeUpdate(String description, String newBillee)
@@ -72,6 +84,7 @@ public class TabularResultsAssignedView extends ResizeComposite
         }
     }
 
+    @Override
     public void setResults(List<AssignedTaskTotal> report)
     {
         Collections.sort(report, Collections.reverseOrder(new Comparator<AssignedTaskTotal>()
@@ -145,7 +158,7 @@ public class TabularResultsAssignedView extends ResizeComposite
                 {
                     if (!oldValue.equals(newValue))
                     {
-                        label.getLabel().setText(Label_Updating);
+                        label.getLabel().setText(constants.updating());
                         sendBilleeUpdate(reportRow, newValue);
                     }
                 }
@@ -181,6 +194,7 @@ public class TabularResultsAssignedView extends ResizeComposite
         fireBilleeUpdate(description, newBillee);
     }
 
+    @Override
     public void setBillees(List<String> billees)
     {
         oracle.clear();

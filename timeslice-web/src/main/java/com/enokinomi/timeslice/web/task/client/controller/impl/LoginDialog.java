@@ -79,7 +79,7 @@ public class LoginDialog extends DialogBox
         });
     }
 
-    public LoginDialog(String title, String subText, LoginDialog.IListener plistener)
+    LoginDialog(String title, String subText, LoginDialog.IListener plistener)
     {
         super(false, true);
 

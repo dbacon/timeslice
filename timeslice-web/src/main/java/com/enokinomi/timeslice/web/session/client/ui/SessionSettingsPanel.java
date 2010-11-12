@@ -11,7 +11,7 @@ public class SessionSettingsPanel extends Composite
 {
     private final FlexTable table = new FlexTable();
 
-    public SessionSettingsPanel()
+    SessionSettingsPanel()
     {
         initWidget(table);
     }

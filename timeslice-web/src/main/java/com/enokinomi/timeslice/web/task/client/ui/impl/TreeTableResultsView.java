@@ -26,7 +26,7 @@ public class TreeTableResultsView extends ResizeComposite
     private FlexTable resultsTable = new FlexTable();
     private final TaskTotalIntegrator integrator;
 
-    public TreeTableResultsView(TaskTotalIntegrator integrator)
+    TreeTableResultsView(TaskTotalIntegrator integrator)
     {
         this.integrator = integrator;
         initWidget(new ScrollPanel(resultsTable));

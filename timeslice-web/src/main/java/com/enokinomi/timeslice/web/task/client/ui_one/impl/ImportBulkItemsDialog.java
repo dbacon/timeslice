@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
-import com.enokinomi.timeslice.web.task.client.ui_compat.Ts107Reader;
+import com.enokinomi.timeslice.web.task.client.ui_compat.api.ITs107Reader;
 import com.enokinomi.timeslice.web.task.client.ui_one.api.BulkItemListener;
 import com.enokinomi.timeslice.web.task.client.ui_one.api.IImportBulkItemsDialog;
 import com.google.gwt.dom.client.Style.Unit;
@@ -28,6 +28,7 @@ public class ImportBulkItemsDialog extends DialogBox implements IImportBulkItems
     private List<BulkItemListener> listeners = new ArrayList<BulkItemListener>();
 
     private final ArrayList<StartTag> parsedItems = new ArrayList<StartTag>();
+    private final ITs107Reader ts107Reader;
 
     public DialogBox asDialog()
     {
@@ -55,12 +56,13 @@ public class ImportBulkItemsDialog extends DialogBox implements IImportBulkItems
     }
 
     @Inject
-    ImportBulkItemsDialog(ImportBulkItemsDialogConstants constants, ImportBulkItemsDialogMessages messages)
+    ImportBulkItemsDialog(ImportBulkItemsDialogConstants constants, ImportBulkItemsDialogMessages messages, ITs107Reader ts107Reader)
     {
         super(false, true);
 
         this.constants = constants;
         this.messages = messages;
+        this.ts107Reader = ts107Reader;
 
         initWidgets();
     }
@@ -98,7 +100,7 @@ public class ImportBulkItemsDialog extends DialogBox implements IImportBulkItems
             public void onChange(ChangeEvent event)
             {
                 parsedItems.clear();
-                parsedItems.addAll(new Ts107Reader(textArea.getText()).parseItems());
+                parsedItems.addAll(ts107Reader.parseItems(textArea.getText()));
 
                 updateImportButton();
             }

@@ -76,7 +76,7 @@ public class ProRataManagerPanel extends Composite
     }
 
     @Inject
-    public ProRataManagerPanel(IAuthTokenHolder tokenHolder)
+    ProRataManagerPanel(IAuthTokenHolder tokenHolder)
     {
         this.tokenHolder = tokenHolder;
 

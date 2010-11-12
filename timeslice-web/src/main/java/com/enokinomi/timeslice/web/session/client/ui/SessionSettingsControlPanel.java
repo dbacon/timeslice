@@ -27,7 +27,7 @@ public class SessionSettingsControlPanel extends Composite implements ClickHandl
     private IAuthTokenHolder authTokenHolder;
 
     @Inject
-    public SessionSettingsControlPanel(IAuthTokenHolder authTokenHolder)
+    SessionSettingsControlPanel(IAuthTokenHolder authTokenHolder)
     {
         this.authTokenHolder = authTokenHolder;
 

@@ -1,29 +1,23 @@
-package com.enokinomi.timeslice.web.task.client.ui_compat;
+package com.enokinomi.timeslice.web.task.client.ui_compat.impl;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
+import com.enokinomi.timeslice.web.task.client.ui_compat.api.ITs107Reader;
 
 
-public class Ts107Reader
+public class Ts107Reader implements ITs107Reader
 {
-    private final String text;
-
-    public Ts107Reader(String text)
+    Ts107Reader()
     {
-        this.text = text;
     }
 
-    public String getText()
-    {
-        return text;
-    }
-
-    public List<StartTag> parseItems()
+    @Override
+    public List<StartTag> parseItems(String text)
     {
         LinkedList<StartTag> result = new LinkedList<StartTag>();
-        String[] lines = getText().split("\n");
+        String[] lines = text.split("\n");
 
         for (String line: lines)
         {

@@ -136,7 +136,7 @@ public class ParamPanel extends Composite implements IParamPanel
     }
 
     @Inject
-    public ParamPanel(ParamPanelConstants constants)
+    ParamPanel(ParamPanelConstants constants)
     {
         this.constants = constants;
 

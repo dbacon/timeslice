@@ -19,7 +19,7 @@ public class Node<PathComponent, Value, Aggregate>
      * @param emptyAggregate
      * @param emptyValue
      */
-    public Node(Aggregate emptyAggregate)
+    Node(Aggregate emptyAggregate)
     {
         this(Collections.<PathComponent>emptyList(), emptyAggregate, null);
     }
@@ -29,7 +29,7 @@ public class Node<PathComponent, Value, Aggregate>
      *
      * @param path
      */
-    public Node(List<PathComponent> path)
+    Node(List<PathComponent> path)
     {
         this(path, null, null);
     }

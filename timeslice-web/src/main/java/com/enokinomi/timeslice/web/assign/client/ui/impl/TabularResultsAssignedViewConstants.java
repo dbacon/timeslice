@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.web.assign.client.ui;
+package com.enokinomi.timeslice.web.assign.client.ui.impl;
 
 import com.google.gwt.i18n.client.Constants;
 

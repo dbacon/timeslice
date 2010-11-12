@@ -8,6 +8,10 @@ public abstract class NodeTraverser<PC,T,A>
 {
     protected abstract void visit(List<PC> path, T data, A aggregate);
 
+    protected NodeTraverser()
+    {
+    }
+
     public void visit(Node<PC, T,A> node)
     {
         visit(node.path, node.value, node.aggregate);

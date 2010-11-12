@@ -7,6 +7,10 @@ import java.util.Map;
 
 public class Reorderer<K,V>
 {
+    Reorderer()
+    {
+    }
+
     public Map<K, V> reorder(Map<K,V> map, int rowi, int rel)
     {
         int starting = rowi;

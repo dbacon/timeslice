@@ -91,7 +91,7 @@ public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsPr
     }
 
     @Inject
-    public OptionsPanel(SessionSettingsControlPanel sscp)
+    OptionsPanel(SessionSettingsControlPanel sscp)
     {
         localWidgetsInit();
 

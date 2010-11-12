@@ -23,6 +23,10 @@ public abstract class BaseController implements IController
 {
     private List<IControllerListener> listeners = new ArrayList<IControllerListener>();
 
+    protected BaseController()
+    {
+    }
+
     public void addControllerListener(IControllerListener listener)
     {
         if (listener != null)

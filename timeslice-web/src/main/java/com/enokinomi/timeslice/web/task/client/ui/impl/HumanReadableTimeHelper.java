@@ -4,6 +4,10 @@ import com.google.gwt.i18n.client.NumberFormat;
 
 public class HumanReadableTimeHelper
 {
+    HumanReadableTimeHelper()
+    {
+    }
+
     public static String formatDuration(long millis)
     {
         long seconds = millis / 1000;

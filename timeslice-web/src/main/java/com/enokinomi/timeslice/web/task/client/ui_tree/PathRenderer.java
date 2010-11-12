@@ -17,7 +17,7 @@ public class PathRenderer<PC> implements Tx<List<PC>, String>
         this(separator, TransformUtils.<PC>stringify());
     }
 
-    public PathRenderer(String separator, Tx<PC, String> pcStringify)
+    PathRenderer(String separator, Tx<PC, String> pcStringify)
     {
         this.separator = separator;
         this.pcStringify = pcStringify;

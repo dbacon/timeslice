@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
-import com.enokinomi.timeslice.web.assign.client.ui.TabularResultsAssignedView;
-import com.enokinomi.timeslice.web.assign.client.ui.TabularResultsAssignedView.Listener;
+import com.enokinomi.timeslice.web.assign.client.ui.api.ITabularResultsAssignedView;
+import com.enokinomi.timeslice.web.assign.client.ui.impl.TabularResultsAssignedView.Listener;
 import com.enokinomi.timeslice.web.prorata.client.ui.ProjectListPanel;
 import com.enokinomi.timeslice.web.task.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.task.client.ui.api.IParamChangedListener;
@@ -35,7 +35,7 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
     private final Button persistButton;
     private final TextBox persistAsName = new TextBox();
     private final Label persisted = new Label();
-    private final TabularResultsAssignedView resultsAssignedView = new TabularResultsAssignedView();
+    private final ITabularResultsAssignedView resultsAssignedView;
     private final TaskTotalIntegrator integrator = new TaskTotalIntegrator("/");
     private final TreeTableResultsView resultsTreeView = new TreeTableResultsView(integrator);
     private final ProjectListPanel projectListPanel;
@@ -78,10 +78,11 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
     }
 
     @Inject
-    public ReportPanel(ReportPanelConstants constants, ProjectListPanel projectListPanel, IParamPanel paramPanel)
+    ReportPanel(ReportPanelConstants constants, ProjectListPanel projectListPanel, IParamPanel paramPanel, ITabularResultsAssignedView resultsAssignedView)
     {
         this.projectListPanel = projectListPanel;
         this.params = paramPanel;
+        this.resultsAssignedView = resultsAssignedView;
 
         refreshButton = new Button(constants.refresh());
         persistButton = new Button(constants.persist());
@@ -154,7 +155,7 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
 
         TabLayoutPanel resultsTabs = new TabLayoutPanel(2, Unit.EM);
         resultsTabs.add(resultsTreeView, constants.totaling());
-        resultsTabs.add(resultsAssignedView, constants.assigned());
+        resultsTabs.add(resultsAssignedView.asWidget(), constants.assigned());
         resultsTabs.add(projectListPanel, constants.projectList());
 
         SplitLayoutPanel dp = new SplitLayoutPanel();

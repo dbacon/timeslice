@@ -14,7 +14,7 @@ public class TaskTotalIntegrator implements NodeIntegrator<String, TaskTotal, Ta
 {
     private String separator;
 
-    public TaskTotalIntegrator(String separator)
+    TaskTotalIntegrator(String separator)
     {
         this.separator = separator;
     }

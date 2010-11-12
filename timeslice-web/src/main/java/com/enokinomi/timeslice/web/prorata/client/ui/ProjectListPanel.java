@@ -89,7 +89,7 @@ public class ProjectListPanel extends Composite
     private final IOrderingSvc2Async orderingSvc2;
 
     @Inject
-    public ProjectListPanel(
+    ProjectListPanel(
             IAuthTokenHolder tokenHolder,
             IProRataSvcAsync prorataSvc,
             IOrderingSvcAsync orderingSvc,

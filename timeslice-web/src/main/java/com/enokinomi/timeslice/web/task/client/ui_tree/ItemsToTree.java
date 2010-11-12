@@ -13,7 +13,7 @@ public class ItemsToTree<PC, V, A>
     private final Tx<V, List<PC>> pathExtractor;
     private final Tx<Pair<A, V>, A> valueCombiner;
 
-    public ItemsToTree(NodeIntegrator<PC, V, A> integrator)
+    ItemsToTree(NodeIntegrator<PC, V, A> integrator)
     {
         pathExtractor = integrator.createPathExtractor();
         valueCombiner = integrator.createValueCombiner();
