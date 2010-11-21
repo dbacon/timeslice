@@ -7,6 +7,7 @@ import com.enokinomi.timeslice.lib.commondatautil.ConnectionWork;
 import com.enokinomi.timeslice.lib.commondatautil.IConnectionContext;
 import com.enokinomi.timeslice.lib.commondatautil.ISchemaDetector;
 import com.enokinomi.timeslice.lib.commondatautil.SchemaDuty;
+import com.enokinomi.timeslice.lib.util.Mutable;
 import com.google.inject.Inject;
 
 public class DowngradeSchema1To0AppJob implements AppJob

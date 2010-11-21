@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.lib.appjob_stockjobs;
+package com.enokinomi.timeslice.lib.util;
 
 public class Mutable<T>
 {
