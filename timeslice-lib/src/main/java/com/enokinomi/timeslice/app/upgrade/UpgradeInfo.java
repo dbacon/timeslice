@@ -12,7 +12,7 @@ public class UpgradeInfo
     private URL downloadUrl;
     private List<String> tags = new ArrayList<String>();
 
-    public UpgradeInfo(Instant releaseTime, URL downloadUrl)
+    UpgradeInfo(Instant releaseTime, URL downloadUrl)
     {
         this.releaseTime = releaseTime;
         this.downloadUrl = downloadUrl;

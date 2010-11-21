@@ -1,7 +1,7 @@
 package com.enokinomi.timeslice.lib.userinfo;
 
 
-import com.enokinomi.timeslice.lib.commondatautil.IConnectionContext;
+import com.enokinomi.timeslice.lib.commondatautil.api.IConnectionContext;
 import com.google.inject.Inject;
 
 

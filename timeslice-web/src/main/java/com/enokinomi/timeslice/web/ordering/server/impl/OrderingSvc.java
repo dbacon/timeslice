@@ -2,7 +2,7 @@ package com.enokinomi.timeslice.web.ordering.server.impl;
 
 import java.util.List;
 
-import com.enokinomi.timeslice.lib.ordering.IOrderingStore;
+import com.enokinomi.timeslice.lib.ordering.api.IOrderingStore;
 import com.enokinomi.timeslice.web.ordering.client.core.IOrderingSvc;
 import com.enokinomi.timeslice.web.session.server.core.ISessionTracker;
 import com.google.inject.Inject;

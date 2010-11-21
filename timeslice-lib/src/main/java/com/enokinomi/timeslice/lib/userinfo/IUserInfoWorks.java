@@ -1,11 +1,11 @@
 package com.enokinomi.timeslice.lib.userinfo;
 
-import com.enokinomi.timeslice.lib.commondatautil.ConnectionWork;
+import com.enokinomi.timeslice.lib.commondatautil.api.IConnectionWork;
 
 public interface IUserInfoWorks
 {
 
-    ConnectionWork<TsSettings> workLoadUserSettings(String username, String prefix);
-    ConnectionWork<Void> workSaveUserSettings(String username, TsSettings settings);
+    IConnectionWork<TsSettings> workLoadUserSettings(String username, String prefix);
+    IConnectionWork<Void> workSaveUserSettings(String username, TsSettings settings);
 
 }

@@ -3,8 +3,8 @@ package com.enokinomi.timeslice.web.assign.server.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.enokinomi.timeslice.lib.assign.INowProvider;
-import com.enokinomi.timeslice.lib.assign.ITagStore;
+import com.enokinomi.timeslice.lib.assign.api.INowProvider;
+import com.enokinomi.timeslice.lib.assign.api.ITagStore;
 import com.enokinomi.timeslice.lib.task.TaskTotalMember;
 import com.enokinomi.timeslice.lib.task.TimesliceSvc;
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;

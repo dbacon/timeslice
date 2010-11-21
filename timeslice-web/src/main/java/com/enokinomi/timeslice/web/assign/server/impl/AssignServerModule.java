@@ -1,6 +1,6 @@
 package com.enokinomi.timeslice.web.assign.server.impl;
 
-import com.enokinomi.timeslice.lib.assign.AssignModule;
+import com.enokinomi.timeslice.lib.assign.impl.AssignModule;
 import com.enokinomi.timeslice.web.assign.client.core.IAssignmentSvc;
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;

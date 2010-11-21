@@ -44,7 +44,7 @@ public class Upgrader
         this.safeDir = safeDir;
     }
 
-    public Upgrader(String url, String safeDir)
+    Upgrader(String url, String safeDir)
     {
         this.url = url;
         this.safeDir = safeDir;

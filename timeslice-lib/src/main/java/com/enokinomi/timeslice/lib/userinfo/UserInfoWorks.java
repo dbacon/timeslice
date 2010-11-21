@@ -5,8 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.enokinomi.timeslice.lib.commondatautil.BaseHsqldbOps;
-import com.enokinomi.timeslice.lib.commondatautil.ConnectionWork;
+import com.enokinomi.timeslice.lib.commondatautil.api.IConnectionWork;
+import com.enokinomi.timeslice.lib.commondatautil.impl.BaseHsqldbOps;
 import com.enokinomi.timeslice.lib.util.ITransformThrowable;
 import com.google.inject.Inject;
 
@@ -23,9 +23,9 @@ public class UserInfoWorks implements IUserInfoWorks
     }
 
     @Override
-    public ConnectionWork<TsSettings> workLoadUserSettings(final String username, final String prefix)
+    public IConnectionWork<TsSettings> workLoadUserSettings(final String username, final String prefix)
     {
-        return new ConnectionWork<TsSettings>()
+        return new IConnectionWork<TsSettings>()
         {
             @Override
             public TsSettings performWithConnection(Connection conn)
@@ -64,9 +64,9 @@ public class UserInfoWorks implements IUserInfoWorks
     }
 
     @Override
-    public ConnectionWork<Void> workSaveUserSettings(final String username, final TsSettings settings)
+    public IConnectionWork<Void> workSaveUserSettings(final String username, final TsSettings settings)
     {
-        return new ConnectionWork<Void>()
+        return new IConnectionWork<Void>()
         {
             @Override
             public Void performWithConnection(Connection conn)

@@ -14,9 +14,11 @@ import org.junit.Test;
 
 import com.enokinomi.timeslice.lib.assign.ConnectionFactory;
 import com.enokinomi.timeslice.lib.assign.MockSchemaManager;
-import com.enokinomi.timeslice.lib.commondatautil.BaseHsqldbOps;
-import com.enokinomi.timeslice.lib.commondatautil.ConnectionContext;
-import com.enokinomi.timeslice.lib.commondatautil.SchemaDuty;
+import com.enokinomi.timeslice.lib.commondatautil.api.ISchemaDuty;
+import com.enokinomi.timeslice.lib.commondatautil.impl.BaseHsqldbOps;
+import com.enokinomi.timeslice.lib.commondatautil.impl.ConnectionContext;
+import com.enokinomi.timeslice.lib.commondatautil.impl.SchemaDuty;
+import com.enokinomi.timeslice.lib.util.IoHelp;
 
 
 public class UserInfoDaoTest
@@ -32,8 +34,8 @@ public class UserInfoDaoTest
         ConnectionFactory connFactory = new ConnectionFactory();
         conn = connFactory.createConnection(dbDir + "/test-1");
 
-        SchemaDuty sd = new SchemaDuty("timeslice-4.ddl");
-        sd.createSchema(conn);
+        ISchemaDuty sd = new SchemaDuty();
+        sd.createSchema(conn, new IoHelp().readSystemResource("timeslice-4.ddl"));
     }
 
     @After

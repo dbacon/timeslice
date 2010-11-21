@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.joda.time.Instant;
 
-import com.enokinomi.timeslice.lib.commondatautil.BaseHsqldbOps;
-import com.enokinomi.timeslice.lib.commondatautil.ConnectionWork;
+import com.enokinomi.timeslice.lib.commondatautil.api.IConnectionWork;
+import com.enokinomi.timeslice.lib.commondatautil.impl.BaseHsqldbOps;
 import com.enokinomi.timeslice.lib.util.ITransformThrowable;
 import com.google.inject.Inject;
 
@@ -23,9 +23,9 @@ public class TimesliceWorks implements ITimesliceWorks
     }
 
     @Override
-    public ConnectionWork<Void> workAdd(final StartTag tag)
+    public IConnectionWork<Void> workAdd(final StartTag tag)
     {
-        return new ConnectionWork<Void>()
+        return new IConnectionWork<Void>()
         {
             @Override
             public Void performWithConnection(Connection conn)
@@ -49,9 +49,9 @@ public class TimesliceWorks implements ITimesliceWorks
         };
     }
     @Override
-    public ConnectionWork<List<StartTag>> workQuery(final String owner, final Instant starting, final Instant ending, final int pageSize, final int pageIndex)
+    public IConnectionWork<List<StartTag>> workQuery(final String owner, final Instant starting, final Instant ending, final int pageSize, final int pageIndex)
     {
-        return new ConnectionWork<List<StartTag>>()
+        return new IConnectionWork<List<StartTag>>()
         {
             @Override
             public List<StartTag> performWithConnection(Connection conn)
@@ -87,9 +87,9 @@ public class TimesliceWorks implements ITimesliceWorks
     }
 
     @Override
-    public ConnectionWork<Void> workRemove(final StartTag tag)
+    public IConnectionWork<Void> workRemove(final StartTag tag)
     {
-        return new ConnectionWork<Void>()
+        return new IConnectionWork<Void>()
         {
             @Override
             public Void performWithConnection(Connection conn)
@@ -109,9 +109,9 @@ public class TimesliceWorks implements ITimesliceWorks
     }
 
     @Override
-    public ConnectionWork<Void> workUpdateText(final StartTag tag)
+    public IConnectionWork<Void> workUpdateText(final StartTag tag)
     {
-        return new ConnectionWork<Void>()
+        return new IConnectionWork<Void>()
         {
             @Override
             public Void performWithConnection(Connection conn)

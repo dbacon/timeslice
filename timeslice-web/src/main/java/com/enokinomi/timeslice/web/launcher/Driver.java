@@ -15,7 +15,7 @@ import joptsimple.OptionSpecBuilder;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import com.enokinomi.timeslice.lib.commondatautil.CommonDataModule;
+import com.enokinomi.timeslice.lib.commondatautil.impl.CommonDataModule;
 import com.enokinomi.timeslice.web.appjob.server.impl.AppJobServerModule;
 import com.enokinomi.timeslice.web.assign.server.impl.AssignServerModule;
 import com.enokinomi.timeslice.web.branding.api.BrandingAbstractModule;

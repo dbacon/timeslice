@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.enokinomi.timeslice.lib.prorata.IProRataStore;
+import com.enokinomi.timeslice.lib.prorata.api.IProRataStore;
 import com.enokinomi.timeslice.lib.util.ITransform;
 import com.enokinomi.timeslice.web.prorata.client.core.Group;
 import com.enokinomi.timeslice.web.prorata.client.core.GroupComponent;
@@ -16,10 +16,10 @@ import com.google.inject.Inject;
 
 public class ProRataSvc implements IProRataSvc
 {
-    private final class ToComponent implements ITransform<com.enokinomi.timeslice.lib.prorata.GroupComponent, GroupComponent>
+    private final class ToComponent implements ITransform<com.enokinomi.timeslice.lib.prorata.api.GroupComponent, GroupComponent>
     {
         @Override
-        public GroupComponent apply(com.enokinomi.timeslice.lib.prorata.GroupComponent r)
+        public GroupComponent apply(com.enokinomi.timeslice.lib.prorata.api.GroupComponent r)
         {
             return new GroupComponent(r.getGroupName(), r.getName(), r.getWeight().doubleValue());
         }
@@ -53,7 +53,7 @@ public class ProRataSvc implements IProRataSvc
     public List<GroupComponent> expandGroup(String authToken, String groupName)
     {
         sessionTracker.checkToken(authToken);
-        List<com.enokinomi.timeslice.lib.prorata.GroupComponent> groupComponents = store.dereferenceGroup(groupName);
+        List<com.enokinomi.timeslice.lib.prorata.api.GroupComponent> groupComponents = store.dereferenceGroup(groupName);
         return tr(groupComponents, new ArrayList<GroupComponent>(groupComponents.size()), new ToComponent());
     }
 
@@ -71,7 +71,7 @@ public class ProRataSvc implements IProRataSvc
 
         List<Group> result = new ArrayList<Group>();
         ToComponent tx = new ToComponent();
-        for (com.enokinomi.timeslice.lib.util.Pair<String, List<com.enokinomi.timeslice.lib.prorata.GroupComponent>> group: store.listAllGroupsInfo())
+        for (com.enokinomi.timeslice.lib.util.Pair<String, List<com.enokinomi.timeslice.lib.prorata.api.GroupComponent>> group: store.listAllGroupsInfo())
         {
             result.add(new Group(group.first, tr(group.second, new ArrayList<GroupComponent>(group.second.size()), tx)));
         }

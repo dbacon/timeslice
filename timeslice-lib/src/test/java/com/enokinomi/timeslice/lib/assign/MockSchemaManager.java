@@ -2,16 +2,14 @@ package com.enokinomi.timeslice.lib.assign;
 
 import java.sql.Connection;
 
-import com.enokinomi.timeslice.lib.commondatautil.SchemaManager;
+import com.enokinomi.timeslice.lib.commondatautil.api.ISchemaManager;
 
-public final class MockSchemaManager extends SchemaManager
+public final class MockSchemaManager implements ISchemaManager
 {
     private final int version;
 
     public MockSchemaManager(int version)
     {
-        super(null, null);
-
         this.version = version;
     }
 
