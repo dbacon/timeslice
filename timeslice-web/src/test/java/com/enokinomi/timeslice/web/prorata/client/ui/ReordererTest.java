@@ -10,8 +10,6 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.enokinomi.timeslice.web.prorata.client.ui.Reorderer;
-
 
 public class ReordererTest
 {

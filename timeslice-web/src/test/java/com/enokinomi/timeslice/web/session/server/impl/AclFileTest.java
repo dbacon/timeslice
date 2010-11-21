@@ -3,8 +3,6 @@ package com.enokinomi.timeslice.web.session.server.impl;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.enokinomi.timeslice.web.session.server.impl.AclFile;
-
 
 public class AclFileTest
 {

@@ -47,7 +47,7 @@ public class HsqldbTagWorks implements ITagWorks
     private final BaseHsqldbOps baseStore;
 
     @Inject
-    public HsqldbTagWorks(BaseHsqldbOps baseStore)
+    HsqldbTagWorks(BaseHsqldbOps baseStore)
     {
         this.baseStore = baseStore;
     }

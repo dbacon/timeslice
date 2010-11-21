@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.enokinomi.timeslice.lib.userinfo.TsSettings;
+import com.enokinomi.timeslice.lib.userinfo.api.TsSettings;
 import com.enokinomi.timeslice.web.session.client.core.ISessionSvc;
 import com.enokinomi.timeslice.web.session.server.core.ISessionTracker;
 import com.enokinomi.timeslice.web.session.server.core.SessionData;

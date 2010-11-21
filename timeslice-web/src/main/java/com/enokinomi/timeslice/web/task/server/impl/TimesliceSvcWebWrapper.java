@@ -3,7 +3,7 @@ package com.enokinomi.timeslice.web.task.server.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.enokinomi.timeslice.lib.task.TimesliceSvc;
+import com.enokinomi.timeslice.lib.task.api.ITimesliceSvc;
 import com.enokinomi.timeslice.lib.util.Transforms;
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
 import com.enokinomi.timeslice.web.task.client.core.TaskTotal;
@@ -16,10 +16,10 @@ import com.google.inject.Inject;
  */
 public class TimesliceSvcWebWrapper
 {
-    private final TimesliceSvc timesliceSvc;
+    private final ITimesliceSvc timesliceSvc;
 
     @Inject
-    TimesliceSvcWebWrapper(TimesliceSvc timesliceSvc)
+    TimesliceSvcWebWrapper(ITimesliceSvc timesliceSvc)
     {
         this.timesliceSvc = timesliceSvc;
     }
@@ -29,7 +29,7 @@ public class TimesliceSvcWebWrapper
         return Transforms.tr(timesliceSvc.refreshItems(
                     user,
                     maxSize,
-                    com.enokinomi.timeslice.lib.task.SortDir.valueOf(sortDir.name()),
+                    com.enokinomi.timeslice.lib.task.api.SortDir.valueOf(sortDir.name()),
                     startingInstant,
                     endingInstant),
                 new ArrayList<StartTag>(),
@@ -42,7 +42,7 @@ public class TimesliceSvcWebWrapper
                 timesliceSvc.refreshTotals(
                         user,
                         maxSize,
-                        com.enokinomi.timeslice.lib.task.SortDir.valueOf(sortDir.name()),
+                        com.enokinomi.timeslice.lib.task.api.SortDir.valueOf(sortDir.name()),
                         startingInstant,
                         endingInstant,
                         allowWords,
@@ -56,7 +56,7 @@ public class TimesliceSvcWebWrapper
         return timesliceSvc.persistTotals(
                 persistAsName,
                 maxSize,
-                com.enokinomi.timeslice.lib.task.SortDir.valueOf(sortDir.name()),
+                com.enokinomi.timeslice.lib.task.api.SortDir.valueOf(sortDir.name()),
                 startingInstant,
                 endingInstant,
                 allowWords,
@@ -72,7 +72,7 @@ public class TimesliceSvcWebWrapper
 
     public void addItems(final String user, List<StartTag> items)
     {
-        timesliceSvc.addItems(user, Transforms.tr(items, new ArrayList<com.enokinomi.timeslice.lib.task.StartTag>(), new ClientToServer(user)));
+        timesliceSvc.addItems(user, Transforms.tr(items, new ArrayList<com.enokinomi.timeslice.lib.task.api.StartTag>(), new ClientToServer(user)));
     }
 
     public void update(String user, StartTag editedStartTag)

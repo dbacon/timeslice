@@ -7,6 +7,10 @@ import com.enokinomi.timeslice.lib.assign.api.INowProvider;
 
 public class RealtimeNowProvider implements INowProvider
 {
+    RealtimeNowProvider()
+    {
+    }
+
     @Override
     public DateTime getNow()
     {

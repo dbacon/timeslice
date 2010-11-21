@@ -2,7 +2,7 @@ package com.enokinomi.timeslice.web.task.server.impl;
 
 import java.io.File;
 
-import com.enokinomi.timeslice.lib.task.TaskModule;
+import com.enokinomi.timeslice.lib.task.impl.TaskModule;
 import com.enokinomi.timeslice.web.task.client.core.ITimesliceSvc;
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;

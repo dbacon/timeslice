@@ -11,8 +11,8 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
 
-import com.enokinomi.timeslice.lib.userinfo.TsSettings;
-import com.enokinomi.timeslice.lib.userinfo.UserInfoDao;
+import com.enokinomi.timeslice.lib.userinfo.api.IUserInfoDao;
+import com.enokinomi.timeslice.lib.userinfo.api.TsSettings;
 import com.enokinomi.timeslice.lib.util.Check;
 import com.google.inject.Inject;
 import com.google.inject.internal.Nullable;
@@ -32,11 +32,11 @@ public class TsHost
 
     private final Server server = new Server();
 
-    private final UserInfoDao userInfoDao;
+    private final IUserInfoDao userInfoDao;
 
 
     @Inject
-    TsHost(@Nullable UserInfoDao userInfoDao)
+    TsHost(@Nullable IUserInfoDao userInfoDao)
     {
         this.userInfoDao = userInfoDao;
     }

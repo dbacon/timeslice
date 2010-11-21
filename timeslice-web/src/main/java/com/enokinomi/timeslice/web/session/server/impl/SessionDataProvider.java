@@ -4,8 +4,8 @@ import java.util.UUID;
 
 import org.joda.time.DateTime;
 
-import com.enokinomi.timeslice.lib.userinfo.IUserInfoDao;
-import com.enokinomi.timeslice.lib.userinfo.TsSettings;
+import com.enokinomi.timeslice.lib.userinfo.api.IUserInfoDao;
+import com.enokinomi.timeslice.lib.userinfo.api.TsSettings;
 import com.enokinomi.timeslice.web.session.server.core.SessionData;
 import com.google.inject.Inject;
 

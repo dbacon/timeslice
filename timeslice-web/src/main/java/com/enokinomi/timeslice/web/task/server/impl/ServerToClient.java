@@ -3,8 +3,8 @@ package com.enokinomi.timeslice.web.task.server.impl;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 
-import com.enokinomi.timeslice.lib.task.StartTag;
-import com.enokinomi.timeslice.lib.task.TaskTotalMember;
+import com.enokinomi.timeslice.lib.task.api.StartTag;
+import com.enokinomi.timeslice.lib.task.api.TaskTotalMember;
 import com.enokinomi.timeslice.lib.util.ITransform;
 import com.enokinomi.timeslice.web.task.client.core.TaskTotal;
 

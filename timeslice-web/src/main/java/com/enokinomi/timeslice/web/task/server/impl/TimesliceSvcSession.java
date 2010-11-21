@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
-import com.enokinomi.timeslice.lib.userinfo.TsSettings;
+import com.enokinomi.timeslice.lib.userinfo.api.TsSettings;
 import com.enokinomi.timeslice.web.branding.api.IBranding;
 import com.enokinomi.timeslice.web.core.client.util.NotAuthenticException;
 import com.enokinomi.timeslice.web.session.server.core.ISessionTracker;

@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
 import com.enokinomi.timeslice.web.task.client.ui_compat.api.ITs107Reader;
-import com.enokinomi.timeslice.web.task.client.ui_compat.impl.Ts107Reader;
 
 
 public class Ts107ReaderTest

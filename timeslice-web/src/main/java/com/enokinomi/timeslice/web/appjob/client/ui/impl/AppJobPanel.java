@@ -3,8 +3,8 @@ package com.enokinomi.timeslice.web.appjob.client.ui.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.enokinomi.timeslice.web.appjob.client.ui.api.IAppJobPanelListener;
 import com.enokinomi.timeslice.web.appjob.client.ui.api.IAppJobPanel;
+import com.enokinomi.timeslice.web.appjob.client.ui.api.IAppJobPanelListener;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

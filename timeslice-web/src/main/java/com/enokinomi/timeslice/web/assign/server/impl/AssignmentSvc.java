@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.enokinomi.timeslice.lib.assign.api.INowProvider;
 import com.enokinomi.timeslice.lib.assign.api.ITagStore;
-import com.enokinomi.timeslice.lib.task.TaskTotalMember;
-import com.enokinomi.timeslice.lib.task.TimesliceSvc;
+import com.enokinomi.timeslice.lib.task.api.ITimesliceSvc;
+import com.enokinomi.timeslice.lib.task.api.TaskTotalMember;
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.task.client.core_todo_move_out.SortDir;
 import com.google.inject.Inject;
@@ -18,13 +18,13 @@ import com.google.inject.name.Named;
  */
 public class AssignmentSvc
 {
-    private final TimesliceSvc timesliceSvc;
+    private final ITimesliceSvc timesliceSvc;
     private final String valueIfNotAssigned;
     private final ITagStore tagStore;
     private final INowProvider nowProvider;
 
     @Inject
-    AssignmentSvc(ITagStore tagStore, INowProvider nowProvider, TimesliceSvc timesliceSvc, @Named("assignDefault") String valueIfNotAssigned)
+    AssignmentSvc(ITagStore tagStore, INowProvider nowProvider, ITimesliceSvc timesliceSvc, @Named("assignDefault") String valueIfNotAssigned)
     {
         this.tagStore = tagStore;
         this.nowProvider = nowProvider;
@@ -44,7 +44,7 @@ public class AssignmentSvc
 
     public List<AssignedTaskTotal> refreshTotals(String user, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
     {
-        return resolveBillees(timesliceSvc.refreshTotals(user, maxSize, com.enokinomi.timeslice.lib.task.SortDir.valueOf(sortDir.name()), startingInstant, endingInstant, allowWords, ignoreWords));
+        return resolveBillees(timesliceSvc.refreshTotals(user, maxSize, com.enokinomi.timeslice.lib.task.api.SortDir.valueOf(sortDir.name()), startingInstant, endingInstant, allowWords, ignoreWords));
     }
 
     private List<AssignedTaskTotal> resolveBillees(List<TaskTotalMember> taskTotals)

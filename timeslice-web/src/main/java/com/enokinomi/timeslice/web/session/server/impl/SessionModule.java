@@ -1,6 +1,6 @@
 package com.enokinomi.timeslice.web.session.server.impl;
 
-import com.enokinomi.timeslice.lib.userinfo.UserInfoModule;
+import com.enokinomi.timeslice.lib.userinfo.impl.UserInfoModule;
 import com.enokinomi.timeslice.web.session.client.core.ISessionSvc;
 import com.enokinomi.timeslice.web.session.server.core.ISessionTracker;
 import com.google.inject.AbstractModule;

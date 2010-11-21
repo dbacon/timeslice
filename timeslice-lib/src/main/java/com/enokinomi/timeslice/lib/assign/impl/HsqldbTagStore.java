@@ -15,7 +15,7 @@ public class HsqldbTagStore implements ITagStore
     private final ITagWorks tagWorks;
 
     @Inject
-    public HsqldbTagStore(ITagWorks tagWorks, IConnectionContext connContext)
+    HsqldbTagStore(ITagWorks tagWorks, IConnectionContext connContext)
     {
         this.tagWorks = tagWorks;
         this.connContext = connContext;
