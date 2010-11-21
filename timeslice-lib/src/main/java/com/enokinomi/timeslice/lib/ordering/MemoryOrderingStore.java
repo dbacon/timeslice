@@ -1,46 +1,63 @@
 package com.enokinomi.timeslice.lib.ordering;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-public class MemoryOrderingStore<T> implements IOrderingStore<T>
+
+public class MemoryOrderingStore implements IOrderingStore
 {
-    private Map<String, List<T>> store = new LinkedHashMap<String, List<T>>();
+    List<String> data = new ArrayList<String>();
 
-    @Override
-    public List<T> requestOrdering(String setName, List<T> unorderedSetValues)
+    public MemoryOrderingStore()
     {
-        List<T> ordering = store.get(setName);
+        this(Collections.<String>emptyList());
+    }
 
-        if (null == ordering)
-        {
-            return unorderedSetValues;
-        }
-        else
-        {
-            List<T> result = new OrderApplier().<T>applyOrdering(unorderedSetValues, ordering);
-
-            return result;
-        }
+    public MemoryOrderingStore(List<String> existingData)
+    {
+        data.addAll(existingData);
     }
 
     @Override
-    public void setOrdering(String setName, List<T> orderedSetMembers)
+    public void addPartialOrdering(String setName, String smaller, List<String> larger)
     {
-        // delete any existing under setName
-        // save items and their index in the list under setName
+        // we are removing anything we are adding.
+        data.removeAll(larger);
 
-        List<T> list = store.get(setName);
+        int indexOf = -1;
 
-        if (null == list)
+        if (null != smaller)
         {
-            list = new ArrayList<T>();
-            store.put(setName, list);
+            if (larger.contains(smaller)) throw new IllegalArgumentException("larger set cannot contain smaller element");
+
+            // missing destination anchor is implicitly added
+            if (!data.contains(smaller)) data.add(smaller);
+
+            // add new members after anchor
+            indexOf = data.indexOf(smaller);
         }
 
-        list.clear();
-        list.addAll(orderedSetMembers);
+        data.addAll(indexOf + 1, larger);
+
+        dump("after adding partial");
     }
+
+    private void dump(String msg)
+    {
+        System.out.println("Data (" + msg + "):");
+        for (String element: data)
+        {
+
+            System.out.println("  " + element);
+        }
+        System.out.println("End.");
+    }
+
+    @Override
+    public List<String> requestOrdering(String setName, List<String> unorderedElements)
+    {
+        return new OrderApplier().applyOrdering(unorderedElements, data);
+    }
+
 }

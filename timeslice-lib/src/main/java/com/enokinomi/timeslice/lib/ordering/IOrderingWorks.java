@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.lib.ordering2;
+package com.enokinomi.timeslice.lib.ordering;
 
 import java.util.List;
 

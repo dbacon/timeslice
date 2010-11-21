@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.lib.ordering2;
+package com.enokinomi.timeslice.lib.ordering;
 
 import static org.junit.Assert.assertEquals;
 
@@ -22,6 +22,10 @@ import com.enokinomi.timeslice.lib.assign.MockSchemaManager;
 import com.enokinomi.timeslice.lib.commondatautil.BaseHsqldbOps;
 import com.enokinomi.timeslice.lib.commondatautil.ConnectionContext;
 import com.enokinomi.timeslice.lib.commondatautil.SchemaDuty;
+import com.enokinomi.timeslice.lib.ordering.BaseLowLevelOrderingWorks;
+import com.enokinomi.timeslice.lib.ordering.IOrderingStore;
+import com.enokinomi.timeslice.lib.ordering.OrderingStore;
+import com.enokinomi.timeslice.lib.ordering.OrderingWorks;
 
 
 public class IOrderingTestImplTest

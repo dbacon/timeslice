@@ -10,26 +10,26 @@ import com.google.inject.Inject;
 public class OrderingSvc implements IOrderingSvc
 {
     private final ISessionTracker sessionTracker;
-    private final IOrderingStore<String> store;
+    private final IOrderingStore orderingStore;
 
     @Inject
-    OrderingSvc(ISessionTracker sessionTracker, IOrderingStore<String> store)
+    OrderingSvc(ISessionTracker sessionTracker, IOrderingStore orderingStore)
     {
         this.sessionTracker = sessionTracker;
-        this.store = store;
+        this.orderingStore = orderingStore;
     }
 
     @Override
     public List<String> requestOrdering(String authToken, String setName, List<String> items)
     {
         sessionTracker.checkToken(authToken);
-        return store.requestOrdering(setName, items);
+        return orderingStore.requestOrdering(setName, items);
     }
 
     @Override
-    public void setOrdering(String authToken, String setName, List<String> items)
+    public void setPartialOrdering(String authToken, String setName, String smaller, List<String> larger)
     {
         sessionTracker.checkToken(authToken);
-        store.setOrdering(setName, items);
+        orderingStore.addPartialOrdering(setName, smaller, larger);
     }
 }

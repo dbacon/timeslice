@@ -2,9 +2,15 @@ package com.enokinomi.timeslice.lib.ordering;
 
 import java.util.List;
 
-public interface IOrderingStore<T>
+public interface IOrderingStore
 {
-    List<T> requestOrdering(String setName, List<T> unorderedSetValues);
+    /**
+     *
+     * @param setName
+     * @param smaller - null means nothing is smaller, i.e. larger set should be at the beginning.
+     * @param larger
+     */
+    void addPartialOrdering(String setName, String smaller, List<String> larger);
 
-    void setOrdering(String setName, List<T> orderedSetMembers);
+    List<String> requestOrdering(String setName, List<String> unorderedElements);
 }

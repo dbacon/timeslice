@@ -9,5 +9,5 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface IOrderingSvc extends RemoteService
 {
     List<String> requestOrdering(String authToken, String setName, List<String> items);
-    void setOrdering(String authToken, String setName, List<String> items);
+    void setPartialOrdering(String authToken, String setName, String smaller, List<String> larger);
 }

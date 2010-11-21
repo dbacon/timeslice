@@ -1,10 +1,9 @@
-package com.enokinomi.timeslice.lib.ordering2;
+package com.enokinomi.timeslice.lib.ordering;
 
 import java.sql.Connection;
 import java.util.List;
 
 import com.enokinomi.timeslice.lib.commondatautil.ConnectionWork;
-import com.enokinomi.timeslice.lib.ordering.OrderApplier;
 import com.google.inject.Inject;
 
 public class OrderingWorks implements IOrderingWorks

@@ -12,7 +12,6 @@ import java.util.TreeMap;
 
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.core.client.util.Checks;
-import com.enokinomi.timeslice.web.ordering.client.core.IOrderingSvc2Async;
 import com.enokinomi.timeslice.web.ordering.client.core.IOrderingSvcAsync;
 import com.enokinomi.timeslice.web.prorata.client.core.Group;
 import com.enokinomi.timeslice.web.prorata.client.core.GroupComponent;
@@ -86,14 +85,12 @@ public class ProjectListPanel extends Composite
     Map<String, Tree> results = new LinkedHashMap<String, Tree>();
 
     private List<AssignedTaskTotal> itemsCache = new ArrayList<AssignedTaskTotal>();
-    private final IOrderingSvc2Async orderingSvc2;
 
     @Inject
     ProjectListPanel(
             IAuthTokenHolder tokenHolder,
             IProRataSvcAsync prorataSvc,
             IOrderingSvcAsync orderingSvc,
-            IOrderingSvc2Async orderingSvc2,
             ProjectListPanelConstants constants,
             ProjectListPanelMessages messages,
             ProRataManagerPanel proRataManagePanel)
@@ -101,7 +98,6 @@ public class ProjectListPanel extends Composite
         this.tokenHolder = tokenHolder;
         this.prorataSvc = prorataSvc;
         this.orderingSvc = orderingSvc;
-        this.orderingSvc2 = orderingSvc2;
         this.constants = constants;
         this.messages = messages;
         this.proRataManagePanel = proRataManagePanel;
@@ -438,7 +434,7 @@ public class ProjectListPanel extends Composite
             return;
         }
 
-        orderingSvc2.requestOrdering(authToken, ORDERING__TS_PROJECTS, new ArrayList<String>(map.keySet()), new AsyncCallback<List<String>>()
+        orderingSvc.requestOrdering(authToken, ORDERING__TS_PROJECTS, new ArrayList<String>(map.keySet()), new AsyncCallback<List<String>>()
         {
             @Override
             public void onSuccess(List<String> result)
@@ -629,7 +625,7 @@ public class ProjectListPanel extends Composite
 
         String item = keyList.get(i);
 
-        orderingSvc2.setPartialOrdering(tokenHolder.getAuthToken(), ORDERING__TS_PROJECTS, smaller, Arrays.asList(item), new AsyncCallback<Void>()
+        orderingSvc.setPartialOrdering(tokenHolder.getAuthToken(), ORDERING__TS_PROJECTS, smaller, Arrays.asList(item), new AsyncCallback<Void>()
         {
             @Override
             public void onFailure(Throwable caught)
@@ -644,38 +640,6 @@ public class ProjectListPanel extends Composite
             }
         });
 
-    }
-
-    protected Map<String, Double> moveRow(Map<String, Double> map, int rowi, int rel)
-    {
-        Map<String, Double> reorder = new Reorderer<String, Double>().reorder(map, rowi, rel);
-
-        String authToken = (null == tokenHolder) ? null : tokenHolder.getAuthToken();
-
-        if (null == authToken)
-        {
-            GWT.log("No authorization token available - can't order projects.");
-        }
-        else
-        {
-            final ArrayList<String> newOrder = new ArrayList<String>(reorder.keySet());
-            orderingSvc.setOrdering(authToken, ORDERING__TS_PROJECTS, newOrder, new AsyncCallback<Void>()
-            {
-                @Override
-                public void onFailure(Throwable caught)
-                {
-                    GWT.log("Setting ordering for '" + ORDERING__TS_PROJECTS + "' failed: " + caught.getMessage(), caught);
-                }
-
-                @Override
-                public void onSuccess(Void result)
-                {
-//                    GWT.log("Ordering set for '" + ORDERING__TS_PROJECTS + "': " + newOrder.toString());
-                }
-            });
-        }
-
-        return reorder;
     }
 
     private Panel drawPrefix(int[] siblingCounts, int[] siblingIndexes)
