@@ -1,42 +1,30 @@
 package com.enokinomi.timeslice.lib.task;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
 import org.joda.time.Instant;
 
-import com.enokinomi.timeslice.lib.commondatautil.BaseHsqldbStore;
-import com.enokinomi.timeslice.lib.util.ITransformThrowable;
+import com.enokinomi.timeslice.lib.commondatautil.IConnectionContext;
 import com.google.inject.Inject;
 
 
 public class HsqldbTimesliceStore implements ITimesliceStore
 {
-    private final BaseHsqldbStore baseStore;
+    private final IConnectionContext connContext;
+    private final ITimesliceWorks timesliceWorks;
 
     @Inject
-    public HsqldbTimesliceStore(BaseHsqldbStore baseStore)
+    public HsqldbTimesliceStore(IConnectionContext connContext, ITimesliceWorks timesliceWorks)
     {
-        this.baseStore = baseStore;
+        this.connContext = connContext;
+        this.timesliceWorks = timesliceWorks;
     }
 
     @Override
-    public synchronized void add(StartTag tag)
+    public synchronized void add(final StartTag tag)
     {
-        baseStore.require(0);
-
-        baseStore.doSomeSql(
-                "insert into ts_tag (whenstamp, who, what) values (?, ?, ?)",
-                new Object[]
-                {
-                        tag.getWhen().toString(),
-                        tag.getWho(),
-                        tag.getWhat(),
-                },
-                null,
-                1);
+        connContext.doWorkWithinContext(timesliceWorks.workAdd(tag));
     }
 
     @Override
@@ -46,61 +34,21 @@ public class HsqldbTimesliceStore implements ITimesliceStore
     }
 
     @Override
-    public synchronized List<StartTag> query(String owner, Instant starting, Instant ending, int pageSize, int pageIndex)
+    public synchronized List<StartTag> query(final String owner, final Instant starting, final Instant ending, final int pageSize, final int pageIndex)
     {
-        baseStore.require(0);
-
-        return baseStore.doSomeSql(
-                "select limit ? ? whenstamp, who, what from ts_tag where who = ? and whenstamp < ? and whenstamp > ? order by whenstamp desc",
-                new Object[]
-                {
-                        pageIndex*pageSize,
-                        pageSize,
-                        owner,
-                        ending.toString(),
-                        starting.toString(),
-                },
-                new ITransformThrowable<ResultSet, StartTag, SQLException>()
-                {
-                    @Override
-                    public StartTag apply(ResultSet r) throws SQLException
-                    {
-                        String whenStr = r.getString(1);
-                        String who = r.getString(2);
-                        String what = r.getString(3);
-
-                        return new StartTag(who, whenStr, what, null);
-                    }
-                },
-                null);
+        return connContext.doWorkWithinContext(timesliceWorks.workQuery(owner, starting, ending, pageSize, pageIndex));
     }
 
     @Override
-    public synchronized void remove(StartTag tag)
+    public synchronized void remove(final StartTag tag)
     {
-        baseStore.require(0);
-
-        baseStore.doSomeSql(
-                "delete from ts_tag where whenstamp = ?",
-                new Object[] { tag.getWhen().toString() },
-                null,
-                1);
+        connContext.doWorkWithinContext(timesliceWorks.workRemove(tag));
     }
 
     @Override
-    public synchronized void updateText(StartTag tag)
+    public synchronized void updateText(final StartTag tag)
     {
-        baseStore.require(0);
-
-        baseStore.doSomeSql(
-                "update ts_tag set what = ? where whenstamp = ?",
-                new Object[]
-                {
-                        tag.getWhat(),
-                        tag.getWhen().toString(),
-                },
-                null,
-                1);
+        connContext.doWorkWithinContext(timesliceWorks.workUpdateText(tag));
     }
 
 }

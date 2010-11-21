@@ -13,23 +13,21 @@ import org.apache.log4j.Logger;
 import com.enokinomi.timeslice.lib.util.ITransformThrowable;
 import com.google.inject.Inject;
 
-public final class BaseHsqldbStore
+public final class BaseHsqldbOps
 {
-    private static final Logger log = Logger.getLogger(BaseHsqldbStore.class);
+    private static final Logger log = Logger.getLogger(BaseHsqldbOps.class);
 
-    private final Connection conn;
     private final SchemaManager schemaManager;
 
     private Integer version = null;
 
     @Inject
-    public BaseHsqldbStore(Connection conn, SchemaManager schemaManager)
+    public BaseHsqldbOps(SchemaManager schemaManager)
     {
-        this.conn = conn;
         this.schemaManager = schemaManager;
     }
 
-    public synchronized boolean versionIsAtLeast(int minversion)
+    public synchronized boolean versionIsAtLeast(Connection conn, int minversion)
     {
         if (null == version)
         {
@@ -41,18 +39,18 @@ public final class BaseHsqldbStore
         return minversion <= version;
     }
 
-    public synchronized void require(int minversion)
+    public synchronized void require(Connection conn, int minversion)
     {
-        if (!versionIsAtLeast(minversion))
+        if (!versionIsAtLeast(conn, minversion))
         {
             String version2 = Integer.MIN_VALUE == version ? "(unrecognized)" : ("" + version);
             throw new RuntimeException(String.format("Insufficient database version %s, need %s.", version2, minversion));
         }
     }
 
-    public <T> T doSomeSqlSingleResult(String sql, Object[] params, ITransformThrowable<ResultSet, T, SQLException> rowConverter)
+    public <T> T doSomeSqlSingleResult(Connection conn, String sql, Object[] params, ITransformThrowable<ResultSet, T, SQLException> rowConverter)
     {
-        List<T> results = doSomeSql(sql, params, rowConverter);
+        List<T> results = doSomeSql(conn, sql, params, rowConverter, null);
 
         if (results.size() <= 0) return null;
 
@@ -61,23 +59,10 @@ public final class BaseHsqldbStore
         throw new RuntimeException("Expected single result, but " + results.size() + " were returned");
     }
 
-    public <T> List<T> doSomeSql(String sql, Object[] params, ITransformThrowable<ResultSet, T, SQLException> rowConverter)
-    {
-        return doSomeSql(sql, params, rowConverter, null);
-    }
-
-    /**
-     *
-     * @param <T>
-     * @param sql
-     * @param params
-     * @param rowConverter - pass null if statement is update/insert, pass a Transform if it's a query w/ a result-set.
-     * @return
-     */
-    public <T> List<T> doSomeSql(String sql, Object[] params, ITransformThrowable<ResultSet, T, SQLException> rowConverter, Integer expectedAffectedRowCount)
-    {
-        return doSomeSql(conn, sql, params, rowConverter, expectedAffectedRowCount);
-    }
+//    public <T> List<T> doSomeSql(Connection conn, String sql, Object[] params, ITransformThrowable<ResultSet, T, SQLException> rowConverter)
+//    {
+//        return doSomeSql(conn, sql, params, rowConverter, null);
+//    }
 
     /**
      *
@@ -88,7 +73,7 @@ public final class BaseHsqldbStore
      * @param rowConverter - pass null if statement is update/insert, pass a Transform if it's a query w/ a result-set.
      * @return
      */
-    public static <T> List<T> doSomeSql(Connection conn, String sql, Object[] params, ITransformThrowable<ResultSet, T, SQLException> rowConverter, Integer expectedAffectedRowCount)
+    public <T> List<T> doSomeSql(Connection conn, String sql, Object[] params, ITransformThrowable<ResultSet, T, SQLException> rowConverter, Integer expectedAffectedRowCount)
     {
         PreparedStatement statement = null;
         ResultSet rs = null;

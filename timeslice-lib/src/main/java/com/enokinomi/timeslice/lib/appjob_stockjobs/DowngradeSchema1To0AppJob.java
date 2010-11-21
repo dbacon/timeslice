@@ -3,21 +3,22 @@ package com.enokinomi.timeslice.lib.appjob_stockjobs;
 import java.sql.Connection;
 
 import com.enokinomi.timeslice.lib.appjob.AppJob;
+import com.enokinomi.timeslice.lib.commondatautil.ConnectionWork;
+import com.enokinomi.timeslice.lib.commondatautil.IConnectionContext;
 import com.enokinomi.timeslice.lib.commondatautil.ISchemaDetector;
 import com.enokinomi.timeslice.lib.commondatautil.SchemaDuty;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 public class DowngradeSchema1To0AppJob implements AppJob
 {
     private final String jobId = "downgrade-data-1-0";
-    private final Connection conn;
+    private final IConnectionContext connContext;
     private final ISchemaDetector schemaDetector;
 
     @Inject
-    DowngradeSchema1To0AppJob(@Named("tsConnection") Connection conn, ISchemaDetector schemaDetector)
+    DowngradeSchema1To0AppJob(IConnectionContext connContext, ISchemaDetector schemaDetector)
     {
-        this.conn = conn;
+        this.connContext = connContext;
         this.schemaDetector = schemaDetector;
     }
 
@@ -30,15 +31,27 @@ public class DowngradeSchema1To0AppJob implements AppJob
     @Override
     public String perform()
     {
-        Integer versionPreUpgrade = schemaDetector.detectSchema(conn);
+        final Mutable<Integer> versionPreUpgrade = new Mutable<Integer>(null);
+        final Mutable<Integer> versionPostUpgrade = new Mutable<Integer>(null);
 
-        SchemaDuty upgradeDuty = new SchemaDuty("migration-sql-1-to-0.sql");
+        connContext.doWorkWithinContext(new ConnectionWork<Void>()
+        {
+            @Override
+            public Void performWithConnection(Connection conn)
+            {
+                versionPreUpgrade.set(schemaDetector.detectSchema(conn));
 
-        upgradeDuty.createSchema(conn);
+                SchemaDuty upgradeDuty = new SchemaDuty("migration-sql-1-to-0.sql");
 
-        Integer versionPostUpgrade = schemaDetector.detectSchema(conn);
+                upgradeDuty.createSchema(conn);
 
-        return String.format("Upgrading result: version before -> after: %s -> %s", versionPreUpgrade, versionPostUpgrade);
+                versionPostUpgrade.set(schemaDetector.detectSchema(conn));
+
+                return null; // Void
+            }
+        });
+
+        return String.format("Upgrading result: version before -> after: %s -> %s", versionPreUpgrade.get(), versionPostUpgrade.get());
     }
 
 }

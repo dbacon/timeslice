@@ -15,7 +15,8 @@ import org.junit.Test;
 
 import com.enokinomi.timeslice.lib.assign.ConnectionFactory;
 import com.enokinomi.timeslice.lib.assign.MockSchemaManager;
-import com.enokinomi.timeslice.lib.commondatautil.BaseHsqldbStore;
+import com.enokinomi.timeslice.lib.commondatautil.BaseHsqldbOps;
+import com.enokinomi.timeslice.lib.commondatautil.ConnectionContext;
 import com.enokinomi.timeslice.lib.commondatautil.SchemaDuty;
 
 
@@ -55,7 +56,7 @@ public class OrderingStoreImplTest
 
     private IOrderingStore<String> createStoreUnderTest()
     {
-        return new OrderingStore(new BaseHsqldbStore(conn, new MockSchemaManager(3)));
+        return new OrderingStore(new BaseHsqldbOps(new MockSchemaManager(3)), new ConnectionContext(conn));
     }
 
     @Test

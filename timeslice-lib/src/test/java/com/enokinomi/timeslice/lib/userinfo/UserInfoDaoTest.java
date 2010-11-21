@@ -1,6 +1,7 @@
 package com.enokinomi.timeslice.lib.userinfo;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.sql.Connection;
@@ -13,7 +14,8 @@ import org.junit.Test;
 
 import com.enokinomi.timeslice.lib.assign.ConnectionFactory;
 import com.enokinomi.timeslice.lib.assign.MockSchemaManager;
-import com.enokinomi.timeslice.lib.commondatautil.BaseHsqldbStore;
+import com.enokinomi.timeslice.lib.commondatautil.BaseHsqldbOps;
+import com.enokinomi.timeslice.lib.commondatautil.ConnectionContext;
 import com.enokinomi.timeslice.lib.commondatautil.SchemaDuty;
 
 
@@ -46,7 +48,7 @@ public class UserInfoDaoTest
 
     private UserInfoDao createStoreUnderTest(int version)
     {
-        return new UserInfoDao(new BaseHsqldbStore(conn, new MockSchemaManager(version)));
+        return new UserInfoDao(new ConnectionContext(conn), new UserInfoWorks(new BaseHsqldbOps(new MockSchemaManager(version))));
     }
 
     @Test

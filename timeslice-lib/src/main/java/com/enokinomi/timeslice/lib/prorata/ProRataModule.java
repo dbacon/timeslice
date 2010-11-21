@@ -8,6 +8,7 @@ public class ProRataModule extends AbstractModule
     protected void configure()
     {
         bind(IProRataStore.class).to(HsqldbStore.class);
+        bind(IProRataWorks.class).to(ProRataWorks.class);
     }
 
 }

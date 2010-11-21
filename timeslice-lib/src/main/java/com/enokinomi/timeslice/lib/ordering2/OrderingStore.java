@@ -2,68 +2,35 @@ package com.enokinomi.timeslice.lib.ordering2;
 
 import java.util.List;
 
-import com.enokinomi.timeslice.lib.commondatautil.BaseHsqldbStore;
-import com.enokinomi.timeslice.lib.ordering.OrderApplier;
+import com.enokinomi.timeslice.lib.commondatautil.IConnectionContext;
 import com.google.inject.Inject;
 
-public class OrderingStore extends BaseLowLevelOrderingStore implements IOrderingStore
+public class OrderingStore implements IOrderingStore
 {
+    private final IConnectionContext connContext;
+    private final IOrderingWorks orderingWorks;
+
     @Inject
-    public OrderingStore(BaseHsqldbStore baseStore)
+    public OrderingStore(IConnectionContext connContext, IOrderingWorks orderingWorks)
     {
-        super(baseStore);
+        this.connContext = connContext;
+        this.orderingWorks = orderingWorks;
     }
 
     @Override
-    public List<String> requestOrdering(String setName, List<String> unorderedSetValues)
+    public List<String> requestOrdering(final String setName, final List<String> unorderedSetValues)
     {
-        if (getBaseStore().versionIsAtLeast(3))
-        {
-            return new OrderApplier().<String>applyOrdering(unorderedSetValues, getSet(setName));
-        }
-        else
-        {
-            return unorderedSetValues;
-        }
+        return connContext.doWorkWithinContext(orderingWorks.workRequestOrdering(setName, unorderedSetValues));
     }
 
-    //    @Override
-    @SuppressWarnings("unused")
-    private void setOrdering(String setName, List<String> orderedSetMembers)
+    public void setOrdering(final String setName, final List<String> orderedSetMembers)
     {
-        if (getBaseStore().versionIsAtLeast(3))
-        {
-            deleteSetByName(setName);
-            insertSet(setName, orderedSetMembers);
-        }
+        connContext.doWorkWithinContext(orderingWorks.workSetOrdering(setName, orderedSetMembers));
     }
 
     @Override
-    public void addPartialOrdering(String setName, String smaller, List<String> larger)
+    public void addPartialOrdering(final String setName, final String smaller, final List<String> larger)
     {
-        if (getBaseStore().versionIsAtLeast(3))
-        {
-            // TODO: should be wrapped in transaction
-
-            List<String> order = getSet(setName);
-
-            order.removeAll(larger);
-
-            int indexOfAnchor = -1;
-
-            if (null != smaller)
-            {
-                if (larger.contains(smaller)) throw new IllegalArgumentException("larger set cannot contain smaller element");
-
-                if (!order.contains(smaller)) order.add(smaller);
-
-                indexOfAnchor = order.indexOf(smaller);
-            }
-
-            order.addAll(indexOfAnchor + 1, larger);
-
-            deleteSetByName(setName);
-            insertSet(setName, order);
-        }
+        connContext.doWorkWithinContext(orderingWorks.workAddPartialOrdering(setName, smaller, larger));
     }
 }

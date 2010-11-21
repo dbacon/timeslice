@@ -8,6 +8,7 @@ public class UserInfoModule extends AbstractModule
     protected void configure()
     {
         bind(IUserInfoDao.class).to(UserInfoDao.class);
+        bind(IUserInfoWorks.class).to(UserInfoWorks.class);
     }
 
 }

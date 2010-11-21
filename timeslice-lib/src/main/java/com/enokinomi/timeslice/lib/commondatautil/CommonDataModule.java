@@ -7,7 +7,6 @@ import java.sql.Statement;
 import org.apache.log4j.Logger;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
 import com.google.inject.name.Names;
 
 public class CommonDataModule extends AbstractModule
@@ -29,13 +28,13 @@ public class CommonDataModule extends AbstractModule
     {
         bind(String.class).annotatedWith(Names.named("schemaResource")).toInstance(schemaResourceName);
 
-        // This one needs to be fixed.. scoping/pooling connections.
-        bind(Connection.class).annotatedWith(Names.named("tsConnection")).to(Connection.class);
+        ConnectionContext connContext = new ConnectionContext(createNew());
+        bind(IConnectionContext.class).toInstance(connContext);
 
         bind(ISchemaDetector.class).to(SchemaDetector.class);
     }
 
-    @Provides Connection getConnection()
+    private Connection createNew()
     {
         try
         {
@@ -47,6 +46,7 @@ public class CommonDataModule extends AbstractModule
             st.close();
             log.debug("Set write-delay to 500ms");
 
+            log.debug(String.format("Created connection: %s (%d)", conn.toString(), conn.hashCode()));
             return conn;
         }
         catch (Exception e)

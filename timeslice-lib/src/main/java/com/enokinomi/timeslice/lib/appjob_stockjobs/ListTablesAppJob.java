@@ -6,18 +6,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.enokinomi.timeslice.lib.appjob.AppJob;
+import com.enokinomi.timeslice.lib.commondatautil.ConnectionWork;
+import com.enokinomi.timeslice.lib.commondatautil.IConnectionContext;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 public class ListTablesAppJob implements AppJob
 {
     private final String jobId = "List tables";
-    private final Connection conn;
+    private final IConnectionContext connContext;
 
     @Inject
-    ListTablesAppJob(@Named("tsConnection") Connection conn)
+    ListTablesAppJob(IConnectionContext connContext)
     {
-        this.conn = conn;
+        this.connContext = connContext;
     }
 
     @Override
@@ -29,25 +30,34 @@ public class ListTablesAppJob implements AppJob
     @Override
     public String perform()
     {
-        List<String> tableNames = new ArrayList<String>();
+        final List<String> tableNames = new ArrayList<String>();
 
-        try
+        connContext.doWorkWithinContext(new ConnectionWork<Void>()
         {
-            ResultSet tables = conn.getMetaData().getTables(null, "PUBLIC", "%", null);
-            while (tables.next())
+            @Override
+            public Void performWithConnection(Connection conn)
             {
-                String tableName = tables.getString("TABLE_NAME");
-                if (tableName.startsWith("TS_"))
+                try
                 {
-                    tableNames.add(tableName);
+                    ResultSet tables = conn.getMetaData().getTables(null, "PUBLIC", "%", null);
+                    while (tables.next())
+                    {
+                        String tableName = tables.getString("TABLE_NAME");
+                        if (tableName.startsWith("TS_"))
+                        {
+                            tableNames.add(tableName);
+                        }
+                    }
+                    tables.close();
                 }
+                catch (Exception e)
+                {
+                    throw new RuntimeException("Could not list tables: " + e.getMessage(), e);
+                }
+
+                return null; // Void
             }
-            tables.close();
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException("Could not list tables: " + e.getMessage(), e);
-        }
+        });
 
         return tableNames.toString();
     }

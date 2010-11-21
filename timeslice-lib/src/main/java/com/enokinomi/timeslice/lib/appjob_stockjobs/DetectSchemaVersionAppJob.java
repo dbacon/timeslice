@@ -3,20 +3,21 @@ package com.enokinomi.timeslice.lib.appjob_stockjobs;
 import java.sql.Connection;
 
 import com.enokinomi.timeslice.lib.appjob.AppJob;
+import com.enokinomi.timeslice.lib.commondatautil.ConnectionWork;
+import com.enokinomi.timeslice.lib.commondatautil.IConnectionContext;
 import com.enokinomi.timeslice.lib.commondatautil.ISchemaDetector;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 public class DetectSchemaVersionAppJob implements AppJob
 {
     private final String jobId = "Show schema version";
-    private final Connection conn;
+    private final IConnectionContext connContext;
     private final ISchemaDetector schemaDetector;
 
     @Inject
-    DetectSchemaVersionAppJob(@Named("tsConnection") Connection conn, ISchemaDetector schemaDetector)
+    DetectSchemaVersionAppJob(IConnectionContext connContext, ISchemaDetector schemaDetector)
     {
-        this.conn = conn;
+        this.connContext = connContext;
         this.schemaDetector = schemaDetector;
     }
 
@@ -33,7 +34,14 @@ public class DetectSchemaVersionAppJob implements AppJob
 
         try
         {
-            msg = "detected version " + schemaDetector.detectSchema(conn);
+            msg = connContext.doWorkWithinContext(new ConnectionWork<String>()
+            {
+                @Override
+                public String performWithConnection(Connection conn)
+                {
+                    return "detected version " + schemaDetector.detectSchema(conn);
+                }
+            });
         }
         catch (Exception e)
         {

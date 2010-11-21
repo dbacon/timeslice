@@ -3,21 +3,22 @@ package com.enokinomi.timeslice.lib.appjob_stockjobs;
 import java.sql.Connection;
 
 import com.enokinomi.timeslice.lib.appjob.AppJob;
+import com.enokinomi.timeslice.lib.commondatautil.ConnectionWork;
+import com.enokinomi.timeslice.lib.commondatautil.IConnectionContext;
 import com.enokinomi.timeslice.lib.commondatautil.ISchemaDetector;
 import com.enokinomi.timeslice.lib.commondatautil.SchemaDuty;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 public class SchemaOpAppJob implements AppJob
 {
     private final String jobId = "fix-schema-1";
-    private final Connection conn;
+    private final IConnectionContext connContext;
     private final ISchemaDetector schemaDetector;
 
     @Inject
-    SchemaOpAppJob(@Named("tsConnection") Connection conn, ISchemaDetector schemaDetector)
+    SchemaOpAppJob(IConnectionContext connContext, ISchemaDetector schemaDetector)
     {
-        this.conn = conn;
+        this.connContext = connContext;
         this.schemaDetector = schemaDetector;
     }
 
@@ -30,24 +31,29 @@ public class SchemaOpAppJob implements AppJob
     @Override
     public String perform()
     {
-
-        SchemaDuty upgradeDuty = new SchemaDuty("fix-schema-1.sql");
-
-        upgradeDuty.createSchema(conn);
-
-//        Integer versionPostUpgrade = detector.detectSchema(conn);
-
-        String msg = "";
-        try
+        return connContext.doWorkWithinContext(new ConnectionWork<String>()
         {
-            msg = "version detected post-operation: " + schemaDetector.detectSchema(conn);
-        }
-        catch (Exception e)
-        {
-            msg = "version detection failed: " + e.getMessage();
-        }
+            @Override
+            public String performWithConnection(Connection conn)
+            {
+                SchemaDuty upgradeDuty = new SchemaDuty("fix-schema-1.sql");
 
-        return String.format("Schema operation: " + msg);
+                upgradeDuty.createSchema(conn);
+
+//                Integer versionPostUpgrade = detector.detectSchema(conn);
+
+                String msg = "";
+                try
+                {
+                    msg = "version detected post-operation: " + schemaDetector.detectSchema(conn);
+                }
+                catch (Exception e)
+                {
+                    msg = "version detection failed: " + e.getMessage();
+                }
+
+                return String.format("Schema operation: " + msg);
+            }
+        });
     }
-
 }
