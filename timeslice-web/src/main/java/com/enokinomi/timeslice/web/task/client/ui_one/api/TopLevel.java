@@ -1,6 +1,5 @@
 package com.enokinomi.timeslice.web.task.client.ui_one.api;
 
-import com.enokinomi.timeslice.web.task.client.ui_one.impl.UiOneGinjector;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.RootLayoutPanel;

@@ -2,7 +2,7 @@ package com.enokinomi.timeslice.web.appjob.client.ui.api;
 
 import java.util.List;
 
-import com.enokinomi.timeslice.web.task.client.ui.api.IIsWidget;
+import com.enokinomi.timeslice.web.core.client.ui.IIsWidget;
 
 public interface IAppJobPanel extends IIsWidget
 {

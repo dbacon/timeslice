@@ -5,8 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.enokinomi.timeslice.lib.commondatautil.api.IBaseHsqldbOps;
 import com.enokinomi.timeslice.lib.commondatautil.api.IConnectionWork;
-import com.enokinomi.timeslice.lib.commondatautil.impl.BaseHsqldbOps;
 import com.enokinomi.timeslice.lib.userinfo.api.ConfEntry;
 import com.enokinomi.timeslice.lib.userinfo.api.IUserInfoWorks;
 import com.enokinomi.timeslice.lib.userinfo.api.TsSettings;
@@ -17,10 +17,10 @@ public class UserInfoWorks implements IUserInfoWorks
 {
     private static final int RequiredVersion = 4;
 
-    private final BaseHsqldbOps baseStore;
+    private final IBaseHsqldbOps baseStore;
 
     @Inject
-    UserInfoWorks(BaseHsqldbOps baseStore)
+    UserInfoWorks(IBaseHsqldbOps baseStore)
     {
         this.baseStore = baseStore;
     }

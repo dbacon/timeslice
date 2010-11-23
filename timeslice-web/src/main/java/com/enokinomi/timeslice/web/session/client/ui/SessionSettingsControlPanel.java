@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.enokinomi.timeslice.web.session.client.core.ISessionSvc;
 import com.enokinomi.timeslice.web.session.client.core.ISessionSvcAsync;
-import com.enokinomi.timeslice.web.task.client.controller.api.IAuthTokenHolder;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.web.task.client.ui_one.impl;
+package com.enokinomi.timeslice.web.task.client.ui_one.api;
 
 import com.google.gwt.i18n.client.Constants;
 
@@ -6,9 +6,6 @@ public interface TimesliceAppConstants extends Constants
 {
     @DefaultStringValue("Logout")
     String logout();
-
-    @DefaultStringValue("Please login.")
-    String pleaseLogin();
 
     @DefaultStringValue("<u>R</u>eports")
     String reports();

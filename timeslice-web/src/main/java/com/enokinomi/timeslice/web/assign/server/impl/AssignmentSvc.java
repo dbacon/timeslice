@@ -8,7 +8,7 @@ import com.enokinomi.timeslice.lib.assign.api.ITagStore;
 import com.enokinomi.timeslice.lib.task.api.ITimesliceSvc;
 import com.enokinomi.timeslice.lib.task.api.TaskTotalMember;
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
-import com.enokinomi.timeslice.web.task.client.core_todo_move_out.SortDir;
+import com.enokinomi.timeslice.web.core.client.ui.SortDir;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 

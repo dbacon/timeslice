@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.web.task.client.controller.api;
+package com.enokinomi.timeslice.web.session.client.ui;
 
 public interface IAuthTokenHolder
 {

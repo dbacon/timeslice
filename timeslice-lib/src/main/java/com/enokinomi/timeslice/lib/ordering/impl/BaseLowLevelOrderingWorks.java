@@ -5,14 +5,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.enokinomi.timeslice.lib.commondatautil.api.IBaseHsqldbOps;
 import com.enokinomi.timeslice.lib.commondatautil.api.IConnectionWork;
-import com.enokinomi.timeslice.lib.commondatautil.impl.BaseHsqldbOps;
 import com.enokinomi.timeslice.lib.util.ITransformThrowable;
 import com.google.inject.Inject;
 
 public class BaseLowLevelOrderingWorks
 {
-    private final BaseHsqldbOps baseStore;
+    private final IBaseHsqldbOps baseStore;
 
     private static interface Table
     {
@@ -27,12 +27,12 @@ public class BaseLowLevelOrderingWorks
     }
 
     @Inject
-    BaseLowLevelOrderingWorks(BaseHsqldbOps baseStore)
+    BaseLowLevelOrderingWorks(IBaseHsqldbOps baseStore)
     {
         this.baseStore = baseStore;
     }
 
-    protected BaseHsqldbOps getBaseStore()
+    protected IBaseHsqldbOps getBaseStore()
     {
         return baseStore;
     }

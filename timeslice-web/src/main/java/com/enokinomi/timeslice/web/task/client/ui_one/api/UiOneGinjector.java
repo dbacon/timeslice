@@ -1,6 +1,6 @@
-package com.enokinomi.timeslice.web.task.client.ui_one.impl;
+package com.enokinomi.timeslice.web.task.client.ui_one.api;
 
-import com.enokinomi.timeslice.web.task.client.ui_one.api.ITimesliceApp;
+import com.enokinomi.timeslice.web.task.client.ui_one.impl.UiOneClientModule;
 import com.google.gwt.inject.client.GinModules;
 import com.google.gwt.inject.client.Ginjector;
 

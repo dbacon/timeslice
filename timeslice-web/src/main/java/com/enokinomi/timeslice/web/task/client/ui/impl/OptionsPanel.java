@@ -3,12 +3,12 @@ package com.enokinomi.timeslice.web.task.client.ui.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.enokinomi.timeslice.web.core.client.ui.PrefHelper;
 import com.enokinomi.timeslice.web.session.client.ui.SessionSettingsControlPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsListener;
 import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsProvider;
 import com.enokinomi.timeslice.web.task.client.ui_one.api.ITimesliceApp.Defaults;
-import com.enokinomi.timeslice.web.task.client.ui_one.api.PrefHelper;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;

@@ -17,13 +17,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.enokinomi.timeslice.lib.assign.impl.ConnectionFactory;
-import com.enokinomi.timeslice.lib.assign.impl.MockSchemaManager;
 import com.enokinomi.timeslice.lib.commondatautil.api.ISchemaDuty;
 import com.enokinomi.timeslice.lib.commondatautil.impl.BaseHsqldbOps;
 import com.enokinomi.timeslice.lib.commondatautil.impl.ConnectionContext;
 import com.enokinomi.timeslice.lib.commondatautil.impl.SchemaDuty;
 import com.enokinomi.timeslice.lib.ordering.api.IOrderingStore;
+import com.enokinomi.timeslice.lib.testing.ConnectionFactory;
+import com.enokinomi.timeslice.lib.testing.MockSchemaManager;
 import com.enokinomi.timeslice.lib.util.IoHelp;
 
 

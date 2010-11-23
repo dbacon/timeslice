@@ -8,16 +8,15 @@ import com.enokinomi.timeslice.web.appjob.client.core.IAppJobSvcAsync;
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.assign.client.core.IAssignmentSvcAsync;
 import com.enokinomi.timeslice.web.core.client.ui.ErrorBox;
+import com.enokinomi.timeslice.web.core.client.ui.PrefHelper;
+import com.enokinomi.timeslice.web.core.client.ui.SortDir;
 import com.enokinomi.timeslice.web.core.client.util.AsyncResult;
 import com.enokinomi.timeslice.web.core.client.util.NotAuthenticException;
-import com.enokinomi.timeslice.web.task.client.controller.api.IAuthTokenHolder;
+import com.enokinomi.timeslice.web.session.client.ui.IAuthTokenHolder;
 import com.enokinomi.timeslice.web.task.client.core.ITimesliceSvcAsync;
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
 import com.enokinomi.timeslice.web.task.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.task.client.core_todo_move_out.BrandInfo;
-import com.enokinomi.timeslice.web.task.client.core_todo_move_out.SortDir;
-import com.enokinomi.timeslice.web.task.client.ui_one.api.PrefHelper;
-import com.enokinomi.timeslice.web.task.client.ui_one.impl.TimesliceAppConstants;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -32,10 +31,10 @@ public class GwtRpcController extends BaseController implements IAuthTokenHolder
     private String authToken = Cookies.getCookie("timeslice.authtoken");
     private LoginDialog loginDialog = null;
 
-    private final TimesliceAppConstants constants;
+    private final ControllerConstants constants;
 
     @Inject
-    GwtRpcController(TimesliceAppConstants constants, ITimesliceSvcAsync svc, IAssignmentSvcAsync assignedSvc, IAppJobSvcAsync jobSvc)
+    GwtRpcController(ControllerConstants constants, ITimesliceSvcAsync svc, IAssignmentSvcAsync assignedSvc, IAppJobSvcAsync jobSvc)
     {
         this.constants = constants;
         this.svc = svc;

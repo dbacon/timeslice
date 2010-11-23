@@ -3,9 +3,9 @@ package com.enokinomi.timeslice.web.task.client.ui.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.enokinomi.timeslice.web.core.client.ui.PrefHelper;
 import com.enokinomi.timeslice.web.task.client.ui.api.IHotlistPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IHotlistPanelListener;
-import com.enokinomi.timeslice.web.task.client.ui_one.api.PrefHelper;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Cookies;

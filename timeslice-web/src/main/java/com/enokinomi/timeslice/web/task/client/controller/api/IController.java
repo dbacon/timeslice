@@ -2,8 +2,8 @@ package com.enokinomi.timeslice.web.task.client.controller.api;
 
 import java.util.List;
 
+import com.enokinomi.timeslice.web.core.client.ui.SortDir;
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
-import com.enokinomi.timeslice.web.task.client.core_todo_move_out.SortDir;
 
 
 public interface IController

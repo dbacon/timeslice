@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.enokinomi.timeslice.web.core.client.ui.PrefHelper;
 import com.enokinomi.timeslice.web.task.client.ui.api.IParamChangedListener;
 import com.enokinomi.timeslice.web.task.client.ui.api.IParamPanel;
-import com.enokinomi.timeslice.web.task.client.ui_one.api.PrefHelper;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;

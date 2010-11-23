@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.joda.time.Instant;
 
+import com.enokinomi.timeslice.lib.commondatautil.api.IBaseHsqldbOps;
 import com.enokinomi.timeslice.lib.commondatautil.api.IConnectionWork;
-import com.enokinomi.timeslice.lib.commondatautil.impl.BaseHsqldbOps;
 import com.enokinomi.timeslice.lib.task.api.ITimesliceWorks;
 import com.enokinomi.timeslice.lib.task.api.StartTag;
 import com.enokinomi.timeslice.lib.util.ITransformThrowable;
@@ -16,10 +16,10 @@ import com.google.inject.Inject;
 
 public class TimesliceWorks implements ITimesliceWorks
 {
-    private final BaseHsqldbOps baseHsqldbOps;
+    private final IBaseHsqldbOps baseHsqldbOps;
 
     @Inject
-    TimesliceWorks(BaseHsqldbOps baseStore)
+    TimesliceWorks(IBaseHsqldbOps baseStore)
     {
         this.baseHsqldbOps = baseStore;
     }

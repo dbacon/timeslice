@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.assign.client.ui.api.ITabularResultsAssignedView;
-import com.enokinomi.timeslice.web.assign.client.ui.impl.TabularResultsAssignedView.Listener;
+import com.enokinomi.timeslice.web.assign.client.ui.api.ITabularResultsAssignedViewListener;
 import com.enokinomi.timeslice.web.prorata.client.ui.ProjectListPanel;
 import com.enokinomi.timeslice.web.task.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.task.client.ui.api.IParamChangedListener;
@@ -144,7 +144,7 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
         vp.add(params.asWidget());
         vp.add(buttonPanel);
 
-        resultsAssignedView.addListener(new Listener()
+        resultsAssignedView.addListener(new ITabularResultsAssignedViewListener()
         {
             @Override
             public void billeeUpdate(String description, String newBillee)

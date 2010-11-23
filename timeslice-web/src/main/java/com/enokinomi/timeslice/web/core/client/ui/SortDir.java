@@ -1,7 +1,7 @@
 /**
  *
  */
-package com.enokinomi.timeslice.web.task.client.core_todo_move_out;
+package com.enokinomi.timeslice.web.core.client.ui;
 
 import java.io.Serializable;
 

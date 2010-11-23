@@ -1,5 +1,6 @@
 package com.enokinomi.timeslice.web.task.client.ui.api;
 
+import com.enokinomi.timeslice.web.core.client.ui.IIsWidget;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.TextBox;
 

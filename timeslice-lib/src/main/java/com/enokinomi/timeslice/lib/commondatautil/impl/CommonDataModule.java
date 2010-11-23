@@ -6,6 +6,7 @@ import java.sql.Statement;
 
 import org.apache.log4j.Logger;
 
+import com.enokinomi.timeslice.lib.commondatautil.api.IBaseHsqldbOps;
 import com.enokinomi.timeslice.lib.commondatautil.api.IConnectionContext;
 import com.enokinomi.timeslice.lib.commondatautil.api.IFixedSchemaDuty;
 import com.enokinomi.timeslice.lib.commondatautil.api.ISchemaDetector;
@@ -36,6 +37,8 @@ public class CommonDataModule extends AbstractModule
 
         bind(IFixedSchemaDuty.class).to(FixedSchemaDuty.class);
         bind(String.class).annotatedWith(Names.named("schemaResource")).toInstance(schemaResourceName);
+
+        bind(IBaseHsqldbOps.class).to(BaseHsqldbOps.class);
 
         ConnectionContext connContext = new ConnectionContext(createNew());
         bind(IConnectionContext.class).toInstance(connContext);

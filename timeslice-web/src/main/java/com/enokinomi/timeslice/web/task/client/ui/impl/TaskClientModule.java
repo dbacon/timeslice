@@ -1,6 +1,6 @@
 package com.enokinomi.timeslice.web.task.client.ui.impl;
 
-import com.enokinomi.timeslice.web.task.client.controller.api.IAuthTokenHolder;
+import com.enokinomi.timeslice.web.session.client.ui.IAuthTokenHolder;
 import com.enokinomi.timeslice.web.task.client.controller.api.IController;
 import com.enokinomi.timeslice.web.task.client.controller.impl.GwtRpcController;
 import com.enokinomi.timeslice.web.task.client.ui.api.IHistoryPanel;

@@ -1,6 +1,6 @@
 package com.enokinomi.timeslice.web.task.client.ui_one.api;
 
-import com.enokinomi.timeslice.web.task.client.ui.api.IIsWidget;
+import com.enokinomi.timeslice.web.core.client.ui.IIsWidget;
 
 public interface ITimesliceApp extends IIsWidget
 {

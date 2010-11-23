@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.assign.client.ui.api.ITabularResultsAssignedView;
+import com.enokinomi.timeslice.web.assign.client.ui.api.ITabularResultsAssignedViewListener;
 import com.enokinomi.timeslice.web.core.client.ui.EditableLabel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -38,15 +39,10 @@ public class TabularResultsAssignedView extends ResizeComposite implements ITabu
         initWidget(new ScrollPanel(resultsTable));
     }
 
-    public static interface Listener
-    {
-        void billeeUpdate(String description, String newBillee);
-    }
-
-    private final ArrayList<Listener> listeners = new ArrayList<Listener>();
+    private final ArrayList<ITabularResultsAssignedViewListener> listeners = new ArrayList<ITabularResultsAssignedViewListener>();
 
     @Override
-    public void addListener(Listener listener)
+    public void addListener(ITabularResultsAssignedViewListener listener)
     {
         if (null != listener)
         {
@@ -55,7 +51,7 @@ public class TabularResultsAssignedView extends ResizeComposite implements ITabu
     }
 
     @Override
-    public void removeListener(Listener listener)
+    public void removeListener(ITabularResultsAssignedViewListener listener)
     {
         if (null != listener)
         {
@@ -71,7 +67,7 @@ public class TabularResultsAssignedView extends ResizeComposite implements ITabu
 
     protected void fireBilleeUpdate(String description, String newBillee)
     {
-        for (Listener listener: listeners)
+        for (ITabularResultsAssignedViewListener listener: listeners)
         {
             try
             {

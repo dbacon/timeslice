@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.lib.assign.impl;
+package com.enokinomi.timeslice.lib.testing;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

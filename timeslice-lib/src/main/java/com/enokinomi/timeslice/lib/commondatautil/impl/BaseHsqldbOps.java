@@ -10,12 +10,13 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.enokinomi.timeslice.lib.commondatautil.api.IBaseHsqldbOps;
 import com.enokinomi.timeslice.lib.commondatautil.api.ISchemaManager;
 import com.enokinomi.timeslice.lib.commondatautil.api.SetParam;
 import com.enokinomi.timeslice.lib.util.ITransformThrowable;
 import com.google.inject.Inject;
 
-public class BaseHsqldbOps
+public class BaseHsqldbOps implements IBaseHsqldbOps
 {
     private static final Logger log = Logger.getLogger(BaseHsqldbOps.class);
 
@@ -29,6 +30,7 @@ public class BaseHsqldbOps
         this.schemaManager = schemaManager;
     }
 
+    @Override
     public synchronized boolean versionIsAtLeast(Connection conn, int minversion)
     {
         if (null == version)
@@ -41,6 +43,7 @@ public class BaseHsqldbOps
         return minversion <= version;
     }
 
+    @Override
     public synchronized void require(Connection conn, int minversion)
     {
         if (!versionIsAtLeast(conn, minversion))
@@ -50,6 +53,7 @@ public class BaseHsqldbOps
         }
     }
 
+    @Override
     public <T> T doSomeSqlSingleResult(Connection conn, String sql, Object[] params, ITransformThrowable<ResultSet, T, SQLException> rowConverter)
     {
         List<T> results = doSomeSql(conn, sql, params, rowConverter, null);
@@ -70,6 +74,7 @@ public class BaseHsqldbOps
      * @param rowConverter - pass null if statement is update/insert, pass a Transform if it's a query w/ a result-set.
      * @return
      */
+    @Override
     public <T> List<T> doSomeSql(Connection conn, String sql, Object[] params, ITransformThrowable<ResultSet, T, SQLException> rowConverter, Integer expectedAffectedRowCount)
     {
         PreparedStatement statement = null;

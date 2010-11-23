@@ -2,6 +2,7 @@ package com.enokinomi.timeslice.web.task.client.ui.api;
 
 import java.util.List;
 
+import com.enokinomi.timeslice.web.core.client.ui.IIsWidget;
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
 
 public interface IHistoryPanel extends IIsWidget

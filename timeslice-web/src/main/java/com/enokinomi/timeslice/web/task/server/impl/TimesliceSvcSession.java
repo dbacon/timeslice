@@ -7,6 +7,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.enokinomi.timeslice.lib.userinfo.api.TsSettings;
 import com.enokinomi.timeslice.web.branding.api.IBranding;
+import com.enokinomi.timeslice.web.core.client.ui.SortDir;
 import com.enokinomi.timeslice.web.core.client.util.NotAuthenticException;
 import com.enokinomi.timeslice.web.session.server.core.ISessionTracker;
 import com.enokinomi.timeslice.web.session.server.core.SessionData;
@@ -14,7 +15,6 @@ import com.enokinomi.timeslice.web.task.client.core.ITimesliceSvc;
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
 import com.enokinomi.timeslice.web.task.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.task.client.core_todo_move_out.BrandInfo;
-import com.enokinomi.timeslice.web.task.client.core_todo_move_out.SortDir;
 import com.google.inject.Inject;
 
 public class TimesliceSvcSession implements ITimesliceSvc

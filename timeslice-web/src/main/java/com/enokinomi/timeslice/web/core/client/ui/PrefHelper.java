@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.web.task.client.ui_one.api;
+package com.enokinomi.timeslice.web.core.client.ui;
 
 import java.util.Date;
 

@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.enokinomi.timeslice.lib.commondatautil.api.IBaseHsqldbOps;
 import com.enokinomi.timeslice.lib.commondatautil.api.IConnectionWork;
-import com.enokinomi.timeslice.lib.commondatautil.impl.BaseHsqldbOps;
 import com.enokinomi.timeslice.lib.prorata.api.GroupComponent;
 import com.enokinomi.timeslice.lib.prorata.api.IProRataWorks;
 import com.enokinomi.timeslice.lib.util.ITransformThrowable;
@@ -18,10 +18,10 @@ import com.google.inject.Inject;
 
 public class ProRataWorks implements IProRataWorks
 {
-    private final BaseHsqldbOps baseStore;
+    private final IBaseHsqldbOps baseStore;
 
     @Inject
-    ProRataWorks(BaseHsqldbOps baseHsqldbOps)
+    ProRataWorks(IBaseHsqldbOps baseHsqldbOps)
     {
         this.baseStore = baseHsqldbOps;
     }

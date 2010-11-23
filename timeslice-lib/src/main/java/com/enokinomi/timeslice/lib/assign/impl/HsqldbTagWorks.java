@@ -12,8 +12,8 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import com.enokinomi.timeslice.lib.assign.api.ITagWorks;
+import com.enokinomi.timeslice.lib.commondatautil.api.IBaseHsqldbOps;
 import com.enokinomi.timeslice.lib.commondatautil.api.IConnectionWork;
-import com.enokinomi.timeslice.lib.commondatautil.impl.BaseHsqldbOps;
 import com.enokinomi.timeslice.lib.util.ITransformThrowable;
 import com.google.inject.Inject;
 
@@ -44,10 +44,10 @@ public class HsqldbTagWorks implements ITagWorks
                         "\n" + "   AND eff_from <= ? AND ? < eff_until " +
                         "\n" + "   AND what = ? ";
 
-    private final BaseHsqldbOps baseStore;
+    private final IBaseHsqldbOps baseStore;
 
     @Inject
-    HsqldbTagWorks(BaseHsqldbOps baseStore)
+    HsqldbTagWorks(IBaseHsqldbOps baseStore)
     {
         this.baseStore = baseStore;
     }

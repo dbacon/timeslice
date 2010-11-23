@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
+import com.enokinomi.timeslice.web.core.client.ui.PrefHelper;
 import com.enokinomi.timeslice.web.core.client.util.Checks;
 import com.enokinomi.timeslice.web.ordering.client.core.IOrderingSvcAsync;
 import com.enokinomi.timeslice.web.prorata.client.core.Group;
@@ -23,8 +24,7 @@ import com.enokinomi.timeslice.web.prorata.client.tree.LeafOnlyTotalingVisitor;
 import com.enokinomi.timeslice.web.prorata.client.tree.MapRuleSource;
 import com.enokinomi.timeslice.web.prorata.client.tree.Tree;
 import com.enokinomi.timeslice.web.prorata.client.ui.ProRataManagerPanel.Listener;
-import com.enokinomi.timeslice.web.task.client.controller.api.IAuthTokenHolder;
-import com.enokinomi.timeslice.web.task.client.ui_one.api.PrefHelper;
+import com.enokinomi.timeslice.web.session.client.ui.IAuthTokenHolder;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;
