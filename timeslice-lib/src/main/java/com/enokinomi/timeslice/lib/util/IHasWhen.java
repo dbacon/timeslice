@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.lib.generic;
+package com.enokinomi.timeslice.lib.util;
 
 import org.joda.time.Instant;
 

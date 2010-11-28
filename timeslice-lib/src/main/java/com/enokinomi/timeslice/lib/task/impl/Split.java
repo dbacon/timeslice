@@ -9,8 +9,8 @@ import java.util.Map;
 
 import org.joda.time.Instant;
 
-import com.enokinomi.timeslice.lib.generic.CompareByTime;
 import com.enokinomi.timeslice.lib.task.api.StartTag;
+import com.enokinomi.timeslice.lib.util.CompareByTime;
 
 
 /**

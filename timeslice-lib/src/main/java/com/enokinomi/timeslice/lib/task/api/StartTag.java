@@ -3,7 +3,7 @@ package com.enokinomi.timeslice.lib.task.api;
 import org.joda.time.Instant;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.enokinomi.timeslice.lib.generic.IHasWhen;
+import com.enokinomi.timeslice.lib.util.IHasWhen;
 import com.enokinomi.timeslice.lib.util.Transforms;
 
 
