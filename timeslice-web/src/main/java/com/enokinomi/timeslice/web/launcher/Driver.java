@@ -5,7 +5,9 @@ import static com.enokinomi.timeslice.lib.util.Check.mapNullTo;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.ServiceLoader;
+import java.util.TreeMap;
 
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionParser;
@@ -103,8 +105,11 @@ public class Driver
             log.info("config: data     : " + db);
         }
 
+        Entry<Integer, String> latestVersion = findLatestSchemaVersion();
+        log.info("Found latest supported schema version " + latestVersion.getKey());
+
         Guice.createInjector(
-                new CommonDataModule("timeslice-3.ddl", db),
+                new CommonDataModule(latestVersion.getValue(), db),
                     new SessionModule(acl),
                     new AppJobServerModule(),
                     new ProRataServerModule(),
@@ -117,6 +122,20 @@ public class Driver
             )
             .getInstance(TsHost.class)
             .run(port, res);
+    }
+
+    private static Entry<Integer, String> findLatestSchemaVersion()
+    {
+        TreeMap<Integer, String> foundVersions = new TreeMap<Integer, String>();
+        for (int i = 0; i < 100; ++i)
+        {
+            String nextName = "timeslice-" + i + ".ddl";
+            if (null != ClassLoader.getSystemClassLoader().getResource(nextName))
+            {
+                foundVersions.put(i, nextName);
+            }
+        }
+        return foundVersions.lastEntry();
     }
 
     private static Module figureOutBrandingModule()
