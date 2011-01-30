@@ -5,6 +5,9 @@ import com.google.inject.AbstractModule;
 
 public class AppJobModule extends AbstractModule
 {
+    public AppJobModule()
+    {
+    }
 
     @Override
     protected void configure()

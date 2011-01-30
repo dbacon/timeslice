@@ -3,6 +3,8 @@
 <module>
 
   <inherits name="com.google.gwt.user.User" />
+  <inherits name="com.google.gwt.inject.Inject"/>
+
   <inherits name="com.enokinomi.timeslice.web.core.Core" />
 
 </module>

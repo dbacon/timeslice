@@ -62,6 +62,7 @@ public class GuiceRpcService extends RemoteServiceServlet
         if (null == injector)
         {
             String acl = getServletContext().getInitParameter("timeslice.acl");
+            if (null == acl) acl = config.getInitParameter("timeslice.acl");
             if (null == acl) throw new RuntimeException("No ACL given in context-param 'timeslice.acl'.");
 
             String db = getServletContext().getInitParameter("timeslice.db");
@@ -135,8 +136,6 @@ public class GuiceRpcService extends RemoteServiceServlet
     @Override
     public String processCall(String payload) throws SerializationException
     {
-        log.debug("GWT rpc generic call processor");
-
         RPCRequest req = RPC.decodeRequest(payload, null, this);
         onAfterRequestDeserialized(req);
         return RPC.invokeAndEncodeResponse(

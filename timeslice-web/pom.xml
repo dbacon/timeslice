@@ -6,6 +6,7 @@
 		<groupId>com.enokinomi.timeslice</groupId>
 		<artifactId>timeslice-parent</artifactId>
 		<version>1.0.10-beta-21-SNAPSHOT</version>
+        <relativePath>../timeslice-parent</relativePath>
 	</parent>
 
 	<groupId>com.enokinomi.timeslice</groupId>
@@ -20,7 +21,7 @@
 		<gwt.version>1.6.4</gwt.version>
 		<gwt.version>1.7.1</gwt.version>
 		-->
-		<gwt.version>2.0.3</gwt.version>
+		<gwt.version>2.1.1</gwt.version>
 	</properties>
 
 	<build>
@@ -76,34 +77,34 @@
 		<pluginRepository>
 			<id>codehaus</id>
 			<name>codehaus</name>
-			<url>http://repository.codehaus.org/</url>
+            <url>https://nexus.codehaus.org/content/repositories/releases</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
 			<releases>
 				<enabled>true</enabled>
-			</releases>
-		</pluginRepository>
-		<pluginRepository>
-			<id>codehaus-snapshots</id>
-			<name>codehaus-snapshots</name>
-			<url>http://snapshots.repository.codehaus.org/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>false</enabled>
+                <checksumPolicy>warn</checksumPolicy>
 			</releases>
 		</pluginRepository>
 	</pluginRepositories>
 
 	<dependencies>
 
-		<dependency>
-			<groupId>com.enokinomi.timeslice</groupId>
-			<artifactId>timeslice-lib</artifactId>
-			<version>${version}</version>
-		</dependency>
+        <dependency>
+            <groupId>com.enokinomi.timeslice</groupId>
+            <artifactId>timeslice-lib</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.enokinomi.timeslice</groupId>
+            <artifactId>timeslice-appjob</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.enokinomi.timeslice</groupId>
+            <artifactId>timeslice-stockjobs</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -230,7 +231,7 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>gwt-maven-plugin</artifactId>
-						<version>1.2</version>
+						<version>2.1.0-1</version>
 						<executions>
 							<execution>
                                 <phase>compile</phase>
@@ -239,7 +240,7 @@
 						</executions>
 						<configuration>
 							<inplace>true</inplace>
-							<warSourceDirectory>src/main/webapp</warSourceDirectory>
+							<warSourceDirectory>war</warSourceDirectory>
 							<force>true</force>
 						</configuration>
 					</plugin>

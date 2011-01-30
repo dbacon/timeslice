@@ -134,7 +134,6 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
                 else
                 {
                     showError(result);
-                    //messagePanel.add(new AcknowledgableMessagePanel("No item added."));
                 }
             }
 
@@ -147,7 +146,6 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
                 else
                 {
                     showError(result);
-//                    messagePanel.add(new AcknowledgableMessagePanel("No refresh happened: " + result.getThrown().getMessage()));
                 }
             }
         });
@@ -199,9 +197,9 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
                 public void onRefreshItemsDone(AsyncResult<List<StartTag>> result)
                 {
                     Window.setTitle(
-                            options.isCurrentTaskInTitlebar()
-                                ? renderTitlebar(Checks.mapNullTo(findCurrentStartTag(result.getReturned()), UnknownTag).getDescription())
-                                : originalWindowTitle);
+                            (!result.isError() && options.isCurrentTaskInTitlebar())
+                            ? renderTitlebar(Checks.mapNullTo(findCurrentStartTag(result.getReturned()), UnknownTag).getDescription())
+                                    : originalWindowTitle);
                 }
             });
     }
@@ -215,7 +213,7 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
                 {
                     if (result.isError())
                     {
-                        GWT.log("got error back: " + result.getThrown().getMessage(), result.getThrown());
+                        showError(result);
                     }
                     else
                     {
@@ -228,7 +226,7 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
                 {
                     if (result.isError())
                     {
-                        GWT.log("got error back: " + result.getThrown().getMessage(), result.getThrown());
+                        showError(result);
                     }
                     else
                     {
@@ -241,7 +239,7 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
                 {
                     if (result.isError())
                     {
-                        GWT.log("got error back: " + result.getThrown().getMessage(), result.getThrown());
+                        showError(result);
                     }
                     else
                     {
@@ -255,7 +253,7 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
                 {
                     if (result.isError())
                     {
-                        GWT.log("got error back: " + result.getThrown().getMessage(), result.getThrown());
+                        showError(result);
                     }
                     else
                     {
@@ -268,7 +266,7 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
                 {
                     if (asyncResult.isError())
                     {
-                        GWT.log("Error during refreshing all billees: " + asyncResult.getThrown().getMessage());
+                        showError(asyncResult);
                     }
                     else
                     {
@@ -348,7 +346,7 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
                 {
                     if (result.isError())
                     {
-                        GWT.log("Listing server-side jobs failed: " + result.getThrown().getMessage());
+                        showError(result);
                         appJobPanel.redisplayJobIds(new ArrayList<String>());
                     }
                     else
@@ -420,6 +418,9 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
 
     private void showError(AsyncResult<?> result)
     {
+        // TODO: why not messagePanel?
+        //   messagePanel.add(new AcknowledgableMessagePanel("No refresh happened: " + result.getThrown().getMessage()));
+
         String tmsg = "(nothing thrown)";
 
         Throwable t = result.getThrown();

@@ -513,14 +513,13 @@ public class GwtRpcController extends BaseController implements IAuthTokenHolder
                 @Override
                 public void onFailure(Throwable caught)
                 {
-                    GWT.log("got back error for assigned totals: " + caught.getMessage());
-
                     if (caught instanceof NotAuthenticException)
                     {
                         authenticate(caught.getMessage(), retryAction);
                     }
                     else
                     {
+                        // TODO: why do we fire and handle errors everywhere else, why not just handle here?
                         fireRefreshTotalsAssignedDone(new AsyncResult<List<AssignedTaskTotal>>(null, caught));
 //                        new ErrorBox("authentication", caught.getMessage()).show();
 //                        throw new RuntimeException("Service error: " + caught.getMessage(), caught);

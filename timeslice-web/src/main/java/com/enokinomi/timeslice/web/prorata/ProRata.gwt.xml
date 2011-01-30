@@ -5,5 +5,8 @@
   <inherits name="com.google.gwt.user.User" />
 
   <inherits name="com.enokinomi.timeslice.web.core.Core" />
+  <inherits name="com.enokinomi.timeslice.web.session.Session"/>
+  <inherits name="com.enokinomi.timeslice.web.ordering.Ordering"/>
+  <inherits name="com.enokinomi.timeslice.web.assign.Assign"/>
 
 </module>

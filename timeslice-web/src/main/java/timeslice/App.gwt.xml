@@ -2,24 +2,29 @@
 
 <module>
 
+    <inherits name="com.google.gwt.inject.Inject"/>
+    <inherits name="com.google.gwt.user.theme.standard.Standard" />
+
     <inherits name="com.enokinomi.timeslice.web.task.Task" />
     <inherits name="com.enokinomi.timeslice.web.assign.Assign" />
     <inherits name="com.enokinomi.timeslice.web.prorata.ProRata" />
     <inherits name="com.enokinomi.timeslice.web.ordering.Ordering" />
     <inherits name="com.enokinomi.timeslice.web.session.Session" />
 
-    <inherits name="com.google.gwt.inject.Inject"/>
 
 	<entry-point class="com.enokinomi.timeslice.web.task.client.ui_one.api.TopLevel" />
 
-    <inherits name="com.google.gwt.user.theme.standard.Standard" />
 
-	<!-- 202 seconds down to 57 seconds
-	<set-property name="user.agent" value="gecko" />
-	 -->
+	<!-- for testing, reduce GWT compile time, e.g. 202 seconds down to 57 seconds -->
+    <set-property name="user.agent" value="safari" />
+    <!--
+     -->
 
+    <!-- for production, include supported browsers and languages -->
+    <!--
     <extend-property name="locale" values="en"/>
     <extend-property name="locale" values="ja"/>
+     -->
 
     <stylesheet src="ts-default.css" />
 

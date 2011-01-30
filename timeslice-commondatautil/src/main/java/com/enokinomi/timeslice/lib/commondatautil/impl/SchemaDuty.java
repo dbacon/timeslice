@@ -13,7 +13,7 @@ public class SchemaDuty implements ISchemaDuty
     private static final Logger log = Logger.getLogger(SchemaDuty.class);
 
     @Inject
-    public SchemaDuty()
+    SchemaDuty()
     {
     }
 

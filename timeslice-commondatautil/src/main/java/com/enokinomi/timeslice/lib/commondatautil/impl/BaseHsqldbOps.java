@@ -25,7 +25,7 @@ public class BaseHsqldbOps implements IBaseHsqldbOps
     private Integer version = null;
 
     @Inject
-    public BaseHsqldbOps(ISchemaManager schemaManager)
+    BaseHsqldbOps(ISchemaManager schemaManager)
     {
         this.schemaManager = schemaManager;
     }

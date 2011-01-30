@@ -11,7 +11,7 @@ public class ConnectionContext implements IConnectionContext
     private final Connection conn;
 
     @Inject
-    public ConnectionContext(Connection conn)
+    ConnectionContext(Connection conn)
     {
         this.conn = conn;
     }

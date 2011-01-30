@@ -1,0 +1,30 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.enokinomi.timeslice</groupId>
+        <artifactId>timeslice-parent</artifactId>
+        <version>1.0.10-beta-21-SNAPSHOT</version>
+    </parent>
+
+    <groupId>com.enokinomi.timeslice</groupId>
+    <artifactId>timeslice-util</artifactId>
+    <version>1.0.10-beta-21-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>timeslice-util</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>1.4</version>
+        </dependency>
+    </dependencies>
+</project>

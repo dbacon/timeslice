@@ -1,6 +1,6 @@
 package com.enokinomi.timeslice.web.core.client.util;
 
-public class NotAuthenticException extends RuntimeException
+public class NotAuthenticException extends ServiceException
 {
     private static final long serialVersionUID = 1L;
 

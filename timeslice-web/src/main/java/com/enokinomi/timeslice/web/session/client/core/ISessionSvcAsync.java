@@ -7,6 +7,5 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface ISessionSvcAsync
 {
-
     void getSettings(String authToken, AsyncCallback<Map<String, List<String>>> callback);
 }

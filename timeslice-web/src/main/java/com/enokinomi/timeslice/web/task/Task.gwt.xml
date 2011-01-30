@@ -3,9 +3,11 @@
 <module>
 
   <inherits name="com.google.gwt.user.User" />
+  <inherits name="com.google.gwt.user.theme.standard.Standard" />
   <inherits name="com.enokinomi.timeslice.web.core.Core" />
   <inherits name="com.enokinomi.timeslice.web.appjob.AppJob" />
-
-  <inherits name="com.google.gwt.user.theme.standard.Standard" />
+  <inherits name="com.enokinomi.timeslice.web.assign.Assign"/>
+  <inherits name="com.enokinomi.timeslice.web.session.Session"/>
+  <inherits name="com.enokinomi.timeslice.web.prorata.ProRata"/>
 
 </module>

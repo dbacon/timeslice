@@ -17,10 +17,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.enokinomi.timeslice.lib.commondatautil.api.ISchemaDuty;
-import com.enokinomi.timeslice.lib.commondatautil.impl.BaseHsqldbOps;
-import com.enokinomi.timeslice.lib.commondatautil.impl.ConnectionContext;
-import com.enokinomi.timeslice.lib.commondatautil.impl.SchemaDuty;
+import com.enokinomi.timeslice.lib.commondatautil.impl.CommonDataFactory;
 import com.enokinomi.timeslice.lib.ordering.api.IOrderingStore;
 import com.enokinomi.timeslice.lib.testing.ConnectionFactory;
 import com.enokinomi.timeslice.lib.testing.MockSchemaManager;
@@ -142,8 +139,7 @@ public class IOrderingTestImplTest
         ConnectionFactory connFactory = new ConnectionFactory();
         conn = connFactory.createConnection(dbDir + "/test-1");
 
-        ISchemaDuty sd = new SchemaDuty();
-        sd.createSchema(conn, new IoHelp().readSystemResource("timeslice-3.ddl"));
+        new CommonDataFactory().createSchemaDuty().createSchema(conn, new IoHelp().readSystemResource("timeslice-3.ddl"));
     }
 
     @After
@@ -158,7 +154,8 @@ public class IOrderingTestImplTest
 
     private IOrderingStore createImplUnderTest(List<String> existingData)
     {
-        return new OrderingStore(new ConnectionContext(conn), new OrderingWorks(new BaseLowLevelOrderingWorks(new BaseHsqldbOps(new MockSchemaManager(3)))));
+        CommonDataFactory f = new CommonDataFactory();
+        return new OrderingStore(f.createConnectionContext(conn), new OrderingWorks(new BaseLowLevelOrderingWorks(f.createBaseHsqldbOps(new MockSchemaManager(3)))));
     }
 
     protected InitialBuilder on(final IOrderingStore impl, final String orderName)

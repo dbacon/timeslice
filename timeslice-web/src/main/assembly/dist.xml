@@ -46,8 +46,8 @@
             <directoryMode>0755</directoryMode>
         </fileSet>
 		<fileSet>
-			<directory>${basedir}/src/main/webapp</directory>
-			<outputDirectory>/webapp</outputDirectory>
+			<directory>${basedir}/war</directory>
+			<outputDirectory>/war</outputDirectory>
 			<fileMode>0644</fileMode>
 			<directoryMode>0755</directoryMode>
 		</fileSet>

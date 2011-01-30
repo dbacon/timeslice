@@ -2,6 +2,7 @@ package com.enokinomi.timeslice.web.task.server.impl;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.apache.commons.io.IOUtils;
 
@@ -65,48 +66,93 @@ public class TimesliceSvcSession implements ITimesliceSvc
     }
 
     @Override
-    public List<StartTag> refreshItems(String authToken, int maxSize, SortDir sortDir, String startingInstant, String endingInstant)
+    public List<StartTag> refreshItems(final String authToken, final int maxSize, final SortDir sortDir, final String startingInstant, final String endingInstant)
     {
-        SessionData sd = sessionTracker.checkToken(authToken);
-        TsSettings settings = sd.getSettings();
-        return timesliceSvc.refreshItems(sd.getUser(), maxSize, sortDir, startingInstant, endingInstant, settings.getTzOffsetMinutes());
+        return new Catcher().catchAndWrap("Refreshing items", new Callable<List<StartTag>>()
+        {
+            @Override
+            public List<StartTag> call()
+            {
+                SessionData sd = sessionTracker.checkToken(authToken);
+                TsSettings settings = sd.getSettings();
+                return timesliceSvc.refreshItems(sd.getUser(), maxSize, sortDir, startingInstant, endingInstant, settings.getTzOffsetMinutes());
+            }
+        });
     }
 
     @Override
-    public List<TaskTotal> refreshTotals(String authToken, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
+    public List<TaskTotal> refreshTotals(final String authToken, final int maxSize, final SortDir sortDir, final String startingInstant, final String endingInstant, final List<String> allowWords, final List<String> ignoreWords)
     {
-        SessionData sd = sessionTracker.checkToken(authToken);
-        TsSettings settings = sd.getSettings();
-        return timesliceSvc.refreshTotals(sd.getUser(), maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, settings.getTzOffset());
+        return new Catcher().catchAndWrap("Refreshing totals", new Callable<List<TaskTotal>>()
+        {
+            @Override
+            public List<TaskTotal> call()
+            {
+                SessionData sd = sessionTracker.checkToken(authToken);
+                TsSettings settings = sd.getSettings();
+                return timesliceSvc.refreshTotals(sd.getUser(), maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, settings.getTzOffset());
+            }
+        });
     }
 
     @Override
-    public String persistTotals(String authToken, String persistAsName, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords)
+    public String persistTotals(final String authToken, final String persistAsName, final int maxSize, final SortDir sortDir, final String startingInstant, final String endingInstant, final List<String> allowWords, final List<String> ignoreWords)
     {
-        SessionData sd = sessionTracker.checkToken(authToken);
-        TsSettings settings = sd.getSettings();
-        return timesliceSvc.persistTotals(persistAsName, maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, settings.getTzOffset(), sd.getUser());
+        return new Catcher().catchAndWrap("Persisting totals", new Callable<String>()
+        {
+            @Override
+            public String call() throws Exception
+            {
+                SessionData sd = sessionTracker.checkToken(authToken);
+                TsSettings settings = sd.getSettings();
+                return timesliceSvc.persistTotals(persistAsName, maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, settings.getTzOffset(), sd.getUser());
+            }
+        });
     }
 
     @Override
-    public void addItem(String authToken, String instantString, String taskDescription)
+    public void addItem(final String authToken, final String instantString, final String taskDescription)
     {
-        SessionData sd = sessionTracker.checkToken(authToken);
-        timesliceSvc.addItem(instantString, taskDescription, sd.getUser());
+        new Catcher().catchAndWrap("Adding item", new Callable<Void>()
+        {
+            @Override
+            public Void call()
+            {
+                SessionData sd = sessionTracker.checkToken(authToken);
+                timesliceSvc.addItem(instantString, taskDescription, sd.getUser());
+                return null; // Void
+            }
+        });
     }
 
     @Override
-    public void addItems(String authToken, List<StartTag> items)
+    public void addItems(final String authToken, final List<StartTag> items)
     {
-        SessionData sd = sessionTracker.checkToken(authToken);
-        timesliceSvc.addItems(sd.getUser(), items);
+        new Catcher().catchAndWrap("Adding items", new Callable<Void>()
+        {
+            @Override
+            public Void call() throws Exception
+            {
+                SessionData sd = sessionTracker.checkToken(authToken);
+                timesliceSvc.addItems(sd.getUser(), items);
+                return null; // Void
+            }
+        });
     }
 
     @Override
-    public void update(String authToken, StartTag editedStartTag)
+    public void update(final String authToken, final StartTag editedStartTag)
     {
-        SessionData sd = sessionTracker.checkToken(authToken);
-        timesliceSvc.update(sd.getUser(), editedStartTag);
+        new Catcher().catchAndWrap("Updating", new Callable<Void>()
+        {
+            @Override
+            public Void call() throws Exception
+            {
+                SessionData sd = sessionTracker.checkToken(authToken);
+                timesliceSvc.update(sd.getUser(), editedStartTag);
+                return null; // Void
+            }
+        });
     }
 
     @Override

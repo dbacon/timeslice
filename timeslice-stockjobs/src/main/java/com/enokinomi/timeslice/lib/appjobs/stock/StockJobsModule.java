@@ -7,6 +7,10 @@ import com.google.inject.multibindings.Multibinder;
 public class StockJobsModule extends AbstractModule
 {
 
+    public StockJobsModule()
+    {
+    }
+
     @Override
     protected void configure()
     {

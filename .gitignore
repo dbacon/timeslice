@@ -2,6 +2,11 @@
 timeslice-mobile/bin
 timeslice-mobile/gen
 target
+.classpath
 .project
 .settings
 /timeslice-web/src/test/input/data
+
+war/timeslice.App
+
+
