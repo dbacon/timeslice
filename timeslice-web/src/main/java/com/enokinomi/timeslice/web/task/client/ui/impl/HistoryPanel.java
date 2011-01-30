@@ -110,6 +110,7 @@ public class HistoryPanel extends ResizeComposite implements IHistoryPanel
         table.getColumnFormatter().setWidth(2, "10em");
         table.getColumnFormatter().addStyleName(1, "tsTimeField");
         initWidget(scroller);
+        setStyleName("HistoryPanel");
     }
 
     public void clear(boolean shouldUpdate)

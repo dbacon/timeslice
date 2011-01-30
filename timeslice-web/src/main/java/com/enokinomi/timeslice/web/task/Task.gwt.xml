@@ -10,4 +10,6 @@
   <inherits name="com.enokinomi.timeslice.web.session.Session"/>
   <inherits name="com.enokinomi.timeslice.web.prorata.ProRata"/>
 
+  <stylesheet src="controls.css" />
+
 </module>

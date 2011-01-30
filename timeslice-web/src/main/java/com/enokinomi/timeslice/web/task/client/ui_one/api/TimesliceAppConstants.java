@@ -19,10 +19,13 @@ public interface TimesliceAppConstants extends Constants
     @DefaultStringValue("<u>S</u>ettings")
     String options();
 
-    @DefaultStringValue("Current")
+    @DefaultStringValue("View Interval and Input Mode:")
+    String mode();
+
+    @DefaultStringValue("Current Entry")
     String current();
 
-    @DefaultStringValue("Specify Date")
+    @DefaultStringValue("Historic Date Report")
     String specifyDate();
 
     @DefaultStringValue("<u>T</u>ask:")

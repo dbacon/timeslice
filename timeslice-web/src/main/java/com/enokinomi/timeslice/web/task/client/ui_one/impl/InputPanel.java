@@ -21,6 +21,8 @@ import com.enokinomi.timeslice.web.task.client.ui.api.IParamPanel;
 import com.enokinomi.timeslice.web.task.client.ui_one.api.BulkItemListener;
 import com.enokinomi.timeslice.web.task.client.ui_one.api.IImportBulkItemsDialog;
 import com.enokinomi.timeslice.web.task.client.ui_one.api.TimesliceAppConstants;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -29,14 +31,13 @@ import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.ResizeComposite;
@@ -56,6 +57,7 @@ public class InputPanel extends ResizeComposite implements IIsWidget
     private final IHistoryPanel historyPanel;
     private final MultiWordSuggestOracle suggestSource;
     private final SuggestBox taskDescriptionEntry;
+    private final HorizontalPanel entryPanel = new HorizontalPanel();
     private final VerticalPanel actionPanel = new VerticalPanel();
     private final VerticalPanel idleActionPanel = new VerticalPanel();
     private final IHotlistPanel hotlistPanel;
@@ -183,6 +185,7 @@ public class InputPanel extends ResizeComposite implements IIsWidget
             }
         });
 
+        specifiedDateBox.setValue(new Date());
         specifiedDateBox.addValueChangeHandler(new ValueChangeHandler<Date>()
                 {
                     @Override
@@ -200,6 +203,7 @@ public class InputPanel extends ResizeComposite implements IIsWidget
                     public void onValueChange(ValueChangeEvent<Boolean> event)
                     {
                         fixSpecifiedDateBox(event.getValue());
+                        setEntryVisible(!event.getValue());
                         scheduleRefresh();
                     }
                 });
@@ -210,12 +214,15 @@ public class InputPanel extends ResizeComposite implements IIsWidget
                     public void onValueChange(ValueChangeEvent<Boolean> event)
                     {
                         fixSpecifiedDateBox(!event.getValue());
+                        setEntryVisible(event.getValue());
                         scheduleRefresh();
                     }
                 });
         modeRadioNormal.setValue(true, true);
 
-        FlowPanel modePanel = new FlowPanel();
+        HorizontalPanel modePanel = new HorizontalPanel();
+        modePanel.setSpacing(5);
+        modePanel.add(new Label(constants.mode()));
         modePanel.add(modeRadioNormal);
         modePanel.add(modeRadioSpecify);
         modePanel.add(specifiedDateBox);
@@ -312,7 +319,6 @@ public class InputPanel extends ResizeComposite implements IIsWidget
             }
         });
 
-        HorizontalPanel entryPanel = new HorizontalPanel();
         entryPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
         entryPanel.setSpacing(5);
         entryPanel.add(updateLink);
@@ -336,10 +342,17 @@ public class InputPanel extends ResizeComposite implements IIsWidget
 
     }
 
+    private void setEntryVisible(boolean visible)
+    {
+        hotlistPanel.asWidget().setVisible(visible);
+        entryPanel.setVisible(visible);
+    }
+
     private void scheduleHotlinkValidation()
     {
-        DeferredCommand.addCommand(new Command()
+        Scheduler.get().scheduleDeferred(new ScheduledCommand()
         {
+            @Override
             public void execute()
             {
                 boolean descriptionIsEmpty = taskDescriptionEntry.getText().trim().isEmpty();
@@ -351,8 +364,10 @@ public class InputPanel extends ResizeComposite implements IIsWidget
 
     private void scheduleHotlistValidation()
     {
-        DeferredCommand.addCommand(new Command()
+        Scheduler.get().scheduleDeferred(new ScheduledCommand()
         {
+
+            @Override
             public void execute()
             {
                 hotlistPanel.asWidget().setVisible(0 < hotlistPanel.getHotlistItemCount());
@@ -363,13 +378,13 @@ public class InputPanel extends ResizeComposite implements IIsWidget
     private void fixSpecifiedDateBox(boolean value)
     {
         specifiedDateBox.setEnabled(value);
-        specifiedDateBox.setVisible(value);
     }
 
     private void scheduleRefresh()
     {
-        DeferredCommand.addCommand(new Command()
+        Scheduler.get().scheduleDeferred(new ScheduledCommand()
         {
+            @Override
             public void execute()
             {
                 String starting = IParamPanel.MachineFormat.format(new Date(new Date().getTime() - options.getMaxSeconds() * 1000));
