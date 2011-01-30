@@ -24,7 +24,7 @@ public class TimesliceSvcWebWrapper
         this.timesliceSvc = timesliceSvc;
     }
 
-    public List<StartTag> refreshItems(String user, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, int tzOffset)
+    public List<StartTag> refreshItems(String user, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, int tzOffsetMinutes)
     {
         return Transforms.tr(timesliceSvc.refreshItems(
                     user,
@@ -33,10 +33,10 @@ public class TimesliceSvcWebWrapper
                     startingInstant,
                     endingInstant),
                 new ArrayList<StartTag>(),
-                ServerToClient.createStartTagTx(tzOffset));
+                ServerToClient.createStartTagTx(tzOffsetMinutes));
     }
 
-    public List<TaskTotal> refreshTotals(String user, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords, int tzOffset)
+    public List<TaskTotal> refreshTotals(String user, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords, int tzOffsetMinutes)
     {
         return Transforms.tr(
                 timesliceSvc.refreshTotals(
@@ -48,7 +48,7 @@ public class TimesliceSvcWebWrapper
                         allowWords,
                         ignoreWords),
                 new ArrayList<TaskTotal>(),
-                ServerToClient.createTaskTotal(tzOffset));
+                ServerToClient.createTaskTotal(tzOffsetMinutes));
     }
 
     public void addItem(String instantString, String taskDescription, String user)

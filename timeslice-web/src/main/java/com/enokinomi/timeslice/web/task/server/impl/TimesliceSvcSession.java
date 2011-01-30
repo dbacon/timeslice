@@ -90,7 +90,7 @@ public class TimesliceSvcSession implements ITimesliceSvc
             {
                 SessionData sd = sessionTracker.checkToken(authToken);
                 TsSettings settings = sd.getSettings();
-                return timesliceSvc.refreshTotals(sd.getUser(), maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, settings.getTzOffset());
+                return timesliceSvc.refreshTotals(sd.getUser(), maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, settings.getTzOffsetMinutes());
             }
         });
     }

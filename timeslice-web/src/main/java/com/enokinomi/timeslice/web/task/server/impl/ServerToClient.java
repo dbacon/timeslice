@@ -15,16 +15,18 @@ public class ServerToClient
     {
     }
 
-    public static ITransform<StartTag, com.enokinomi.timeslice.web.task.client.core.StartTag> createStartTagTx(final int tzoffset)
+    public static ITransform<StartTag, com.enokinomi.timeslice.web.task.client.core.StartTag> createStartTagTx(final int tzOffsetMinutes)
     {
         return new ITransform<StartTag, com.enokinomi.timeslice.web.task.client.core.StartTag>()
         {
             @Override
             public com.enokinomi.timeslice.web.task.client.core.StartTag apply(StartTag r)
             {
+                DateTimeZone tzOffsetMs = DateTimeZone.forOffsetMillis(tzOffsetMinutes*60*1000);
+
                 return new com.enokinomi.timeslice.web.task.client.core.StartTag(
-                        r.getWhen().toDateTime(DateTimeZone.forOffsetHours(tzoffset)).toString(),
-                        r.getUntil() == null ? null : r.getUntil().toString(),
+                        r.getWhen().toDateTime(tzOffsetMs).toString(),
+                        r.getUntil() == null ? null : r.getUntil().toDateTime(tzOffsetMs).toString(),
                         r.getUntil() == null ? null : new Double(new Duration(r.getWhen(), r.getUntil()).toDuration().getMillis()),
                         r.getWhat(),
                         r.getWhen().isBeforeNow()
@@ -33,7 +35,7 @@ public class ServerToClient
         };
     }
 
-    public static ITransform<TaskTotalMember, TaskTotal> createTaskTotal(final int tzoffset)
+    public static ITransform<TaskTotalMember, TaskTotal> createTaskTotal(final int tzOffsetMinutes)
     {
         return new ITransform<TaskTotalMember, TaskTotal>()
         {
