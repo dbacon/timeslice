@@ -5,7 +5,7 @@
 	<groupId>com.enokinomi.timeslice</groupId>
 	<artifactId>timeslice-brand-api</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.10-beta-21</version>
+	<version>1.0.10-beta-22-SNAPSHOT</version>
 
 	<name>timeslice-brand-api</name>
 
