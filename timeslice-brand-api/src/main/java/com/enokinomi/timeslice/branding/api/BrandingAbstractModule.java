@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.web.branding.api;
+package com.enokinomi.timeslice.branding.api;
 
 import com.google.inject.AbstractModule;
 

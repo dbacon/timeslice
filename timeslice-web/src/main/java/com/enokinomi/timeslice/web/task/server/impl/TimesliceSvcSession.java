@@ -6,8 +6,8 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.io.IOUtils;
 
+import com.enokinomi.timeslice.branding.api.IBranding;
 import com.enokinomi.timeslice.lib.userinfo.api.TsSettings;
-import com.enokinomi.timeslice.web.branding.api.IBranding;
 import com.enokinomi.timeslice.web.core.client.ui.SortDir;
 import com.enokinomi.timeslice.web.core.client.util.NotAuthenticException;
 import com.enokinomi.timeslice.web.session.server.core.ISessionTracker;

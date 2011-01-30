@@ -1,7 +1,7 @@
 package com.enokinomi.timeslice.brand.defaultbrand;
 
-import com.enokinomi.timeslice.launcher.BrandingAbstractModule;
-import com.enokinomi.timeslice.launcher.IBranding;
+import com.enokinomi.timeslice.branding.api.BrandingAbstractModule;
+import com.enokinomi.timeslice.branding.api.IBranding;
 
 
 public class DefaultBrandModule extends BrandingAbstractModule

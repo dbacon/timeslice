@@ -17,10 +17,10 @@ import joptsimple.OptionSpecBuilder;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import com.enokinomi.timeslice.branding.api.BrandingAbstractModule;
 import com.enokinomi.timeslice.lib.commondatautil.impl.CommonDataModule;
 import com.enokinomi.timeslice.web.appjob.server.impl.AppJobServerModule;
 import com.enokinomi.timeslice.web.assign.server.impl.AssignServerModule;
-import com.enokinomi.timeslice.web.branding.api.BrandingAbstractModule;
 import com.enokinomi.timeslice.web.branding.impl.DefaultBrandingModule;
 import com.enokinomi.timeslice.web.guice.GuiceRpcModule;
 import com.enokinomi.timeslice.web.ordering.server.impl.OrderingServerModule;

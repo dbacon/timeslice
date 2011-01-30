@@ -12,6 +12,7 @@
     <modules>
         <module>timeslice-parent</module>
         <module>timeslice-appjob</module>
+        <module>timeslice-brand-api</module>
         <module>timeslice-brand-default</module>
         <module>timeslice-commondatautil</module>
         <module>timeslice-lib</module>

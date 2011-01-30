@@ -105,6 +105,11 @@
             <artifactId>timeslice-stockjobs</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.enokinomi.timeslice</groupId>
+            <artifactId>timeslice-brand-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
 		<dependency>
 			<groupId>javax.servlet</groupId>
