@@ -530,48 +530,6 @@ public class GwtRpcController extends BaseController implements IAuthTokenHolder
     }
 
     @Override
-    public void startPersistTotals(final String persistAsName, final int maxSize, final SortDir sortDir, final String startingInstant, final String endingInstant, final List<String> allowWords, final List<String> ignoreWords)
-    {
-        final IOnAuthenticated retryAction = new IOnAuthenticated()
-        {
-            @Override
-            public void startRetry()
-            {
-                startPersistTotals(persistAsName, maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords);
-            }
-        };
-
-        if (null == authToken)
-        {
-            authenticate(retryAction);
-        }
-        else
-        {
-            svc.persistTotals(authToken, persistAsName, maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, new AsyncCallback<String>()
-            {
-                @Override
-                public void onSuccess(String result)
-                {
-                    firePersistTotalsDone(new AsyncResult<String>(result, null));
-                }
-
-                @Override
-                public void onFailure(Throwable caught)
-                {
-                    if (caught instanceof NotAuthenticException)
-                    {
-                        authenticate(caught.getMessage(), retryAction);
-                    }
-                    else
-                    {
-                        firePersistTotalsDone(new AsyncResult<String>(null, caught));
-                    }
-                }
-            });
-        }
-    }
-
-    @Override
     public void startListAvailableJobs()
     {
         final IOnAuthenticated retryAction = new IOnAuthenticated()

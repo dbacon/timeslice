@@ -62,7 +62,6 @@ public class Driver
         ArgumentAcceptingOptionSpec<String> aclSpec = parser.acceptsAll(Arrays.asList("a", "acl"), "ACL file.").withRequiredArg().ofType(String.class);
         ArgumentAcceptingOptionSpec<String> resSpec = parser.acceptsAll(Arrays.asList("w", "web-root"), "Base folder of web resources.").withRequiredArg().ofType(String.class);
         ArgumentAcceptingOptionSpec<String> defResSpec = parser.acceptsAll(Arrays.asList("W", "default-web-root"), "Base folder of web resources.").withRequiredArg().ofType(String.class);
-        ArgumentAcceptingOptionSpec<String> safeDirSpec = parser.acceptsAll(Arrays.asList("s", "safe-dir"), "Safe-dir to save server-side files.").withRequiredArg().ofType(String.class);
         OptionSpecBuilder debugSpec = parser.acceptsAll(Arrays.asList("D", "debug"), "Set log-level to DEBUG");
 
         OptionSet detectedOptions = null;
@@ -95,7 +94,6 @@ public class Driver
         String db = mapNullTo(dbSpec.value(detectedOptions), userHome + "/.timeslice-data/hsql/default-01");
         final String res = mapNullTo(resSpec.value(detectedOptions), mapNullTo(defResSpec.value(detectedOptions), "webapp"));
         final Integer port = portSpec.value(detectedOptions);
-        final String safeDir = mapNullTo(safeDirSpec.value(detectedOptions), ".");
 
         if (log.isInfoEnabled())
         {
@@ -103,7 +101,6 @@ public class Driver
             log.info("config: web-root : " + res);
             log.info("config: ACL      : " + acl);
             log.info("config: data     : " + db);
-            log.info("config: safedir  : " + safeDir);
         }
 
         Guice.createInjector(
@@ -111,7 +108,7 @@ public class Driver
                     new SessionModule(acl),
                     new AppJobServerModule(),
                     new ProRataServerModule(),
-                    new TaskServerModule(safeDir),
+                    new TaskServerModule(),
                     new AssignServerModule(),
                     new OrderingServerModule(),
                 new TsWebLaunchModule(),

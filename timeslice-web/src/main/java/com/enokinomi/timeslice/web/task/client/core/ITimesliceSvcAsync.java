@@ -21,5 +21,4 @@ public interface ITimesliceSvcAsync
     void addItems(String authToken, List<StartTag> items, AsyncCallback<Void> callback);
     void update(String authToken, StartTag editedStartTag, AsyncCallback<Void> callback);
 
-    void persistTotals(String authToken, String persistAsName, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords, AsyncCallback<String> callback);
 }

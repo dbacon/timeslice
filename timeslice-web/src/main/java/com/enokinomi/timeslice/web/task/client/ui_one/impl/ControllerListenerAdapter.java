@@ -49,11 +49,6 @@ public class ControllerListenerAdapter implements IControllerListener
     }
 
     @Override
-    public void onPersistTotalsDone(AsyncResult<String> result)
-    {
-    }
-
-    @Override
     public void onRefreshTotalsAssignedDone(AsyncResult<List<AssignedTaskTotal>> result)
     {
     }

@@ -8,12 +8,6 @@ public interface ReportPanelConstants extends Constants
     @DefaultStringValue("Refresh")
     String refresh();
 
-    @DefaultStringValue("Persist")
-    String persist();
-
-    @DefaultStringValue("%D - selected full day;  %S - starting date/time;  %E - ending date/time")
-    String persistedNameSubstitutionHint();
-
     @DefaultStringValue("Break-down")
     String totaling();
 

@@ -89,14 +89,6 @@ public abstract class BaseController implements IController
         }
     }
 
-    protected void firePersistTotalsDone(AsyncResult<String> result)
-    {
-        for (IControllerListener listener: listeners)
-        {
-            listener.onPersistTotalsDone(result);
-        }
-    }
-
     protected void fireAddItemDone(AsyncResult<Void> result)
     {
         for (IControllerListener listener: listeners)

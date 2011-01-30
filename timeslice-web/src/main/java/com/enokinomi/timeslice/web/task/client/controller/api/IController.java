@@ -22,7 +22,6 @@ public interface IController
     void startRefreshItems(int maxSize, String startingInstant, String endingInstant);
     void startRefreshTotals(int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords);
     void startRefreshTotalsAssigned(int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords);
-    void startPersistTotals(String persistAsName, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords);
     void startAssignBillee(String description, String newBillee);
     void startGetAllBillees();
 

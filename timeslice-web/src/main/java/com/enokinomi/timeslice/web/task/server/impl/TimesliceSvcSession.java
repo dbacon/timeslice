@@ -96,21 +96,6 @@ public class TimesliceSvcSession implements ITimesliceSvc
     }
 
     @Override
-    public String persistTotals(final String authToken, final String persistAsName, final int maxSize, final SortDir sortDir, final String startingInstant, final String endingInstant, final List<String> allowWords, final List<String> ignoreWords)
-    {
-        return new Catcher().catchAndWrap("Persisting totals", new Callable<String>()
-        {
-            @Override
-            public String call() throws Exception
-            {
-                SessionData sd = sessionTracker.checkToken(authToken);
-                TsSettings settings = sd.getSettings();
-                return timesliceSvc.persistTotals(persistAsName, maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, settings.getTzOffset(), sd.getUser());
-            }
-        });
-    }
-
-    @Override
     public void addItem(final String authToken, final String instantString, final String taskDescription)
     {
         new Catcher().catchAndWrap("Adding item", new Callable<Void>()

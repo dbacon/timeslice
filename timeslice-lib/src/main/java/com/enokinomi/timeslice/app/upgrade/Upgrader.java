@@ -14,7 +14,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
@@ -22,7 +21,7 @@ import org.joda.time.format.ISODateTimeFormat;
 public class Upgrader
 {
     private String url;
-    private String safeDir;
+    private File installDir;
 
     public String getUrl()
     {
@@ -34,25 +33,25 @@ public class Upgrader
         this.url = url;
     }
 
-    public String getSafeDir()
+    public File getInstallDir()
     {
-        return safeDir;
+        return installDir;
     }
 
-    public void setSafeDir(String safeDir)
+    public void setInstallDir(File installDir)
     {
-        this.safeDir = safeDir;
+        this.installDir = installDir;
     }
 
-    Upgrader(String url, String safeDir)
+    Upgrader(String url, File installDir)
     {
         this.url = url;
-        this.safeDir = safeDir;
+        this.installDir = installDir;
     }
 
     public File download(UpgradeInfo info) throws Exception
     {
-        File localFile = new File(FilenameUtils.concat(getSafeDir(), new File(info.getDownloadUrl().getPath()).getName()));
+        File localFile = new File(getInstallDir(), new File(info.getDownloadUrl().getPath()).getName());
 
         int nread = IOUtils.copy(info.getDownloadUrl().openStream(), new FileOutputStream(localFile));
         System.out.println("read: " + nread);
@@ -71,7 +70,7 @@ public class Upgrader
 
             if (entry.getName().endsWith("/"))
             {
-                File dir = new File(FilenameUtils.concat(getSafeDir(), entry.getName()));
+                File dir = new File(getInstallDir(), entry.getName());
 
                 if (entry.getName().lastIndexOf('/') == entry.getName().indexOf('/'))
                 {
@@ -103,7 +102,7 @@ public class Upgrader
             }
             else
             {
-                File file = new File(FilenameUtils.concat(getSafeDir(), entry.getName()));
+                File file = new File(getInstallDir(), entry.getName());
 
                 if (file.exists())
                 {

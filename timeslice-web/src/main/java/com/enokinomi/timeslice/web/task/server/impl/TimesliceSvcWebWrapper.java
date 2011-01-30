@@ -51,20 +51,6 @@ public class TimesliceSvcWebWrapper
                 ServerToClient.createTaskTotal(tzOffset));
     }
 
-    public String persistTotals(String persistAsName, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords, int tzOffset, String user)
-    {
-        return timesliceSvc.persistTotals(
-                persistAsName,
-                maxSize,
-                com.enokinomi.timeslice.lib.task.api.SortDir.valueOf(sortDir.name()),
-                startingInstant,
-                endingInstant,
-                allowWords,
-                ignoreWords,
-                tzOffset,
-                user);
-    }
-
     public void addItem(String instantString, String taskDescription, String user)
     {
         timesliceSvc.addItem(instantString, taskDescription, user);

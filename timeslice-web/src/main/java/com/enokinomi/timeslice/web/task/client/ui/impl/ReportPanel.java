@@ -19,11 +19,9 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
@@ -32,9 +30,6 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
 {
     private final IParamPanel params;
     private final Button refreshButton;
-    private final Button persistButton;
-    private final TextBox persistAsName = new TextBox();
-    private final Label persisted = new Label();
     private final ITabularResultsAssignedView resultsAssignedView;
     private final TaskTotalIntegrator integrator = new TaskTotalIntegrator("/");
     private final TreeTableResultsView resultsTreeView = new TreeTableResultsView(integrator);
@@ -61,14 +56,6 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
         }
     }
 
-    protected void firePersistRequested(String persistAsName, String startingTimeText, String endingTimeText, List<String> allowWords, List<String> ignoreWords)
-    {
-        for (IReportPanelListener listener: listeners)
-        {
-            listener.persistRequested(persistAsName, startingTimeText, endingTimeText, allowWords, ignoreWords);
-        }
-    }
-
     protected void fireBilleeUpdateRequested(String description, String newBillee)
     {
         for (IReportPanelListener listener: listeners)
@@ -85,7 +72,6 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
         this.resultsAssignedView = resultsAssignedView;
 
         refreshButton = new Button(constants.refresh());
-        persistButton = new Button(constants.persist());
 
         params.addParamChangedListener(new IParamChangedListener()
         {
@@ -114,30 +100,10 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
             }
         });
 
-        persistButton.setAccessKey('p');
-        persistButton.addClickHandler(new ClickHandler()
-        {
-            @Override
-            public void onClick(ClickEvent event)
-            {
-                firePersistRequested(
-                        renderPersistName(),
-                        params.getStartingTimeRendered(),
-                        params.getEndingTimeRendered(),
-                        Arrays.asList(params.getAllowWords().getText().split(",")),
-                        Arrays.asList(params.getIgnoreWords().getText().split(",")));
-            }
-        });
-
-        persistAsName.setText("full-day-%D");
-        persistAsName.setTitle(constants.persistedNameSubstitutionHint());
         HorizontalPanel buttonPanel = new HorizontalPanel();
         buttonPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
         buttonPanel.add(refreshButton);
         buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
-        buttonPanel.add(persistAsName);
-        buttonPanel.add(persistButton);
-        buttonPanel.add(persisted);
 
         VerticalPanel vp = new VerticalPanel();
         vp.setVerticalAlignment(VerticalPanel.ALIGN_TOP);
@@ -176,20 +142,6 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
     {
         resultsAssignedView.setResults(report);
         projectListPanel.update(report);
-    }
-
-    protected String renderPersistName()
-    {
-        return persistAsName.getText()
-            .replaceAll("%D", params.getFullDaySelected())
-            .replaceAll("%S", params.getStartingTimeRendered())
-            .replaceAll("%E", params.getEndingTimeRendered());
-    }
-
-    @Override
-    public void setPersisted(String persistedName)
-    {
-        persisted.setText(persistedName);
     }
 
     @Override

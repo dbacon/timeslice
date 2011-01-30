@@ -10,7 +10,6 @@ public interface IReportPanel extends IIsWidget
 {
     IParamPanel getParamsPanel();
     void addReportPanelListener(IReportPanelListener iReportPanelListener);
-    void setPersisted(String persistedName);
     void setResultsAssigned(List<AssignedTaskTotal> report);
     void setResults(List<TaskTotal> results);
     public abstract void setBillees(List<String> billees);

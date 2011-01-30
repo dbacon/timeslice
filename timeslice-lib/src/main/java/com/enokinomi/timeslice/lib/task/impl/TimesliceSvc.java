@@ -1,18 +1,12 @@
 package com.enokinomi.timeslice.lib.task.impl;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
-import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.enokinomi.timeslice.lib.task.api.ISafeDirProvider;
 import com.enokinomi.timeslice.lib.task.api.ITimesliceStore;
 import com.enokinomi.timeslice.lib.task.api.ITimesliceSvc;
 import com.enokinomi.timeslice.lib.task.api.SortDir;
@@ -22,23 +16,18 @@ import com.google.inject.Inject;
 
 public class TimesliceSvc implements ITimesliceSvc
 {
-    private static final Logger log = Logger.getLogger(TimesliceSvc.class);
-
-    private String reportPrefix = "";
     private final ITimesliceStore store;
     private final Sum summer;
     private final Aggregate aggregator;
     private final Split splitter;
-    private final ISafeDirProvider safeDirProvider;
 
     @Inject
-    TimesliceSvc(ITimesliceStore store, Sum summer, Aggregate aggregate, Split splitter, ISafeDirProvider safeDirProvider)
+    TimesliceSvc(ITimesliceStore store, Sum summer, Aggregate aggregate, Split splitter)
     {
         this.store = store;
         this.summer = summer;
         this.aggregator = aggregate;
         this.splitter = splitter;
-        this.safeDirProvider = safeDirProvider;
     }
 
     @Override
@@ -158,55 +147,6 @@ public class TimesliceSvc implements ITimesliceSvc
                        aggregator.sumThem(summer, aggregator.aggregate(tags)).values(),
                        allowWords,
                        ignoreWords)));
-    }
-
-    @Override
-    public String persistTotals(String persistAsName, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords, int tzOffset, String user)
-    {
-        List<com.enokinomi.timeslice.lib.task.api.StartTag> tags = queryForTags(
-                user,
-                sortDir == SortDir.asc,
-                startingInstant == null
-                    ? new Instant(0)
-                    : ISODateTimeFormat.dateTime().parseDateTime(startingInstant).toInstant(),
-                endingInstant == null
-                    ? new Instant(Integer.MAX_VALUE)
-                    : ISODateTimeFormat.dateTime().parseDateTime(endingInstant).toInstant(),
-                maxSize,
-                0);
-
-        List<TaskTotalMember> rows = createReport(new ArrayList<com.enokinomi.timeslice.lib.task.api.TaskTotal>(
-                    filterItems(
-                        aggregator.sumThem(summer, aggregator.aggregate(tags)).values(),
-                        allowWords,
-                        ignoreWords)));
-
-        ArrayList<String> lines = new ArrayList<String>();
-        for (TaskTotalMember row: rows)
-        {
-            lines.add(String.format("%s,%s,%.6f", row.getWho(), row.getWhat(), row.getMillis() / 1000. / 60. / 60.));
-        }
-
-        String filename = reportPrefix;
-        if (null != persistAsName && !persistAsName.isEmpty()) filename = filename + persistAsName;
-        String ts = new Instant().toDateTime(DateTimeZone.forOffsetHours(tzOffset)).toString();
-        filename = filename + "." + ts + ".ts-snapshot.csv";
-
-        filename = filename.replaceAll(":", "-"); // armor the filename for filesystems which don't support ':'
-        File report = new File(safeDirProvider.getSafeDir(), filename);
-        try
-        {
-            FileUtils.writeLines(report, lines);
-            if (log.isInfoEnabled()) log.info("Wrote report to '" + report.getAbsolutePath() + "'.");
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException("Could not persist report: " + e.getMessage());
-        }
-
-        // TODO, write to a file in an accessible location, build & return a link.
-        // TODO, for security, link should point to a servlet, which checks authentication, like this one does.
-        return filename;
     }
 
     @Override

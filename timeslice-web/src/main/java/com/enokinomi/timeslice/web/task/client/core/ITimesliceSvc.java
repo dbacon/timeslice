@@ -24,5 +24,4 @@ public interface ITimesliceSvc extends RemoteService
     void addItems(String authToken, List<StartTag> items) throws ServiceException;
     void update(String authToken, StartTag editedStartTag) throws ServiceException;
 
-    String persistTotals(String authToken, String persistAsName, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords) throws ServiceException;
 }

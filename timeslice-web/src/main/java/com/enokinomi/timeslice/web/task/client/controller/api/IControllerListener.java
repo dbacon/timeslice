@@ -19,7 +19,6 @@ public interface IControllerListener
     void onRefreshItemsDone(AsyncResult<List<StartTag>> result);
     void onAddItemDone(AsyncResult<Void> result);
     void onRefreshTotalsDone(AsyncResult<List<TaskTotal>> result);
-    void onPersistTotalsDone(AsyncResult<String> result);
     void onRefreshTotalsAssignedDone(AsyncResult<List<AssignedTaskTotal>> result);
     void onAssignBilleeDone(AsyncResult<Void> result);
     void onAllBilleesDone(AsyncResult<List<String>> asyncResult);

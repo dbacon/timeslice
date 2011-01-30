@@ -235,20 +235,6 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
                 }
 
                 @Override
-                public void onPersistTotalsDone(AsyncResult<String> result)
-                {
-                    if (result.isError())
-                    {
-                        showError(result);
-                    }
-                    else
-                    {
-                        // TODO: show download link in browser.
-                        reportPanel.setPersisted(result.getReturned());
-                    }
-                }
-
-                @Override
                 public void onAssignBilleeDone(AsyncResult<Void> result)
                 {
                     if (result.isError())
@@ -282,19 +268,6 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
             public void refreshRequested(String startingTimeText, String endingTimeText, List<String> allowWords, List<String> ignoreWords)
             {
                 refreshTotals(startingTimeText, endingTimeText, allowWords, ignoreWords);
-            }
-
-            @Override
-            public void persistRequested(String persistAsName, String startingTimeText, String endingTimeText, List<String> allowWords, List<String> ignoreWords)
-            {
-                controller.startPersistTotals(
-                        persistAsName,
-                        1000,
-                        SortDir.desc,
-                        startingTimeText,
-                        endingTimeText,
-                        allowWords,
-                        ignoreWords);
             }
 
             @Override
