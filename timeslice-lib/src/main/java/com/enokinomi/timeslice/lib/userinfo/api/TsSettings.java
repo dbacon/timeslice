@@ -179,7 +179,7 @@ public class TsSettings
 
     public int getTzOffsetMinutes()
     {
-        return getScalar("tzoffsetmin", ParseInt, 0);
+        return getScalar("usersession.tzoffsetmin", ParseInt, 0);
     }
 
 }
