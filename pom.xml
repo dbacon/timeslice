@@ -10,11 +10,11 @@
     <name>timeslice-project</name>
 
     <modules>
+        <module>timeslice-parent</module>
         <module>timeslice-appjob</module>
         <module>timeslice-brand-default</module>
         <module>timeslice-commondatautil</module>
         <module>timeslice-lib</module>
-        <module>timeslice-parent</module>
         <module>timeslice-stockjobs</module>
         <module>timeslice-util</module>
         <module>timeslice-web</module>
