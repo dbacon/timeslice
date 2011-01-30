@@ -5,12 +5,12 @@
     <parent>
         <groupId>com.enokinomi.timeslice</groupId>
         <artifactId>timeslice-parent</artifactId>
-        <version>1.0.10-beta-21-SNAPSHOT</version>
+        <version>1.0.10-beta-21</version>
     </parent>
 
     <groupId>com.enokinomi.timeslice</groupId>
     <artifactId>timeslice-commondatautil</artifactId>
-    <version>1.0.10-beta-21-SNAPSHOT</version>
+    <version>1.0.10-beta-21</version>
     <packaging>jar</packaging>
 
     <name>timeslice-commondatautil</name>
@@ -19,7 +19,7 @@
         <dependency>
             <groupId>com.enokinomi.timeslice</groupId>
             <artifactId>timeslice-util</artifactId>
-            <version>1.0.10-beta-21-SNAPSHOT</version>
+            <version>1.0.10-beta-21</version>
         </dependency>
         <dependency>
             <groupId>com.google.inject</groupId>
