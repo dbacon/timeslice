@@ -785,10 +785,22 @@ public class ProjectListPanel extends Composite
         col++;
     }
 
+    /**
+     * Since we don't have an 'isParsable(String)' method.
+     *
+     * @param input
+     * @param defaultValue
+     * @return
+     */
+    private static double doubleOrDefault(String input, double defaultValue)
+    {
+        try { return Double.valueOf(input); } catch (Exception e) { return defaultValue; }
+    }
+
     private void readPrefs()
     {
         scaleCheckBox.setValue("true".equals(Cookies.getCookie(PrefKeys.Scale)));
-        scaleToTextBox.setText(Cookies.getCookie(PrefKeys.ScaleTo));
+        scaleToTextBox.setText("" + doubleOrDefault(Cookies.getCookie(PrefKeys.ScaleTo), 8.));
         orderingCheckBox.setValue("true".equals(Cookies.getCookie(PrefKeys.AutoOrder)));
     }
 
