@@ -11,7 +11,7 @@ bindir="$(dirname -- "$0")"
 
 topdir="$(dirname -- "$bindir")"
 libdir="$topdir/lib"
-webdir="$topdir/webapp"
+webdir="$topdir/web"
 
 cp="$(fs=("$libdir"/*.jar); export IFS=:; echo "${fs[*]}" )"
 
