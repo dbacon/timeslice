@@ -1,13 +1,13 @@
 package com.enokinomi.timeslice.web.task.client.controller.impl;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -54,7 +54,7 @@ public class LoginDialog extends DialogBox
 
     private void scheduleSubmit()
     {
-        DeferredCommand.addCommand(new Command()
+        Scheduler.get().scheduleDeferred(new ScheduledCommand()
         {
             @Override
             public void execute()
@@ -69,7 +69,7 @@ public class LoginDialog extends DialogBox
 
     private void scheduleButtonSensitivity()
     {
-        DeferredCommand.addCommand(new Command()
+        Scheduler.get().scheduleDeferred(new ScheduledCommand()
         {
             @Override
             public void execute()
@@ -160,7 +160,7 @@ public class LoginDialog extends DialogBox
     @Override
     public void show()
     {
-        DeferredCommand.addCommand(new Command()
+        Scheduler.get().scheduleDeferred(new ScheduledCommand()
         {
             @Override
             public void execute()

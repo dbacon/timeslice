@@ -1,13 +1,13 @@
 package com.enokinomi.timeslice.web.prorata.client.ui;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -107,7 +107,7 @@ public class SplitProjectDialogBox extends DialogBox
             }
         });
 
-        DeferredCommand.addCommand(new Command()
+        Scheduler.get().scheduleDeferred(new ScheduledCommand()
         {
             @Override
             public void execute()
