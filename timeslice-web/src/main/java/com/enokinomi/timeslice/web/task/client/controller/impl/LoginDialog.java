@@ -6,8 +6,8 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -102,28 +102,28 @@ public class LoginDialog extends DialogBox
         if (null != subtextLabel) vp.add(subtextLabel);
         vp.add(table);
 
-        userText.addKeyPressHandler(new KeyPressHandler()
+        userText.addKeyDownHandler(new KeyDownHandler()
         {
             @Override
-            public void onKeyPress(KeyPressEvent event)
+            public void onKeyDown(KeyDownEvent event)
             {
                 scheduleButtonSensitivity();
 
-                if (event.getCharCode() == KeyCodes.KEY_ENTER)
+                if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER)
                 {
                     passwordText.setFocus(true);
                 }
             }
         });
 
-        passwordText.addKeyPressHandler(new KeyPressHandler()
+        passwordText.addKeyDownHandler(new KeyDownHandler()
         {
             @Override
-            public void onKeyPress(KeyPressEvent event)
+            public void onKeyDown(KeyDownEvent event)
             {
                 scheduleButtonSensitivity();
 
-                if (event.getCharCode() == KeyCodes.KEY_ENTER)
+                if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER)
                 {
                     scheduleSubmit();
                 }

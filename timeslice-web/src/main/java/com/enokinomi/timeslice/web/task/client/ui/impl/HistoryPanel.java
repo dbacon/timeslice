@@ -176,7 +176,9 @@ public class HistoryPanel extends ResizeComposite implements IHistoryPanel
                 }
             });
 
-            EditableLabel itemLabel = new EditableLabel(new SuggestBox(oracle), item.getDescription());
+            SuggestBox suggestBox = new SuggestBox(oracle);
+            suggestBox.setAutoSelectEnabled(false);
+            EditableLabel itemLabel = new EditableLabel(suggestBox, item.getDescription());
             itemLabel.getEditor().setWidth("30em");
             itemLabel.addListener(new Listener()
             {

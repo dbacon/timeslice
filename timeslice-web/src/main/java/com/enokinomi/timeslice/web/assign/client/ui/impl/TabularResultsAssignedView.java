@@ -135,6 +135,7 @@ public class TabularResultsAssignedView extends ResizeComposite implements ITabu
             // TODO: set style for edited editable-label
 
             final SuggestBox suggestBox = new SuggestBox(oracle);
+            suggestBox.setAutoSelectEnabled(false);
             final EditableLabel label = new EditableLabel(suggestBox, reportRow.getBilledTo());
             label.setLabelStylePrimaryName("ts-project");
             label.addListener(new EditableLabel.Listener()

@@ -27,14 +27,13 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -296,26 +295,27 @@ public class InputPanel extends ResizeComposite implements IIsWidget
 
         taskDescriptionEntry.setWidth("30em");
         taskDescriptionEntry.setAccessKey('t');
-        taskDescriptionEntry.getTextBox().addKeyPressHandler(new KeyPressHandler()
+        taskDescriptionEntry.setAutoSelectEnabled(false);
+        taskDescriptionEntry.getTextBox().addKeyDownHandler(new KeyDownHandler()
         {
             @Override
-            public void onKeyPress(KeyPressEvent event)
+            public void onKeyDown(KeyDownEvent event)
             {
                 scheduleHotlinkValidation();
 
-                if (KeyCodes.KEY_ESCAPE == event.getCharCode())
+                if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE)
                 {
                     taskDescriptionEntry.setText("");
                 }
-                else if (event.isControlKeyDown() && (KeyCodes.KEY_ENTER == event.getCharCode()))
+                else if (event.getNativeEvent().getCtrlKey() && (event.getNativeKeyCode() == KeyCodes.KEY_ENTER))
                 {
                     enterNewStartTag(taskDescriptionEntry.getText());
                 }
-                else if (options.isControlSpaceSends() && event.isControlKeyDown() && (' ' == event.getCharCode()))
+                else if (options.isControlSpaceSends() &&
+                        event.getNativeEvent().getCtrlKey() && (event.getNativeKeyCode() == ' '))
                 {
                     enterNewStartTag(taskDescriptionEntry.getText());
                 }
-                event.stopPropagation();
             }
         });
 

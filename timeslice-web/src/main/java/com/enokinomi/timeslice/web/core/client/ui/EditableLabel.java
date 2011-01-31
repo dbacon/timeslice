@@ -8,8 +8,8 @@ import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.ui.Composite;
@@ -124,14 +124,21 @@ public class EditableLabel extends Composite
         fireEditAccepted(oldValue, newValue);
     }
 
+    private static SuggestBox createNoAutoSuggestBox()
+    {
+        SuggestBox box = new SuggestBox();
+        box.setAutoSelectEnabled(false);
+        return box;
+    }
+
     public EditableLabel()
     {
-        this(new SuggestBox(), "");
+        this(createNoAutoSuggestBox(), "");
     }
 
     public EditableLabel(String initialText)
     {
-        this(new SuggestBox(), initialText);
+        this(createNoAutoSuggestBox(), initialText);
     }
 
     public EditableLabel(SuggestBox editor, String initialText)
@@ -168,16 +175,16 @@ public class EditableLabel extends Composite
             }
         });
 
-        editor.getTextBox().addKeyPressHandler(new KeyPressHandler()
+        editor.getTextBox().addKeyDownHandler(new KeyDownHandler()
         {
             @Override
-            public void onKeyPress(KeyPressEvent event)
+            public void onKeyDown(KeyDownEvent event)
             {
-                if (event.getCharCode() == KeyCodes.KEY_ENTER && event.isControlKeyDown())
+                if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER && event.getNativeEvent().getCtrlKey())
                 {
                     onEditAccepted();
                 }
-                else if (event.getCharCode() == KeyCodes.KEY_ESCAPE)
+                else if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE)
                 {
                     onEditCanceled();
                 }
