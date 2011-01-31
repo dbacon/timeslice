@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import com.enokinomi.timeslice.lib.appjob.api.AppJobCompletion;
 import com.enokinomi.timeslice.lib.appjob.api.IAppJobProcessor;
+import com.enokinomi.timeslice.lib.appjobs.stock.BrokenUpgradeFix1;
 import com.enokinomi.timeslice.lib.commondatautil.api.IConnectionContext;
 import com.enokinomi.timeslice.lib.commondatautil.api.IConnectionWork;
 import com.enokinomi.timeslice.lib.commondatautil.api.ISchemaManager;
@@ -35,6 +36,7 @@ public class Issue149_DataSchemaUpgradeBadStateTest
     private static final String[] jobs = {
             ListTables,
             ShowSchemaVersion,
+            BrokenUpgradeFix1.JobId,
             Upgrade01,
             Upgrade12,
             Upgrade23,

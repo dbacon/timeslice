@@ -15,6 +15,8 @@ import com.google.inject.Inject;
 
 public class BrokenUpgradeFix1 implements AppJob
 {
+    public static final String JobId = "Detect and fix broken upgrade id-1";
+
     private final IConnectionContext connContext;
     private final ISchemaDetector schemaDetector;
     private final ISchemaDuty schemaDuty;
@@ -30,7 +32,7 @@ public class BrokenUpgradeFix1 implements AppJob
     @Override
     public String getJobId()
     {
-        return "Detect and fix broken upgrade id-1";
+        return JobId;
     }
 
     @Override
