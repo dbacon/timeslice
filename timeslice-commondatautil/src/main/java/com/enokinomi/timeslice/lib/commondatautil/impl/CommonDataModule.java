@@ -54,9 +54,9 @@ public class CommonDataModule extends AbstractModule
             Connection conn = DriverManager.getConnection("jdbc:hsqldb:file:" + dbFilename + ";shutdown=true;", "SA", "");
 
             Statement st = conn.createStatement();
-            st.execute("SET WRITE_DELAY 500 MILLIS");
+            st.execute("SET WRITE_DELAY 0 MILLIS");
             st.close();
-            log.debug("Set write-delay to 500ms");
+            log.debug("Set write-delay to 0ms");
 
             log.debug(String.format("Created connection: %s (%d)", conn.toString(), conn.hashCode()));
             return conn;

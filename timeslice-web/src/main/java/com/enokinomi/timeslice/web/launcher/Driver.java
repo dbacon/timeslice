@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.TreeMap;
 
 import joptsimple.ArgumentAcceptingOptionSpec;
@@ -18,6 +19,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.enokinomi.timeslice.branding.api.BrandingAbstractModule;
+import com.enokinomi.timeslice.lib.appjob.api.AppJob;
+import com.enokinomi.timeslice.lib.appjob.api.AppJobCompletion;
+import com.enokinomi.timeslice.lib.appjob.api.IAppJobProcessor;
 import com.enokinomi.timeslice.lib.commondatautil.impl.CommonDataModule;
 import com.enokinomi.timeslice.web.appjob.server.impl.AppJobServerModule;
 import com.enokinomi.timeslice.web.assign.server.impl.AssignServerModule;
@@ -28,7 +32,10 @@ import com.enokinomi.timeslice.web.prorata.server.impl.ProRataServerModule;
 import com.enokinomi.timeslice.web.session.server.impl.SessionModule;
 import com.enokinomi.timeslice.web.task.server.impl.TaskServerModule;
 import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.google.inject.Module;
+import com.google.inject.TypeLiteral;
 
 
 public class Driver
@@ -64,6 +71,8 @@ public class Driver
         ArgumentAcceptingOptionSpec<String> aclSpec = parser.acceptsAll(Arrays.asList("a", "acl"), "ACL file.").withRequiredArg().ofType(String.class);
         ArgumentAcceptingOptionSpec<String> resSpec = parser.acceptsAll(Arrays.asList("w", "web-root"), "Base folder of web resources.").withRequiredArg().ofType(String.class);
         ArgumentAcceptingOptionSpec<String> defResSpec = parser.acceptsAll(Arrays.asList("W", "default-web-root"), "Base folder of web resources.").withRequiredArg().ofType(String.class);
+        OptionSpecBuilder listJobsSpec = parser.acceptsAll(Arrays.asList("J", "list-jobs"), "List jobs");
+        ArgumentAcceptingOptionSpec<String> runJobSpec = parser.acceptsAll(Arrays.asList("j", "run-job"), "Run job").withRequiredArg().ofType(String.class);
         OptionSpecBuilder debugSpec = parser.acceptsAll(Arrays.asList("D", "debug"), "Set log-level to DEBUG");
 
         OptionSet detectedOptions = null;
@@ -108,7 +117,7 @@ public class Driver
         Entry<Integer, String> latestVersion = findLatestSchemaVersion();
         log.info("Found latest supported schema version " + latestVersion.getKey());
 
-        Guice.createInjector(
+        Injector injector = Guice.createInjector(
                 new CommonDataModule(latestVersion.getValue(), db),
                     new SessionModule(acl),
                     new AppJobServerModule(),
@@ -119,9 +128,35 @@ public class Driver
                 new TsWebLaunchModule(),
                 new GuiceRpcModule(),
                 figureOutBrandingModule()
-            )
-            .getInstance(TsHost.class)
-            .run(port, res);
+        );
+
+        if (detectedOptions.has(listJobsSpec))
+        {
+            Set<AppJob> jobs = injector.getInstance(Key.get(new TypeLiteral<Set<AppJob>>() {}));
+            for (AppJob job: jobs)
+            {
+                System.out.println(job.getJobId());
+            }
+        }
+        else if (detectedOptions.has(runJobSpec))
+        {
+            String jobIdToRun = runJobSpec.value(detectedOptions);
+
+            IAppJobProcessor jobProcessor = injector.getInstance(IAppJobProcessor.class);
+            AppJobCompletion completion = jobProcessor.performJob(jobIdToRun);
+
+            System.out.printf(
+                        "job    : %s\n" +
+                        "status : %s\n" +
+                        "message: %s\n",
+                        completion.getJobId(),
+                        completion.getStatus(),
+                        completion.getDescription());
+        }
+        else
+        {
+            injector.getInstance(TsHost.class).run(port, res);
+        }
     }
 
     private static Entry<Integer, String> findLatestSchemaVersion()
