@@ -530,6 +530,8 @@ public class ProjectListPanel extends Composite
 
     private void drawProjects(final double total, final Map<String, Double> projectMap)
     {
+        clearAndInstallHeaders_projectTable();
+
         int rowi = 1;
         Set<Entry<String, Double>> leafTotals = projectMap.entrySet();
         int rowmax = leafTotals.size();
