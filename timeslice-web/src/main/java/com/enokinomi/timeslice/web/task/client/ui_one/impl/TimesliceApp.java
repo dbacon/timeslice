@@ -44,10 +44,10 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
 {
     private final TimesliceAppConstants constants;
     private final IController controller;
-    private final HTML issuesLink = new HTML();
+    private final HTML issuesLink;
     private final IOptionsProvider options;
-    private final Label serverInfoLabel = new Label("[querying]");
-    private final Anchor logoutAnchor = new Anchor();
+    private final Label serverInfoLabel;
+    private final Anchor logoutAnchor;
     private final InputPanel inputPanel;
     private final IReportPanel reportPanel;
     private final IOptionsPanel optionsPanel;
@@ -72,6 +72,10 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
         this.reportPanel = reportPanel;
         this.optionsPanel = optionsPanel;
         this.appJobPanel = appJobPanel;
+
+        issuesLink = new HTML();
+        serverInfoLabel = new Label("[querying]");
+        logoutAnchor = new Anchor(constants.logout());
 
         initWidget(initContents());
     }
