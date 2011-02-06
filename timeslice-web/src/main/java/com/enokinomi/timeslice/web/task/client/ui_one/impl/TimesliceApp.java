@@ -55,6 +55,7 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
     private final IOptionsPanel optionsPanel;
     private final IAppJobPanel appJobPanel;
     private final ILoginSupport loginSupport;
+    private final TzSupport tzSupport;
 
     private String originalWindowTitle;
     private static final StartTag UnknownTag = new StartTag(null, null, null, "-unknown-", false);
@@ -66,7 +67,7 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
     }
 
     @Inject
-    TimesliceApp(TimesliceAppConstants constants, IController controller, IOptionsProvider optionsProvider, InputPanel inputPanel, IReportPanel reportPanel, IOptionsPanel optionsPanel, IAppJobPanel appJobPanel, ILoginSupport loginSupport)
+    TimesliceApp(TimesliceAppConstants constants, IController controller, IOptionsProvider optionsProvider, InputPanel inputPanel, IReportPanel reportPanel, IOptionsPanel optionsPanel, IAppJobPanel appJobPanel, ILoginSupport loginSupport, TzSupport tzSupport)
     {
         this.constants = constants;
         this.controller = controller;
@@ -76,6 +77,7 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
         this.optionsPanel = optionsPanel;
         this.appJobPanel = appJobPanel;
         this.loginSupport = loginSupport;
+        this.tzSupport = tzSupport;
 
         issuesLink = new HTML();
         serverInfoLabel = new Label("[querying]");
@@ -413,7 +415,13 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
 
     private StartTag findCurrentStartTag(List<StartTag> items)
     {
-        String now = IParamPanel.MachineFormat.format(new Date());
+        // Since we are searching for 'now'
+        // among the rendered items in history,
+        // we must also use the same TZ which they
+        // were rendered in, to make the lexicographical
+        // comparison valid.
+
+        String now = tzSupport.renderForClientMachine(new Date());
 
         for (int i = 0; i < items.size(); ++i)
         {

@@ -17,7 +17,6 @@ import com.enokinomi.timeslice.web.task.client.ui.api.IHotlistPanelListener;
 import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsListener;
 import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsProvider;
-import com.enokinomi.timeslice.web.task.client.ui.api.IParamPanel;
 import com.enokinomi.timeslice.web.task.client.ui_one.api.BulkItemListener;
 import com.enokinomi.timeslice.web.task.client.ui_one.api.IImportBulkItemsDialog;
 import com.enokinomi.timeslice.web.task.client.ui_one.api.TimesliceAppConstants;
@@ -31,6 +30,7 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -339,6 +339,9 @@ public class InputPanel extends ResizeComposite implements IsWidget
         specifiedDateBox.setEnabled(value);
     }
 
+    // used only internally and to service, so tz doesnt matter.
+    public static final DateTimeFormat MachineFormat = DateTimeFormat.getFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
     private void scheduleRefresh()
     {
         Scheduler.get().scheduleDeferred(new ScheduledCommand()
@@ -346,7 +349,7 @@ public class InputPanel extends ResizeComposite implements IsWidget
             @Override
             public void execute()
             {
-                String starting = IParamPanel.MachineFormat.format(new Date(new Date().getTime() - options.getMaxSeconds() * 1000));
+                String starting = MachineFormat.format(new Date(new Date().getTime() - options.getMaxSeconds() * 1000));
                 String ending = null;
 
                 if (modeRadioSpecify.getValue() && null != specifiedDateBox.getValue())
@@ -355,8 +358,8 @@ public class InputPanel extends ResizeComposite implements IsWidget
                     Date beginningOfSpecifiedDay = floorDate(specifiedDate);
                     Date untilEndOfSpecifiedDay = new Date(beginningOfSpecifiedDay.getTime() + 1000*3600*24);
 
-                    starting = IParamPanel.MachineFormat.format(beginningOfSpecifiedDay);
-                    ending = IParamPanel.MachineFormat.format(untilEndOfSpecifiedDay);
+                    starting = MachineFormat.format(beginningOfSpecifiedDay);
+                    ending = MachineFormat.format(untilEndOfSpecifiedDay);
                 }
 
                 controller.startRefreshItems(
