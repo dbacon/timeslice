@@ -13,6 +13,8 @@ import java.util.TreeMap;
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.core.client.ui.PrefHelper;
 import com.enokinomi.timeslice.web.core.client.util.Checks;
+import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport;
+import com.enokinomi.timeslice.web.login.client.ui.impl.LoginSupport;
 import com.enokinomi.timeslice.web.ordering.client.core.IOrderingSvcAsync;
 import com.enokinomi.timeslice.web.prorata.client.core.Group;
 import com.enokinomi.timeslice.web.prorata.client.core.GroupComponent;
@@ -24,7 +26,6 @@ import com.enokinomi.timeslice.web.prorata.client.tree.LeafOnlyTotalingVisitor;
 import com.enokinomi.timeslice.web.prorata.client.tree.MapRuleSource;
 import com.enokinomi.timeslice.web.prorata.client.tree.Tree;
 import com.enokinomi.timeslice.web.prorata.client.ui.ProRataManagerPanel.Listener;
-import com.enokinomi.timeslice.web.session.client.ui.IAuthTokenHolder;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -66,7 +67,7 @@ public class ProjectListPanel extends Composite
         public static final String AutoOrder = "timeslice.project.autoorder";
     }
 
-    private final IAuthTokenHolder tokenHolder;
+    private final ILoginSupport loginSupport;
     private final IProRataSvcAsync prorataSvc;
     private final IOrderingSvcAsync orderingSvc;
     private final ProjectListPanelConstants constants;
@@ -88,14 +89,14 @@ public class ProjectListPanel extends Composite
 
     @Inject
     ProjectListPanel(
-            IAuthTokenHolder tokenHolder,
+            LoginSupport loginSupport,
             IProRataSvcAsync prorataSvc,
             IOrderingSvcAsync orderingSvc,
             ProjectListPanelConstants constants,
             ProjectListPanelMessages messages,
             ProRataManagerPanel proRataManagePanel)
     {
-        this.tokenHolder = tokenHolder;
+        this.loginSupport = loginSupport;
         this.prorataSvc = prorataSvc;
         this.orderingSvc = orderingSvc;
         this.constants = constants;
@@ -218,6 +219,12 @@ public class ProjectListPanel extends Composite
         initWidget(tabs);
 
         clearAndInstallHeaders();
+    }
+
+    public void clear()
+    {
+        update(Arrays.<AssignedTaskTotal>asList());
+        proRataManagePanel.clear();
     }
 
     private void clearAndInstallHeaders()
@@ -376,7 +383,7 @@ public class ProjectListPanel extends Composite
 
     private void requestExpansion()
     {
-        String authToken = (null == tokenHolder) ? null : tokenHolder.getAuthToken();
+        String authToken = (null == loginSupport) ? null : loginSupport.getAuthToken();
 
         if (null == authToken)
         {
@@ -426,7 +433,7 @@ public class ProjectListPanel extends Composite
 
     private void requestOrdering(final double total, final Map<String, Double> map)
     {
-        String authToken = (null == tokenHolder) ? null : tokenHolder.getAuthToken();
+        String authToken = (null == loginSupport) ? null : loginSupport.getAuthToken();
 
         if (null == authToken)
         {
@@ -627,7 +634,7 @@ public class ProjectListPanel extends Composite
 
         String item = keyList.get(i);
 
-        orderingSvc.setPartialOrdering(tokenHolder.getAuthToken(), ORDERING__TS_PROJECTS, smaller, Arrays.asList(item), new AsyncCallback<Void>()
+        orderingSvc.setPartialOrdering(loginSupport.getAuthToken(), ORDERING__TS_PROJECTS, smaller, Arrays.asList(item), new AsyncCallback<Void>()
         {
             @Override
             public void onFailure(Throwable caught)
@@ -715,7 +722,7 @@ public class ProjectListPanel extends Composite
                     public void added(String project, String splitTo, Double weight)
                     {
                         // TODO: disallow non-devolving cycles (insid the svc would be best?)
-                        prorataSvc.addGroupComponent(tokenHolder.getAuthToken(), project, splitTo, weight, new AsyncCallback<Void>()
+                        prorataSvc.addGroupComponent(loginSupport.getAuthToken(), project, splitTo, weight, new AsyncCallback<Void>()
                             {
                                 @Override
                                 public void onFailure(Throwable caught)
@@ -739,7 +746,7 @@ public class ProjectListPanel extends Composite
             @Override
             public void onClick(ClickEvent event)
             {
-                prorataSvc.removeGroupComponent(tokenHolder.getAuthToken(), parent.getName(), row.getName(), new AsyncCallback<Void>()
+                prorataSvc.removeGroupComponent(loginSupport.getAuthToken(), parent.getName(), row.getName(), new AsyncCallback<Void>()
                 {
                     @Override
                     public void onFailure(Throwable caught)

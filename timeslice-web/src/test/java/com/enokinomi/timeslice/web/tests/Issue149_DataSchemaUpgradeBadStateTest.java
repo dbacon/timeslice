@@ -32,6 +32,7 @@ public class Issue149_DataSchemaUpgradeBadStateTest
     private static final String Upgrade12 = "Upgrade data schema at version 1 to 2";
     private static final String Upgrade23 = "Upgrade data schema at version 2 to 3";
     private static final String Upgrade34 = "Upgrade data schema at version 3 to 4";
+    private static final String Upgrade45 = "Upgrade data schema at version 4 to 5";
 
     private static final String[] jobs = {
             ListTables,
@@ -41,6 +42,7 @@ public class Issue149_DataSchemaUpgradeBadStateTest
             Upgrade12,
             Upgrade23,
             Upgrade34,
+            Upgrade45,
     };
 
     String[] version3Tables = {

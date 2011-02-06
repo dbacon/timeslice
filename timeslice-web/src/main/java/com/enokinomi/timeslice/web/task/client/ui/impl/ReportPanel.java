@@ -132,6 +132,14 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
     }
 
     @Override
+    public void clear()
+    {
+        resultsTreeView.clear();
+        resultsAssignedView.clear();
+        projectListPanel.clear();
+    }
+
+    @Override
     public void setResults(List<TaskTotal> results)
     {
         resultsTreeView.setResults(results);

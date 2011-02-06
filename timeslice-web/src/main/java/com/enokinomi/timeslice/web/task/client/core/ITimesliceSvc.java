@@ -15,8 +15,6 @@ public interface ITimesliceSvc extends RemoteService
 
     // TODO: move these into a separate service, since others now also use it.
     String serverInfo();
-    String authenticate(String username, String password);
-    void logout(String authToken) throws ServiceException;
 
     List<StartTag> refreshItems(String authToken, int maxSize, SortDir sortDir, String startingInstant, String endingInstant) throws ServiceException;
     List<TaskTotal> refreshTotals(String authToken, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords) throws ServiceException;

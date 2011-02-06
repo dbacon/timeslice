@@ -86,8 +86,8 @@ public class SessionTracker implements ISessionTracker
         SessionData sessionData = validSessions.get(authenticationToken);
         if (sessionData.getExpiresAt().isBeforeNow())
         {
-            SessionData expiredSession = validSessions.remove(authenticationToken);
-            throw new NotAuthenticException("Expired token: " + expiredSession.getExpiresAt().toString());
+            validSessions.remove(authenticationToken);
+            throw new NotAuthenticException("Expired token.");
         }
 
         // great, have a nice time.

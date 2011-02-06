@@ -11,8 +11,6 @@ public interface IOptionsProvider
     long getMaxSeconds();
     boolean isControlSpaceSends();
     boolean isCurrentTaskInTitlebar();
-    boolean isAutoRefresh();
-    int getAutoRefreshMs();
     String getTitleBarTemplate();
 
 }

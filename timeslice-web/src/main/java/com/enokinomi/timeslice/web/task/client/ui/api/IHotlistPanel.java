@@ -1,9 +1,9 @@
 package com.enokinomi.timeslice.web.task.client.ui.api;
 
-import com.enokinomi.timeslice.web.core.client.ui.IIsWidget;
+import com.google.gwt.user.client.ui.IsWidget;
 
 
-public interface IHotlistPanel extends IIsWidget
+public interface IHotlistPanel extends IsWidget
 {
     void addHotlistPanelListener(IHotlistPanelListener listener);
     void removeHotlistPanelListener(IHotlistPanelListener listener);

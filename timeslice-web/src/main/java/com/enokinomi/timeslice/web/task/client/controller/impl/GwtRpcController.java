@@ -7,65 +7,32 @@ import com.enokinomi.timeslice.web.appjob.client.core.AppJobCompletion;
 import com.enokinomi.timeslice.web.appjob.client.core.IAppJobSvcAsync;
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.assign.client.core.IAssignmentSvcAsync;
-import com.enokinomi.timeslice.web.core.client.ui.ErrorBox;
-import com.enokinomi.timeslice.web.core.client.ui.PrefHelper;
 import com.enokinomi.timeslice.web.core.client.ui.SortDir;
 import com.enokinomi.timeslice.web.core.client.util.AsyncResult;
-import com.enokinomi.timeslice.web.core.client.util.NotAuthenticException;
-import com.enokinomi.timeslice.web.session.client.ui.IAuthTokenHolder;
+import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport;
+import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport.IOnAuthenticated;
 import com.enokinomi.timeslice.web.task.client.core.ITimesliceSvcAsync;
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
 import com.enokinomi.timeslice.web.task.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.task.client.core_todo_move_out.BrandInfo;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 
-public class GwtRpcController extends BaseController implements IAuthTokenHolder
+public class GwtRpcController extends BaseController
 {
     private final ITimesliceSvcAsync svc;
     private final IAssignmentSvcAsync assignedSvc;
     private final IAppJobSvcAsync jobSvc;
-
-    private String authToken = Cookies.getCookie("timeslice.authtoken");
-    private LoginDialog loginDialog = null;
-
-    private final ControllerConstants constants;
+    private final ILoginSupport loginSupport;
 
     @Inject
-    GwtRpcController(ControllerConstants constants, ITimesliceSvcAsync svc, IAssignmentSvcAsync assignedSvc, IAppJobSvcAsync jobSvc)
+    GwtRpcController(ITimesliceSvcAsync svc, IAssignmentSvcAsync assignedSvc, IAppJobSvcAsync jobSvc, ILoginSupport loginSupport)
     {
-        this.constants = constants;
         this.svc = svc;
         this.assignedSvc = assignedSvc;
         this.jobSvc = jobSvc;
-    }
-
-    public String getAuthToken()
-    {
-        return authToken;
-    }
-
-    public void logout()
-    {
-        svc.logout(authToken, new AsyncCallback<Void>()
-        {
-            @Override
-            public void onSuccess(Void result)
-            {
-                GWT.log("forgetting auth token");
-                authToken = null;
-                fireUnauthenticated(false);
-            }
-
-            @Override
-            public void onFailure(Throwable caught)
-            {
-                GWT.log("logging out failed ??");
-                // eh ? leave it I guess.
-            }
-        });
+        this.loginSupport = loginSupport;
     }
 
     public void serverInfo()
@@ -105,511 +72,300 @@ public class GwtRpcController extends BaseController implements IAuthTokenHolder
         });
     }
 
-    private <R> void requestAuthentication(String user, String password, final IOnAuthenticated action)
-    {
-        GWT.log("Requesting authentication token for '" + user + "'.");
-        svc.authenticate(user, password, new AsyncCallback<String>()
-                {
-                    @Override
-                    public void onSuccess(String result)
-                    {
-                        authToken = result;
-                        Cookies.setCookie("timeslice.authtoken", result, PrefHelper.createDateSufficientlyInTheFuture());
-                        fireAuthenticated();
-                        if (null != action) action.startRetry();
-                    }
-
-                    @Override
-                    public void onFailure(Throwable caught)
-                    {
-                        StringBuilder sb = new StringBuilder();
-                        for (StackTraceElement f: caught.getStackTrace())
-                        {
-                            sb.append(f.toString()).append("\n");
-                        }
-                        GWT.log(sb.toString());
-
-                        new ErrorBox("authentication", caught.getMessage()).show();
-
-                        authToken = null;
-                        fireUnauthenticated(false);
-                    }
-                });
-    }
-
-
-    public void authenticate(IOnAuthenticated retryAction)
-    {
-        authenticate(constants.pleaseLogin(), null, retryAction);
-    }
-
-    public void authenticate(String subtext, IOnAuthenticated retryAction)
-    {
-        authenticate(constants.pleaseLogin(), subtext, retryAction);
-    }
-
-    public static interface IOnAuthenticated
-    {
-        void startRetry();
-    }
-
-    public void authenticate(String title, String subText, final IOnAuthenticated action)
-    {
-        if (null == loginDialog)
-        {
-            loginDialog = new LoginDialog(title, subText, new LoginDialog.IListener()
-            {
-                @Override
-                public void submitted(String user, String password)
-                {
-                    requestAuthentication(user, password, action);
-                    loginDialog = null;
-                }
-
-                @Override
-                public void canceled()
-                {
-                    // nothing. let them have at it.
-                    loginDialog = null;
-                }
-            });
-
-            loginDialog.center();
-        }
-        else
-        {
-        }
-    }
 
     @Override
     public void startAddItem(final String instantString, final String taskDescription)
     {
-        final IOnAuthenticated retryAction = new IOnAuthenticated()
+        new IOnAuthenticated()
         {
             @Override
-            public void startRetry()
+            public void runAsync()
             {
-                startAddItem(instantString, taskDescription);
+                svc.addItem(loginSupport.getAuthToken(),
+                        instantString, taskDescription,
+                        loginSupport.withRetry(this, new AsyncCallback<Void>()
+                        {
+                            @Override
+                            public void onSuccess(Void result)
+                            {
+                                fireAddItemDone(new AsyncResult<Void>(result, null));
+                            }
+
+                            @Override
+                            public void onFailure(Throwable caught)
+                            {
+                                // TODO: log error here instead of firing.
+                                 fireAddItemDone(new AsyncResult<Void>(null, caught));
+                            }
+                        }));
             }
-        };
-
-        if (null == authToken)
-        {
-            // not authenticated.
-            authenticate(retryAction);
-        }
-        else
-        {
-            svc.addItem(authToken, instantString, taskDescription, new AsyncCallback<Void>()
-                    {
-                        @Override
-                        public void onFailure(Throwable caught)
-                        {
-                            if (caught instanceof NotAuthenticException)
-                            {
-                                authenticate(caught.getMessage(), retryAction);
-                            }
-                            else
-                            {
-                                fireAddItemDone(new AsyncResult<Void>(null, caught));
-                            }
-                        }
-
-                        @Override
-                        public void onSuccess(Void result)
-                        {
-                            fireAddItemDone(new AsyncResult<Void>(result, null));
-                        }
-                    });
-        }
+        }.runAsync();
     }
 
     @Override
     public void startAddItems(final List<StartTag> items)
     {
-        final IOnAuthenticated retryAction = new IOnAuthenticated()
+        new IOnAuthenticated()
         {
             @Override
-            public void startRetry()
+            public void runAsync()
             {
-                startAddItems(items);
-            }
-        };
-
-        if (null == authToken)
-        {
-            // not authenticated.
-            authenticate(retryAction);
-        }
-        else
-        {
-            svc.addItems(authToken, items, new AsyncCallback<Void>()
-                    {
-                        @Override
-                        public void onFailure(Throwable caught)
+                svc.addItems(loginSupport.getAuthToken(),
+                        items,
+                        loginSupport.withRetry(this, new AsyncCallback<Void>()
                         {
-                            if (caught instanceof NotAuthenticException)
+                            @Override
+                            public void onFailure(Throwable caught)
                             {
-                                authenticate(caught.getMessage(), retryAction);
-                            }
-                            else
-                            {
+                                // TODO: report here instead of firing.
                                 fireAddItemDone(new AsyncResult<Void>(null, caught));
                             }
-                        }
 
-                        @Override
-                        public void onSuccess(Void result)
-                        {
-                            fireAddItemDone(new AsyncResult<Void>(result, null));
-                        }
-                    });
-        }
+                            @Override
+                            public void onSuccess(Void result)
+                            {
+                                fireAddItemDone(new AsyncResult<Void>(result, null));
+                            }
+                        }));
+            }
+        }.runAsync();
     }
 
     @Override
     public void startEditDescription(final StartTag editedStartTag)
     {
-        final IOnAuthenticated retryAction = new IOnAuthenticated()
+        new IOnAuthenticated()
         {
             @Override
-            public void startRetry()
+            public void runAsync()
             {
-                startEditDescription(editedStartTag);
+                svc.update(loginSupport.getAuthToken(),
+                        editedStartTag,
+                        loginSupport.withRetry(this, new AsyncCallback<Void>()
+                        {
+                            @Override
+                            public void onFailure(Throwable caught)
+                            {
+                                // TODO: report here instead of firing.
+                                fireAddItemDone(new AsyncResult<Void>(null, caught));
+                            }
+
+                            @Override
+                            public void onSuccess(Void result)
+                            {
+                                fireAddItemDone(new AsyncResult<Void>(result, null));
+                            }
+                        }));
             }
-        };
+        }.runAsync();
 
-        if (null == authToken)
-        {
-            authenticate(retryAction);
-        }
-        else
-        {
-            svc.update(authToken, editedStartTag, new AsyncCallback<Void>()
-            {
-                @Override
-                public void onFailure(Throwable caught)
-                {
-                    if (caught instanceof NotAuthenticException)
-                    {
-                        authenticate(caught.getMessage(), retryAction);
-                    }
-                    else
-                    {
-                        fireAddItemDone(new AsyncResult<Void>(null, caught));
-                    }
-                }
-
-                @Override
-                public void onSuccess(Void result)
-                {
-                    fireAddItemDone(new AsyncResult<Void>(result, null));
-                }
-            });
-        }
     }
 
     @Override
     public void startRefreshItems(final int maxSize, final String startingInstant, final String endingInstant)
     {
-        final IOnAuthenticated retryAction = new IOnAuthenticated()
+        new IOnAuthenticated()
         {
             @Override
-            public void startRetry()
+            public void runAsync()
             {
-                startRefreshItems(maxSize, startingInstant, endingInstant);
-            }
-        };
-
-        if (null == authToken)
-        {
-            // not authenticated.
-            authenticate(retryAction);
-        }
-        else
-        {
-            svc.refreshItems(authToken, maxSize, SortDir.desc, startingInstant, endingInstant, new AsyncCallback<List<StartTag>>()
-                    {
-                        @Override
-                        public void onSuccess(List<StartTag> result)
+                svc.refreshItems(loginSupport.getAuthToken(),
+                        maxSize, SortDir.desc, startingInstant, endingInstant,
+                        loginSupport.withRetry(this, new AsyncCallback<List<StartTag>>()
                         {
-                            fireRefreshItemsDone(new AsyncResult<List<StartTag>>(result, null));
-                        }
-
-                        @Override
-                        public void onFailure(Throwable caught)
-                        {
-                            if (caught instanceof NotAuthenticException)
+                            @Override
+                            public void onSuccess(List<StartTag> result)
                             {
-                                authenticate(caught.getMessage(), retryAction);
+                                fireRefreshItemsDone(new AsyncResult<List<StartTag>>(result, null));
                             }
-                            else
+
+                            @Override
+                            public void onFailure(Throwable caught)
                             {
+                                // TODO: handle here instead of firing.
                                 fireRefreshItemsDone(new AsyncResult<List<StartTag>>(null, caught));
                             }
-                        }
-                    });
-        }
+                        }));
+            }
+        }.runAsync();
     }
 
     @Override
     public void startRefreshTotals(final int maxSize, final SortDir sortDir, final String startingInstant, final String endingInstant, final List<String> allowWords, final List<String> ignoreWords)
     {
-        final IOnAuthenticated retryAction = new IOnAuthenticated()
+        new IOnAuthenticated()
         {
             @Override
-            public void startRetry()
+            public void runAsync()
             {
-                startRefreshTotals(maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords);
-            }
-        };
-
-        if (null == authToken)
-        {
-            // not authenticated.
-            authenticate(retryAction);
-        }
-        else
-        {
-            svc.refreshTotals(authToken, maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, new AsyncCallback<List<TaskTotal>>()
-                    {
-                        @Override
-                        public void onFailure(Throwable caught)
+                svc.refreshTotals(loginSupport.getAuthToken(),
+                        maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords,
+                        loginSupport.withRetry(this, new AsyncCallback<List<TaskTotal>>()
                         {
-                            if (caught instanceof NotAuthenticException)
+                            @Override
+                            public void onFailure(Throwable caught)
                             {
-                                authenticate(caught.getMessage(), retryAction);
-                            }
-                            else
-                            {
+                                // TODO: handle this here instead of propagating.
                                 fireRefreshTotalsDone(new AsyncResult<List<TaskTotal>>(null, caught));
                             }
-                        }
 
-                        @Override
-                        public void onSuccess(List<TaskTotal> result)
-                        {
-                            fireRefreshTotalsDone(new AsyncResult<List<TaskTotal>>(result, null));
-                        }
-                    });
-        }
+                            @Override
+                            public void onSuccess(List<TaskTotal> result)
+                            {
+                                fireRefreshTotalsDone(new AsyncResult<List<TaskTotal>>(result, null));
+                            }
+                        }));
+            }
+        }.runAsync();
     }
 
     @Override
     public void startAssignBillee(final String description, final String newBillee)
     {
-        final IOnAuthenticated retryAction = new IOnAuthenticated()
+        new IOnAuthenticated()
         {
             @Override
-            public void startRetry()
+            public void runAsync()
             {
-                startAssignBillee(description, newBillee);
+                assignedSvc.assign(loginSupport.getAuthToken(),
+                        description, newBillee,
+                        loginSupport.withRetry(this, new AsyncCallback<Void>()
+                        {
+                            @Override
+                            public void onSuccess(Void result)
+                            {
+                                fireAssignBilleeDone(new AsyncResult<Void>(result, null));
+
+                                startGetAllBillees();
+                            }
+
+                            @Override
+                            public void onFailure(Throwable caught)
+                            {
+                                GWT.log("failure - assign billee: " + caught.getMessage());
+                                // TODO: handle this here instead of propagating
+                                fireAssignBilleeDone(new AsyncResult<Void>(null, caught));
+//                                new ErrorBox("authentication", caught.getMessage()).show();
+//                                throw new RuntimeException("Service error: " + caught.getMessage(), caught);
+                            }
+                        }));
             }
-        };
-
-        if (null == authToken)
-        {
-            authenticate(retryAction);
-        }
-        else
-        {
-            assignedSvc.assign(authToken, description, newBillee, new AsyncCallback<Void>()
-            {
-                @Override
-                public void onSuccess(Void result)
-                {
-                    fireAssignBilleeDone(new AsyncResult<Void>(result, null));
-
-                    startGetAllBillees();
-                }
-
-                @Override
-                public void onFailure(Throwable caught)
-                {
-                    GWT.log("failure - assign billee: " + caught.getMessage());
-                    if (caught instanceof NotAuthenticException)
-                    {
-                        authenticate(caught.getMessage(), retryAction);
-                    }
-                    else
-                    {
-                        fireAssignBilleeDone(new AsyncResult<Void>(null, caught));
-//                        new ErrorBox("authentication", caught.getMessage()).show();
-//                        throw new RuntimeException("Service error: " + caught.getMessage(), caught);
-                    }
-                }
-            });
-        }
+        }.runAsync();
     }
 
     @Override
     public void startGetAllBillees()
     {
-        final IOnAuthenticated retryAction = new IOnAuthenticated()
+        new IOnAuthenticated()
         {
             @Override
-            public void startRetry()
+            public void runAsync()
             {
-                startGetAllBillees();
+                assignedSvc.getAllBillees(loginSupport.getAuthToken(),
+                        loginSupport.withRetry(this, new AsyncCallback<List<String>>()
+                        {
+                            @Override
+                            public void onSuccess(List<String> result)
+                            {
+                                fireAllBilleesDone(new AsyncResult<List<String>>(result, null));
+                            }
+
+                            @Override
+                            public void onFailure(Throwable caught)
+                            {
+                                // TODO: handle this here instead of propagating
+                                fireAllBilleesDone(new AsyncResult<List<String>>(null, caught));
+                            }
+                        }));
             }
-        };
-
-        if (null == authToken)
-        {
-            authenticate(retryAction);
-        }
-        else
-        {
-            assignedSvc.getAllBillees(authToken, new AsyncCallback<List<String>>()
-            {
-                @Override
-                public void onSuccess(List<String> result)
-                {
-                    fireAllBilleesDone(new AsyncResult<List<String>>(result, null));
-                }
-
-                @Override
-                public void onFailure(Throwable caught)
-                {
-                    if (caught instanceof NotAuthenticException)
-                    {
-                        authenticate(caught.getMessage(), retryAction);
-                    }
-                    else
-                    {
-                        fireAllBilleesDone(new AsyncResult<List<String>>(null, caught));
-                    }
-                }
-            });
-        }
+        }.runAsync();
     }
 
     @Override
     public void startRefreshTotalsAssigned(final int maxSize, final SortDir sortDir, final String startingInstant, final String endingInstant, final List<String> allowWords, final List<String> ignoreWords)
     {
-        final IOnAuthenticated retryAction = new IOnAuthenticated()
+        new IOnAuthenticated()
         {
             @Override
-            public void startRetry()
+            public void runAsync()
             {
-                startRefreshTotalsAssigned(maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords);
+                assignedSvc.refreshTotals(loginSupport.getAuthToken(),
+                        maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords,
+                        loginSupport.withRetry(this, new AsyncCallback<List<AssignedTaskTotal>>()
+                        {
+                            @Override
+                            public void onSuccess(List<AssignedTaskTotal> result)
+                            {
+                                fireRefreshTotalsAssignedDone(new AsyncResult<List<AssignedTaskTotal>>(result, null));
+                            }
+
+                            @Override
+                            public void onFailure(Throwable caught)
+                            {
+                                // TODO: why do we fire and handle errors everywhere else, why not just handle here?
+                                fireRefreshTotalsAssignedDone(new AsyncResult<List<AssignedTaskTotal>>(null, caught));
+//                              new ErrorBox("authentication", caught.getMessage()).show();
+//                              throw new RuntimeException("Service error: " + caught.getMessage(), caught);
+                            }
+                        }));
             }
-        };
-
-        if (null == authToken)
-        {
-            authenticate(retryAction);
-        }
-        else
-        {
-            assignedSvc.refreshTotals(authToken, maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, new AsyncCallback<List<AssignedTaskTotal>>()
-            {
-                @Override
-                public void onSuccess(List<AssignedTaskTotal> result)
-                {
-                    fireRefreshTotalsAssignedDone(new AsyncResult<List<AssignedTaskTotal>>(result, null));
-                }
-
-                @Override
-                public void onFailure(Throwable caught)
-                {
-                    if (caught instanceof NotAuthenticException)
-                    {
-                        authenticate(caught.getMessage(), retryAction);
-                    }
-                    else
-                    {
-                        // TODO: why do we fire and handle errors everywhere else, why not just handle here?
-                        fireRefreshTotalsAssignedDone(new AsyncResult<List<AssignedTaskTotal>>(null, caught));
-//                        new ErrorBox("authentication", caught.getMessage()).show();
-//                        throw new RuntimeException("Service error: " + caught.getMessage(), caught);
-                    }
-                }
-            });
-        }
+        }.runAsync();
     }
 
     @Override
     public void startListAvailableJobs()
     {
-        final IOnAuthenticated retryAction = new IOnAuthenticated()
+        new IOnAuthenticated()
         {
             @Override
-            public void startRetry()
+            public void runAsync()
             {
-                startListAvailableJobs();
+                jobSvc.getAvailableJobIds(loginSupport.getAuthToken(),
+                        loginSupport.withRetry(this, new AsyncCallback<List<String>>()
+                        {
+                            @Override
+                            public void onSuccess(List<String> result)
+                            {
+                                fireListAvailableJobsDone(new AsyncResult<List<String>>(result, null));
+                            }
+
+                            @Override
+                            public void onFailure(Throwable caught)
+                            {
+                                // TODO: handle here instead of propagating
+                                fireListAvailableJobsDone(new AsyncResult<List<String>>(null, caught));
+                            }
+                        }));
             }
-        };
-
-        if (null == authToken)
-        {
-            authenticate(retryAction);
-        }
-        else
-        {
-            jobSvc.getAvailableJobIds(authToken, new AsyncCallback<List<String>>()
-            {
-                @Override
-                public void onSuccess(List<String> result)
-                {
-                    fireListAvailableJobsDone(new AsyncResult<List<String>>(result, null));
-                }
-
-                @Override
-                public void onFailure(Throwable caught)
-                {
-                    if (caught instanceof NotAuthenticException)
-                    {
-                        authenticate(caught.getMessage(), retryAction);
-                    }
-                    else
-                    {
-                        fireListAvailableJobsDone(new AsyncResult<List<String>>(null, caught));
-                    }
-                }
-            });
-        }
+        }.runAsync();
     }
 
     @Override
     public void startPerformJob(final String jobId)
     {
-        final IOnAuthenticated retryAction = new IOnAuthenticated()
+        new IOnAuthenticated()
         {
             @Override
-            public void startRetry()
+            public void runAsync()
             {
-                startPerformJob(jobId);
+                jobSvc.performJob(loginSupport.getAuthToken(),
+                        jobId,
+                        loginSupport.withRetry(this, new AsyncCallback<AppJobCompletion>()
+                        {
+                            @Override
+                            public void onSuccess(AppJobCompletion result)
+                            {
+                                firePerformJobDone(new AsyncResult<AppJobCompletion>(result, null));
+                            }
+
+                            @Override
+                            public void onFailure(Throwable caught)
+                            {
+                                // TODO: handle here instead of propagating
+                                firePerformJobDone(new AsyncResult<AppJobCompletion>(null, caught));
+                            }
+                        }));
             }
-        };
-
-        if (null == authToken)
-        {
-            authenticate(retryAction);
-        }
-        else
-        {
-            jobSvc.performJob(authToken, jobId, new AsyncCallback<AppJobCompletion>()
-            {
-                @Override
-                public void onSuccess(AppJobCompletion result)
-                {
-                    firePerformJobDone(new AsyncResult<AppJobCompletion>(result, null));
-                }
-
-                @Override
-                public void onFailure(Throwable caught)
-                {
-                    if (caught instanceof NotAuthenticException)
-                    {
-                        authenticate(caught.getMessage(), retryAction);
-                    }
-                    else
-                    {
-                        firePerformJobDone(new AsyncResult<AppJobCompletion>(null, caught));
-                    }
-                }
-            });
-        }
+        }.runAsync();
     }
 }

@@ -18,6 +18,7 @@ public final class GuiceRpcModule extends ServletModule
                 "com.enokinomi.timeslice.web.task.Task",
                 "com.enokinomi.timeslice.web.ordering.Ordering",
                 "com.enokinomi.timeslice.web.prorata.ProRata",
+                "com.enokinomi.timeslice.web.settings.Settings",
                 "com.enokinomi.timeslice.web.core.Core"
                 ))
         {

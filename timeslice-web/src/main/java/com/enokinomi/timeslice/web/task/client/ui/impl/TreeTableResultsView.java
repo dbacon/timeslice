@@ -1,5 +1,6 @@
 package com.enokinomi.timeslice.web.task.client.ui.impl;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -43,6 +44,11 @@ public class TreeTableResultsView extends ResizeComposite
     {
         value.setValue(value.getValue() + 1);
         return value.getValue();
+    }
+
+    public void clear()
+    {
+        setResults(Arrays.<TaskTotal>asList());
     }
 
     public void setResults(List<TaskTotal> report)
@@ -137,4 +143,5 @@ public class TreeTableResultsView extends ResizeComposite
             }
         }.visit(ItemsToTree.create(integrator).rowsToTree(report, new TaskTotal()));
     }
+
 }

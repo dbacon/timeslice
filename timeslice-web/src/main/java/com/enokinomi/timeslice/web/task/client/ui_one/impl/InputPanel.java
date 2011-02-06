@@ -3,10 +3,10 @@ package com.enokinomi.timeslice.web.task.client.ui_one.impl;
 import static com.enokinomi.timeslice.web.core.client.util.TransformUtils.tr;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import com.enokinomi.timeslice.web.core.client.ui.IIsWidget;
 import com.enokinomi.timeslice.web.core.client.util.ITransform;
 import com.enokinomi.timeslice.web.task.client.controller.api.IController;
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
@@ -31,11 +31,11 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.RadioButton;
@@ -47,7 +47,7 @@ import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-public class InputPanel extends ResizeComposite implements IIsWidget
+public class InputPanel extends ResizeComposite implements IsWidget
 {
     private final TimesliceAppConstants constants;
     private final DateBox specifiedDateBox = new DateBox();
@@ -61,7 +61,6 @@ public class InputPanel extends ResizeComposite implements IIsWidget
     private final VerticalPanel idleActionPanel = new VerticalPanel();
     private final IHotlistPanel hotlistPanel;
     private final Provider<IImportBulkItemsDialog> importBulkItemsDialog;
-    private final Timer autoRefreshTimer;
     private final IOptionsProvider options;
     private final IController controller;
 
@@ -87,51 +86,15 @@ public class InputPanel extends ResizeComposite implements IIsWidget
         suggestSource = new MultiWordSuggestOracle();
         taskDescriptionEntry = new SuggestBox(suggestSource);
 
-        autoRefreshTimer = new Timer()
-        {
-            @Override
-            public void run()
-            {
-                scheduleRefresh();
-            }
-        };
-
         initContents();
     }
 
     private void initContents()
     {
-        controller.addControllerListener(new ControllerListenerAdapter()
-        {
-            @Override
-            public void authenticated()
-            {
-                // start auto-refresh
-                if (options.isAutoRefresh()) autoRefreshTimer.scheduleRepeating(options.getAutoRefreshMs());
-                scheduleRefresh();
-            }
-
-            @Override
-            public void unauthenticated(boolean retry)
-            {
-                // notify ? blank stuff ?
-                // stop auto-refresh
-                autoRefreshTimer.cancel();
-                if (retry) scheduleRefresh();
-            }
-
-        });
-
         options.addOptionsListener(new IOptionsListener()
         {
             public void optionsChanged(IOptionsPanel source)
             {
-                autoRefreshTimer.cancel();
-                if (options.isAutoRefresh())
-                {
-                    autoRefreshTimer.scheduleRepeating(options.getAutoRefreshMs());
-                }
-
                 scheduleRefresh();
             }
         });
@@ -161,13 +124,11 @@ public class InputPanel extends ResizeComposite implements IIsWidget
             @Override
             public void editModeEntered()
             {
-                autoRefreshTimer.cancel();
             }
 
             @Override
             public void editModeLeft()
             {
-                if (options.isAutoRefresh()) autoRefreshTimer.scheduleRepeating(options.getAutoRefreshMs());
             }
         });
 
@@ -337,9 +298,7 @@ public class InputPanel extends ResizeComposite implements IIsWidget
 
         scheduleHotlistValidation();
         scheduleHotlinkValidation();
-        if (options.isAutoRefresh()) autoRefreshTimer.scheduleRepeating(options.getAutoRefreshMs());
         scheduleRefresh();
-
     }
 
     private void setEntryVisible(boolean visible)
@@ -446,6 +405,19 @@ public class InputPanel extends ResizeComposite implements IIsWidget
         }
     }
 
+    public void refresh()
+    {
+        scheduleRefresh();
+    }
+
+    public void clear()
+    {
+        List<String> noWords = Arrays.<String>asList();
+        updateSuggestSource(noWords);
+        historyPanel.setSuggestWords(noWords);
+        historyPanel.clear(true);
+    }
+
     public void itemsRefreshed(List<StartTag> items)
     {
         historyPanel.clear(false);
@@ -464,7 +436,7 @@ public class InputPanel extends ResizeComposite implements IIsWidget
         historyPanel.setSuggestWords(descriptions);
     }
 
-    private void updateSuggestSource(ArrayList<String> items)
+    private void updateSuggestSource(List<String> items)
     {
         suggestSource.clear();
         suggestSource.addAll(items);

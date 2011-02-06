@@ -12,8 +12,6 @@ public interface ITimesliceSvcAsync
 
     // TODO: move these into a separate service, since others now also use it.
     void serverInfo(AsyncCallback<String> callback);
-    void authenticate(String username, String password, AsyncCallback<String> callback);
-    void logout(String authToken, AsyncCallback<Void> callback);
 
     void refreshItems(String authToken, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, AsyncCallback<List<StartTag>> callback);
     void refreshTotals(String authToken, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords, AsyncCallback<List<TaskTotal>> callback);

@@ -1,28 +1,41 @@
 package com.enokinomi.timeslice.web.task.client.ui.impl;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.enokinomi.timeslice.web.core.client.ui.PrefHelper;
-import com.enokinomi.timeslice.web.session.client.ui.SessionSettingsControlPanel;
+import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport;
+import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport.IOnAuthenticated;
+import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport.LoginListener;
+import com.enokinomi.timeslice.web.login.client.ui.impl.LoginSupport;
+import com.enokinomi.timeslice.web.session.client.core.ISessionSvcAsync;
+import com.enokinomi.timeslice.web.settings.client.core.ISettingsSvcAsync;
 import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsListener;
 import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsProvider;
+import com.enokinomi.timeslice.web.task.client.ui.impl.ISettingsEditorPanel.Listener;
 import com.enokinomi.timeslice.web.task.client.ui_one.api.ITimesliceApp.Defaults;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Cookies;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
@@ -35,7 +48,6 @@ public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsPr
         public static final String User = "timeslice.options.user";
         public static final String CtrlSpaceSends = "timeslice.options.controlspacesends";
         public static final String AutoRefresh = "timeslice.options.autorefresh";
-        public static final String AutoRefreshMs = "timeslice.options.autorefreshms";
         public static final String CurrentTaskInTitlebar = "timeslice.options.currenttaskintitlebar";
         public static final String TitlebarTemplate= "timeslice.options.titlebartemplate";
     }
@@ -43,6 +55,8 @@ public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsPr
     public static final String DefaultTitlebarTemplate = "[TS] " + IOptionsProvider.CurrentTaskToken;
 
     private final OptionsConstants constants = GWT.create(OptionsConstants.class);
+    private final ISettingsSvcAsync settingsSvc;
+    private final ISessionSvcAsync sessionSvc;
 
     private final TextBox maxSize = new TextBox();
     private final TextBox maxSeconds = new TextBox();
@@ -54,10 +68,12 @@ public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsPr
     private final CheckBox controlSpaceSends = new CheckBox(constants.controlSpaceAlsoSends());
     private final CheckBox currentTaskInTitlebar = new CheckBox(constants.showCurrentTaskInPageTitle());
     private final TextBox titleBarTemplate = new TextBox();
-    private final CheckBox autoRefresh = new CheckBox(constants.autoRefresh());
-    private final TextBox autoRefreshMs = new TextBox();
+    private final ISettingsEditorPanel settingsEditor;
+    private final FlexTable sessionDataTable = new FlexTable();
 
     private final List<IOptionsListener> listeners = new ArrayList<IOptionsListener>();
+
+    private final ILoginSupport loginSupport;
 
     public Widget asWidget() { return this; }
 
@@ -91,8 +107,13 @@ public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsPr
     }
 
     @Inject
-    OptionsPanel(SessionSettingsControlPanel sscp)
+    OptionsPanel(final LoginSupport loginSupport, final ISettingsSvcAsync settingsSvc, final ISettingsEditorPanel settingsEditor, final ISessionSvcAsync sessionSvc)
     {
+        this.loginSupport = loginSupport;
+        this.settingsSvc = settingsSvc;
+        this.settingsEditor = settingsEditor;
+        this.sessionSvc = sessionSvc;
+
         localWidgetsInit();
 
         int row = 0;
@@ -110,8 +131,6 @@ public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsPr
         optionsTable.setWidget(row++, 0, controlSpaceSends);
         optionsTable.setWidget(row,   0, currentTaskInTitlebar);
         optionsTable.setWidget(row++, 1, titleBarTemplate);
-        optionsTable.setWidget(row,   0, autoRefresh);
-        optionsTable.setWidget(row++, 1, autoRefreshMs);
 
         addOptionsListener(new IOptionsListener()
         {
@@ -121,10 +140,177 @@ public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsPr
             }
         });
 
+        loginSupport.addLoginListener(new LoginListener()
+        {
+            @Override
+            public void sessionEnded(boolean retry)
+            {
+                sessionDataTable.removeAllRows();
+                sessionDataTable.setText(0, 0, "Not logged in.");
+
+                settingsEditor.setSettings(new LinkedHashMap<String, List<String>>());
+            }
+
+            @Override
+            public void newSessionStarted()
+            {
+                updateSessionData();
+                refresh();
+            }
+        });
+
+        settingsEditor.addListener(new Listener()
+        {
+            @Override
+            public void onRefreshButtonClicked()
+            {
+                refresh();
+            }
+
+            @Override
+            public void onItemDeleted(String name, String value)
+            {
+                settingsSvc.deleteSetting(loginSupport.getAuthToken(), name, value, new AsyncCallback<Void>()
+                {
+                    @Override
+                    public void onSuccess(Void result)
+                    {
+                        refresh();
+                    }
+
+                    @Override
+                    public void onFailure(Throwable caught)
+                    {
+                        GWT.log("Deleting item failed: " + caught.getMessage());
+                    }
+                });
+            }
+
+            @Override
+            public void onItemEdited(String name, String oldValue, String newValue)
+            {
+                settingsSvc.editSetting(loginSupport.getAuthToken(), name, oldValue, newValue, new AsyncCallback<Void>()
+                        {
+                            @Override
+                            public void onSuccess(Void result)
+                            {
+                                refresh();
+                            }
+
+                            @Override
+                            public void onFailure(Throwable caught)
+                            {
+                                GWT.log("Editing item failed: " + caught.getMessage());
+                            }
+                        });
+            }
+
+            @Override
+            public void onItemAdded(String name, String value)
+            {
+                settingsSvc.addSetting(loginSupport.getAuthToken(), name, value, new AsyncCallback<Void>()
+                {
+                    @Override
+                    public void onSuccess(Void result)
+                    {
+                        refresh();
+                    }
+
+                    @Override
+                    public void onFailure(Throwable caught)
+                    {
+                        GWT.log("Adding item failed: " + caught.getMessage());
+                    }
+                });
+            }
+        });
+
+        DecoratorPanel pw = new DecoratorPanel();
+        pw.add(sessionDataTable);
+
+        VerticalPanel p = new VerticalPanel();
+        p.setSpacing(5);
+        p.add(pw);
+        p.add(settingsEditor.asWidget());
+
+
         DockLayoutPanel dp = new DockLayoutPanel(Unit.EM);
         dp.addNorth(optionsTable, 15);
-        dp.add(new ScrollPanel(sscp));
+        dp.add(p);
         initWidget(dp);
+
+        Scheduler.get().scheduleDeferred(new ScheduledCommand()
+        {
+            @Override
+            public void execute()
+            {
+                refresh();
+                updateSessionData();
+            }
+        });
+    }
+
+    public void updateSessionData()
+    {
+        new LoginSupport.IOnAuthenticated()
+        {
+            @Override
+            public void runAsync()
+            {
+                sessionSvc.getSessionData(loginSupport.getAuthToken(),
+                        loginSupport.withRetry(this, new AsyncCallback<Map<String,String>>()
+                        {
+                            @Override
+                            public void onSuccess(Map<String, String> result)
+                            {
+                                sessionDataTable.clear();
+
+                                int row = 0;
+                                for (Entry<String, String> entry: result.entrySet())
+                                {
+                                    sessionDataTable.setText(row, 0, entry.getKey());
+                                    sessionDataTable.setText(row, 1, entry.getValue());
+
+                                    ++row;
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Throwable caught)
+                            {
+                                // TODO: log error
+                            }
+                        }));
+            }
+        }.runAsync();
+    }
+
+    private void refresh()
+    {
+        new IOnAuthenticated()
+        {
+            @Override
+            public void runAsync()
+            {
+                settingsSvc.getSettings(
+                        loginSupport.getAuthToken(),
+                        "",
+                        loginSupport.withRetry(this, new AsyncCallback<Map<String,List<String>>>()
+                        {
+                            @Override
+                            public void onSuccess(Map<String, List<String>> result)
+                            {
+                                settingsEditor.setSettings(result);
+                            }
+
+                            @Override
+                            public void onFailure(Throwable caught)
+                            {
+                                GWT.log("Getting session settings failed: " + caught.getMessage(), caught);
+                            }
+                        }));
+            }
+        }.runAsync();
     }
 
     private ClickHandler CommonClickFireChanged = new ClickHandler()
@@ -151,8 +337,6 @@ public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsPr
         maxSeconds.addChangeHandler(CommonChangeFireChanged);
 
         controlSpaceSends.addClickHandler(CommonClickFireChanged);
-        autoRefresh.addClickHandler(CommonClickFireChanged);
-        autoRefreshMs.addChangeHandler(CommonChangeFireChanged);
 
         titleBarTemplate.addChangeHandler(CommonChangeFireChanged);
 
@@ -205,23 +389,6 @@ public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsPr
         return controlSpaceSends.getValue();
     }
 
-    public boolean isAutoRefresh()
-    {
-        return autoRefresh.getValue();
-    }
-
-    public int getAutoRefreshMs()
-    {
-        try
-        {
-            return Integer.parseInt(autoRefreshMs.getText());
-        }
-        catch(NumberFormatException e)
-        {
-            return 500;
-        }
-    }
-
     public boolean isCurrentTaskInTitlebar()
     {
         return currentTaskInTitlebar.getValue();
@@ -241,8 +408,6 @@ public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsPr
         controlSpaceSends.setValue("true".equals(Cookies.getCookie(PrefKeys.CtrlSpaceSends)));
         currentTaskInTitlebar.setValue("true".equals(Cookies.getCookie(PrefKeys.CurrentTaskInTitlebar)));
         titleBarTemplate.setText(Cookies.getCookie(PrefKeys.TitlebarTemplate));
-        autoRefresh.setValue("true".equals(Cookies.getCookie(PrefKeys.AutoRefresh)));
-        autoRefreshMs.setText(Cookies.getCookie(PrefKeys.AutoRefreshMs));
     }
 
     private void initValues()
@@ -272,10 +437,6 @@ public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsPr
         {
             titleBarTemplate.setText(DefaultTitlebarTemplate);
         }
-        if (autoRefreshMs.getText().trim().isEmpty())
-        {
-            autoRefreshMs.setText("" + Defaults.AutoRefreshMs);
-        }
     }
 
     private void writePrefs()
@@ -284,8 +445,6 @@ public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsPr
         Cookies.setCookie(PrefKeys.PageSize, maxSize.getText(), PrefHelper.createDateSufficientlyInTheFuture());
         Cookies.setCookie(PrefKeys.PageSizeSeconds, maxSeconds.getText(), PrefHelper.createDateSufficientlyInTheFuture());
         Cookies.setCookie(PrefKeys.CtrlSpaceSends, (controlSpaceSends.getValue() ? "true" : "false"), PrefHelper.createDateSufficientlyInTheFuture());
-        Cookies.setCookie(PrefKeys.AutoRefresh, autoRefresh.getValue() ? "true" : "false", PrefHelper.createDateSufficientlyInTheFuture());
-        Cookies.setCookie(PrefKeys.AutoRefreshMs, autoRefreshMs.getText(), PrefHelper.createDateSufficientlyInTheFuture());
         Cookies.setCookie(PrefKeys.CurrentTaskInTitlebar, (currentTaskInTitlebar.getValue() ? "true" : "false"), PrefHelper.createDateSufficientlyInTheFuture());
         Cookies.setCookie(PrefKeys.TitlebarTemplate, titleBarTemplate.getText(), PrefHelper.createDateSufficientlyInTheFuture());
     }

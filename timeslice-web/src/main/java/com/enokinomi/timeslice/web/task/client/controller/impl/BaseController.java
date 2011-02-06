@@ -49,22 +49,6 @@ public abstract class BaseController implements IController
         }
     }
 
-    protected void fireAuthenticated()
-    {
-        for (IControllerListener listener: listeners)
-        {
-            listener.authenticated();
-        }
-    }
-
-    protected void fireUnauthenticated(boolean retry)
-    {
-        for (IControllerListener listener: listeners)
-        {
-            listener.unauthenticated(retry);
-        }
-    }
-
     protected void fireRefreshItemsDone(AsyncResult<List<StartTag>> result)
     {
         for (IControllerListener listener: listeners)

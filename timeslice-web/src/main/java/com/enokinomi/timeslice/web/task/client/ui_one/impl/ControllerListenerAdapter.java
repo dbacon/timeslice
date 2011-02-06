@@ -24,16 +24,6 @@ public class ControllerListenerAdapter implements IControllerListener
     }
 
     @Override
-    public void authenticated()
-    {
-    }
-
-    @Override
-    public void unauthenticated(boolean retry)
-    {
-    }
-
-    @Override
     public void onRefreshItemsDone(AsyncResult<List<StartTag>> result)
     {
     }

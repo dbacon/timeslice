@@ -29,6 +29,11 @@ public class TsSettings
         return map.get(key);
     }
 
+    public Map<String, List<String>> getMap()
+    {
+        return map;
+    }
+
     public void setConfScalar(String name, Integer value)
     {
         setConfScalar(name, value, Integer.class);

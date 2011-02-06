@@ -1,16 +1,15 @@
 package com.enokinomi.timeslice.web.session.server.impl;
 
-import com.enokinomi.timeslice.lib.userinfo.impl.UserInfoModule;
 import com.enokinomi.timeslice.web.session.client.core.ISessionSvc;
 import com.enokinomi.timeslice.web.session.server.core.ISessionTracker;
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
 
-public class SessionModule extends AbstractModule
+public class SessionServerModule extends AbstractModule
 {
     private final String aclFilename;
 
-    public SessionModule(String aclFilename)
+    public SessionServerModule(String aclFilename)
     {
         this.aclFilename = aclFilename;
     }
@@ -18,8 +17,6 @@ public class SessionModule extends AbstractModule
     @Override
     protected void configure()
     {
-        install(new UserInfoModule());
-
         bind(ISessionTracker.class).to(SessionTracker.class).asEagerSingleton();
         bind(SessionDataProvider.class);
 

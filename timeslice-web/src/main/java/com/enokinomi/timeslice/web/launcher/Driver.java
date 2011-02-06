@@ -17,19 +17,23 @@ import joptsimple.OptionSpecBuilder;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.hsqldb.util.SqlTool;
 
 import com.enokinomi.timeslice.branding.api.BrandingAbstractModule;
 import com.enokinomi.timeslice.lib.appjob.api.AppJob;
 import com.enokinomi.timeslice.lib.appjob.api.AppJobCompletion;
 import com.enokinomi.timeslice.lib.appjob.api.IAppJobProcessor;
 import com.enokinomi.timeslice.lib.commondatautil.impl.CommonDataModule;
+import com.enokinomi.timeslice.lib.userinfo.impl.UserInfoModule;
 import com.enokinomi.timeslice.web.appjob.server.impl.AppJobServerModule;
 import com.enokinomi.timeslice.web.assign.server.impl.AssignServerModule;
 import com.enokinomi.timeslice.web.branding.impl.DefaultBrandingModule;
 import com.enokinomi.timeslice.web.guice.GuiceRpcModule;
+import com.enokinomi.timeslice.web.login.server.impl.LoginServerModule;
 import com.enokinomi.timeslice.web.ordering.server.impl.OrderingServerModule;
 import com.enokinomi.timeslice.web.prorata.server.impl.ProRataServerModule;
-import com.enokinomi.timeslice.web.session.server.impl.SessionModule;
+import com.enokinomi.timeslice.web.session.server.impl.SessionServerModule;
+import com.enokinomi.timeslice.web.settings.server.impl.SettingsServerModule;
 import com.enokinomi.timeslice.web.task.server.impl.TaskServerModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -74,6 +78,8 @@ public class Driver
         OptionSpecBuilder listJobsSpec = parser.acceptsAll(Arrays.asList("J", "list-jobs"), "List jobs");
         ArgumentAcceptingOptionSpec<String> runJobSpec = parser.acceptsAll(Arrays.asList("j", "run-job"), "Run job").withRequiredArg().ofType(String.class);
         OptionSpecBuilder debugSpec = parser.acceptsAll(Arrays.asList("D", "debug"), "Set log-level to DEBUG");
+        ArgumentAcceptingOptionSpec<String> schemaCreationResourceSpec = parser.acceptsAll(Arrays.asList("S", "schema-creation-resource"), "Use specified resource to create schema if needed").withRequiredArg().ofType(String.class);
+        OptionSpecBuilder sqlToolSpec = parser.acceptsAll(Arrays.asList("I", "sql-tool"), "Use interactive SQL tool");
 
         OptionSet detectedOptions = null;
         try
@@ -117,9 +123,19 @@ public class Driver
         Entry<Integer, String> latestVersion = findLatestSchemaVersion();
         log.info("Found latest supported schema version " + latestVersion.getKey());
 
+        String schemaCreationResource =
+            detectedOptions.has(schemaCreationResourceSpec)
+                ? schemaCreationResourceSpec.value(detectedOptions)
+                : latestVersion.getValue();
+
+        log.info("Schema-creation resource: " + schemaCreationResource);
+
         Injector injector = Guice.createInjector(
-                new CommonDataModule(latestVersion.getValue(), db),
-                    new SessionModule(acl),
+                new CommonDataModule(schemaCreationResource, db),
+                new UserInfoModule(),
+                    new LoginServerModule(),
+                    new SettingsServerModule(),
+                    new SessionServerModule(acl),
                     new AppJobServerModule(),
                     new ProRataServerModule(),
                     new TaskServerModule(),
@@ -152,6 +168,21 @@ public class Driver
                         completion.getJobId(),
                         completion.getStatus(),
                         completion.getDescription());
+        }
+        else if (detectedOptions.has(sqlToolSpec))
+        {
+            try
+            {
+                SqlTool.objectMain(new String[]
+                {
+                        "--inlineRc",
+                        "url=jdbc:hsqldb:file:" + db + ",user=sa,password=",
+                });
+            }
+            catch (Exception e)
+            {
+                log.warn("SqlTool raised exception: " + e.getMessage(), e);
+            }
         }
         else
         {

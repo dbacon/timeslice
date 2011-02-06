@@ -12,8 +12,6 @@ public interface IController
     void addControllerListener(IControllerListener listener);
     void removeControllerListener(IControllerListener listener);
 
-    void logout();
-
     void serverInfo();
     void startGetBranding();
     void startEditDescription(StartTag editedStartTag);

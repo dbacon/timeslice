@@ -1,6 +1,7 @@
 package com.enokinomi.timeslice.web.assign.client.ui.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -78,6 +79,12 @@ public class TabularResultsAssignedView extends ResizeComposite implements ITabu
                 GWT.log("Updating listener failed: " + e.getMessage());
             }
         }
+    }
+
+    @Override
+    public void clear()
+    {
+        setResults(Arrays.<AssignedTaskTotal>asList());
     }
 
     @Override

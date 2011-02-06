@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.web.task.client.controller.impl;
+package com.enokinomi.timeslice.web.login.client.ui.impl;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;

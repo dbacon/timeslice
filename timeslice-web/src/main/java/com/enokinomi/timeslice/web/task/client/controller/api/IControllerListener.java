@@ -14,8 +14,6 @@ public interface IControllerListener
 {
     void serverInfoRecieved(String info);
     void onBranded(AsyncResult<BrandInfo> result);
-    void authenticated();
-    void unauthenticated(boolean retry);
     void onRefreshItemsDone(AsyncResult<List<StartTag>> result);
     void onAddItemDone(AsyncResult<Void> result);
     void onRefreshTotalsDone(AsyncResult<List<TaskTotal>> result);

@@ -7,9 +7,9 @@ import java.util.concurrent.Callable;
 import org.apache.commons.io.IOUtils;
 
 import com.enokinomi.timeslice.branding.api.IBranding;
+import com.enokinomi.timeslice.lib.userinfo.api.IUserInfoDao;
 import com.enokinomi.timeslice.lib.userinfo.api.TsSettings;
 import com.enokinomi.timeslice.web.core.client.ui.SortDir;
-import com.enokinomi.timeslice.web.core.client.util.NotAuthenticException;
 import com.enokinomi.timeslice.web.session.server.core.ISessionTracker;
 import com.enokinomi.timeslice.web.session.server.core.SessionData;
 import com.enokinomi.timeslice.web.task.client.core.ITimesliceSvc;
@@ -23,13 +23,15 @@ public class TimesliceSvcSession implements ITimesliceSvc
     private final ISessionTracker sessionTracker;
     private final TimesliceSvcWebWrapper timesliceSvc;
     private final IBranding branding;
+    private final IUserInfoDao userInfoDao;
 
     @Inject
-    TimesliceSvcSession(TimesliceSvcWebWrapper timesliceSvc, ISessionTracker sessionTracker, IBranding branding)
+    TimesliceSvcSession(TimesliceSvcWebWrapper timesliceSvc, ISessionTracker sessionTracker, IBranding branding, IUserInfoDao userInfoDao)
     {
         this.timesliceSvc = timesliceSvc;
         this.sessionTracker = sessionTracker;
         this.branding = branding;
+        this.userInfoDao = userInfoDao;
     }
 
     @Override
@@ -54,18 +56,6 @@ public class TimesliceSvcSession implements ITimesliceSvc
     }
 
     @Override
-    public String authenticate(String username, String password)
-    {
-        return sessionTracker.authenticate(username, password);
-    }
-
-    @Override
-    public void logout(String authToken) throws NotAuthenticException
-    {
-        sessionTracker.logout(authToken);
-    }
-
-    @Override
     public List<StartTag> refreshItems(final String authToken, final int maxSize, final SortDir sortDir, final String startingInstant, final String endingInstant)
     {
         return new Catcher().catchAndWrap("Refreshing items", new Callable<List<StartTag>>()
@@ -74,7 +64,7 @@ public class TimesliceSvcSession implements ITimesliceSvc
             public List<StartTag> call()
             {
                 SessionData sd = sessionTracker.checkToken(authToken);
-                TsSettings settings = sd.getSettings();
+                TsSettings settings = userInfoDao.loadUserSettings(sd.getUser(), "");
                 return timesliceSvc.refreshItems(sd.getUser(), maxSize, sortDir, startingInstant, endingInstant, settings.getTzOffsetMinutes());
             }
         });
@@ -89,7 +79,7 @@ public class TimesliceSvcSession implements ITimesliceSvc
             public List<TaskTotal> call()
             {
                 SessionData sd = sessionTracker.checkToken(authToken);
-                TsSettings settings = sd.getSettings();
+                TsSettings settings = userInfoDao.loadUserSettings(sd.getUser(), "");
                 return timesliceSvc.refreshTotals(sd.getUser(), maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords, settings.getTzOffsetMinutes());
             }
         });

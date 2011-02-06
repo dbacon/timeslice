@@ -12,6 +12,8 @@ import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.core.client.ui.SortDir;
 import com.enokinomi.timeslice.web.core.client.util.AsyncResult;
 import com.enokinomi.timeslice.web.core.client.util.Checks;
+import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport;
+import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport.LoginListener;
 import com.enokinomi.timeslice.web.task.client.controller.api.IController;
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
 import com.enokinomi.timeslice.web.task.client.core.TaskTotal;
@@ -52,6 +54,7 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
     private final IReportPanel reportPanel;
     private final IOptionsPanel optionsPanel;
     private final IAppJobPanel appJobPanel;
+    private final ILoginSupport loginSupport;
 
     private String originalWindowTitle;
     private static final StartTag UnknownTag = new StartTag(null, null, null, "-unknown-", false);
@@ -63,7 +66,7 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
     }
 
     @Inject
-    TimesliceApp(TimesliceAppConstants constants, IController controller, IOptionsProvider optionsProvider, InputPanel inputPanel, IReportPanel reportPanel, IOptionsPanel optionsPanel, IAppJobPanel appJobPanel)
+    TimesliceApp(TimesliceAppConstants constants, IController controller, IOptionsProvider optionsProvider, InputPanel inputPanel, IReportPanel reportPanel, IOptionsPanel optionsPanel, IAppJobPanel appJobPanel, ILoginSupport loginSupport)
     {
         this.constants = constants;
         this.controller = controller;
@@ -72,6 +75,7 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
         this.reportPanel = reportPanel;
         this.optionsPanel = optionsPanel;
         this.appJobPanel = appJobPanel;
+        this.loginSupport = loginSupport;
 
         issuesLink = new HTML();
         serverInfoLabel = new Label("[querying]");
@@ -126,6 +130,21 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
 
     private void linkInputPanel()
     {
+        loginSupport.addLoginListener(new LoginListener()
+        {
+            @Override
+            public void sessionEnded(boolean retry)
+            {
+                inputPanel.clear();
+            }
+
+            @Override
+            public void newSessionStarted()
+            {
+                inputPanel.refresh();
+            }
+        });
+
         controller.addControllerListener(new ControllerListenerAdapter()
         {
             public void onAddItemDone(AsyncResult<Void> result)
@@ -162,7 +181,7 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
             @Override
             public void onClick(ClickEvent event)
             {
-                controller.logout();
+                loginSupport.logout();
             }
         });
 
@@ -210,6 +229,21 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
 
     private void linkReportPanel()
     {
+        loginSupport.addLoginListener(new LoginListener()
+        {
+            @Override
+            public void sessionEnded(boolean retry)
+            {
+                reportPanel.clear();
+            }
+
+            @Override
+            public void newSessionStarted()
+            {
+                refreshTotals();
+            }
+        });
+
         controller.addControllerListener(new ControllerListenerAdapter()
             {
                 @Override

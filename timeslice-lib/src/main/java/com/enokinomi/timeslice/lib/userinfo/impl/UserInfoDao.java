@@ -32,4 +32,22 @@ public class UserInfoDao implements IUserInfoDao
         connContext.doWorkWithinContext(userInfoWorks.workSaveUserSettings(username, settings));
     }
 
+    @Override
+    public void addSetting(String username, String name, String value)
+    {
+        connContext.doWorkWithinContext(userInfoWorks.addSetting(username, name, value));
+    }
+
+    @Override
+    public void editSetting(String username, String name, String oldValue, String newValue)
+    {
+        connContext.doWorkWithinContext(userInfoWorks.editSetting(username, name, oldValue, newValue));
+    }
+
+    @Override
+    public void deleteSetting(String username, String name, String value)
+    {
+        connContext.doWorkWithinContext(userInfoWorks.deleteSetting(username, name, value));
+    }
+
 }

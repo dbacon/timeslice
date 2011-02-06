@@ -113,4 +113,90 @@ public class UserInfoWorks implements IUserInfoWorks
             }
         };
     }
+
+    @Override
+    public IConnectionWork<Void> addSetting(final String user, final String name, final String value)
+    {
+        return new IConnectionWork<Void>()
+        {
+            @Override
+            public Void performWithConnection(Connection conn)
+            {
+                if (baseStore.versionIsAtLeast(conn, RequiredVersion))
+                {
+                    baseStore.doSomeSql(
+                            conn,
+                            "insert into ts_conf (username, name, type, value) values (?, ?, ?, ?)",
+                            new Object[]
+                            {
+                                    user,
+                                    name,
+                                    "unused",
+                                    value
+                            },
+                            null,
+                            1);
+                }
+
+                return null; // Void
+            }
+        };
+    }
+
+    @Override
+    public IConnectionWork<Void> editSetting(final String user, final String name, final String oldValue, final String newValue)
+    {
+        return new IConnectionWork<Void>()
+        {
+            @Override
+            public Void performWithConnection(Connection conn)
+            {
+                if (baseStore.versionIsAtLeast(conn, RequiredVersion))
+                {
+                    baseStore.doSomeSql(
+                            conn,
+                            "update ts_conf set value = ? where username = ? and name = ? and value = ?",
+                            new Object[]
+                            {
+                                    newValue,
+                                    user,
+                                    name,
+                                    oldValue
+                            },
+                            null,
+                            null); // we might match more
+                }
+
+                return null; // Void
+            }
+        };
+    }
+
+    @Override
+    public IConnectionWork<Void> deleteSetting(final String user, final String name, final String value)
+    {
+        return new IConnectionWork<Void>()
+        {
+            @Override
+            public Void performWithConnection(Connection conn)
+            {
+                if (baseStore.versionIsAtLeast(conn, RequiredVersion))
+                {
+                    baseStore.doSomeSql(
+                            conn,
+                            "delete from ts_conf where username = ? and name = ? and value = ?",
+                            new Object[]
+                            {
+                                    user,
+                                    name,
+                                    value
+                            },
+                            null,
+                            null); // we can't distinguish
+                }
+
+                return null; // Void
+            }
+        };
+    }
 }
