@@ -176,6 +176,7 @@ public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsPr
                     public void onSuccess(Void result)
                     {
                         refresh();
+                        updateSessionData();
                     }
 
                     @Override
@@ -195,6 +196,7 @@ public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsPr
                             public void onSuccess(Void result)
                             {
                                 refresh();
+                                updateSessionData();
                             }
 
                             @Override
@@ -214,6 +216,7 @@ public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsPr
                     public void onSuccess(Void result)
                     {
                         refresh();
+                        updateSessionData();
                     }
 
                     @Override
