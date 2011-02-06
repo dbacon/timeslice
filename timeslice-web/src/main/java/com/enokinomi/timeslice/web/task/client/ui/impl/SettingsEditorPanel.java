@@ -24,20 +24,26 @@ public class SettingsEditorPanel extends Composite implements ISettingsEditorPan
     public interface ThisUiBinder extends UiBinder<Widget, SettingsEditorPanel> { }
     public interface ThisStyle extends CssResource { String live(); }
 
-    @UiField Button refreshButton;
-    @UiField TextBox currentValueTextBox;
-    @UiField TextBox newNameTextBox;
-    @UiField TextBox newValueTextBox;
-    @UiField Button saveButton;
-    @UiField Button cancelButton;
-    @UiField FlexTable table;
-    @UiField Panel settingEditorPanel;
-    @UiField ThisStyle style;
+    @UiField protected Button refreshButton;
+    @UiField protected TextBox currentValueTextBox;
+    @UiField protected TextBox newNameTextBox;
+    @UiField protected TextBox newValueTextBox;
+    @UiField protected Button saveButton;
+    @UiField protected Button cancelButton;
+    @UiField protected FlexTable table;
+    @UiField protected Panel settingEditorPanel;
+    @UiField protected ThisStyle style;
 
     private final SettingsEditorPanelConstants constants;
 
+    private final List<Row> rows = new ArrayList<Row>();
+
+    static final String CREATE_NEW = "New Value:";
+    static final int ActionColumn_Edit = 2;
+    static final int ActionColumn_Delete = 3;
+
     @Inject
-    public SettingsEditorPanel(ThisUiBinder uiBinder, SettingsEditorPanelConstants constants)
+    SettingsEditorPanel(ThisUiBinder uiBinder, SettingsEditorPanelConstants constants)
     {
         this.constants = constants;
 
@@ -52,21 +58,19 @@ public class SettingsEditorPanel extends Composite implements ISettingsEditorPan
     }
 
     @UiHandler("cancelButton")
-    void onClick_CancelButton(ClickEvent e)
+    protected void onClick_CancelButton(ClickEvent e)
     {
         clearInputs();
     }
 
     @UiHandler("refreshButton")
-    void onClick_RefreshButton(ClickEvent e)
+    protected void onClick_RefreshButton(ClickEvent e)
     {
         fireOnRefreshButtonClicked();
     }
 
-    public static final String CREATE_NEW = "New Value:";
-
     @UiHandler("saveButton")
-    void onClick_SaveButton(ClickEvent e)
+    protected void onClick_SaveButton(ClickEvent e)
     {
 
         if (currentValueTextBox.getText().equals(CREATE_NEW))
@@ -114,6 +118,7 @@ public class SettingsEditorPanel extends Composite implements ISettingsEditorPan
         for (Listener listener: listeners) listener.onRefreshButtonClicked();
     }
 
+    @Override
     public void clear()
     {
         table.removeAllRows();
@@ -123,11 +128,8 @@ public class SettingsEditorPanel extends Composite implements ISettingsEditorPan
         table.setText(0, 1, constants.value());
     }
 
-    public static final int ActionColumn_Edit = 2;
-    public static final int ActionColumn_Delete = 3;
-
     @UiHandler("table")
-    public void onTableClicked(ClickEvent event)
+    protected void onTableClicked(ClickEvent event)
     {
         Cell cell = table.getCellForEvent(event);
         Row item = rows.get(cell.getRowIndex() - 1);
@@ -150,8 +152,7 @@ public class SettingsEditorPanel extends Composite implements ISettingsEditorPan
         }
     }
 
-    private List<Row> rows = new ArrayList<Row>();
-
+    @Override
     public void setSettings(Map<String, List<String>> settings)
     {
         rows.clear();
@@ -167,13 +168,13 @@ public class SettingsEditorPanel extends Composite implements ISettingsEditorPan
         render();
     }
 
-    public static class Row
+    static class Row
     {
         private final String name;
         private final String value;
         private final boolean editable;
 
-        public Row(String name, String value, boolean editable)
+        Row(String name, String value, boolean editable)
         {
             this.name = name;
             this.value = value;
@@ -196,7 +197,6 @@ public class SettingsEditorPanel extends Composite implements ISettingsEditorPan
         }
 
     }
-
 
     private void render()
     {

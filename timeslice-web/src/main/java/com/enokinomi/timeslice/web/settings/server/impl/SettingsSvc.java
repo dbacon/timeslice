@@ -9,7 +9,7 @@ import com.enokinomi.timeslice.web.session.server.core.SessionData;
 import com.enokinomi.timeslice.web.settings.client.core.ISettingsSvc;
 import com.google.inject.Inject;
 
-public class SettingsSvc implements ISettingsSvc
+class SettingsSvc implements ISettingsSvc
 {
     private final ISessionTracker tracker;
     private final IUserInfoDao userInfoDao;

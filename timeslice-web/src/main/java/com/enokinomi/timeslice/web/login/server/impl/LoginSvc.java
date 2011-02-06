@@ -5,12 +5,12 @@ import com.enokinomi.timeslice.web.login.client.core.ILoginSvc;
 import com.enokinomi.timeslice.web.session.server.core.ISessionTracker;
 import com.google.inject.Inject;
 
-public class LoginSvc implements ILoginSvc
+class LoginSvc implements ILoginSvc
 {
     private final ISessionTracker sessionTracker;
 
     @Inject
-    public LoginSvc(ISessionTracker sessionTracker)
+    LoginSvc(ISessionTracker sessionTracker)
     {
         this.sessionTracker = sessionTracker;
     }

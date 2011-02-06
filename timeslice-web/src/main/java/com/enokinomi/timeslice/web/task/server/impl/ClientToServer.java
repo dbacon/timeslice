@@ -3,7 +3,7 @@ package com.enokinomi.timeslice.web.task.server.impl;
 import com.enokinomi.timeslice.lib.util.ITransform;
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
 
-public class ClientToServer implements ITransform<StartTag, com.enokinomi.timeslice.lib.task.api.StartTag>
+class ClientToServer implements ITransform<StartTag, com.enokinomi.timeslice.lib.task.api.StartTag>
 {
     private final String user;
 

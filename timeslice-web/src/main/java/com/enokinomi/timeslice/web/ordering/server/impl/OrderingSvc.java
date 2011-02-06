@@ -7,7 +7,7 @@ import com.enokinomi.timeslice.web.ordering.client.core.IOrderingSvc;
 import com.enokinomi.timeslice.web.session.server.core.ISessionTracker;
 import com.google.inject.Inject;
 
-public class OrderingSvc implements IOrderingSvc
+class OrderingSvc implements IOrderingSvc
 {
     private final ISessionTracker sessionTracker;
     private final IOrderingStore orderingStore;

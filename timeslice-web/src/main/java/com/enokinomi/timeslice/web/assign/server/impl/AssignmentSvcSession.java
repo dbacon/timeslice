@@ -6,14 +6,14 @@ import java.util.concurrent.Callable;
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.assign.client.core.IAssignmentSvc;
 import com.enokinomi.timeslice.web.core.client.ui.SortDir;
+import com.enokinomi.timeslice.web.core.server.util.Catcher;
 import com.enokinomi.timeslice.web.session.server.core.ISessionTracker;
 import com.enokinomi.timeslice.web.session.server.core.SessionData;
-import com.enokinomi.timeslice.web.task.server.impl.Catcher;
 import com.google.inject.Inject;
 
-public class AssignmentSvcSession implements IAssignmentSvc
+class AssignmentSvcSession implements IAssignmentSvc
 {
-    public final ISessionTracker sessionTracker;
+    private final ISessionTracker sessionTracker;
     private final AssignmentSvc assignmentSvc;
 
     @Inject

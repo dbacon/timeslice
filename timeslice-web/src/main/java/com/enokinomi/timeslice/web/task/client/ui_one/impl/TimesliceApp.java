@@ -24,7 +24,6 @@ import com.enokinomi.timeslice.web.task.client.ui.api.IParamPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IReportPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IReportPanelListener;
 import com.enokinomi.timeslice.web.task.client.ui_one.api.ITimesliceApp;
-import com.enokinomi.timeslice.web.task.client.ui_one.api.TimesliceAppConstants;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;

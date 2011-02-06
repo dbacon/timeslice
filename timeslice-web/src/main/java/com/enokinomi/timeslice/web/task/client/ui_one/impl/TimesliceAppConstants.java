@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.web.task.client.ui_one.api;
+package com.enokinomi.timeslice.web.task.client.ui_one.impl;
 
 import com.google.gwt.i18n.client.Constants;
 

@@ -19,7 +19,6 @@ import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsProvider;
 import com.enokinomi.timeslice.web.task.client.ui_one.api.BulkItemListener;
 import com.enokinomi.timeslice.web.task.client.ui_one.api.IImportBulkItemsDialog;
-import com.enokinomi.timeslice.web.task.client.ui_one.api.TimesliceAppConstants;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;

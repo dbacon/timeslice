@@ -2,7 +2,7 @@ package com.enokinomi.timeslice.web.login.client.ui.impl;
 
 import com.google.gwt.i18n.client.Constants;
 
-public interface LoginDialogConstants extends Constants
+interface LoginDialogConstants extends Constants
 {
     @DefaultStringValue("Login")
     String login();

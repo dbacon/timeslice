@@ -12,7 +12,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 
-public class SessionTracker implements ISessionTracker
+class SessionTracker implements ISessionTracker
 {
     private static final Logger log = Logger.getLogger(SessionTracker.class);
 

@@ -2,7 +2,7 @@ package com.enokinomi.timeslice.web.task.client.ui.impl;
 
 import com.google.gwt.i18n.client.Constants;
 
-public interface TreeTableResultsViewConstants extends Constants
+interface TreeTableResultsViewConstants extends Constants
 {
 
     @DefaultStringValue("Who")

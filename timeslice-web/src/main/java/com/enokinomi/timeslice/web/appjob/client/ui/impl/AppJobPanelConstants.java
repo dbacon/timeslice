@@ -2,7 +2,7 @@ package com.enokinomi.timeslice.web.appjob.client.ui.impl;
 
 import com.google.gwt.i18n.client.Constants;
 
-public interface AppJobPanelConstants extends Constants
+interface AppJobPanelConstants extends Constants
 {
 
     @DefaultStringValue("Refresh Job List")

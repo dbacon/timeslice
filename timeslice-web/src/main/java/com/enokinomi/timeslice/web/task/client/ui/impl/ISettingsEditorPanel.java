@@ -7,7 +7,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 
 public interface ISettingsEditorPanel extends IsWidget
 {
-    public static interface Listener
+    static interface Listener
     {
         void onRefreshButtonClicked();
         void onItemDeleted(String name, String value);
@@ -18,4 +18,6 @@ public interface ISettingsEditorPanel extends IsWidget
     void addListener(Listener listener);
 
     void setSettings(Map<String, List<String>> settings);
+
+    void clear();
 }

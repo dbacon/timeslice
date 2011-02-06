@@ -37,6 +37,7 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
 
     private ArrayList<IReportPanelListener> listeners = new ArrayList<IReportPanelListener>();
 
+    @Override
     public Widget asWidget() { return this; };
 
     @Override

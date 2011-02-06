@@ -10,7 +10,7 @@ import com.enokinomi.timeslice.web.task.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.task.client.ui_tree.NodeIntegrator;
 
 
-public class TaskTotalIntegrator implements NodeIntegrator<String, TaskTotal, TaskTotal>
+class TaskTotalIntegrator implements NodeIntegrator<String, TaskTotal, TaskTotal>
 {
     private String separator;
 

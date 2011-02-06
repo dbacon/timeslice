@@ -14,7 +14,6 @@ import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.core.client.ui.PrefHelper;
 import com.enokinomi.timeslice.web.core.client.util.Checks;
 import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport;
-import com.enokinomi.timeslice.web.login.client.ui.impl.LoginSupport;
 import com.enokinomi.timeslice.web.ordering.client.core.IOrderingSvcAsync;
 import com.enokinomi.timeslice.web.prorata.client.core.Group;
 import com.enokinomi.timeslice.web.prorata.client.core.GroupComponent;
@@ -89,7 +88,7 @@ public class ProjectListPanel extends Composite
 
     @Inject
     ProjectListPanel(
-            LoginSupport loginSupport,
+            ILoginSupport loginSupport,
             IProRataSvcAsync prorataSvc,
             IOrderingSvcAsync orderingSvc,
             ProjectListPanelConstants constants,

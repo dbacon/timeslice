@@ -45,6 +45,7 @@ public class ParamPanel extends Composite implements IParamPanel
         public static final String AllowStrings = "timeslice.report.allowstrings";
     }
 
+    @Override
     public Widget asWidget() { return this; }
 
     private final List<IParamChangedListener> listeners = new ArrayList<IParamChangedListener>();
@@ -75,7 +76,7 @@ public class ParamPanel extends Composite implements IParamPanel
     }
 
     // used only internally and to service, so tz doesn't matter.
-    public static final DateTimeFormat MachineFormat = DateTimeFormat.getFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    private static final DateTimeFormat MachineFormat = DateTimeFormat.getFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
     @Override
     public String getStartingTimeRendered()

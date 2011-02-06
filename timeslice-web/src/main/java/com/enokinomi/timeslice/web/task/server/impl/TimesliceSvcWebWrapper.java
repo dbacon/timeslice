@@ -14,7 +14,7 @@ import com.google.inject.Inject;
  * Translates between server- and client- types.
  *
  */
-public class TimesliceSvcWebWrapper
+class TimesliceSvcWebWrapper
 {
     private final ITimesliceSvc timesliceSvc;
 
@@ -24,7 +24,7 @@ public class TimesliceSvcWebWrapper
         this.timesliceSvc = timesliceSvc;
     }
 
-    public List<StartTag> refreshItems(String user, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, int tzOffsetMinutes)
+    List<StartTag> refreshItems(String user, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, int tzOffsetMinutes)
     {
         return Transforms.tr(timesliceSvc.refreshItems(
                     user,
@@ -36,7 +36,7 @@ public class TimesliceSvcWebWrapper
                 ServerToClient.createStartTagTx(tzOffsetMinutes));
     }
 
-    public List<TaskTotal> refreshTotals(String user, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords, int tzOffsetMinutes)
+    List<TaskTotal> refreshTotals(String user, int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords, int tzOffsetMinutes)
     {
         return Transforms.tr(
                 timesliceSvc.refreshTotals(
@@ -51,17 +51,17 @@ public class TimesliceSvcWebWrapper
                 ServerToClient.createTaskTotal(tzOffsetMinutes));
     }
 
-    public void addItem(String instantString, String taskDescription, String user)
+    void addItem(String instantString, String taskDescription, String user)
     {
         timesliceSvc.addItem(instantString, taskDescription, user);
     }
 
-    public void addItems(final String user, List<StartTag> items)
+    void addItems(final String user, List<StartTag> items)
     {
         timesliceSvc.addItems(user, Transforms.tr(items, new ArrayList<com.enokinomi.timeslice.lib.task.api.StartTag>(), new ClientToServer(user)));
     }
 
-    public void update(String user, StartTag editedStartTag)
+    void update(String user, StartTag editedStartTag)
     {
         timesliceSvc.update(user, new ClientToServer(user).apply(editedStartTag));
     }

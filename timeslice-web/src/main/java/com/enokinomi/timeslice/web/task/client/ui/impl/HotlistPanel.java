@@ -18,13 +18,6 @@ import com.google.inject.Inject;
 
 public class HotlistPanel extends Composite implements IHotlistPanel
 {
-    public static final class Mode
-    {
-//        public static final String EditSingle = "Hotlist [delete-single]";
-//        public static final String EditMulti = "Hotlist [delete-multi]";
-//        public static final String Hotlist = "Hotlist";
-    }
-
     private static final String CookieNamePrefix = "timeslice.hotlist.";
 
     private final HotlistPanelConstants constants;

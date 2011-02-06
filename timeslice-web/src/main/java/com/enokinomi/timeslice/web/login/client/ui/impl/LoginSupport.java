@@ -21,7 +21,7 @@ public class LoginSupport implements ILoginSupport
     private LoginDialog loginDialog = null;
 
     @Inject
-    public LoginSupport(LoginConstants constants, ILoginSvcAsync svc)
+    LoginSupport(LoginConstants constants, ILoginSvcAsync svc)
     {
         this.constants = constants;
         this.svc = svc;
@@ -53,17 +53,17 @@ public class LoginSupport implements ILoginSupport
         }
     }
 
-    public <R1> NoAuthProblemAsyncCallback<R1> withRetry(LoginSupport.IOnAuthenticated retryAction, AsyncCallback<R1> wrapped)
+    public <R1> RetryingAsyncCallback<R1> withRetry(LoginSupport.IOnAuthenticated retryAction, AsyncCallback<R1> wrapped)
     {
-        return new NoAuthProblemAsyncCallback<R1>(retryAction, wrapped);
+        return new RetryingAsyncCallback1<R1>(retryAction, wrapped);
     }
 
-    public class NoAuthProblemAsyncCallback<R> implements AsyncCallback<R>
+    class RetryingAsyncCallback1<R> implements RetryingAsyncCallback<R>
     {
         private final AsyncCallback<R> wrapped;
         private final LoginSupport.IOnAuthenticated retryAction;
 
-        public NoAuthProblemAsyncCallback(LoginSupport.IOnAuthenticated retryAction, AsyncCallback<R> wrapped)
+        public RetryingAsyncCallback1(LoginSupport.IOnAuthenticated retryAction, AsyncCallback<R> wrapped)
         {
             this.retryAction = retryAction;
             this.wrapped = wrapped;
@@ -115,17 +115,17 @@ public class LoginSupport implements ILoginSupport
         });
     }
 
-    public void authenticate(LoginSupport.IOnAuthenticated retryAction)
+    void authenticate(LoginSupport.IOnAuthenticated retryAction)
     {
         authenticate(constants.pleaseLogin(), null, retryAction);
     }
 
-    public void authenticate(String subtext, LoginSupport.IOnAuthenticated retryAction)
+    void authenticate(String subtext, LoginSupport.IOnAuthenticated retryAction)
     {
         authenticate(constants.pleaseLogin(), subtext, retryAction);
     }
 
-    public void authenticate(String title, String subText, final LoginSupport.IOnAuthenticated action)
+    void authenticate(String title, String subText, final LoginSupport.IOnAuthenticated action)
     {
         if (null == loginDialog)
         {

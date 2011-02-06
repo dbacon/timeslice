@@ -6,10 +6,6 @@ import com.google.inject.AbstractModule;
 
 public class TaskServerModule extends AbstractModule
 {
-    public TaskServerModule()
-    {
-    }
-
     @Override
     protected void configure()
     {

@@ -22,6 +22,7 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Inject;
 
 public class AppJobPanel extends ResizeComposite implements IAppJobPanel
 {
@@ -33,8 +34,10 @@ public class AppJobPanel extends ResizeComposite implements IAppJobPanel
 
     private List<IAppJobPanelListener> listeners = new ArrayList<IAppJobPanelListener>();
 
+    @Override
     public Widget asWidget() { return this; }
 
+    @Inject
     AppJobPanel()
     {
         HorizontalPanel hp = new HorizontalPanel();

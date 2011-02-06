@@ -2,7 +2,7 @@ package com.enokinomi.timeslice.web.task.client.ui.impl;
 
 import com.google.gwt.i18n.client.Constants;
 
-public interface OptionsConstants extends Constants
+interface OptionsConstants extends Constants
 {
     @DefaultStringValue("Control-space also sends.")
     public String controlSpaceAlsoSends();

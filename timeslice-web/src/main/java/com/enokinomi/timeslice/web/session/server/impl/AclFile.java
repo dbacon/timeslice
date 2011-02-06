@@ -10,7 +10,7 @@ import org.apache.commons.io.FileUtils;
 import com.enokinomi.timeslice.lib.util.Narrow;
 
 
-public class AclFile
+class AclFile
 {
     private final String fileName;
 

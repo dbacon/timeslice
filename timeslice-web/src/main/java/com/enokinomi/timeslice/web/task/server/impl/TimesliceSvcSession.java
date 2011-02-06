@@ -10,6 +10,7 @@ import com.enokinomi.timeslice.branding.api.IBranding;
 import com.enokinomi.timeslice.lib.userinfo.api.IUserInfoDao;
 import com.enokinomi.timeslice.lib.userinfo.api.TsSettings;
 import com.enokinomi.timeslice.web.core.client.ui.SortDir;
+import com.enokinomi.timeslice.web.core.server.util.Catcher;
 import com.enokinomi.timeslice.web.session.server.core.ISessionTracker;
 import com.enokinomi.timeslice.web.session.server.core.SessionData;
 import com.enokinomi.timeslice.web.task.client.core.ITimesliceSvc;
@@ -18,7 +19,7 @@ import com.enokinomi.timeslice.web.task.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.task.client.core_todo_move_out.BrandInfo;
 import com.google.inject.Inject;
 
-public class TimesliceSvcSession implements ITimesliceSvc
+class TimesliceSvcSession implements ITimesliceSvc
 {
     private final ISessionTracker sessionTracker;
     private final TimesliceSvcWebWrapper timesliceSvc;

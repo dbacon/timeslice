@@ -16,7 +16,7 @@ import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class LoginDialog extends DialogBox
+class LoginDialog extends DialogBox
 {
     private final LoginDialogConstants constants = GWT.create(LoginDialogConstants.class);
 
@@ -26,7 +26,7 @@ public class LoginDialog extends DialogBox
     private Button cancelButton = new Button(constants.cancel());
 
 
-    public static interface IListener
+    static interface IListener
     {
         void submitted(String user, String password);
         void canceled();

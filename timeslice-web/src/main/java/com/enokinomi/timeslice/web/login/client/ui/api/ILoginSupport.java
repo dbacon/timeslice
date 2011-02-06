@@ -1,6 +1,5 @@
 package com.enokinomi.timeslice.web.login.client.ui.api;
 
-import com.enokinomi.timeslice.web.login.client.ui.impl.LoginSupport.NoAuthProblemAsyncCallback;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface ILoginSupport
@@ -19,7 +18,13 @@ public interface ILoginSupport
         void runAsync();
     }
 
-    <R1> NoAuthProblemAsyncCallback<R1> withRetry(IOnAuthenticated retryAction, AsyncCallback<R1> wrapped);
+    /** Signifies that Authentication errors will be handled and retried */
+    public static interface RetryingAsyncCallback<R> extends AsyncCallback<R>
+    {
+    }
+
+    <R1> RetryingAsyncCallback<R1> withRetry(IOnAuthenticated retryAction, AsyncCallback<R1> wrapped);
+
     String getAuthToken();
     void logout();
     void addLoginListener(LoginListener listener);

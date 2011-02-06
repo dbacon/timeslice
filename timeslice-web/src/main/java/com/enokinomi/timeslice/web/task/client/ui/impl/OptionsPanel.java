@@ -10,14 +10,12 @@ import com.enokinomi.timeslice.web.core.client.ui.PrefHelper;
 import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport;
 import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport.IOnAuthenticated;
 import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport.LoginListener;
-import com.enokinomi.timeslice.web.login.client.ui.impl.LoginSupport;
 import com.enokinomi.timeslice.web.session.client.core.ISessionSvcAsync;
 import com.enokinomi.timeslice.web.settings.client.core.ISettingsSvcAsync;
 import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsListener;
 import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsProvider;
 import com.enokinomi.timeslice.web.task.client.ui.impl.ISettingsEditorPanel.Listener;
-import com.enokinomi.timeslice.web.task.client.ui_one.api.ITimesliceApp.Defaults;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -41,18 +39,22 @@ import com.google.inject.Inject;
 
 public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsProvider
 {
-    public static class PrefKeys
+    private static class PrefKeys
     {
         public static final String PageSize = "timeslice.options.pagesize";
         public static final String PageSizeSeconds = "timeslice.options.pagesizeseconds";
-        public static final String User = "timeslice.options.user";
         public static final String CtrlSpaceSends = "timeslice.options.controlspacesends";
-        public static final String AutoRefresh = "timeslice.options.autorefresh";
         public static final String CurrentTaskInTitlebar = "timeslice.options.currenttaskintitlebar";
         public static final String TitlebarTemplate= "timeslice.options.titlebartemplate";
     }
 
-    public static final String DefaultTitlebarTemplate = "[TS] " + IOptionsProvider.CurrentTaskToken;
+    private static final class Defaults
+    {
+        public static final int MaxResults = 10;
+        public static final long MaxSeconds = 60 * 60 * 24;
+    }
+
+    private static final String DefaultTitlebarTemplate = "[TS] " + IOptionsProvider.CurrentTaskToken;
 
     private final OptionsConstants constants = GWT.create(OptionsConstants.class);
     private final ISettingsSvcAsync settingsSvc;
@@ -75,6 +77,7 @@ public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsPr
 
     private final ILoginSupport loginSupport;
 
+    @Override
     public Widget asWidget() { return this; }
 
     @Override
@@ -107,7 +110,7 @@ public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsPr
     }
 
     @Inject
-    OptionsPanel(final LoginSupport loginSupport, final ISettingsSvcAsync settingsSvc, final ISettingsEditorPanel settingsEditor, final ISessionSvcAsync sessionSvc)
+    OptionsPanel(final ILoginSupport loginSupport, final ISettingsSvcAsync settingsSvc, final ISettingsEditorPanel settingsEditor, final ISessionSvcAsync sessionSvc)
     {
         this.loginSupport = loginSupport;
         this.settingsSvc = settingsSvc;
@@ -253,9 +256,9 @@ public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsPr
         });
     }
 
-    public void updateSessionData()
+    private void updateSessionData()
     {
-        new LoginSupport.IOnAuthenticated()
+        new IOnAuthenticated()
         {
             @Override
             public void runAsync()
@@ -363,6 +366,7 @@ public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsPr
         titleBarTemplate.setEnabled(currentTaskInTitlebar.getValue());
     }
 
+    @Override
     public int getMaxSize()
     {
         try
@@ -375,6 +379,7 @@ public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsPr
         }
     }
 
+    @Override
     public long getMaxSeconds()
     {
         try
@@ -387,11 +392,13 @@ public class OptionsPanel extends Composite implements IOptionsPanel, IOptionsPr
         }
     }
 
+    @Override
     public boolean isControlSpaceSends()
     {
         return controlSpaceSends.getValue();
     }
 
+    @Override
     public boolean isCurrentTaskInTitlebar()
     {
         return currentTaskInTitlebar.getValue();

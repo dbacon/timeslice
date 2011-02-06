@@ -4,7 +4,7 @@ import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport;
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
 
-public class LoginServerModule extends AbstractGinModule
+public class LoginClientModule extends AbstractGinModule
 {
 
     @Override

@@ -1,6 +1,5 @@
 package com.enokinomi.timeslice.web.task.client.controller.impl;
 
-
 import java.util.List;
 
 import com.enokinomi.timeslice.web.appjob.client.core.AppJobCompletion;
@@ -35,6 +34,7 @@ public class GwtRpcController extends BaseController
         this.loginSupport = loginSupport;
     }
 
+    @Override
     public void serverInfo()
     {
         svc.serverInfo(new AsyncCallback<String>()
@@ -53,6 +53,7 @@ public class GwtRpcController extends BaseController
         });
     }
 
+    @Override
     public void startGetBranding()
     {
         svc.getBrandInfo(new AsyncCallback<BrandInfo>()

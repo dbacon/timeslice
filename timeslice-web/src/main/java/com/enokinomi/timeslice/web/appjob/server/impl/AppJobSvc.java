@@ -9,7 +9,7 @@ import com.enokinomi.timeslice.web.appjob.client.core.IAppJobSvc;
 import com.enokinomi.timeslice.web.core.client.util.NotAuthenticException;
 import com.google.inject.Inject;
 
-public class AppJobSvc implements IAppJobSvc
+class AppJobSvc implements IAppJobSvc
 {
     private final IAppJobProcessor appJobSvc;
 

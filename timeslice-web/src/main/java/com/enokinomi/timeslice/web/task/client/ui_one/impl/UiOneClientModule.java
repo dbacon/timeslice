@@ -2,6 +2,7 @@ package com.enokinomi.timeslice.web.task.client.ui_one.impl;
 
 import com.enokinomi.timeslice.web.appjob.client.ui.impl.AppJobClientModule;
 import com.enokinomi.timeslice.web.assign.client.ui.impl.AssignClientModule;
+import com.enokinomi.timeslice.web.login.client.ui.impl.LoginClientModule;
 import com.enokinomi.timeslice.web.task.client.ui.impl.TaskClientModule;
 import com.enokinomi.timeslice.web.task.client.ui_compat.impl.UiCompatClientModule;
 import com.enokinomi.timeslice.web.task.client.ui_one.api.IImportBulkItemsDialog;
@@ -13,6 +14,7 @@ public class UiOneClientModule extends AbstractGinModule
     @Override
     protected void configure()
     {
+        install(new LoginClientModule());
         install(new AssignClientModule());
         install(new AppJobClientModule());
         install(new TaskClientModule());

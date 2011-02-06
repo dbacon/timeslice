@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.web.task.server.impl;
+package com.enokinomi.timeslice.web.core.server.util;
 
 import java.util.concurrent.Callable;
 
@@ -6,6 +6,10 @@ import com.enokinomi.timeslice.web.core.client.util.ServiceException;
 
 public class Catcher
 {
+    public Catcher()
+    {
+    }
+
     public <T> T catchAndWrap(String msg, Callable<T> code) throws ServiceException
     {
         try

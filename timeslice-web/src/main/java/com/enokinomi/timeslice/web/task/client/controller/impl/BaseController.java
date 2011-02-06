@@ -17,7 +17,7 @@ import com.enokinomi.timeslice.web.task.client.core_todo_move_out.BrandInfo;
  * Provides listener management part of IController.
  *
  */
-public abstract class BaseController implements IController
+abstract class BaseController implements IController
 {
     private List<IControllerListener> listeners = new ArrayList<IControllerListener>();
 

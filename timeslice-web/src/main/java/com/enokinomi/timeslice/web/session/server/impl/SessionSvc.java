@@ -11,7 +11,7 @@ import com.enokinomi.timeslice.web.session.server.core.ISessionTracker;
 import com.enokinomi.timeslice.web.session.server.core.SessionData;
 import com.google.inject.Inject;
 
-public class SessionSvc implements ISessionSvc
+class SessionSvc implements ISessionSvc
 {
     private final ISessionTracker tracker;
     private final IUserInfoDao userInfoDao;

@@ -7,7 +7,7 @@ import org.joda.time.DateTime;
 import com.enokinomi.timeslice.web.session.server.core.SessionData;
 import com.google.inject.Inject;
 
-public class SessionDataProvider
+class SessionDataProvider
 {
     @Inject
     SessionDataProvider()

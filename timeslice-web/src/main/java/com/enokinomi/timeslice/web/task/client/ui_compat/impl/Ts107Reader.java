@@ -6,7 +6,6 @@ import java.util.List;
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
 import com.enokinomi.timeslice.web.task.client.ui_compat.api.ITs107Reader;
 
-
 public class Ts107Reader implements ITs107Reader
 {
     Ts107Reader()

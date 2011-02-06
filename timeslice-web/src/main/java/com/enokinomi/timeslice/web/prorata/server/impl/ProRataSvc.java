@@ -14,7 +14,7 @@ import com.enokinomi.timeslice.web.prorata.client.core.IProRataSvc;
 import com.enokinomi.timeslice.web.session.server.core.ISessionTracker;
 import com.google.inject.Inject;
 
-public class ProRataSvc implements IProRataSvc
+class ProRataSvc implements IProRataSvc
 {
     private final class ToComponent implements ITransform<com.enokinomi.timeslice.lib.prorata.api.GroupComponent, GroupComponent>
     {

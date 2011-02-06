@@ -37,6 +37,7 @@ public class HistoryPanel extends ResizeComposite implements IHistoryPanel
 
     private final MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 
+    @Override
     public Widget asWidget() { return this; }
 
     private final List<IHistoryPanelListener> listeners = new ArrayList<IHistoryPanelListener>();
@@ -113,6 +114,7 @@ public class HistoryPanel extends ResizeComposite implements IHistoryPanel
         setStyleName("HistoryPanel");
     }
 
+    @Override
     public void clear(boolean shouldUpdate)
     {
         items.clear();
@@ -123,18 +125,13 @@ public class HistoryPanel extends ResizeComposite implements IHistoryPanel
         }
     }
 
-    public void clear()
-    {
-        clear(true);
-    }
-
     @Override
     public void addItems(List<StartTag> items)
     {
         addItems(items, true);
     }
 
-    public void addItems(List<StartTag> items, boolean shouldUpdate)
+    private void addItems(List<StartTag> items, boolean shouldUpdate)
     {
         this.items.addAll(items);
 
@@ -151,7 +148,7 @@ public class HistoryPanel extends ResizeComposite implements IHistoryPanel
         oracle.addAll(words);
     }
 
-    protected void update()
+    private void update()
     {
         Collections.reverse(items);
 

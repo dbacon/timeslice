@@ -20,7 +20,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.ScrollPanel;
 
-public class TreeTableResultsView extends ResizeComposite
+class TreeTableResultsView extends ResizeComposite
 {
     private final TreeTableResultsViewConstants constants = GWT.create(TreeTableResultsViewConstants.class);
 
@@ -33,25 +33,12 @@ public class TreeTableResultsView extends ResizeComposite
         initWidget(new ScrollPanel(resultsTable));
     }
 
-    public Integer postInc(Mutable<Integer> value)
-    {
-        Integer v = value.getValue();
-        value.setValue(value.getValue() + 1);
-        return v;
-    }
-
-    public Integer preInc(Mutable<Integer> value)
-    {
-        value.setValue(value.getValue() + 1);
-        return value.getValue();
-    }
-
-    public void clear()
+    void clear()
     {
         setResults(Arrays.<TaskTotal>asList());
     }
 
-    public void setResults(List<TaskTotal> report)
+    void setResults(List<TaskTotal> report)
     {
         Collections.sort(report, Collections.reverseOrder(new Comparator<TaskTotal>()
                 {
