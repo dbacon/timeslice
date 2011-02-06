@@ -1,0 +1,32 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+    xmlns:g="urn:import:com.google.gwt.user.client.ui">
+
+    <ui:style>
+
+    </ui:style>
+
+    <g:SplitLayoutPanel>
+
+        <g:north size="300">
+            <g:ScrollPanel>
+                <g:VerticalPanel>
+                    <g:HorizontalPanel>
+                        <g:Button ui:field="refreshButton">Refresh</g:Button>
+                        <g:Button ui:field="clearResultsButton">Clear Results</g:Button>
+                    </g:HorizontalPanel>
+                    <g:FlexTable ui:field="tab"/>
+                </g:VerticalPanel>
+            </g:ScrollPanel>
+        </g:north>
+
+        <g:center>
+            <g:ScrollPanel ui:field="resultsScroller">
+                <g:FlexTable ui:field="results"/>
+            </g:ScrollPanel>
+        </g:center>
+
+    </g:SplitLayoutPanel>
+
+</ui:UiBinder>
+

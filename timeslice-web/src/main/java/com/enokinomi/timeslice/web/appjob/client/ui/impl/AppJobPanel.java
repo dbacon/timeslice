@@ -12,68 +12,55 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.SplitLayoutPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
 public class AppJobPanel extends ResizeComposite implements IAppJobPanel
 {
+    private static AppJobPanelUiBinder uiBinder = GWT.create(AppJobPanelUiBinder.class);
+    interface AppJobPanelUiBinder extends UiBinder<Widget, AppJobPanel> { }
+
     private final AppJobPanelConstants constants = GWT.create(AppJobPanelConstants.class);
 
-    private final FlexTable tab = new FlexTable();
-    private final FlexTable results = new FlexTable();
-    private final ScrollPanel resultScroller = new ScrollPanel(results);
+    @UiField protected FlexTable tab;
+    @UiField protected FlexTable results;
+    @UiField protected ScrollPanel resultsScroller;
 
     private List<IAppJobPanelListener> listeners = new ArrayList<IAppJobPanelListener>();
 
     @Override
     public Widget asWidget() { return this; }
 
+    @UiHandler("refreshButton")
+    protected void onClicked_refreshButton(ClickEvent e)
+    {
+        fireJobListRefreshRequested();
+    }
+
+    @UiHandler("clearResultsButton")
+    protected void onClicked_clearResultsButton(ClickEvent e)
+    {
+        results.removeAllRows();
+        addHeaders();
+    }
+
     @Inject
     AppJobPanel()
     {
-        HorizontalPanel hp = new HorizontalPanel();
-
-        hp.add(new Button(constants.refreshJobList(), new ClickHandler()
-        {
-            @Override
-            public void onClick(ClickEvent event)
-            {
-                fireJobListRefreshRequested();
-            }
-        }));
-
-        hp.add(new Button(constants.clearResults(), new ClickHandler()
-        {
-            @Override
-            public void onClick(ClickEvent event)
-            {
-                results.removeAllRows();
-                addHeaders();
-            }
-        }));
+        initWidget(uiBinder.createAndBindUi(this));
 
         results.addStyleDependentName("tsMathTable");
 
         addHeaders();
-
-        VerticalPanel vp = new VerticalPanel();
-        vp.add(hp);
-        vp.add(tab);
-
-        SplitLayoutPanel dp = new SplitLayoutPanel();
-        dp.addNorth(new ScrollPanel(vp), 300);
-        dp.add(resultScroller);
-
-        initWidget(dp);
     }
 
     protected void addHeaders()
@@ -93,7 +80,7 @@ public class AppJobPanel extends ResizeComposite implements IAppJobPanel
         results.setWidget(row, 1, new Label(status));
         results.setWidget(row, 2, new Label(result));
 
-        resultScroller.scrollToBottom();
+        resultsScroller.scrollToBottom();
     }
 
     @Override
