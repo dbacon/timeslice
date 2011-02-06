@@ -5,12 +5,12 @@
     <parent>
         <groupId>com.enokinomi.timeslice</groupId>
         <artifactId>timeslice-parent</artifactId>
-        <version>1.0.10-beta-24-SNAPSHOT</version>
+        <version>1.0.10</version>
     </parent>
 
     <groupId>com.enokinomi.timeslice</groupId>
     <artifactId>timeslice-appjob</artifactId>
-    <version>1.0.10-beta-24-SNAPSHOT</version>
+    <version>1.0.10</version>
     <packaging>jar</packaging>
 
     <name>timeslice-appjob</name>
