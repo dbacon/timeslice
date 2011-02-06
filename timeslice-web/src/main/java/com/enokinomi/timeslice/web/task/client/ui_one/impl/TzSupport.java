@@ -53,6 +53,12 @@ public class TzSupport
         });
     }
 
+    @SuppressWarnings("deprecation")
+    public static int getTimezoneOffsetMinutesFromBrowser()
+    {
+        return new Date().getTimezoneOffset() * -1; // browsers report east of GMT as negative.
+    }
+
     private void loadUserTz()
     {
         GWT.log("TzSupport starting look-up");
@@ -90,7 +96,38 @@ public class TzSupport
                                 else
                                 {
                                     GWT.log("TZ: No setting found.");
+                                    setFromBrowser();
                                 }
+                            }
+                        }));
+            }
+        }.runAsync();
+    }
+
+    public void setFromBrowser()
+    {
+        final int number = TzSupport.getTimezoneOffsetMinutesFromBrowser();
+
+        new ILoginSupport.IOnAuthenticated()
+        {
+            @Override
+            public void runAsync()
+            {
+                settingSvc.addSetting(loginSupport.getAuthToken(),
+                        "usersession.tzoffsetmin", "" + number,
+                        loginSupport.withRetry(this, new AsyncCallback<Void>()
+                        {
+                            @Override
+                            public void onFailure(Throwable caught)
+                            {
+                                GWT.log("Failed auto-setting timezone: " + caught.getMessage());
+                            }
+
+                            @Override
+                            public void onSuccess(Void result)
+                            {
+                                GWT.log("Auto-set timezone: " + number);
+                                loadUserTz(); // careful, could ping-pong if mis-information
                             }
                         }));
             }
