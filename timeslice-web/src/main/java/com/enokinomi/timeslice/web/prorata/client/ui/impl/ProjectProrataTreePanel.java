@@ -20,18 +20,18 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
 
 public class ProjectProrataTreePanel extends Composite implements IProjectProrataTreePanel
 {
     private static ProjectProrataTreePanelUiBinder uiBinder = GWT.create(ProjectProrataTreePanelUiBinder.class);
     interface ProjectProrataTreePanelUiBinder extends UiBinder<Widget, ProjectProrataTreePanel> { }
 
+    private final ProjectProrataTreePanelMessages messages = GWT.create(ProjectProrataTreePanelMessages.class);
+    private final ProjectProrataTreePanelConstants constants = GWT.create(ProjectProrataTreePanelConstants.class);
+
     @UiField protected FlexTable table;
-    private final ProjectProrataTreePanelMessages messages;
 
     private final List<Listener> listeners = new ArrayList<Listener>();
-    private final ProjectProrataTreePanelConstants constants;
 
     protected void fireSplitRequested(String project, String splitTo, Double weight)
     {
@@ -58,12 +58,8 @@ public class ProjectProrataTreePanel extends Composite implements IProjectProrat
         }
     }
 
-    @Inject
-    ProjectProrataTreePanel(ProjectProrataTreePanelConstants constants, ProjectProrataTreePanelMessages messages)
+    ProjectProrataTreePanel()
     {
-        this.constants = constants;
-        this.messages = messages;
-
         initWidget(uiBinder.createAndBindUi(this));
     }
 

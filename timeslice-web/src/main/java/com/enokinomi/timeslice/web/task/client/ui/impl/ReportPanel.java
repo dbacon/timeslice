@@ -7,6 +7,7 @@ import java.util.List;
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.assign.client.ui.api.ITabularResultsAssignedView;
 import com.enokinomi.timeslice.web.assign.client.ui.api.ITabularResultsAssignedViewListener;
+import com.enokinomi.timeslice.web.prorata.client.presenter.api.IProrataManagerPresenter;
 import com.enokinomi.timeslice.web.prorata.client.ui.api.IProjectListPanel;
 import com.enokinomi.timeslice.web.task.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.task.client.ui.api.IParamChangedListener;
@@ -36,6 +37,7 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
     private final IProjectListPanel projectListPanel;
 
     private ArrayList<IReportPanelListener> listeners = new ArrayList<IReportPanelListener>();
+    private final IProrataManagerPresenter prorataPresenter;
 
     @Override
     public Widget asWidget() { return this; };
@@ -66,11 +68,14 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
     }
 
     @Inject
-    ReportPanel(ReportPanelConstants constants, IProjectListPanel projectListPanel, IParamPanel paramPanel, ITabularResultsAssignedView resultsAssignedView)
+    ReportPanel(ReportPanelConstants constants, IProjectListPanel projectListPanel, IParamPanel paramPanel, ITabularResultsAssignedView resultsAssignedView, IProrataManagerPresenter prorataPresenter)
     {
         this.projectListPanel = projectListPanel;
         this.params = paramPanel;
         this.resultsAssignedView = resultsAssignedView;
+        this.prorataPresenter = prorataPresenter;
+
+        this.projectListPanel.bind(this.prorataPresenter);
 
         refreshButton = new Button(constants.refresh());
 
@@ -150,7 +155,7 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
     public void setResultsAssigned(List<AssignedTaskTotal> report)
     {
         resultsAssignedView.setResults(report);
-        projectListPanel.update(report);
+        prorataPresenter.setStuff(report); // TODO: continue factoring up, out of ui.
     }
 
     @Override

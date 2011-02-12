@@ -34,6 +34,9 @@ public class ProjectReportPanel extends Composite implements IProjectReportPanel
     private static ProjectReportPanelUiBinder uiBinder = GWT.create(ProjectReportPanelUiBinder.class);
     interface ProjectReportPanelUiBinder extends UiBinder<Widget, ProjectReportPanel> { }
 
+    private final ProjectReportPanelConstants constants = GWT.create(ProjectReportPanelConstants.class);
+    private final ProjectReportPanelMessages messages = GWT.create(ProjectReportPanelMessages.class);
+
     @UiField protected FlexTable projectTable;
 
     @UiField protected TextBox scaleToTextBox;
@@ -55,10 +58,6 @@ public class ProjectReportPanel extends Composite implements IProjectReportPanel
         }
     }
 
-    private final ProjectReportPanelConstants constants;
-
-    private final ProjectReportPanelMessages messages;
-
     protected void fireAssignPartialOrderingRequested(Map<String, Double> projectMap, int i, int j)
     {
         for (Listener listener: listeners)
@@ -68,11 +67,8 @@ public class ProjectReportPanel extends Composite implements IProjectReportPanel
     }
 
     @Inject
-    ProjectReportPanel(ProjectReportPanelConstants constants, ProjectReportPanelMessages messages)
+    ProjectReportPanel()
     {
-        this.constants = constants;
-        this.messages = messages;
-
         Widget widget = uiBinder.createAndBindUi(this);
 
         scaleCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>()

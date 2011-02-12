@@ -1,0 +1,41 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+    xmlns:g="urn:import:com.google.gwt.user.client.ui"
+    xmlns:ts="urn:import:com.enokinomi.timeslice.web.prorata.client.ui.impl"
+    ui:generateFormat="com.google.gwt.i18n.rebind.format.PropertiesFormat"
+    ui:generateKeys="com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator"
+    ui:generateLocales="default" >
+
+    <ui:style>
+
+    </ui:style>
+
+    <g:TabLayoutPanel barHeight="2" barUnit="EM">
+
+        <g:tab>
+            <g:header>Report</g:header>
+            <ts:ProjectReportPanel ui:field="projectReportPanel"/>
+        </g:tab>
+
+        <g:tab>
+            <g:header><ui:msg>Pro-rata Maintenance</ui:msg></g:header>
+
+            <g:TabLayoutPanel barHeight="2" barUnit="EM">
+
+                <g:tab>
+                    <g:header><ui:msg>Project Break-down</ui:msg></g:header>
+                    <ts:ProjectProrataTreePanel ui:field="projectProrataTreePanel"/>
+                </g:tab>
+
+                <g:tab>
+                    <g:header><ui:msg>All Rules</ui:msg></g:header>
+                    <ts:ProrataManagerPanel ui:field="prorataManagePanel"/>
+                </g:tab>
+
+            </g:TabLayoutPanel>
+
+        </g:tab>
+
+    </g:TabLayoutPanel>
+
+</ui:UiBinder>

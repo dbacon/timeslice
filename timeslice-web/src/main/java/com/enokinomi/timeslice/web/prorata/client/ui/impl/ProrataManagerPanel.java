@@ -40,7 +40,7 @@ public class ProrataManagerPanel extends Composite implements IProrataManagerPan
     private final TextBox weightBox = new TextBox();
     private final Button b;
 
-    private final ProrataManagerPanelConstants constants;
+    private final ProrataManagerPanelConstants constants = GWT.create(ProrataManagerPanelConstants.class);
 
     private final List<Listener> listeners = new ArrayList<Listener>();
 
@@ -87,10 +87,8 @@ public class ProrataManagerPanel extends Composite implements IProrataManagerPan
     }
 
     @Inject
-    ProrataManagerPanel(ProrataManagerPanelConstants constants)
+    ProrataManagerPanel()
     {
-        this.constants = constants;
-
         b = new Button(constants.addNew());
         b.addClickHandler(new ClickHandler()
         {
