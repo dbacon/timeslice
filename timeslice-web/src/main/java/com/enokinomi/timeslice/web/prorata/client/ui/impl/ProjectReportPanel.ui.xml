@@ -1,6 +1,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
-<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-    xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:a="urn:import:java.awt">
+<ui:UiBinder
+    xmlns:ui="urn:ui:com.google.gwt.uibinder"
+    xmlns:g="urn:import:com.google.gwt.user.client.ui" >
 
     <ui:style>
         .numberEntry
@@ -11,7 +12,7 @@
 
     <g:VerticalPanel>
 
-        <g:HorizontalPanel>
+        <g:HorizontalPanel verticalAlignment="ALIGN_MIDDLE">
             <g:CheckBox ui:field="scaleCheckBox">Include scaling</g:CheckBox>
             <g:TextBox ui:field="scaleToTextBox" ui:styleName="numberEntry">8</g:TextBox>
         </g:HorizontalPanel>

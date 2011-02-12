@@ -9,4 +9,5 @@ target
 
 war/timeslice.App
 
+/timeslice-web/.gwt
 

@@ -24,7 +24,7 @@
 
     <g:VerticalPanel>
 
-        <g:HorizontalPanel>
+        <g:HorizontalPanel verticalAlignment="ALIGN_MIDDLE" spacing="5">
             <g:Label>Settings</g:Label>
             <g:Button ui:field="refreshButton">Refresh</g:Button>
         </g:HorizontalPanel>
