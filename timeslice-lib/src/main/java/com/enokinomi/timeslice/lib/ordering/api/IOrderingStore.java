@@ -12,5 +12,5 @@ public interface IOrderingStore
      */
     void addPartialOrdering(String setName, String smaller, List<String> larger);
 
-    List<String> requestOrdering(String setName, List<String> unorderedElements);
+    List<String> requestOrdering(String setName);
 }

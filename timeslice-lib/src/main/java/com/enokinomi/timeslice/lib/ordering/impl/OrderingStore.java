@@ -20,9 +20,9 @@ public class OrderingStore implements IOrderingStore
     }
 
     @Override
-    public List<String> requestOrdering(final String setName, final List<String> unorderedSetValues)
+    public List<String> requestOrdering(final String setName)
     {
-        return connContext.doWorkWithinContext(orderingWorks.workRequestOrdering(setName, unorderedSetValues));
+        return connContext.doWorkWithinContext(orderingWorks.workRequestOrdering(setName));
     }
 
     public void setOrdering(final String setName, final List<String> orderedSetMembers)

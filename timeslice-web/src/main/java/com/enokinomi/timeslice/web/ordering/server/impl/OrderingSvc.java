@@ -20,10 +20,10 @@ class OrderingSvc implements IOrderingSvc
     }
 
     @Override
-    public List<String> requestOrdering(String authToken, String setName, List<String> items)
+    public List<String> requestOrdering(String authToken, String setName)
     {
         sessionTracker.checkToken(authToken);
-        return orderingStore.requestOrdering(setName, items);
+        return orderingStore.requestOrdering(setName);
     }
 
     @Override
@@ -32,4 +32,5 @@ class OrderingSvc implements IOrderingSvc
         sessionTracker.checkToken(authToken);
         orderingStore.addPartialOrdering(setName, smaller, larger);
     }
+
 }

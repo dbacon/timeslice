@@ -31,7 +31,7 @@ import com.enokinomi.timeslice.web.branding.impl.DefaultBrandingModule;
 import com.enokinomi.timeslice.web.guice.GuiceRpcModule;
 import com.enokinomi.timeslice.web.login.server.impl.LoginServerModule;
 import com.enokinomi.timeslice.web.ordering.server.impl.OrderingServerModule;
-import com.enokinomi.timeslice.web.prorata.server.impl.ProRataServerModule;
+import com.enokinomi.timeslice.web.prorata.server.impl.ProrataServerModule;
 import com.enokinomi.timeslice.web.session.server.impl.SessionServerModule;
 import com.enokinomi.timeslice.web.settings.server.impl.SettingsServerModule;
 import com.enokinomi.timeslice.web.task.server.impl.TaskServerModule;
@@ -137,7 +137,7 @@ public class Driver
                     new SettingsServerModule(),
                     new SessionServerModule(acl),
                     new AppJobServerModule(),
-                    new ProRataServerModule(),
+                    new ProrataServerModule(),
                     new TaskServerModule(),
                     new AssignServerModule(),
                     new OrderingServerModule(),

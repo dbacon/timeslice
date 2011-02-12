@@ -7,7 +7,7 @@ import java.util.List;
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.assign.client.ui.api.ITabularResultsAssignedView;
 import com.enokinomi.timeslice.web.assign.client.ui.api.ITabularResultsAssignedViewListener;
-import com.enokinomi.timeslice.web.prorata.client.ui.ProjectListPanel;
+import com.enokinomi.timeslice.web.prorata.client.ui.api.IProjectListPanel;
 import com.enokinomi.timeslice.web.task.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.task.client.ui.api.IParamChangedListener;
 import com.enokinomi.timeslice.web.task.client.ui.api.IParamPanel;
@@ -33,7 +33,7 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
     private final ITabularResultsAssignedView resultsAssignedView;
     private final TaskTotalIntegrator integrator = new TaskTotalIntegrator("/");
     private final TreeTableResultsView resultsTreeView = new TreeTableResultsView(integrator);
-    private final ProjectListPanel projectListPanel;
+    private final IProjectListPanel projectListPanel;
 
     private ArrayList<IReportPanelListener> listeners = new ArrayList<IReportPanelListener>();
 
@@ -66,7 +66,7 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
     }
 
     @Inject
-    ReportPanel(ReportPanelConstants constants, ProjectListPanel projectListPanel, IParamPanel paramPanel, ITabularResultsAssignedView resultsAssignedView)
+    ReportPanel(ReportPanelConstants constants, IProjectListPanel projectListPanel, IParamPanel paramPanel, ITabularResultsAssignedView resultsAssignedView)
     {
         this.projectListPanel = projectListPanel;
         this.params = paramPanel;
@@ -123,7 +123,7 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
         TabLayoutPanel resultsTabs = new TabLayoutPanel(2, Unit.EM);
         resultsTabs.add(resultsTreeView, constants.totaling());
         resultsTabs.add(resultsAssignedView.asWidget(), constants.assigned());
-        resultsTabs.add(projectListPanel, constants.projectList());
+        resultsTabs.add(projectListPanel.asWidget(), constants.projectList());
 
         SplitLayoutPanel dp = new SplitLayoutPanel();
         dp.addNorth(vp, 180);

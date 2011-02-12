@@ -40,4 +40,9 @@ public class Group implements Serializable
         this.components = components;
     }
 
+    public String toString()
+    {
+        return getName() + "->" + getComponents();
+    }
+
 }

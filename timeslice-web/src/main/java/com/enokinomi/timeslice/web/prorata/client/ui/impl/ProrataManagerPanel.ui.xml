@@ -1,0 +1,42 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+    xmlns:g="urn:import:com.google.gwt.user.client.ui">
+
+    <ui:style>
+        .monkey {
+            background: red;
+        }
+    </ui:style>
+
+    <g:VerticalPanel>
+        <g:ScrollPanel>
+            <g:HorizontalPanel>
+
+                <g:FlexTable ui:field="groupInfoTable" />
+
+                <g:VerticalPanel>
+
+                    <g:DisclosurePanel>
+
+                        <g:header>Full rules description</g:header>
+
+                        <g:VerticalPanel>
+
+                            <g:TextArea ui:field="rulesTextArea" height="20em" width="30em"></g:TextArea>
+
+                            <g:HorizontalPanel>
+                                <g:Button ui:field="rulesRemoveAllButton">Remove All</g:Button>
+                                <g:Button ui:field="rulesLoadButton">Load</g:Button>
+                            </g:HorizontalPanel>
+
+                        </g:VerticalPanel>
+
+                    </g:DisclosurePanel>
+
+                </g:VerticalPanel>
+
+            </g:HorizontalPanel>
+        </g:ScrollPanel>
+    </g:VerticalPanel>
+
+</ui:UiBinder>

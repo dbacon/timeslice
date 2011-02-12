@@ -163,7 +163,7 @@ public class TabularResultsAssignedView extends ResizeComposite implements ITabu
                     if (!oldValue.equals(newValue))
                     {
                         label.getLabel().setText(constants.updating());
-                        sendBilleeUpdate(reportRow, newValue);
+                        sendBilleeUpdate(reportRow.getWhat(), newValue);
                     }
                 }
             });
@@ -188,9 +188,9 @@ public class TabularResultsAssignedView extends ResizeComposite implements ITabu
 
     }
 
-    private void sendBilleeUpdate(AssignedTaskTotal reportRow, String newValue)
+    private void sendBilleeUpdate(String what, String newValue)
     {
-        onBilleeUpdate(reportRow.getWhat(), newValue);
+        onBilleeUpdate(what, newValue);
     }
 
     protected void onBilleeUpdate(String description, String newBillee)

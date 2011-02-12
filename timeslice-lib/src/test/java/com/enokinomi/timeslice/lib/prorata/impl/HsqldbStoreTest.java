@@ -52,7 +52,7 @@ public class HsqldbStoreTest
     public void test_1() throws Exception
     {
         CommonDataFactory f = new CommonDataFactory();
-        HsqldbStore store = new HsqldbStore(f.createConnectionContext(conn), new ProRataWorks(f.createBaseHsqldbOps(new MockSchemaManager(2))));
+        HsqldbStore store = new HsqldbStore(f.createConnectionContext(conn), new ProrataWorks(f.createBaseHsqldbOps(new MockSchemaManager(2))));
 
         List<String> groupNames = store.listGroupNames();
         assertNotNull(groupNames);
@@ -63,7 +63,7 @@ public class HsqldbStoreTest
     public void test_2() throws Exception
     {
         CommonDataFactory f = new CommonDataFactory();
-        HsqldbStore store = new HsqldbStore(f.createConnectionContext(conn), new ProRataWorks(f.createBaseHsqldbOps(new MockSchemaManager(2))));
+        HsqldbStore store = new HsqldbStore(f.createConnectionContext(conn), new ProrataWorks(f.createBaseHsqldbOps(new MockSchemaManager(2))));
 
         List<GroupComponent> groupComponents = store.dereferenceGroup("no-group");
 
@@ -75,7 +75,7 @@ public class HsqldbStoreTest
     public void test_3() throws Exception
     {
         CommonDataFactory f = new CommonDataFactory();
-        HsqldbStore store = new HsqldbStore(f.createConnectionContext(conn), new ProRataWorks(f.createBaseHsqldbOps(new MockSchemaManager(2))));
+        HsqldbStore store = new HsqldbStore(f.createConnectionContext(conn), new ProrataWorks(f.createBaseHsqldbOps(new MockSchemaManager(2))));
 
         store.addComponent("group1", "project1", BigDecimal.ONE);
 
@@ -92,7 +92,7 @@ public class HsqldbStoreTest
     public void test_add_delete() throws Exception
     {
         CommonDataFactory f = new CommonDataFactory();
-        HsqldbStore store = new HsqldbStore(f.createConnectionContext(conn), new ProRataWorks(f.createBaseHsqldbOps(new MockSchemaManager(2))));
+        HsqldbStore store = new HsqldbStore(f.createConnectionContext(conn), new ProrataWorks(f.createBaseHsqldbOps(new MockSchemaManager(2))));
 
         store.addComponent("group1", "project1", BigDecimal.ONE);
 

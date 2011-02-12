@@ -3,16 +3,12 @@
 <module>
 
   <inherits name="com.google.gwt.user.User" />
-  <inherits name="com.google.gwt.user.theme.standard.Standard" />
-  <inherits name="com.enokinomi.timeslice.web.core.Core" />
-  <inherits name="com.enokinomi.timeslice.web.appjob.AppJob" />
-  <inherits name="com.enokinomi.timeslice.web.assign.Assign"/>
-  <inherits name="com.enokinomi.timeslice.web.settings.Settings"/>
-  <inherits name="com.enokinomi.timeslice.web.session.Session"/>
-  <inherits name="com.enokinomi.timeslice.web.prorata.ProRata"/>
-  <inherits name="com.enokinomi.timeslice.web.login.Login"/>
 
-  <stylesheet src="controls.css" />
+  <inherits name="com.enokinomi.timeslice.web.core.Core" />
+  <inherits name="com.enokinomi.timeslice.web.session.Session"/>
+  <inherits name="com.enokinomi.timeslice.web.ordering.Ordering"/>
+  <inherits name="com.enokinomi.timeslice.web.assign.Assign"/>
+  <inherits name="com.enokinomi.timeslice.web.login.Login"/>
 
   <!-- http://code.google.com/p/google-web-toolkit/issues/detail?id=4454 -->
   <source path="client">

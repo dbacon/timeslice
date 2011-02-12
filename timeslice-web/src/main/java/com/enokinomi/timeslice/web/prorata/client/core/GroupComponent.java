@@ -52,4 +52,8 @@ public class GroupComponent implements Serializable
         this.groupName = groupName;
     }
 
+    public String toString()
+    {
+        return getGroupName() + "/" + getName() + "/" + getWeight();
+    }
 }

@@ -24,8 +24,6 @@ public class TzSupport
     @Inject
     public TzSupport(final ILoginSupport loginSupport, final ISettingsSvcAsync settingSvc)
     {
-        GWT.log("TzSupport created");
-
         this.loginSupport = loginSupport;
         this.settingSvc = settingSvc;
 
@@ -61,7 +59,6 @@ public class TzSupport
 
     private void loadUserTz()
     {
-        GWT.log("TzSupport starting look-up");
         new ILoginSupport.IOnAuthenticated()
         {
             @Override
@@ -86,7 +83,6 @@ public class TzSupport
                                     try
                                     {
                                         tzOffsetMin = Integer.valueOf(values.get(0));
-                                        GWT.log("User TZ set to " + tzOffsetMin);
                                     }
                                     catch (Exception e)
                                     {
@@ -95,7 +91,6 @@ public class TzSupport
                                 }
                                 else
                                 {
-                                    GWT.log("TZ: No setting found.");
                                     setFromBrowser();
                                 }
                             }
@@ -126,7 +121,6 @@ public class TzSupport
                             @Override
                             public void onSuccess(Void result)
                             {
-                                GWT.log("Auto-set timezone: " + number);
                                 loadUserTz(); // careful, could ping-pong if mis-information
                             }
                         }));
@@ -154,7 +148,6 @@ public class TzSupport
 
     public String renderForClientMachine(Date date)
     {
-        GWT.log("TzSupport render request, using TZ offset minutes " + tzOffsetMin);
         return renderForClientMachine(date, tzOffsetMin);
     }
 }

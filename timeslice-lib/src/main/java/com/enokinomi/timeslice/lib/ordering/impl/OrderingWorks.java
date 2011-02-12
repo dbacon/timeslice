@@ -18,7 +18,7 @@ public class OrderingWorks implements IOrderingWorks
     }
 
     @Override
-    public IConnectionWork<List<String>> workRequestOrdering(final String setName, final List<String> unorderedSetValues)
+    public IConnectionWork<List<String>> workRequestOrdering(final String setName)
     {
         return new IConnectionWork<List<String>>()
         {
@@ -26,14 +26,7 @@ public class OrderingWorks implements IOrderingWorks
             public List<String> performWithConnection(Connection conn)
             {
                 List<String> orderSet = basicWorks.workGetSet(setName).performWithConnection(conn);
-                if (null != orderSet)
-                {
-                    return new OrderApplier().<String>applyOrdering(unorderedSetValues, orderSet);
-                }
-                else
-                {
-                    return unorderedSetValues;
-                }
+                return orderSet;
             }
         };
     }

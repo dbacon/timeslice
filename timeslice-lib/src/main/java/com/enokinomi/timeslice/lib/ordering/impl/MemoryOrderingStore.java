@@ -57,9 +57,9 @@ public class MemoryOrderingStore implements IOrderingStore
     }
 
     @Override
-    public List<String> requestOrdering(String setName, List<String> unorderedElements)
+    public List<String> requestOrdering(String setName)
     {
-        return new OrderApplier().applyOrdering(unorderedElements, data);
+        return data;
     }
 
 }
