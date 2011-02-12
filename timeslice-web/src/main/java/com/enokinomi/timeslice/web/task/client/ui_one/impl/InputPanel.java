@@ -14,9 +14,6 @@ import com.enokinomi.timeslice.web.task.client.ui.api.IHistoryPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IHistoryPanelListener;
 import com.enokinomi.timeslice.web.task.client.ui.api.IHotlistPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IHotlistPanelListener;
-import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsListener;
-import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsPanel;
-import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsProvider;
 import com.enokinomi.timeslice.web.task.client.ui_one.api.BulkItemListener;
 import com.enokinomi.timeslice.web.task.client.ui_one.api.IImportBulkItemsDialog;
 import com.google.gwt.core.client.Scheduler;
@@ -60,8 +57,16 @@ public class InputPanel extends ResizeComposite implements IsWidget
     private final VerticalPanel idleActionPanel = new VerticalPanel();
     private final IHotlistPanel hotlistPanel;
     private final Provider<IImportBulkItemsDialog> importBulkItemsDialog;
-    private final IOptionsProvider options;
     private final IController controller;
+
+    private static class Options
+    {
+        public boolean isControlSpaceSends() { return false; }
+        public int getMaxSize() { return 40; }
+        public int getMaxSeconds() { return 60*60*24; }
+    }
+
+    private final Options options = new Options();
 
     @Override
     public Widget asWidget()
@@ -70,11 +75,10 @@ public class InputPanel extends ResizeComposite implements IsWidget
     }
 
     @Inject
-    InputPanel(TimesliceAppConstants constants, IController controller, IOptionsProvider optionsProvider, IHistoryPanel historyPanel, Provider<IImportBulkItemsDialog> importBulkItemsDialog, IHotlistPanel hotlistPanel)
+    InputPanel(TimesliceAppConstants constants, IController controller, IHistoryPanel historyPanel, Provider<IImportBulkItemsDialog> importBulkItemsDialog, IHotlistPanel hotlistPanel)
     {
         this.constants = constants;
         this.controller = controller;
-        this.options = optionsProvider;
         this.historyPanel = historyPanel;
         this.importBulkItemsDialog = importBulkItemsDialog;
         this.hotlistPanel = hotlistPanel;
@@ -90,13 +94,14 @@ public class InputPanel extends ResizeComposite implements IsWidget
 
     private void initContents()
     {
-        options.addOptionsListener(new IOptionsListener()
-        {
-            public void optionsChanged(IOptionsPanel source)
-            {
-                scheduleRefresh();
-            }
-        });
+        // TODO: switch to settings listener.
+//        options.addOptionsListener(new IOptionsListener()
+//        {
+//            public void optionsChanged(IOptionsPanel source)
+//            {
+//                scheduleRefresh();
+//            }
+//        });
 
         historyPanel.addHistoryPanelListener(new IHistoryPanelListener()
         {

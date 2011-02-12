@@ -4,11 +4,9 @@ import com.enokinomi.timeslice.web.task.client.controller.impl.ControllerClientM
 import com.enokinomi.timeslice.web.task.client.ui.api.IHistoryPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IHotlistPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsPanel;
-import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsProvider;
 import com.enokinomi.timeslice.web.task.client.ui.api.IParamPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IReportPanel;
 import com.google.gwt.inject.client.AbstractGinModule;
-import com.google.inject.Singleton;
 
 public class TaskClientModule extends AbstractGinModule
 {
@@ -17,16 +15,12 @@ public class TaskClientModule extends AbstractGinModule
     {
         install(new ControllerClientModule());
 
-        bind(OptionsPanel.class).in(Singleton.class);
-
-        bind(IOptionsProvider.class).to(OptionsPanel.class);
-
+        bind(IOptionsPanel.class).to(OptionsPanel.class);
         bind(IHistoryPanel.class).to(HistoryPanel.class);
         bind(IReportPanel.class).to(ReportPanel.class);
-        bind(IOptionsPanel.class).to(OptionsPanel.class);
         bind(IParamPanel.class).to(ParamPanel.class);
         bind(IHotlistPanel.class).to(HotlistPanel.class);
-
         bind(ISettingsEditorPanel.class).to(SettingsEditorPanel.class);
+        bind(ISettingsPresenter.class).to(SettingsPresenter.class);
     }
 }

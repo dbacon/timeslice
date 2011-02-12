@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -21,8 +22,11 @@ import com.google.inject.Inject;
 
 public class SettingsEditorPanel extends Composite implements ISettingsEditorPanel
 {
+    private static ThisUiBinder uiBinder = GWT.create(ThisUiBinder.class);
     public interface ThisUiBinder extends UiBinder<Widget, SettingsEditorPanel> { }
     public interface ThisStyle extends CssResource { String live(); }
+
+    private final SettingsEditorPanelConstants constants = GWT.create(SettingsEditorPanelConstants.class);
 
     @UiField protected Button refreshButton;
     @UiField protected TextBox currentValueTextBox;
@@ -34,8 +38,6 @@ public class SettingsEditorPanel extends Composite implements ISettingsEditorPan
     @UiField protected Panel settingEditorPanel;
     @UiField protected ThisStyle style;
 
-    private final SettingsEditorPanelConstants constants;
-
     private final List<Row> rows = new ArrayList<Row>();
 
     static final String CREATE_NEW = "New Value:";
@@ -43,10 +45,8 @@ public class SettingsEditorPanel extends Composite implements ISettingsEditorPan
     static final int ActionColumn_Delete = 3;
 
     @Inject
-    SettingsEditorPanel(ThisUiBinder uiBinder, SettingsEditorPanelConstants constants)
+    SettingsEditorPanel()
     {
-        this.constants = constants;
-
         initWidget(uiBinder.createAndBindUi(this));
     }
 

@@ -11,6 +11,8 @@ import com.enokinomi.timeslice.web.task.client.ui_tree.Mutable;
 import com.enokinomi.timeslice.web.task.client.ui_tree.NodeTraverser;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -18,19 +20,24 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ResizeComposite;
-import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.Inject;
 
 class TreeTableResultsView extends ResizeComposite
 {
+    private static TreeTableResultsViewUiBinder uiBinder = GWT.create(TreeTableResultsViewUiBinder.class);
+    interface TreeTableResultsViewUiBinder extends UiBinder<Widget, TreeTableResultsView> { }
+
     private final TreeTableResultsViewConstants constants = GWT.create(TreeTableResultsViewConstants.class);
 
-    private FlexTable resultsTable = new FlexTable();
-    private final TaskTotalIntegrator integrator;
+    @UiField protected FlexTable resultsTable;
 
-    TreeTableResultsView(TaskTotalIntegrator integrator)
+    private final TaskTotalIntegrator integrator = new TaskTotalIntegrator("/"); // TODO: allow setting/injection
+
+    @Inject
+    TreeTableResultsView()
     {
-        this.integrator = integrator;
-        initWidget(new ScrollPanel(resultsTable));
+        initWidget(uiBinder.createAndBindUi(this));
     }
 
     void clear()

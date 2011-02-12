@@ -26,7 +26,7 @@ public class ProjectListPanel extends Composite implements IProjectListPanel
     @UiField protected IProjectReportPanel projectReportPanel;
 
     @Inject
-    ProjectListPanel(IProrataManagerPresenter prorataManagerPresenter)
+    ProjectListPanel()
     {
         initWidget(uiBinder.createAndBindUi(this));
     }

@@ -1,0 +1,41 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+    xmlns:g="urn:import:com.google.gwt.user.client.ui"
+    xmlns:g2="urn:import:com.google.gwt.user.datepicker.client"
+    xmlns:ts="urn:import:com.enokinomi.timeslice.web.task.client.ui.impl"
+    ui:generateFormat="com.google.gwt.i18n.rebind.format.PropertiesFormat"
+    ui:generateKeys="com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator"
+    ui:generateLocales="default"
+    >
+
+    <ui:style>
+
+    </ui:style>
+
+    <g:HTMLPanel>
+        <table>
+            <tr>
+                <td><ui:msg>For full day</ui:msg></td>
+                <td><ts:DateControlBox ui:field="dateBox"/></td>
+            </tr>
+            <tr>
+                <td>Range</td>
+                <td>
+                    <g:HorizontalPanel verticalAlignment="ALIGN_MIDDLE">
+                        <ts:DateControlBox ui:field="startingTime"/>
+                        <g:Label><ui:msg>through</ui:msg></g:Label>
+                        <ts:DateControlBox ui:field="endingTime"/>
+                    </g:HorizontalPanel>
+                </td>
+            </tr>
+            <tr>
+                <td>Allow words</td>
+                <td><g:TextBox ui:field="allowWords"/></td></tr>
+            <tr>
+                <td>Ignore words</td>
+                <td><g:TextBox ui:field="ignoreWords"/></td>
+            </tr>
+        </table>
+    </g:HTMLPanel>
+
+</ui:UiBinder>

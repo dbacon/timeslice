@@ -12,32 +12,33 @@ import com.enokinomi.timeslice.web.assign.client.ui.api.ITabularResultsAssignedV
 import com.enokinomi.timeslice.web.core.client.ui.EditableLabel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.ResizeComposite;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
 public class TabularResultsAssignedView extends ResizeComposite implements ITabularResultsAssignedView
 {
-    private final TabularResultsAssignedViewConstants constants;
+    private static TabularResultsAssignedViewUiBinder uiBinder = GWT.create(TabularResultsAssignedViewUiBinder.class);
+    interface TabularResultsAssignedViewUiBinder extends UiBinder<Widget, TabularResultsAssignedView> { }
 
-    private FlexTable resultsTable = new FlexTable();
+    private final TabularResultsAssignedViewConstants constants = GWT.create(TabularResultsAssignedViewConstants.class);
+
+    @UiField protected FlexTable resultsTable;
+
     private final MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 
     @Inject
-    TabularResultsAssignedView(TabularResultsAssignedViewConstants constants)
+    TabularResultsAssignedView()
     {
-        this.constants = constants;
-
-        resultsTable.setStylePrimaryName("tsMathTable");
-
-        initWidget(new ScrollPanel(resultsTable));
+        initWidget(uiBinder.createAndBindUi(this));
     }
 
     private final ArrayList<ITabularResultsAssignedViewListener> listeners = new ArrayList<ITabularResultsAssignedViewListener>();
@@ -58,12 +59,6 @@ public class TabularResultsAssignedView extends ResizeComposite implements ITabu
         {
             listeners.remove(listener);
         }
-    }
-
-    @Override
-    public Widget asWidget()
-    {
-        return this;
     }
 
     protected void fireBilleeUpdate(String description, String newBillee)

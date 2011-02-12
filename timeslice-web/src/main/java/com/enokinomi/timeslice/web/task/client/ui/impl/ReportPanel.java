@@ -14,33 +14,28 @@ import com.enokinomi.timeslice.web.task.client.ui.api.IParamChangedListener;
 import com.enokinomi.timeslice.web.task.client.ui.api.IParamPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IReportPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IReportPanelListener;
-import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ResizeComposite;
-import com.google.gwt.user.client.ui.SplitLayoutPanel;
-import com.google.gwt.user.client.ui.TabLayoutPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
 public class ReportPanel extends ResizeComposite implements IReportPanel
 {
-    private final IParamPanel params;
-    private final Button refreshButton;
-    private final ITabularResultsAssignedView resultsAssignedView;
-    private final TaskTotalIntegrator integrator = new TaskTotalIntegrator("/");
-    private final TreeTableResultsView resultsTreeView = new TreeTableResultsView(integrator);
-    private final IProjectListPanel projectListPanel;
+    private static ReportPanelUiBinder uiBinder = GWT.create(ReportPanelUiBinder.class);
+    interface ReportPanelUiBinder extends UiBinder<Widget, ReportPanel> { }
+
+    @UiField protected TreeTableResultsView resultsTreeView;
+    @UiField protected ITabularResultsAssignedView resultsAssignedView;
+    @UiField protected IProjectListPanel projectListPanel;
+    @UiField protected IParamPanel params;
+    @UiField protected Button refreshButton;
 
     private ArrayList<IReportPanelListener> listeners = new ArrayList<IReportPanelListener>();
-    private final IProrataManagerPresenter prorataPresenter;
-
-    @Override
-    public Widget asWidget() { return this; };
 
     @Override
     public void addReportPanelListener(IReportPanelListener listener)
@@ -67,17 +62,26 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
         }
     }
 
-    @Inject
-    ReportPanel(ReportPanelConstants constants, IProjectListPanel projectListPanel, IParamPanel paramPanel, ITabularResultsAssignedView resultsAssignedView, IProrataManagerPresenter prorataPresenter)
+    @Override
+    public void bind(IProrataManagerPresenter prorataPresenter)
     {
-        this.projectListPanel = projectListPanel;
-        this.params = paramPanel;
-        this.resultsAssignedView = resultsAssignedView;
-        this.prorataPresenter = prorataPresenter;
+        projectListPanel.bind(prorataPresenter);
+    }
 
-        this.projectListPanel.bind(this.prorataPresenter);
+    @UiHandler("refreshButton")
+    protected void refreshClicked(ClickEvent e)
+    {
+        fireRefreshRequested(
+                params.getStartingTimeRendered(),
+                params.getEndingTimeRendered(),
+                Arrays.asList(params.getAllowWords().getText().split(",")),
+                Arrays.asList(params.getIgnoreWords().getText().split(",")));
+    }
 
-        refreshButton = new Button(constants.refresh());
+    @Inject
+    ReportPanel()
+    {
+        initWidget(uiBinder.createAndBindUi(this));
 
         params.addParamChangedListener(new IParamChangedListener()
         {
@@ -93,28 +97,6 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
         });
 
         refreshButton.setAccessKey('t');
-        refreshButton.addClickHandler(new ClickHandler()
-        {
-            @Override
-            public void onClick(ClickEvent event)
-            {
-                fireRefreshRequested(
-                        params.getStartingTimeRendered(),
-                        params.getEndingTimeRendered(),
-                        Arrays.asList(params.getAllowWords().getText().split(",")),
-                        Arrays.asList(params.getIgnoreWords().getText().split(",")));
-            }
-        });
-
-        HorizontalPanel buttonPanel = new HorizontalPanel();
-        buttonPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-        buttonPanel.add(refreshButton);
-        buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
-
-        VerticalPanel vp = new VerticalPanel();
-        vp.setVerticalAlignment(VerticalPanel.ALIGN_TOP);
-        vp.add(params.asWidget());
-        vp.add(buttonPanel);
 
         resultsAssignedView.addListener(new ITabularResultsAssignedViewListener()
         {
@@ -124,17 +106,6 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
                 fireBilleeUpdateRequested(description, newBillee);
             }
         });
-
-        TabLayoutPanel resultsTabs = new TabLayoutPanel(2, Unit.EM);
-        resultsTabs.add(resultsTreeView, constants.totaling());
-        resultsTabs.add(resultsAssignedView.asWidget(), constants.assigned());
-        resultsTabs.add(projectListPanel.asWidget(), constants.projectList());
-
-        SplitLayoutPanel dp = new SplitLayoutPanel();
-        dp.addNorth(vp, 180);
-        dp.add(resultsTabs);
-
-        initWidget(dp);
     }
 
     @Override
@@ -155,7 +126,6 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
     public void setResultsAssigned(List<AssignedTaskTotal> report)
     {
         resultsAssignedView.setResults(report);
-        prorataPresenter.setStuff(report); // TODO: continue factoring up, out of ui.
     }
 
     @Override

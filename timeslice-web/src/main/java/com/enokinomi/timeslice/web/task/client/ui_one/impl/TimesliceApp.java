@@ -14,15 +14,17 @@ import com.enokinomi.timeslice.web.core.client.util.AsyncResult;
 import com.enokinomi.timeslice.web.core.client.util.Checks;
 import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport;
 import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport.LoginListener;
+import com.enokinomi.timeslice.web.prorata.client.presenter.api.IProrataManagerPresenter;
 import com.enokinomi.timeslice.web.task.client.controller.api.IController;
+import com.enokinomi.timeslice.web.task.client.controller.api.IControllerListener;
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
 import com.enokinomi.timeslice.web.task.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.task.client.core_todo_move_out.BrandInfo;
 import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsPanel;
-import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsProvider;
 import com.enokinomi.timeslice.web.task.client.ui.api.IParamPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IReportPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IReportPanelListener;
+import com.enokinomi.timeslice.web.task.client.ui.impl.ISettingsPresenter;
 import com.enokinomi.timeslice.web.task.client.ui_one.api.ITimesliceApp;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -46,7 +48,6 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
     private final TimesliceAppConstants constants;
     private final IController controller;
     private final HTML issuesLink;
-    private final IOptionsProvider options;
     private final Label serverInfoLabel;
     private final Anchor logoutAnchor;
     private final InputPanel inputPanel;
@@ -55,6 +56,15 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
     private final IAppJobPanel appJobPanel;
     private final ILoginSupport loginSupport;
     private final TzSupport tzSupport;
+    private final IProrataManagerPresenter prorataPresenter;
+
+    private static class Options
+    {
+        public boolean isCurrentTaskInTitlebar() { return false; }
+        public String getTitleBarTemplate() { return "[TS] " + IOptionsPanel.CURRENTTASK; }
+    }
+
+    private Options options = new Options();
 
     private String originalWindowTitle;
     private static final StartTag UnknownTag = new StartTag(null, null, null, "-unknown-", false);
@@ -66,17 +76,20 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
     }
 
     @Inject
-    TimesliceApp(TimesliceAppConstants constants, IController controller, IOptionsProvider optionsProvider, InputPanel inputPanel, IReportPanel reportPanel, IOptionsPanel optionsPanel, IAppJobPanel appJobPanel, ILoginSupport loginSupport, TzSupport tzSupport)
+    TimesliceApp(TimesliceAppConstants constants, IController controller, InputPanel inputPanel, IReportPanel reportPanel, IOptionsPanel optionsPanel, IAppJobPanel appJobPanel, ILoginSupport loginSupport, TzSupport tzSupport, IProrataManagerPresenter prorataPresenter, ISettingsPresenter settingsPresenter)
     {
         this.constants = constants;
         this.controller = controller;
-        this.options = optionsProvider;
         this.inputPanel = inputPanel;
         this.reportPanel = reportPanel;
         this.optionsPanel = optionsPanel;
         this.appJobPanel = appJobPanel;
         this.loginSupport = loginSupport;
         this.tzSupport = tzSupport;
+        this.prorataPresenter = prorataPresenter;
+
+        reportPanel.bind(prorataPresenter);
+        optionsPanel.bind(settingsPresenter);
 
         issuesLink = new HTML();
         serverInfoLabel = new Label("[querying]");
@@ -127,6 +140,61 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
         controller.startGetBranding();
 
         return dockPanel;
+    }
+
+    private static class ControllerListenerAdapter implements IControllerListener
+    {
+
+        @Override
+        public void serverInfoRecieved(String info)
+        {
+        }
+
+        @Override
+        public void onBranded(AsyncResult<BrandInfo> result)
+        {
+        }
+
+        @Override
+        public void onRefreshItemsDone(AsyncResult<List<StartTag>> result)
+        {
+        }
+
+        @Override
+        public void onAddItemDone(AsyncResult<Void> result)
+        {
+        }
+
+        @Override
+        public void onRefreshTotalsDone(AsyncResult<List<TaskTotal>> result)
+        {
+        }
+
+        @Override
+        public void onRefreshTotalsAssignedDone(AsyncResult<List<AssignedTaskTotal>> result)
+        {
+        }
+
+        @Override
+        public void onAssignBilleeDone(AsyncResult<Void> result)
+        {
+        }
+
+        @Override
+        public void onAllBilleesDone(AsyncResult<List<String>> asyncResult)
+        {
+        }
+
+        @Override
+        public void onListAvailableJobsDone(AsyncResult<List<String>> result)
+        {
+        }
+
+        @Override
+        public void onPerformJobDone(AsyncResult<AppJobCompletion> asyncResult)
+        {
+        }
+
     }
 
     private void linkInputPanel()
@@ -269,7 +337,11 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
                     }
                     else
                     {
-                        reportPanel.setResultsAssigned(result.getReturned());
+                        List<AssignedTaskTotal> report = result.getReturned();
+
+                        reportPanel.setResultsAssigned(report);
+                        // TODO: continue factoring up, out of ui.
+                        prorataPresenter.setStuff(report);
                     }
                 }
 
@@ -458,6 +530,6 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
 
     public String renderTitlebar(String currentTaskDescription)
     {
-        return options.getTitleBarTemplate().replaceAll(IOptionsProvider.CurrentTaskToken, currentTaskDescription);
+        return options.getTitleBarTemplate().replaceAll(IOptionsPanel.CURRENTTASK, currentTaskDescription);
     }
 }
