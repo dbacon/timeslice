@@ -11,7 +11,9 @@
 
     </ui:style>
 
-    <g:FlexTable ui:field="table" ui:styleName="tsMathTable" />
+    <g:VerticalPanel>
+        <g:FlexTable ui:field="table" ui:styleName="tsMathTable" />
+    </g:VerticalPanel>
 
 </ui:UiBinder>
 
