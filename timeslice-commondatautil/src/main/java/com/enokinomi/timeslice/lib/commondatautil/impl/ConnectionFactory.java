@@ -1,11 +1,18 @@
-package com.enokinomi.timeslice.lib.testing;
+package com.enokinomi.timeslice.lib.commondatautil.impl;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 
 public class ConnectionFactory
 {
-    public Connection createConnection(String filename)
+    private final String filename;
+
+    public ConnectionFactory(String filename)
+    {
+        this.filename = filename;
+    }
+
+    public Connection createConnection()
     {
         try
         {

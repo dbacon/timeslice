@@ -3,12 +3,13 @@ package com.enokinomi.timeslice.lib.appjobs.stock;
 import com.enokinomi.timeslice.lib.commondatautil.api.IConnectionContext;
 import com.enokinomi.timeslice.lib.commondatautil.api.ISchemaDetector;
 import com.enokinomi.timeslice.lib.commondatautil.api.ISchemaDuty;
+import com.enokinomi.timeslice.lib.commondatautil.impl.VersionInvalidator;
 import com.google.inject.Inject;
 
 public class Version3To2DowngradeSchemaAppJob extends BaseUpgradeSchemaAppJob
 {
     @Inject
-    Version3To2DowngradeSchemaAppJob(IConnectionContext connContext, ISchemaDetector schemaDetector, ISchemaDuty schemaDuty)
+    Version3To2DowngradeSchemaAppJob(IConnectionContext connContext, ISchemaDetector schemaDetector, ISchemaDuty schemaDuty, VersionInvalidator versionInvalidator)
     {
         super(
                 "Downgrade data schema at version 3 to 2",
@@ -16,6 +17,7 @@ public class Version3To2DowngradeSchemaAppJob extends BaseUpgradeSchemaAppJob
                 null,
                 "drop table ts_version_3_done; " +
                 "drop table ts_ordering; " +
-                "drop table ts_version_3;");
+                "drop table ts_version_3;",
+                versionInvalidator);
     }
 }

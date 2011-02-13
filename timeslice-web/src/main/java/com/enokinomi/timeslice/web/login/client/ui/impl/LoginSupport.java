@@ -5,9 +5,11 @@ import java.util.List;
 
 import com.enokinomi.timeslice.web.core.client.ui.ErrorBox;
 import com.enokinomi.timeslice.web.core.client.ui.PrefHelper;
+import com.enokinomi.timeslice.web.core.client.util.NeedsSetupException;
 import com.enokinomi.timeslice.web.core.client.util.NotAuthenticException;
 import com.enokinomi.timeslice.web.login.client.core.ILoginSvcAsync;
 import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport;
+import com.enokinomi.timeslice.web.login.client.ui.impl.YesNoDialog.YesNoListener;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -153,7 +155,7 @@ public class LoginSupport implements ILoginSupport
         }
     }
 
-    private <R> void requestAuthentication(String user, String password, final LoginSupport.IOnAuthenticated action)
+    private <R> void requestAuthentication(final String user, final String password, final LoginSupport.IOnAuthenticated action)
     {
         GWT.log("Requesting authentication token for '" + user + "'.");
         svc.authenticate(user, password, new AsyncCallback<String>()
@@ -170,17 +172,58 @@ public class LoginSupport implements ILoginSupport
                     @Override
                     public void onFailure(Throwable caught)
                     {
-                        StringBuilder sb = new StringBuilder();
-                        for (StackTraceElement f: caught.getStackTrace())
+                        if (caught instanceof NeedsSetupException)
                         {
-                            sb.append(f.toString()).append("\n");
+                            NeedsSetupException nse = (NeedsSetupException) caught;
+
+                            new YesNoDialog(
+                                    "Setup required - " + nse.getMessage(),
+                                    "Need to create this as the 1st account, fine?",
+                                    new YesNoListener()
+                                    {
+                                        @Override
+                                        public void yes()
+                                        {
+                                            svc.createUserAccount(null, user, password,
+                                                    new AsyncCallback<Void>()
+                                                    {
+                                                        @Override
+                                                        public void onSuccess(Void result)
+                                                        {
+                                                            requestAuthentication(user, password, action);
+                                                        }
+
+                                                        @Override
+                                                        public void onFailure(Throwable caught)
+                                                        {
+                                                            new ErrorBox("Creating account failed", caught.getMessage());
+                                                        }
+                                                    });
+                                        }
+
+                                        @Override
+                                        public void no()
+                                        {
+                                            authToken = null;
+                                            fireSessionEnded(false);
+                                        }
+                                    }).center();
+
                         }
-                        GWT.log(sb.toString());
+                        else
+                        {
+                            StringBuilder sb = new StringBuilder();
+                            for (StackTraceElement f: caught.getStackTrace())
+                            {
+                                sb.append(f.toString()).append("\n");
+                            }
+                            GWT.log(sb.toString());
 
-                        new ErrorBox("authentication", caught.getMessage()).show();
+                            new ErrorBox("authentication", caught.getMessage()).show();
 
-                        authToken = null;
-                        fireSessionEnded(false);
+                            authToken = null;
+                            fireSessionEnded(false);
+                        }
                     }
                 });
     }

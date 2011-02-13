@@ -13,6 +13,8 @@ import com.enokinomi.timeslice.lib.commondatautil.api.ISchemaDetector;
 import com.enokinomi.timeslice.lib.commondatautil.api.ISchemaDuty;
 import com.enokinomi.timeslice.lib.commondatautil.api.ISchemaManager;
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 
 public class CommonDataModule extends AbstractModule
@@ -40,13 +42,15 @@ public class CommonDataModule extends AbstractModule
 
         bind(IBaseHsqldbOps.class).to(BaseHsqldbOps.class);
 
-        ConnectionContext connContext = new ConnectionContext(createNew());
-        bind(IConnectionContext.class).toInstance(connContext);
+        bind(IConnectionContext.class).to(ConnectionContext.class).in(Singleton.class);
 
         bind(ISchemaDetector.class).to(SchemaDetector.class);
+
+        bind(VersionInvalidator.class).in(Singleton.class);
     }
 
-    private Connection createNew()
+    @Provides
+    Connection createNew()
     {
         try
         {
@@ -58,7 +62,7 @@ public class CommonDataModule extends AbstractModule
             st.close();
             log.debug("Set write-delay to 0ms");
 
-            log.debug(String.format("Created connection: %s (%d)", conn.toString(), conn.hashCode()));
+            log.info(String.format("Created connection: %s (%d)", conn.toString(), conn.hashCode()));
             return conn;
         }
         catch (Exception e)

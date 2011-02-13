@@ -36,7 +36,7 @@ public class SchemaOpAppJob implements AppJob
     @Override
     public String perform()
     {
-        return connContext.doWorkWithinContext(new IConnectionWork<String>()
+        return connContext.doWorkWithinWritableContext(new IConnectionWork<String>()
         {
             @Override
             public String performWithConnection(Connection conn)

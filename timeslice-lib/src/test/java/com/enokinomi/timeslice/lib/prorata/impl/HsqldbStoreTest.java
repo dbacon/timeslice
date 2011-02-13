@@ -15,8 +15,8 @@ import org.junit.Test;
 
 import com.enokinomi.timeslice.lib.commondatautil.api.ISchemaDuty;
 import com.enokinomi.timeslice.lib.commondatautil.impl.CommonDataFactory;
+import com.enokinomi.timeslice.lib.commondatautil.impl.ConnectionFactory;
 import com.enokinomi.timeslice.lib.prorata.api.GroupComponent;
-import com.enokinomi.timeslice.lib.testing.ConnectionFactory;
 import com.enokinomi.timeslice.lib.testing.MockSchemaManager;
 import com.enokinomi.timeslice.lib.util.IoHelp;
 
@@ -31,8 +31,8 @@ public class HsqldbStoreTest
         String dbDir = "target/test-generated-data/test-2-1-db";
         FileUtils.deleteDirectory(new File(dbDir));
 
-        ConnectionFactory connFactory = new ConnectionFactory();
-        conn = connFactory.createConnection(dbDir + "/test-1");
+        ConnectionFactory connFactory = new ConnectionFactory(dbDir + "/test-1");
+        conn = connFactory.createConnection();
 
         ISchemaDuty sd = new CommonDataFactory().createSchemaDuty();
         sd.createSchema(conn, new IoHelp().readSystemResource("timeslice-2.ddl"));
@@ -52,7 +52,7 @@ public class HsqldbStoreTest
     public void test_1() throws Exception
     {
         CommonDataFactory f = new CommonDataFactory();
-        HsqldbStore store = new HsqldbStore(f.createConnectionContext(conn), new ProrataWorks(f.createBaseHsqldbOps(new MockSchemaManager(2))));
+        HsqldbStore store = new HsqldbStore(f.createJoiningConnectionContext(conn), new ProrataWorks(f.createBaseHsqldbOps(new MockSchemaManager(2))));
 
         List<String> groupNames = store.listGroupNames();
         assertNotNull(groupNames);
@@ -63,7 +63,7 @@ public class HsqldbStoreTest
     public void test_2() throws Exception
     {
         CommonDataFactory f = new CommonDataFactory();
-        HsqldbStore store = new HsqldbStore(f.createConnectionContext(conn), new ProrataWorks(f.createBaseHsqldbOps(new MockSchemaManager(2))));
+        HsqldbStore store = new HsqldbStore(f.createJoiningConnectionContext(conn), new ProrataWorks(f.createBaseHsqldbOps(new MockSchemaManager(2))));
 
         List<GroupComponent> groupComponents = store.dereferenceGroup("no-group");
 
@@ -75,7 +75,7 @@ public class HsqldbStoreTest
     public void test_3() throws Exception
     {
         CommonDataFactory f = new CommonDataFactory();
-        HsqldbStore store = new HsqldbStore(f.createConnectionContext(conn), new ProrataWorks(f.createBaseHsqldbOps(new MockSchemaManager(2))));
+        HsqldbStore store = new HsqldbStore(f.createJoiningConnectionContext(conn), new ProrataWorks(f.createBaseHsqldbOps(new MockSchemaManager(2))));
 
         store.addComponent("group1", "project1", BigDecimal.ONE);
 
@@ -92,7 +92,7 @@ public class HsqldbStoreTest
     public void test_add_delete() throws Exception
     {
         CommonDataFactory f = new CommonDataFactory();
-        HsqldbStore store = new HsqldbStore(f.createConnectionContext(conn), new ProrataWorks(f.createBaseHsqldbOps(new MockSchemaManager(2))));
+        HsqldbStore store = new HsqldbStore(f.createJoiningConnectionContext(conn), new ProrataWorks(f.createBaseHsqldbOps(new MockSchemaManager(2))));
 
         store.addComponent("group1", "project1", BigDecimal.ONE);
 

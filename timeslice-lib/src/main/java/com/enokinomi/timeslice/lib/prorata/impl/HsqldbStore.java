@@ -25,31 +25,31 @@ public class HsqldbStore implements IProrataStore
     @Override
     public void removeComponent(final String groupName, final String componentName)
     {
-        connContext.doWorkWithinContext(proRataWorks.workRemoveComponent(groupName, componentName));
+        connContext.doWorkWithinWritableContext(proRataWorks.workRemoveComponent(groupName, componentName));
     }
 
     @Override
     public void addComponent(final String groupName, final String componentName, final BigDecimal weight)
     {
-        connContext.doWorkWithinContext(proRataWorks.workAddComponent(groupName, componentName, weight));
+        connContext.doWorkWithinWritableContext(proRataWorks.workAddComponent(groupName, componentName, weight));
     }
 
     @Override
     public List<String> listGroupNames()
     {
-        return connContext.doWorkWithinContext(proRataWorks.workListGroupNames());
+        return connContext.doWorkWithinWritableContext(proRataWorks.workListGroupNames());
     }
 
     @Override
     public List<GroupComponent> dereferenceGroup(final String groupName)
     {
-        return connContext.doWorkWithinContext(proRataWorks.workDereferenceGroup(groupName));
+        return connContext.doWorkWithinWritableContext(proRataWorks.workDereferenceGroup(groupName));
     }
 
     @Override
     public List<Pair<String, List<GroupComponent>>> listAllGroupsInfo()
     {
-        return connContext.doWorkWithinContext(proRataWorks.workListAllGroupsInfo());
+        return connContext.doWorkWithinWritableContext(proRataWorks.workListAllGroupsInfo());
     }
 
 }

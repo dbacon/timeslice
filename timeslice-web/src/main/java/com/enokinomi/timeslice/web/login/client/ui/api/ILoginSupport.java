@@ -6,11 +6,8 @@ public interface ILoginSupport
 {
     public static interface LoginListener
     {
-
         void newSessionStarted();
-
         void sessionEnded(boolean retry);
-
     }
 
     public static interface IOnAuthenticated

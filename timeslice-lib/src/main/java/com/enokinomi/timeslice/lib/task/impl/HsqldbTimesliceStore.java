@@ -27,7 +27,7 @@ public class HsqldbTimesliceStore implements ITimesliceStore
     @Override
     public synchronized void add(final StartTag tag)
     {
-        connContext.doWorkWithinContext(timesliceWorks.workAdd(tag));
+        connContext.doWorkWithinWritableContext(timesliceWorks.workAdd(tag));
     }
 
     @Override
@@ -39,19 +39,19 @@ public class HsqldbTimesliceStore implements ITimesliceStore
     @Override
     public synchronized List<StartTag> query(final String owner, final Instant starting, final Instant ending, final int pageSize, final int pageIndex)
     {
-        return connContext.doWorkWithinContext(timesliceWorks.workQuery(owner, starting, ending, pageSize, pageIndex));
+        return connContext.doWorkWithinWritableContext(timesliceWorks.workQuery(owner, starting, ending, pageSize, pageIndex));
     }
 
     @Override
     public synchronized void remove(final StartTag tag)
     {
-        connContext.doWorkWithinContext(timesliceWorks.workRemove(tag));
+        connContext.doWorkWithinWritableContext(timesliceWorks.workRemove(tag));
     }
 
     @Override
     public synchronized void updateText(final StartTag tag)
     {
-        connContext.doWorkWithinContext(timesliceWorks.workUpdateText(tag));
+        connContext.doWorkWithinWritableContext(timesliceWorks.workUpdateText(tag));
     }
 
 }

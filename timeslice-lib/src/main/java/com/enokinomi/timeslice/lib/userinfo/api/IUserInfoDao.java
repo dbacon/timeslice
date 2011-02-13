@@ -11,4 +11,9 @@ public interface IUserInfoDao
     void editSetting(String username, String name, String oldValue, String newValue);
     void deleteSetting(String username, String name, String value);
     void deleteSetting(String user, String name);
+
+    boolean authenticate(String username, String password);
+    int userCount();
+    void createUser(String username, String password, String schemeName);
+
 }

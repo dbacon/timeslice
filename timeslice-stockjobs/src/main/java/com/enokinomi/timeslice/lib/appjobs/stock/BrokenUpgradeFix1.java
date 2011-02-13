@@ -42,7 +42,7 @@ public class BrokenUpgradeFix1 implements AppJob
         final Mutable<Exception> postFixDetectException = new Mutable<Exception>(null);
         final Mutable<Boolean> fixed = new Mutable<Boolean>(false);
 
-        String result = connContext.doWorkWithinContext(new IConnectionWork<String>()
+        String result = connContext.doWorkWithinWritableContext(new IConnectionWork<String>()
         {
 
             @Override

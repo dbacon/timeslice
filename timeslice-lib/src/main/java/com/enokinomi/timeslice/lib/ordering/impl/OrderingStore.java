@@ -22,17 +22,17 @@ public class OrderingStore implements IOrderingStore
     @Override
     public List<String> requestOrdering(final String setName)
     {
-        return connContext.doWorkWithinContext(orderingWorks.workRequestOrdering(setName));
+        return connContext.doWorkWithinWritableContext(orderingWorks.workRequestOrdering(setName));
     }
 
     public void setOrdering(final String setName, final List<String> orderedSetMembers)
     {
-        connContext.doWorkWithinContext(orderingWorks.workSetOrdering(setName, orderedSetMembers));
+        connContext.doWorkWithinWritableContext(orderingWorks.workSetOrdering(setName, orderedSetMembers));
     }
 
     @Override
     public void addPartialOrdering(final String setName, final String smaller, final List<String> larger)
     {
-        connContext.doWorkWithinContext(orderingWorks.workAddPartialOrdering(setName, smaller, larger));
+        connContext.doWorkWithinWritableContext(orderingWorks.workAddPartialOrdering(setName, smaller, larger));
     }
 }

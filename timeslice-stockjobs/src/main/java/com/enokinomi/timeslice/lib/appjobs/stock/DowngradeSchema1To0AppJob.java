@@ -40,7 +40,7 @@ public class DowngradeSchema1To0AppJob implements AppJob
         final Mutable<Integer> versionPreUpgrade = new Mutable<Integer>(null);
         final Mutable<Integer> versionPostUpgrade = new Mutable<Integer>(null);
 
-        connContext.doWorkWithinContext(new IConnectionWork<Void>()
+        connContext.doWorkWithinWritableContext(new IConnectionWork<Void>()
         {
             @Override
             public Void performWithConnection(Connection conn)

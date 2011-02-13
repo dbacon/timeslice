@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import com.enokinomi.timeslice.lib.commondatautil.api.IBaseHsqldbOps;
 import com.enokinomi.timeslice.lib.commondatautil.api.ISchemaManager;
 import com.enokinomi.timeslice.lib.commondatautil.api.SetParam;
+import com.enokinomi.timeslice.lib.commondatautil.impl.VersionInvalidator.Invalidator;
 import com.enokinomi.timeslice.lib.util.ITransformThrowable;
 import com.google.inject.Inject;
 
@@ -25,9 +26,18 @@ public class BaseHsqldbOps implements IBaseHsqldbOps
     private Integer version = null;
 
     @Inject
-    BaseHsqldbOps(ISchemaManager schemaManager)
+    BaseHsqldbOps(ISchemaManager schemaManager, VersionInvalidator versionInvalidator)
     {
         this.schemaManager = schemaManager;
+
+        versionInvalidator.register(new Invalidator()
+        {
+            @Override
+            public void invalidate()
+            {
+                version = null;
+            }
+        });
     }
 
     @Override

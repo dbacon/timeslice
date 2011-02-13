@@ -11,7 +11,7 @@ import org.junit.Test;
 import com.enokinomi.timeslice.lib.assign.api.ITagStore;
 import com.enokinomi.timeslice.lib.commondatautil.api.ISchemaDuty;
 import com.enokinomi.timeslice.lib.commondatautil.impl.CommonDataFactory;
-import com.enokinomi.timeslice.lib.testing.ConnectionFactory;
+import com.enokinomi.timeslice.lib.commondatautil.impl.ConnectionFactory;
 import com.enokinomi.timeslice.lib.testing.MockSchemaManager;
 import com.enokinomi.timeslice.lib.util.IoHelp;
 
@@ -36,13 +36,13 @@ public class HsqldbTagStoreTest
 
         CommonDataFactory f = new CommonDataFactory();
 
-        ConnectionFactory connFactory = new ConnectionFactory();
+        ConnectionFactory connFactory = new ConnectionFactory(dbDir + "/test-1");
         ITagStore store = new HsqldbTagStore(
                 new HsqldbTagWorks(f.createBaseHsqldbOps(new MockSchemaManager(version))),
-                f.createConnectionContext(connFactory.createConnection(dbDir + "/test-1")));
+                f.createConnectionContext(connFactory));
 
         ISchemaDuty schemaDuty = f.createSchemaDuty();
-        schemaDuty.createSchema(connFactory.createConnection(dbDir + "/test-1"), new IoHelp().readIt(ClassLoader.getSystemResourceAsStream("timeslice-1.ddl")));
+        schemaDuty.createSchema(connFactory.createConnection(), new IoHelp().readIt(ClassLoader.getSystemResourceAsStream("timeslice-1.ddl")));
 //        SchemaDetector schemaDetector = new SchemaDetector();
 
         DateTime asOf = new DateTime(2010, 5, 5, 14, 32, 0, 0);
@@ -61,13 +61,14 @@ public class HsqldbTagStoreTest
 
         final int version = 1;
         CommonDataFactory f = new CommonDataFactory();
-        ConnectionFactory connFactory = new ConnectionFactory();
+        ConnectionFactory connFactory = new ConnectionFactory(dbDir + "/test-1");
         ITagStore store = new HsqldbTagStore(
                 new HsqldbTagWorks(f.createBaseHsqldbOps(new MockSchemaManager(version))),
-                f.createConnectionContext(connFactory.createConnection(dbDir + "/test-1")));
+                f.createConnectionContext(connFactory));
 
         ISchemaDuty schemaDuty = f.createSchemaDuty();
-        schemaDuty.createSchema(connFactory.createConnection(dbDir + "/test-2"), new IoHelp().readIt(ClassLoader.getSystemResourceAsStream("timeslice-1.ddl")));
+        connFactory = new ConnectionFactory(dbDir + "/test-2");
+        schemaDuty.createSchema(connFactory.createConnection(), new IoHelp().readIt(ClassLoader.getSystemResourceAsStream("timeslice-1.ddl")));
 //        SchemaDetector schemaDetector = new SchemaDetector();
 //        HsqldbTimesliceStore store = new HsqldbTimesliceStore("first-task", dbDir + "/test-2", 1, new Instant(), new Instant(), connFactory, schemaDetector);
 //        store.enable(false);

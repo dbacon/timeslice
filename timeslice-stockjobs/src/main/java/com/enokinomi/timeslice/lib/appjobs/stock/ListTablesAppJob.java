@@ -32,7 +32,7 @@ public class ListTablesAppJob implements AppJob
     {
         final List<String> tableNames = new ArrayList<String>();
 
-        connContext.doWorkWithinContext(new IConnectionWork<Void>()
+        connContext.doWorkWithinWritableContext(new IConnectionWork<Void>()
         {
             @Override
             public Void performWithConnection(Connection conn)

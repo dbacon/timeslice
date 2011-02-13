@@ -10,6 +10,7 @@ import com.enokinomi.timeslice.lib.commondatautil.api.IConnectionContext;
 import com.enokinomi.timeslice.lib.commondatautil.api.IConnectionWork;
 import com.enokinomi.timeslice.lib.commondatautil.api.ISchemaDetector;
 import com.enokinomi.timeslice.lib.commondatautil.api.ISchemaDuty;
+import com.enokinomi.timeslice.lib.commondatautil.impl.VersionInvalidator;
 
 public class BaseUpgradeSchemaAppJob implements AppJob
 {
@@ -21,8 +22,9 @@ public class BaseUpgradeSchemaAppJob implements AppJob
     private final String migrationSqlResourceName;
     private final String migrationDdl;
     private final ISchemaDuty schemaDuty;
+    private final VersionInvalidator versionInvalidator;
 
-    BaseUpgradeSchemaAppJob(String jobId, IConnectionContext connContext, ISchemaDetector schemaDetector, ISchemaDuty schemaDuty, int existingVersionRequired, int targetVersion, String migrationSqlResourceName, String migrationDdl)
+    BaseUpgradeSchemaAppJob(String jobId, IConnectionContext connContext, ISchemaDetector schemaDetector, ISchemaDuty schemaDuty, int existingVersionRequired, int targetVersion, String migrationSqlResourceName, String migrationDdl, VersionInvalidator versionInvalidator)
     {
         this.jobId = jobId;
         this.connContext = connContext;
@@ -32,6 +34,7 @@ public class BaseUpgradeSchemaAppJob implements AppJob
         this.targetVersion = targetVersion;
         this.migrationSqlResourceName = migrationSqlResourceName;
         this.migrationDdl = migrationDdl;
+        this.versionInvalidator = versionInvalidator;
     }
 
     @Override
@@ -43,7 +46,7 @@ public class BaseUpgradeSchemaAppJob implements AppJob
     @Override
     public String perform()
     {
-        return connContext.doWorkWithinContext(new IConnectionWork<String>()
+        return connContext.doWorkWithinWritableContext(new IConnectionWork<String>()
         {
             @Override
             public String performWithConnection(Connection conn)
@@ -78,6 +81,8 @@ public class BaseUpgradeSchemaAppJob implements AppJob
                 {
                     throw new RuntimeException("Expected schema version post-upgrade to be '" + targetVersion + "' but found '" + versionPostUpgrade + "'");
                 }
+
+                versionInvalidator.fireInvalidate();
 
                 return String.format("Upgrading result: version before -> after: %s -> %s", versionPreUpgrade, versionPostUpgrade);
             }

@@ -34,7 +34,7 @@ public class DetectSchemaVersionAppJob implements AppJob
 
         try
         {
-            msg = connContext.doWorkWithinContext(new IConnectionWork<String>()
+            msg = connContext.doWorkWithinWritableContext(new IConnectionWork<String>()
             {
                 @Override
                 public String performWithConnection(Connection conn)

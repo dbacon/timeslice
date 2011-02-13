@@ -6,4 +6,5 @@ public interface ILoginSvcAsync
 {
     void logout(String authToken, AsyncCallback<Void> callback);
     void authenticate(String user, String password, AsyncCallback<String> callback);
+    void createUserAccount(String authToken, String user, String password, AsyncCallback<Void> callback);
 }

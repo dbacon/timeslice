@@ -78,7 +78,7 @@ public class Issue149_DataSchemaUpgradeBadStateTest
 
         IConnectionContext connContext = injector.getInstance(IConnectionContext.class);
 
-        Integer version = connContext.doWorkWithinContext(new IConnectionWork<Integer>()
+        Integer version = connContext.doWorkWithinWritableContext(new IConnectionWork<Integer>()
         {
             @Override
             public Integer performWithConnection(Connection conn)

@@ -40,7 +40,6 @@ class AclFile
 
     private Map<String, String> readFileIntoMap()
     {
-
         try
         {
             Map<String, String> map = new LinkedHashMap<String, String>();
@@ -63,7 +62,7 @@ class AclFile
         }
         catch (IOException e)
         {
-            throw new RuntimeException("Exception reading password file: " + e.getMessage(), e);
+            throw new RuntimeException("File-based user-account database not available: '" + getFileName() + "': " + e.getMessage(), e);
         }
     }
 }

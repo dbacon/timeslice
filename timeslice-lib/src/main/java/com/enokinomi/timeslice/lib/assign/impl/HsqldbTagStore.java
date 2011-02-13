@@ -24,18 +24,18 @@ public class HsqldbTagStore implements ITagStore
     @Override
     public String lookupBillee(final String description, final DateTime asOf, final String valueOnMiss)
     {
-        return connContext.doWorkWithinContext(tagWorks.workLookupBillee(description, asOf, valueOnMiss));
+        return connContext.doWorkWithinWritableContext(tagWorks.workLookupBillee(description, asOf, valueOnMiss));
     }
 
     @Override
     public void assignBillee(final String description, final String billee, final DateTime date)
     {
-        connContext.doWorkWithinContext(tagWorks.workAssignBillee(description, billee, date));
+        connContext.doWorkWithinWritableContext(tagWorks.workAssignBillee(description, billee, date));
     }
 
     @Override
     public List<String> getAllBillees()
     {
-        return connContext.doWorkWithinContext(tagWorks.workGetAllBillees());
+        return connContext.doWorkWithinWritableContext(tagWorks.workGetAllBillees());
     }
 }
