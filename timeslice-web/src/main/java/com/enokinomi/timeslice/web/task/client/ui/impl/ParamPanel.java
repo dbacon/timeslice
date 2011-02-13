@@ -66,7 +66,7 @@ public class ParamPanel extends Composite implements IParamPanel
     }
 
     // used only internally and to service, so tz doesn't matter.
-    private static final DateTimeFormat MachineFormat = DateTimeFormat.getFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    private static final DateTimeFormat MachineFormat = DateTimeFormat.getFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZZ");
 
     @Override
     public String getStartingTimeRendered()
