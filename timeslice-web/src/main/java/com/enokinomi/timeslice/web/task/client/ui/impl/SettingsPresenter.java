@@ -8,6 +8,7 @@ import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport;
 import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport.IOnAuthenticated;
 import com.enokinomi.timeslice.web.session.client.core.ISessionSvcAsync;
 import com.enokinomi.timeslice.web.settings.client.core.ISettingsSvcAsync;
+import com.enokinomi.timeslice.web.task.client.ui.api.ISettingsPresenter;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;

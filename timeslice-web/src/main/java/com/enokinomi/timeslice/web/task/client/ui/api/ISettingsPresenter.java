@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.web.task.client.ui.impl;
+package com.enokinomi.timeslice.web.task.client.ui.api;
 
 import java.util.List;
 import java.util.Map;

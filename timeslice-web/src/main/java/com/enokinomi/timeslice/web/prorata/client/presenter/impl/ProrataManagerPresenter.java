@@ -24,12 +24,8 @@ import com.enokinomi.timeslice.web.prorata.client.tree.Leaf;
 import com.enokinomi.timeslice.web.prorata.client.tree.LeafOnlyTotalingVisitor;
 import com.enokinomi.timeslice.web.prorata.client.tree.MapRuleSource;
 import com.enokinomi.timeslice.web.prorata.client.tree.Tree;
-import com.enokinomi.timeslice.web.prorata.client.ui.api.IProjectProrataTreePanel;
-import com.enokinomi.timeslice.web.prorata.client.ui.api.IProjectReportPanel;
-import com.enokinomi.timeslice.web.prorata.client.ui.api.IProrataManagerPanel;
 import com.enokinomi.timeslice.web.prorata.client.ui.impl.ProjectProrataTreePanel;
 import com.enokinomi.timeslice.web.prorata.client.ui.impl.ProjectProrataTreePanel.Row;
-import com.enokinomi.timeslice.web.prorata.client.ui.impl.ProjectReportPanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -80,49 +76,38 @@ public class ProrataManagerPresenter implements IProrataManagerPresenter
         }
     }
 
-    public void bind(final IProjectProrataTreePanel ui)
+    @Override
+    public List<Group> getGroupInfo()
     {
-        listeners.add(new Listener()
-        {
-            @Override
-            public void allGroupInfoChanged(List<Group> result)
-            {
-            }
-
-            @Override
-            public void addComplete()
-            {
-            }
-
-            @Override
-            public void removeComplete()
-            {
-            }
-
-            @Override
-            public void tasksUpdated()
-            {
-                ui.resetRows(rows);
-            }
-        });
-
-        ui.addListener(new IProjectProrataTreePanel.Listener()
-        {
-            @Override
-            public void splitRequested(String project, String splitTo, Double weight)
-            {
-                addGroupComponent(project, splitTo, weight);
-            }
-
-            @Override
-            public void deleteRequested(String parentName, String what)
-            {
-                removeGroupComponent(parentName, what);
-            }
-        });
+        return groupInfo;
     }
 
-    void addGroupComponent(final String groupName, final String target, final Double weight)
+    @Override
+    public Map<String, Double> getLeafTotals()
+    {
+        return leafTotals;
+    }
+
+    @Override
+    public double getGrandTotal()
+    {
+        return grandTotal;
+    }
+
+    @Override
+    public List<Row> getRows()
+    {
+        return rows;
+    }
+
+    @Override
+    public void addListener(Listener listener)
+    {
+        if (listener != null) listeners.add(listener);
+    }
+
+    @Override
+    public void addGroupComponent(final String groupName, final String target, final Double weight)
     {
         new IOnAuthenticated()
         {
@@ -321,98 +306,6 @@ public class ProrataManagerPresenter implements IProrataManagerPresenter
 
 
 
-    public void bind(final IProrataManagerPanel ui)
-    {
-        listeners.add(new Listener()
-        {
-            @Override
-            public void allGroupInfoChanged(List<Group> result)
-            {
-                ui.updateGroupInfoTable(result, groupsToString(result));
-            }
-
-            @Override
-            public void addComplete()
-            {
-                ui.resetInput();
-            }
-
-            @Override
-            public void removeComplete()
-            {
-                ui.updateGroupInfoTable(groupInfo, groupsToString(groupInfo));
-            }
-
-            @Override
-            public void tasksUpdated()
-            {
-            }
-        });
-
-        ui.addListener(new IProrataManagerPanel.Listener()
-        {
-            @Override
-            public void addGroupRequested(String name, String target, Double weight)
-            {
-                addGroupComponent(name, target, weight);
-            }
-
-            @Override
-            public void rulesLoadRequested(String text)
-            {
-                loadAllRules(text);
-            }
-
-            @Override
-            public void removeParsedRulesRequested(String text)
-            {
-                removeParsedRules(text);
-            }
-
-            @Override
-            public void removeGroupRequested(String groupName, String name)
-            {
-                removeGroupComponent(groupName, name);
-            }
-        });
-    }
-
-    public void bind(final IProjectReportPanel ui)
-    {
-        listeners.add(new Listener()
-        {
-            @Override
-            public void allGroupInfoChanged(List<Group> result)
-            {
-            }
-
-            @Override
-            public void addComplete()
-            {
-            }
-
-            @Override
-            public void removeComplete()
-            {
-            }
-
-            @Override
-            public void tasksUpdated()
-            {
-                ui.setProjects(grandTotal, leafTotals);
-            }
-        });
-
-        ui.addListener(new ProjectReportPanel.Listener()
-        {
-            @Override
-            public void assignPartialOrderingRequested(Map<String, Double> projectMap, int i, int j)
-            {
-                sendPartialOrderingAssignment(projectMap, i, j);
-            }
-        });
-    }
-
     @Inject
     ProrataManagerPresenter(ILoginSupport loginSupport, IProrataSvcAsync prorataSvc, IOrderingSvcAsync orderingSvc)
     {
@@ -518,23 +411,8 @@ public class ProrataManagerPresenter implements IProrataManagerPresenter
         fireRemoveComplete();
     }
 
-    private String groupsToString(List<Group> result)
-    {
-        StringBuilder sb = new StringBuilder();
-        for (Group group: result)
-        {
-            for (GroupComponent comp: group.getComponents())
-            {
-                sb.append(group.getName())
-                    .append("|").append(comp.getName())
-                    .append("|").append(comp.getWeight())
-                    .append('\n');
-            }
-        }
-        return sb.toString();
-    }
-
-    private void loadAllRules(String text)
+    @Override
+    public void loadAllRules(String text)
     {
         List<ProrataManagerPresenter.ParsedRule> parsedRules = parseRules(text);
 
@@ -600,7 +478,8 @@ public class ProrataManagerPresenter implements IProrataManagerPresenter
         }.runAsync();
     }
 
-    private void removeParsedRules(String text)
+    @Override
+    public void removeParsedRules(String text)
     {
 
         // TODO: keep list of groups, so we can remove them all
@@ -655,7 +534,8 @@ public class ProrataManagerPresenter implements IProrataManagerPresenter
         }.runAsync();
     }
 
-    void removeGroupComponent(final String group, final String name)
+    @Override
+    public void removeGroupComponent(final String group, final String name)
     {
         new IOnAuthenticated()
         {
@@ -743,7 +623,8 @@ public class ProrataManagerPresenter implements IProrataManagerPresenter
         updateProrataFromCache();
     }
 
-    private void sendPartialOrderingAssignment(Map<String, Double> projectMap, int i, int j)
+    @Override
+    public void sendPartialOrderingAssignment(Map<String, Double> projectMap, int i, int j)
     {
         if (j < 0) --j;
 

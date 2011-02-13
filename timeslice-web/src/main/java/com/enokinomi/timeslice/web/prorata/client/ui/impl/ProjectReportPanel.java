@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.enokinomi.timeslice.web.prorata.client.core.Group;
+import com.enokinomi.timeslice.web.prorata.client.presenter.api.IProrataManagerPresenter;
+import com.enokinomi.timeslice.web.prorata.client.presenter.impl.ProrataManagerPresenter;
 import com.enokinomi.timeslice.web.prorata.client.ui.api.IProjectReportPanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -48,6 +51,42 @@ public class ProjectReportPanel extends Composite implements IProjectReportPanel
     }
 
     private final List<Listener> listeners = new ArrayList<ProjectReportPanel.Listener>();
+
+    public static void bind(final IProjectReportPanel ui, final IProrataManagerPresenter presenter)
+    {
+        presenter.addListener(new ProrataManagerPresenter.Listener()
+        {
+            @Override
+            public void allGroupInfoChanged(List<Group> result)
+            {
+            }
+
+            @Override
+            public void addComplete()
+            {
+            }
+
+            @Override
+            public void removeComplete()
+            {
+            }
+
+            @Override
+            public void tasksUpdated()
+            {
+                ui.setProjects(presenter.getGrandTotal(), presenter.getLeafTotals());
+            }
+        });
+
+        ui.addListener(new ProjectReportPanel.Listener()
+        {
+            @Override
+            public void assignPartialOrderingRequested(Map<String, Double> projectMap, int i, int j)
+            {
+                presenter.sendPartialOrderingAssignment(projectMap, i, j);
+            }
+        });
+    }
 
     @Override
     public void addListener(Listener listener)

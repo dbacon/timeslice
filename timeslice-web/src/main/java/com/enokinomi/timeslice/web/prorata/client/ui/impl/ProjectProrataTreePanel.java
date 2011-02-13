@@ -3,6 +3,9 @@ package com.enokinomi.timeslice.web.prorata.client.ui.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.enokinomi.timeslice.web.prorata.client.core.Group;
+import com.enokinomi.timeslice.web.prorata.client.presenter.api.IProrataManagerPresenter;
+import com.enokinomi.timeslice.web.prorata.client.presenter.impl.ProrataManagerPresenter;
 import com.enokinomi.timeslice.web.prorata.client.ui.api.IProjectProrataTreePanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -32,6 +35,48 @@ public class ProjectProrataTreePanel extends Composite implements IProjectProrat
     @UiField protected FlexTable table;
 
     private final List<Listener> listeners = new ArrayList<Listener>();
+
+    public static void bind(final IProjectProrataTreePanel ui, final IProrataManagerPresenter presenter)
+    {
+        presenter.addListener(new ProrataManagerPresenter.Listener()
+        {
+            @Override
+            public void allGroupInfoChanged(List<Group> result)
+            {
+            }
+
+            @Override
+            public void addComplete()
+            {
+            }
+
+            @Override
+            public void removeComplete()
+            {
+            }
+
+            @Override
+            public void tasksUpdated()
+            {
+                ui.resetRows(presenter.getRows());
+            }
+        });
+
+        ui.addListener(new IProjectProrataTreePanel.Listener()
+        {
+            @Override
+            public void splitRequested(String project, String splitTo, Double weight)
+            {
+                presenter.addGroupComponent(project, splitTo, weight);
+            }
+
+            @Override
+            public void deleteRequested(String parentName, String what)
+            {
+                presenter.removeGroupComponent(parentName, what);
+            }
+        });
+    }
 
     protected void fireSplitRequested(String project, String splitTo, Double weight)
     {

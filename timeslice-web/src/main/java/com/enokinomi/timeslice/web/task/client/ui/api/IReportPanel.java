@@ -15,5 +15,5 @@ public interface IReportPanel extends IsWidget
     void setResults(List<TaskTotal> results);
     public abstract void setBillees(List<String> billees);
     void clear();
-    void bind(IProrataManagerPresenter prorataPresenter);
+    void bindProrataBits(IProrataManagerPresenter prorataPresenter);
 }

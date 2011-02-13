@@ -6,6 +6,8 @@ import java.util.List;
 
 import com.enokinomi.timeslice.web.prorata.client.core.Group;
 import com.enokinomi.timeslice.web.prorata.client.core.GroupComponent;
+import com.enokinomi.timeslice.web.prorata.client.presenter.api.IProrataManagerPresenter;
+import com.enokinomi.timeslice.web.prorata.client.presenter.impl.ProrataManagerPresenter;
 import com.enokinomi.timeslice.web.prorata.client.ui.api.IProrataManagerPanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -43,6 +45,79 @@ public class ProrataManagerPanel extends Composite implements IProrataManagerPan
     private final ProrataManagerPanelConstants constants = GWT.create(ProrataManagerPanelConstants.class);
 
     private final List<Listener> listeners = new ArrayList<Listener>();
+
+    private static String groupsToString(List<Group> result)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (Group group: result)
+        {
+            for (GroupComponent comp: group.getComponents())
+            {
+                sb.append(group.getName())
+                    .append("|").append(comp.getName())
+                    .append("|").append(comp.getWeight())
+                    .append('\n');
+            }
+        }
+        return sb.toString();
+    }
+
+    public static void bind(final IProrataManagerPanel ui, final IProrataManagerPresenter presenter)
+    {
+        presenter.addListener(new ProrataManagerPresenter.Listener()
+        {
+            @Override
+            public void allGroupInfoChanged(List<Group> result)
+            {
+                ui.updateGroupInfoTable(result, groupsToString(result));
+            }
+
+            @Override
+            public void addComplete()
+            {
+                ui.resetInput();
+            }
+
+            @Override
+            public void removeComplete()
+            {
+                List<Group> groupInfo = presenter.getGroupInfo();
+                ui.updateGroupInfoTable(groupInfo, groupsToString(groupInfo));
+            }
+
+            @Override
+            public void tasksUpdated()
+            {
+            }
+        });
+
+        ui.addListener(new IProrataManagerPanel.Listener()
+        {
+            @Override
+            public void addGroupRequested(String name, String target, Double weight)
+            {
+                presenter.addGroupComponent(name, target, weight);
+            }
+
+            @Override
+            public void rulesLoadRequested(String text)
+            {
+                presenter.loadAllRules(text);
+            }
+
+            @Override
+            public void removeParsedRulesRequested(String text)
+            {
+                presenter.removeParsedRules(text);
+            }
+
+            @Override
+            public void removeGroupRequested(String groupName, String name)
+            {
+                presenter.removeGroupComponent(groupName, name);
+            }
+        });
+    }
 
     @Override
     public void addListener(Listener l)

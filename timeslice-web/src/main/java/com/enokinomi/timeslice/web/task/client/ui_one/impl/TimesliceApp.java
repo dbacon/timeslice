@@ -1,7 +1,6 @@
 package com.enokinomi.timeslice.web.task.client.ui_one.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -16,47 +15,49 @@ import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport;
 import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport.LoginListener;
 import com.enokinomi.timeslice.web.prorata.client.presenter.api.IProrataManagerPresenter;
 import com.enokinomi.timeslice.web.task.client.controller.api.IController;
-import com.enokinomi.timeslice.web.task.client.controller.api.IControllerListener;
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
 import com.enokinomi.timeslice.web.task.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.task.client.core_todo_move_out.BrandInfo;
 import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsPanel;
-import com.enokinomi.timeslice.web.task.client.ui.api.IParamPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IReportPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IReportPanelListener;
-import com.enokinomi.timeslice.web.task.client.ui.impl.ISettingsPresenter;
+import com.enokinomi.timeslice.web.task.client.ui.api.ISettingsPresenter;
 import com.enokinomi.timeslice.web.task.client.ui_one.api.ITimesliceApp;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ResizeComposite;
-import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
 public class TimesliceApp extends ResizeComposite implements ITimesliceApp
 {
-    private final TimesliceAppConstants constants;
-    private final IController controller;
-    private final HTML issuesLink;
-    private final Label serverInfoLabel;
-    private final Anchor logoutAnchor;
-    private final InputPanel inputPanel;
-    private final IReportPanel reportPanel;
-    private final IOptionsPanel optionsPanel;
-    private final IAppJobPanel appJobPanel;
-    private final ILoginSupport loginSupport;
+    private static TimesliceAppUiBinder uiBinder = GWT.create(TimesliceAppUiBinder.class);
+    interface TimesliceAppUiBinder extends UiBinder<Widget, TimesliceApp> { }
+
+    @UiField protected HTML issuesLink;
+    @UiField protected Label serverInfoLabel;
+    @UiField protected Anchor logoutAnchor;
+    @UiField protected Anchor inputLink;
+    @UiField protected Anchor reportLink;
+    @UiField protected Anchor optionsLink;
+    @UiField protected Anchor jobsLink;
+
+    @UiField protected InputPanel inputPanel;
+    @UiField protected IReportPanel reportPanel;
+    @UiField protected IOptionsPanel optionsPanel;
+    @UiField protected IAppJobPanel appJobPanel;
+
+    private final ILoginSupport loginSupport; // LEFTOFFHERE - move login + tzsupport into controller, unify controllers (?)
     private final TzSupport tzSupport;
-    private final IProrataManagerPresenter prorataPresenter;
 
     private static class Options
     {
@@ -69,181 +70,96 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
     private String originalWindowTitle;
     private static final StartTag UnknownTag = new StartTag(null, null, null, "-unknown-", false);
 
-    @Override
-    public Widget asWidget()
-    {
-        return this;
-    }
-
     @Inject
-    TimesliceApp(TimesliceAppConstants constants, IController controller, InputPanel inputPanel, IReportPanel reportPanel, IOptionsPanel optionsPanel, IAppJobPanel appJobPanel, ILoginSupport loginSupport, TzSupport tzSupport, IProrataManagerPresenter prorataPresenter, ISettingsPresenter settingsPresenter)
+    TimesliceApp(ILoginSupport loginSupport, TzSupport tzSupport)
     {
-        this.constants = constants;
-        this.controller = controller;
-        this.inputPanel = inputPanel;
-        this.reportPanel = reportPanel;
-        this.optionsPanel = optionsPanel;
-        this.appJobPanel = appJobPanel;
         this.loginSupport = loginSupport;
         this.tzSupport = tzSupport;
-        this.prorataPresenter = prorataPresenter;
 
-        reportPanel.bind(prorataPresenter);
-        optionsPanel.bind(settingsPresenter);
+        initWidget(uiBinder.createAndBindUi(this));
 
-        issuesLink = new HTML();
-        serverInfoLabel = new Label("[querying]");
-        logoutAnchor = new Anchor(constants.logout());
-
-        initWidget(initContents());
+        initContents();
     }
 
-    private Widget initContents()
+    private void initContents()
     {
         originalWindowTitle = Window.getTitle();
 
-        final TabLayoutPanel tp = new TabLayoutPanel(2, Unit.EM);
-        Anchor inputlink = new Anchor(constants.input(), true);
-        inputlink.setAccessKey('i');
-        tp.add(inputPanel, inputlink);
-        Anchor reportslink = new Anchor(constants.reports(), true);
-        reportslink.setAccessKey('r');
-        tp.add(reportPanel.asWidget(), reportslink);
-        Anchor optionslink = new Anchor(constants.options(), true);
-        optionslink.setAccessKey('o');
-        tp.add(optionsPanel.asWidget(), optionslink);
-        Anchor jobsLink = new Anchor(constants.jobs(), true);
+        inputLink.setAccessKey('i');
+        reportLink.setAccessKey('r');
+        optionsLink.setAccessKey('o');
         jobsLink.setAccessKey('j');
-        tp.add(appJobPanel.asWidget(), jobsLink);
 
-        tp.selectTab(0);
-
-        logoutAnchor.setText(constants.logout());
-
-        HorizontalPanel buildLabelBox = new HorizontalPanel();
-        buildLabelBox.setSpacing(15);
         updateIssuesLink("#");
-        buildLabelBox.add(issuesLink);
-        buildLabelBox.add(logoutAnchor);
-        buildLabelBox.add(serverInfoLabel);
-
-        final DockLayoutPanel dockPanel = new DockLayoutPanel(Unit.EM);
-        dockPanel.addSouth(buildLabelBox, 4);
-        dockPanel.add(tp);
-
-        linkThis();
-        linkInputPanel();
-        linkReportPanel();
-        linkAppJobPanel();
-
-        controller.serverInfo();
-        controller.startGetBranding();
-
-        return dockPanel;
     }
 
-    private static class ControllerListenerAdapter implements IControllerListener
+    @Override
+    public void startup()
     {
-
-        @Override
-        public void serverInfoRecieved(String info)
-        {
-        }
-
-        @Override
-        public void onBranded(AsyncResult<BrandInfo> result)
-        {
-        }
-
-        @Override
-        public void onRefreshItemsDone(AsyncResult<List<StartTag>> result)
-        {
-        }
-
-        @Override
-        public void onAddItemDone(AsyncResult<Void> result)
-        {
-        }
-
-        @Override
-        public void onRefreshTotalsDone(AsyncResult<List<TaskTotal>> result)
-        {
-        }
-
-        @Override
-        public void onRefreshTotalsAssignedDone(AsyncResult<List<AssignedTaskTotal>> result)
-        {
-        }
-
-        @Override
-        public void onAssignBilleeDone(AsyncResult<Void> result)
-        {
-        }
-
-        @Override
-        public void onAllBilleesDone(AsyncResult<List<String>> asyncResult)
-        {
-        }
-
-        @Override
-        public void onListAvailableJobsDone(AsyncResult<List<String>> result)
-        {
-        }
-
-        @Override
-        public void onPerformJobDone(AsyncResult<AppJobCompletion> asyncResult)
-        {
-        }
-
+        fireServerInfoRequested();
+        fireBrandingRequested();
+        fireBilleesRequested(); // TODO: is this really ours? if so, a bunch more should be too.
+        fireRefreshRequested();
     }
 
-    private void linkInputPanel()
+    public static interface AppListener
     {
-        loginSupport.addLoginListener(new LoginListener()
-        {
-            @Override
-            public void sessionEnded(boolean retry)
-            {
-                inputPanel.clear();
-            }
+        void refreshRequested();
 
-            @Override
-            public void newSessionStarted()
-            {
-                inputPanel.refresh();
-            }
-        });
+        void billeesRequested();
 
-        controller.addControllerListener(new ControllerListenerAdapter()
-        {
-            public void onAddItemDone(AsyncResult<Void> result)
-            {
-                if (!result.isError())
-                {
-                    //messagePanel.add(new AcknowledgableMessagePanel("Item added."));
-                    inputPanel.itemAdded();
-                }
-                else
-                {
-                    showError(result);
-                }
-            }
+        void brandingRequested();
 
-            public void onRefreshItemsDone(AsyncResult<List<StartTag>> result)
-            {
-                if (!result.isError())
-                {
-                    inputPanel.itemsRefreshed(result.getReturned());
-                }
-                else
-                {
-                    showError(result);
-                }
-            }
-        });
+        void serverInfoRequested();
+
+        void refreshTotalsRequested(String startingTimeText,
+                String endingTimeText, List<String> allowWords,
+                List<String> ignoreWords);
     }
 
-    private void linkThis()
+    private List<AppListener> listeners = new ArrayList<TimesliceApp.AppListener>();
+    public void addAppListener(AppListener l)
+    {
+        if (l != null) listeners.add(l);
+    }
+
+    protected void fireRefreshRequested()
+    {
+        for (AppListener l: listeners) l.refreshRequested();
+    }
+
+    // TODO: is this really ours?
+    protected void fireBilleesRequested()
+    {
+        for (AppListener l: listeners) l.billeesRequested();
+    }
+
+    protected void fireBrandingRequested()
+    {
+        for (AppListener l: listeners) l.brandingRequested();
+    }
+
+    protected void fireServerInfoRequested()
+    {
+        for (AppListener l: listeners) l.serverInfoRequested();
+    }
+
+    @Override
+    public void bind(IController presenter, IProrataManagerPresenter prorataPresenter, ISettingsPresenter settingsPresenter)
+    {
+        linkThis(presenter);
+
+        InputPanel.bind(inputPanel, presenter);
+
+        reportPanel.bindProrataBits(prorataPresenter);
+        linkReportPanel(presenter, prorataPresenter);
+
+        optionsPanel.bind(settingsPresenter);
+
+        linkAppJobPanel(presenter);
+    }
+
+    private void linkThis(final IController controller)
     {
         logoutAnchor.addClickHandler(new ClickHandler()
         {
@@ -261,6 +177,50 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
             {
                 serverInfoLabel.setText("[querying...]");
                 controller.serverInfo();
+            }
+        });
+
+        this.addAppListener(new AppListener()
+        {
+            @Override
+            public void serverInfoRequested()
+            {
+                controller.serverInfo();
+            }
+
+            @Override
+            public void refreshRequested()
+            {
+                // TODO: will be able to have our own settings w/out panels
+                String starting = InputPanel.MachineFormat.format(new Date(new Date().getTime() - 60*60*24 * 1000));
+                String ending = null;
+                int maxItems = 40;
+
+                controller.startRefreshItems(maxItems, starting, ending);
+
+//                controller.startRefreshTotals(maxSize, sortDir, startingInstant, endingInstant, allowWords, ignoreWords)
+            }
+
+            @Override
+            public void brandingRequested()
+            {
+                controller.startGetBranding();
+            }
+
+            @Override
+            public void billeesRequested()
+            {
+                controller.startGetAllBillees();
+            }
+
+            @Override
+            public void refreshTotalsRequested(String startingTimeText, String endingTimeText, List<String> allowWords, List<String> ignoreWords)
+            {
+                // TODO: will be able to have our own settings w/out panels
+                int maxItems = 40;
+
+                controller.startRefreshTotals(maxItems, SortDir.desc, startingTimeText, endingTimeText, allowWords, ignoreWords);
+                controller.startRefreshTotalsAssigned(maxItems, SortDir.desc, startingTimeText, endingTimeText, allowWords, ignoreWords);
             }
         });
 
@@ -296,7 +256,7 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
             });
     }
 
-    private void linkReportPanel()
+    private void linkReportPanel(final IController controller, final IProrataManagerPresenter prorataPresenter)
     {
         loginSupport.addLoginListener(new LoginListener()
         {
@@ -309,7 +269,8 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
             @Override
             public void newSessionStarted()
             {
-                refreshTotals();
+                fireRefreshRequested(); // TODO: could be more specific
+//                refreshTotals();
             }
         });
 
@@ -354,7 +315,8 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
                     }
                     else
                     {
-                        refreshTotals();
+                        fireRefreshRequested(); // TODO: could be more specific..
+//                        refreshTotals();
                     }
                 }
 
@@ -378,7 +340,7 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
             @Override
             public void refreshRequested(String startingTimeText, String endingTimeText, List<String> allowWords, List<String> ignoreWords)
             {
-                refreshTotals(startingTimeText, endingTimeText, allowWords, ignoreWords);
+                fireRefreshTotals(startingTimeText, endingTimeText, allowWords, ignoreWords);
             }
 
             @Override
@@ -387,40 +349,44 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
                 controller.startAssignBillee(description, newBillee);
             }
         });
-
-        controller.startGetAllBillees();
     }
 
-    private void refreshTotals()
+    protected void fireRefreshTotals(String startingTimeText, String endingTimeText, List<String> allowWords, List<String> ignoreWords)
     {
-        IParamPanel params = reportPanel.getParamsPanel();
-        refreshTotals(
-                params.getStartingTimeRendered(),
-                params.getEndingTimeRendered(),
-                Arrays.asList(params.getAllowWords().getText().split(",")),
-                Arrays.asList(params.getIgnoreWords().getText().split(",")));
+        for (AppListener l: listeners) l.refreshTotalsRequested(startingTimeText, endingTimeText, allowWords, ignoreWords);
     }
 
-    private void refreshTotals(String startingTimeText, String endingTimeText, List<String> allowWords, List<String> ignoreWords)
-    {
-        controller.startRefreshTotals(
-                1000,
-                SortDir.desc,
-                startingTimeText,
-                endingTimeText,
-                allowWords,
-                ignoreWords);
+//    private void refreshTotals()
+//    {
+//        IParamPanel params = reportPanel.getParamsPanel();
+//        refreshTotals(
+//                params.getStartingTimeRendered(),
+//                params.getEndingTimeRendered(),
+//                Arrays.asList(params.getAllowWords().getText().split(",")),
+//                Arrays.asList(params.getIgnoreWords().getText().split(",")));
+//    }
+//
+//    private void refreshTotals(String startingTimeText, String endingTimeText, List<String> allowWords, List<String> ignoreWords)
+//    {
+//        // TODO: do by raising event.
+//        controller.startRefreshTotals(
+//                1000,
+//                SortDir.desc,
+//                startingTimeText,
+//                endingTimeText,
+//                allowWords,
+//                ignoreWords);
+//
+//        controller.startRefreshTotalsAssigned(
+//                1000,
+//                SortDir.desc,
+//                startingTimeText,
+//                endingTimeText,
+//                allowWords,
+//                ignoreWords);
+//    }
 
-        controller.startRefreshTotalsAssigned(
-                1000,
-                SortDir.desc,
-                startingTimeText,
-                endingTimeText,
-                allowWords,
-                ignoreWords);
-    }
-
-    private void linkAppJobPanel()
+    private void linkAppJobPanel(final IController controller)
     {
         controller.addControllerListener(new ControllerListenerAdapter()
             {

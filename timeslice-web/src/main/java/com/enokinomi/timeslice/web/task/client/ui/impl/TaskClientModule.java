@@ -6,6 +6,7 @@ import com.enokinomi.timeslice.web.task.client.ui.api.IHotlistPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IParamPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IReportPanel;
+import com.enokinomi.timeslice.web.task.client.ui.api.ISettingsPresenter;
 import com.google.gwt.inject.client.AbstractGinModule;
 
 public class TaskClientModule extends AbstractGinModule

@@ -6,8 +6,12 @@ import java.util.List;
 import com.enokinomi.timeslice.web.core.client.ui.PrefHelper;
 import com.enokinomi.timeslice.web.task.client.ui.api.IHotlistPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IHotlistPanelListener;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
@@ -18,17 +22,17 @@ import com.google.inject.Inject;
 
 public class HotlistPanel extends Composite implements IHotlistPanel
 {
+    private static HotlistPanelUiBinder uiBinder = GWT.create(HotlistPanelUiBinder.class);
+    interface HotlistPanelUiBinder extends UiBinder<Widget, HotlistPanel> { }
+
     private static final String CookieNamePrefix = "timeslice.hotlist.";
 
-    private final HotlistPanelConstants constants;
+    private final HotlistPanelConstants constants = GWT.create(HotlistPanelConstants.class);
 
-    private final FlowPanel vp = new FlowPanel();
-    private final Anchor mode;
+    @UiField protected FlowPanel vp;
+    @UiField protected Anchor mode;
 
     private final List<IHotlistPanelListener> listeners = new ArrayList<IHotlistPanelListener>();
-
-    @Override
-    public Widget asWidget() { return this; }
 
     @Override
     public void addHotlistPanelListener(IHotlistPanelListener listener)
@@ -61,41 +65,36 @@ public class HotlistPanel extends Composite implements IHotlistPanel
         }
     }
 
-    @Inject
-    HotlistPanel(final HotlistPanelConstants constants)
+    @UiHandler("mode")
+    protected void modeClicked(ClickEvent e)
     {
-        this.constants = constants;
+        if (constants.hotlist().equals(mode.getText()) && 1 < vp.getWidgetCount())
+        {
+            mode.setText(constants.editDeleteSingle());
+        }
+        else if (constants.editDeleteSingle().equals(mode.getText()))
+        {
+            mode.setText(constants.editDeleteMulti());
+        }
+        else if (constants.editDeleteMulti().equals(mode.getText()))
+        {
+            mode.setText(constants.hotlist());
+        }
+        else
+        {
+            mode.setText(constants.hotlist());
+        }
+    }
 
-        mode = new Anchor(constants.hotlist(), true);
+
+    @Inject
+    HotlistPanel()
+    {
+        initWidget(uiBinder.createAndBindUi(this));
 
         mode.setTitle("Hotlist panel - click to switch between live and delete mode.");
-        mode.addClickHandler(new ClickHandler()
-        {
-            @Override
-            public void onClick(ClickEvent event)
-            {
-                if (constants.hotlist().equals(mode.getText()) && 1 < vp.getWidgetCount())
-                {
-                    mode.setText(constants.editDeleteSingle());
-                }
-                else if (constants.editDeleteSingle().equals(mode.getText()))
-                {
-                    mode.setText(constants.editDeleteMulti());
-                }
-                else if (constants.editDeleteMulti().equals(mode.getText()))
-                {
-                    mode.setText(constants.hotlist());
-                }
-                else
-                {
-                    mode.setText(constants.hotlist());
-                }
-            }
-        });
 
         repopulate();
-
-        initWidget(vp);
     }
 
     @Override
@@ -111,41 +110,7 @@ public class HotlistPanel extends Composite implements IHotlistPanel
         {
             if (name.startsWith(CookieNamePrefix))
             {
-                final String description = Cookies.getCookie(name);
-
-                Button button = new Button(description, new ClickHandler()
-                {
-                    @Override
-                    public void onClick(ClickEvent event)
-                    {
-                        if (constants.hotlist().equals(mode.getText()))
-                        {
-                            fireHotlistItemClicked(description);
-                        }
-                        else
-                        {
-                            Cookies.removeCookie(name);
-
-                            if (constants.editDeleteSingle().equals(mode.getText()))
-                            {
-                                mode.setText(constants.hotlist());
-                            }
-
-                            repopulate();
-
-                            fireHotlistChanged();
-                        }
-                    }
-                });
-
-                if (added < 10)
-                {
-                    char digitChar = Character.forDigit((1 + added) % 10, 10);
-                    button.setAccessKey(digitChar);
-                    button.setHTML("<u>" + digitChar + "</u> " + button.getText());
-                }
-
-                vp.add(button);
+                vp.add(createHotlistButton(added, name, Cookies.getCookie(name)));
 
                 ++added;
             }
@@ -154,6 +119,48 @@ public class HotlistPanel extends Composite implements IHotlistPanel
         if (added <= 0)
         {
             mode.setText(constants.hotlist());
+        }
+    }
+
+    private Button createHotlistButton(int index, final String name, final String description)
+    {
+        Button button = new Button(description, new ClickHandler()
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                handleHotlistButtonClicked(name, description);
+            }
+        });
+
+        if (index < 10)
+        {
+            char digitChar = Character.forDigit((1 + index) % 10, 10);
+            button.setAccessKey(digitChar);
+            button.setHTML("<u>" + digitChar + "</u> " + button.getText());
+        }
+
+        return button;
+    }
+
+    private void handleHotlistButtonClicked(final String name, final String description)
+    {
+        if (constants.hotlist().equals(mode.getText()))
+        {
+            fireHotlistItemClicked(description);
+        }
+        else
+        {
+            Cookies.removeCookie(name);
+
+            if (constants.editDeleteSingle().equals(mode.getText()))
+            {
+                mode.setText(constants.hotlist());
+            }
+
+            repopulate();
+
+            fireHotlistChanged();
         }
     }
 

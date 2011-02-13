@@ -3,7 +3,6 @@ package com.enokinomi.timeslice.web.task.client.ui.api;
 import java.util.List;
 import java.util.Map;
 
-import com.enokinomi.timeslice.web.task.client.ui.impl.ISettingsPresenter;
 import com.google.gwt.user.client.ui.IsWidget;
 
 

@@ -34,9 +34,9 @@ public class ProjectListPanel extends Composite implements IProjectListPanel
     @Override
     public void bind(IProrataManagerPresenter prorataManagerPresenter)
     {
-        prorataManagerPresenter.bind(projectReportPanel);
-        prorataManagerPresenter.bind(prorataManagePanel);
-        prorataManagerPresenter.bind(projectProrataTreePanel);
+        ProjectReportPanel.bind(projectReportPanel, prorataManagerPresenter);
+        ProrataManagerPanel.bind(prorataManagePanel, prorataManagerPresenter);
+        ProjectProrataTreePanel.bind(projectProrataTreePanel, prorataManagerPresenter);
     }
 
     public void clear()

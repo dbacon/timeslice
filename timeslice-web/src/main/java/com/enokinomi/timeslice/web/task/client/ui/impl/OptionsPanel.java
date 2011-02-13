@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport.LoginListener;
 import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsPanel;
+import com.enokinomi.timeslice.web.task.client.ui.api.ISettingsPresenter;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;

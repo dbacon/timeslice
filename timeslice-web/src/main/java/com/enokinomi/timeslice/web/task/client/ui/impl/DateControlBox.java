@@ -43,6 +43,13 @@ public class DateControlBox extends Composite implements HasValue<Date>, HasValu
         });
     }
 
+    public void setEnabled(boolean enabled)
+    {
+        prevButton.setEnabled(enabled);
+        dateBox.setEnabled(enabled);
+        nextButton.setEnabled(enabled);
+    }
+
     public String getText()
     {
         return dateBox.getTextBox().getText();

@@ -63,7 +63,7 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
     }
 
     @Override
-    public void bind(IProrataManagerPresenter prorataPresenter)
+    public void bindProrataBits(IProrataManagerPresenter prorataPresenter)
     {
         projectListPanel.bind(prorataPresenter);
     }
@@ -106,6 +106,8 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
                 fireBilleeUpdateRequested(description, newBillee);
             }
         });
+
+        clear();
     }
 
     @Override

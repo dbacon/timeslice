@@ -11,8 +11,11 @@ import com.enokinomi.timeslice.web.core.client.ui.EditableLabel.Listener;
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
 import com.enokinomi.timeslice.web.task.client.ui.api.IHistoryPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IHistoryPanelListener;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -28,10 +31,13 @@ import com.google.inject.Inject;
 
 public class HistoryPanel extends ResizeComposite implements IHistoryPanel
 {
-    private final TaskPanelConstants constants;
+    private static HistoryPanelUiBinder uiBinder = GWT.create(HistoryPanelUiBinder.class);
+    interface HistoryPanelUiBinder extends UiBinder<Widget, HistoryPanel> { }
 
-    private final FlexTable table = new FlexTable();
-    private final ScrollPanel scroller = new ScrollPanel(table);
+    private final TaskPanelConstants constants = GWT.create(TaskPanelConstants.class);
+
+    @UiField protected FlexTable table;
+    @UiField protected ScrollPanel scroller;
 
     private final List<StartTag> items = new ArrayList<StartTag>();
 
@@ -103,15 +109,14 @@ public class HistoryPanel extends ResizeComposite implements IHistoryPanel
     }
 
     @Inject
-    HistoryPanel(TaskPanelConstants constants)
+    HistoryPanel()
     {
-        this.constants = constants;
+        initWidget(uiBinder.createAndBindUi(this));
 
+        // no way to do this in the ui-binder?
         table.setWidth("100%");
         table.getColumnFormatter().setWidth(2, "10em");
         table.getColumnFormatter().addStyleName(1, "tsTimeField");
-        initWidget(scroller);
-        setStyleName("HistoryPanel");
     }
 
     @Override
