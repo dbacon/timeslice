@@ -14,6 +14,7 @@ import com.enokinomi.timeslice.web.core.client.util.Checks;
 import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport;
 import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport.LoginListener;
 import com.enokinomi.timeslice.web.prorata.client.presenter.api.IProrataManagerPresenter;
+import com.enokinomi.timeslice.web.settings.client.presenter.api.ISettingsPresenter;
 import com.enokinomi.timeslice.web.task.client.controller.api.IController;
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
 import com.enokinomi.timeslice.web.task.client.core.TaskTotal;
@@ -21,7 +22,7 @@ import com.enokinomi.timeslice.web.task.client.core_todo_move_out.BrandInfo;
 import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IReportPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IReportPanelListener;
-import com.enokinomi.timeslice.web.task.client.ui.api.ISettingsPresenter;
+import com.enokinomi.timeslice.web.task.client.ui.impl.OptionsPanel;
 import com.enokinomi.timeslice.web.task.client.ui_one.api.ITimesliceApp;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -151,10 +152,11 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
 
         InputPanel.bind(inputPanel, presenter);
 
-        reportPanel.bindProrataBits(prorataPresenter);
+        reportPanel.bindProrataBits(prorataPresenter, settingsPresenter);
+        reportPanel.bind(settingsPresenter);
         linkReportPanel(presenter, prorataPresenter);
 
-        optionsPanel.bind(settingsPresenter);
+        OptionsPanel.bind(optionsPanel, settingsPresenter);
 
         linkAppJobPanel(presenter);
     }

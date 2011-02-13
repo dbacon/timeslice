@@ -11,6 +11,7 @@ import com.enokinomi.timeslice.web.prorata.client.core.Group;
 import com.enokinomi.timeslice.web.prorata.client.presenter.api.IProrataManagerPresenter;
 import com.enokinomi.timeslice.web.prorata.client.presenter.impl.ProrataManagerPresenter;
 import com.enokinomi.timeslice.web.prorata.client.ui.api.IProjectReportPanel;
+import com.enokinomi.timeslice.web.settings.client.presenter.api.ISettingsPresenter;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -45,14 +46,9 @@ public class ProjectReportPanel extends Composite implements IProjectReportPanel
     @UiField protected TextBox scaleToTextBox;
     @UiField protected CheckBox scaleCheckBox;
 
-    public static interface Listener
-    {
-        void assignPartialOrderingRequested(Map<String, Double> projectMap, int i, int j); // -> sendReorder
-    }
-
     private final List<Listener> listeners = new ArrayList<ProjectReportPanel.Listener>();
 
-    public static void bind(final IProjectReportPanel ui, final IProrataManagerPresenter presenter)
+    public static void bind(final IProjectReportPanel ui, final IProrataManagerPresenter presenter, final ISettingsPresenter settingsPresenter)
     {
         presenter.addListener(new ProrataManagerPresenter.Listener()
         {
@@ -85,7 +81,46 @@ public class ProjectReportPanel extends Composite implements IProjectReportPanel
             {
                 presenter.sendPartialOrderingAssignment(projectMap, i, j);
             }
+
+            @Override
+            public void scaleToChanged(boolean isEnabled)
+            {
+                settingsPresenter.userSettingCreateOrUpdateRequested("ui.report.project.scaling.enabled", Boolean.toString(isEnabled));
+            }
+
+            @Override
+            public void scaleToValueChanged(double scaleToValue)
+            {
+                settingsPresenter.userSettingCreateOrUpdateRequested("ui.report.project.scaling.value", Double.toString(scaleToValue));
+            }
         });
+
+        settingsPresenter.addListener(new ISettingsPresenter.Listener()
+        {
+            @Override
+            public void userSettingsDone(Map<String, List<String>> result)
+            {
+                if (result.containsKey("ui.report.project.scaling.enabled"))
+                {
+                    ui.setScalingEnabled(Boolean.valueOf(result.get("ui.report.project.scaling.enabled").get(0)), false);
+                }
+                if (result.containsKey("ui.report.project.scaling.value"))
+                {
+                    ui.setScalingValue(Double.valueOf(result.get("ui.report.project.scaling.value").get(0)), false);
+                }
+            }
+
+            @Override
+            public void userSessionDataDone(Map<String, String> result)
+            {
+            }
+
+            @Override
+            public void settingsChanged()
+            {
+            }
+        });
+
     }
 
     @Override
@@ -95,6 +130,16 @@ public class ProjectReportPanel extends Composite implements IProjectReportPanel
         {
             listeners.add(listener);
         }
+    }
+
+    protected void fireScaleToChanged(boolean isEnabled)
+    {
+        for (Listener listener: listeners) listener.scaleToChanged(isEnabled);
+    }
+
+    protected void fireScaleToValueChanged(double scaleToValue)
+    {
+        for (Listener listener: listeners) listener.scaleToValueChanged(scaleToValue);
     }
 
     protected void fireAssignPartialOrderingRequested(Map<String, Double> projectMap, int i, int j)
@@ -115,9 +160,11 @@ public class ProjectReportPanel extends Composite implements IProjectReportPanel
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event)
             {
-                scaleToTextBox.setEnabled(scaleCheckBox.getValue());
+                consistentize();
 
                 drawLastProjects();
+
+                fireScaleToChanged(scaleCheckBox.getValue());
             }
         });
 
@@ -127,12 +174,19 @@ public class ProjectReportPanel extends Composite implements IProjectReportPanel
             public void onChange(ChangeEvent event)
             {
                 drawLastProjects();
+
+                fireScaleToValueChanged(Double.parseDouble(scaleToTextBox.getText()));
             }
         });
 
-        scaleToTextBox.setEnabled(scaleCheckBox.getValue());
+        consistentize();
 
         initWidget(widget);
+    }
+
+    private void consistentize()
+    {
+        scaleToTextBox.setEnabled(scaleCheckBox.getValue());
     }
 
     private void clearAndInstallHeaders_projectTable()
@@ -267,6 +321,19 @@ public class ProjectReportPanel extends Composite implements IProjectReportPanel
             projectTable.getCellFormatter().setAlignment(rowi, 4, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_TOP);
         }
 
+    }
+
+    @Override
+    public void setScalingEnabled(Boolean enabled, boolean fireEvents)
+    {
+        scaleCheckBox.setValue(enabled, false);
+        consistentize();
+    }
+
+    @Override
+    public void setScalingValue(Double value, boolean fireEvents)
+    {
+        scaleToTextBox.setValue(value.toString(), fireEvents);
     }
 
 }

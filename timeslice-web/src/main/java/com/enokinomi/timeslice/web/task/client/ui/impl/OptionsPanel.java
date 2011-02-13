@@ -7,13 +7,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport.LoginListener;
+import com.enokinomi.timeslice.web.settings.client.presenter.api.ISettingsPresenter;
 import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsPanel;
-import com.enokinomi.timeslice.web.task.client.ui.api.ISettingsPresenter;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -25,6 +27,15 @@ import com.google.inject.Inject;
 
 public class OptionsPanel extends Composite implements IOptionsPanel
 {
+    private static final class UiOptionKey
+    {
+        public static final String MaxSeconds = "ui.options.maxseconds";
+        public static final String MaxSize = "ui.options.maxsize";
+        public static final String ControlSpaceSendsEnabled = "ui.options.controlspacesends.enabled";
+        public static final String TaskInTitleBarTemplate = "ui.options.taskintitlebar.template";
+        public static final String TaskInTitleBarEnabled = "ui.options.taskintitlebar.enabled";
+    }
+
     private static OptionsPanelUiBinder uiBinder = GWT.create(OptionsPanelUiBinder.class);
     interface OptionsPanelUiBinder extends UiBinder<Widget, OptionsPanel> { }
 
@@ -45,27 +56,26 @@ public class OptionsPanel extends Composite implements IOptionsPanel
     @UiField protected TextBox maxSeconds;
 
 
-    @Override
-    public void bind(final ISettingsPresenter presenter)
+    public static void bind(final IOptionsPanel ui, final ISettingsPresenter presenter)
     {
         presenter.addListener(new ISettingsPresenter.Listener()
         {
             @Override
             public void settingsChanged()
             {
-                handleSettingsChanged();
+                ui.handleSettingsChanged();
             }
 
             @Override
             public void userSettingsDone(Map<String, List<String>> result)
             {
-                handleUserSettingDone(result);
+                ui.handleUserSettingDone(result);
             }
 
             @Override
             public void userSessionDataDone(Map<String, String> result)
             {
-                handleUserSessionDataDone(result);
+                ui.handleUserSessionDataDone(result);
             }
         });
 
@@ -74,17 +84,17 @@ public class OptionsPanel extends Composite implements IOptionsPanel
             @Override
             public void sessionEnded(boolean retry)
             {
-                handleSessionEnded();
+                ui.handleSessionEnded();
             }
 
             @Override
             public void newSessionStarted()
             {
-                handleSessionStarted();
+                ui.handleSessionStarted();
             }
         });
 
-        addListener(new Listener()
+        ui.addListener(new Listener()
         {
             @Override
             public void userSettingAddRequested(String name, String value)
@@ -96,6 +106,12 @@ public class OptionsPanel extends Composite implements IOptionsPanel
             public void userSettingEditRequested(String name, String oldValue, String newValue)
             {
                 presenter.userSettingEditRequested(name, oldValue, newValue);
+            }
+
+            @Override
+            public void userSettingCreateOrUpdate(String name, String value)
+            {
+                presenter.userSettingCreateOrUpdateRequested(name, value);
             }
 
             @Override
@@ -112,14 +128,6 @@ public class OptionsPanel extends Composite implements IOptionsPanel
         });
     }
 
-    public static interface Listener
-    {
-        void userSettingAddRequested(String name, String value);
-        void userSettingEditRequested(String name, String oldValue, String newValue);
-        void userSettingDeleteRequested(String name, String value);
-        void refreshRequested();
-    }
-
     private List<Listener> listeners = new ArrayList<Listener>();
 
     public void addListener(Listener listener)
@@ -128,27 +136,53 @@ public class OptionsPanel extends Composite implements IOptionsPanel
     }
 
 
-    private void handleSettingsChanged()
+    @Override
+    public void handleSettingsChanged()
     {
         fireRefreshRequested();
     }
 
-    private void handleUserSessionDataDone(Map<String, String> result)
+    @Override
+    public void handleUserSessionDataDone(Map<String, String> result)
     {
         setSessionData(result);
     }
 
-    protected void handleUserSettingDone(Map<String, List<String>> result)
+    @Override
+    public void handleUserSettingDone(Map<String, List<String>> result)
     {
         setUserSettings(result);
+
+        if (result.containsKey(UiOptionKey.MaxSeconds))
+        {
+            maxSeconds.setValue(result.get(UiOptionKey.MaxSeconds).get(0), false);
+        }
+        if (result.containsKey(UiOptionKey.MaxSize))
+        {
+            maxSize.setValue(result.get(UiOptionKey.MaxSize).get(0), false);
+        }
+        if (result.containsKey(UiOptionKey.ControlSpaceSendsEnabled))
+        {
+            controlSpaceSends.setValue(Boolean.valueOf(result.get(UiOptionKey.ControlSpaceSendsEnabled).get(0)), false);
+        }
+        if (result.containsKey(UiOptionKey.TaskInTitleBarEnabled))
+        {
+            currentTaskInTitlebar.setValue(Boolean.valueOf(result.get(UiOptionKey.TaskInTitleBarEnabled).get(0)), false);
+        }
+        if (result.containsKey(UiOptionKey.TaskInTitleBarTemplate))
+        {
+            titleBarTemplate.setValue(result.get(UiOptionKey.TaskInTitleBarTemplate).get(0), false);
+        }
     }
 
-    protected void handleSessionStarted()
+    @Override
+    public void handleSessionStarted()
     {
         fireRefreshRequested();
     }
 
-    protected void handleSessionEnded()
+    @Override
+    public void handleSessionEnded()
     {
         sessionDataTable.removeAllRows();
         sessionDataTable.setText(0, 0, "Not logged in.");
@@ -179,6 +213,11 @@ public class OptionsPanel extends Composite implements IOptionsPanel
     protected void fireRefreshRequested()
     {
         for (Listener listener: listeners) listener.refreshRequested();
+    }
+
+    protected void fireUserSettingCreateOrUpdate(String name, String value)
+    {
+        for (Listener listener: listeners) listener.userSettingCreateOrUpdate(name, value);
     }
 
 
@@ -245,12 +284,58 @@ public class OptionsPanel extends Composite implements IOptionsPanel
 //        titleBarTemplate.addChangeHandler(CommonChangeFireChanged);
 //        currentTaskInTitlebar.addClickHandler(CommonClickFireChanged);
 
-        currentTaskInTitlebar.addClickHandler(new ClickHandler()
+        currentTaskInTitlebar.addValueChangeHandler(new ValueChangeHandler<Boolean>()
         {
             @Override
-            public void onClick(ClickEvent event)
+            public void onValueChange(ValueChangeEvent<Boolean> event)
             {
+                fireUserSettingCreateOrUpdate(UiOptionKey.TaskInTitleBarEnabled, currentTaskInTitlebar.getValue() ? "true" : "false");
                 consistentize();
+            }
+        });
+
+        titleBarTemplate.addKeyPressHandler(new KeyPressHandler()
+        {
+            @Override
+            public void onKeyPress(KeyPressEvent event)
+            {
+                // schedule this for later, after the textbox has been updated.
+                Scheduler.get().scheduleDeferred(new ScheduledCommand()
+                {
+                    @Override
+                    public void execute()
+                    {
+                        fireUserSettingCreateOrUpdate(UiOptionKey.TaskInTitleBarTemplate, titleBarTemplate.getText());
+                    }
+                });
+            }
+        });
+
+        controlSpaceSends.addValueChangeHandler(new ValueChangeHandler<Boolean>()
+        {
+            @Override
+            public void onValueChange(ValueChangeEvent<Boolean> event)
+            {
+                fireUserSettingCreateOrUpdate(UiOptionKey.ControlSpaceSendsEnabled, controlSpaceSends.getValue() ? "true" : "false");
+            }
+        });
+
+        maxSize.addValueChangeHandler(new ValueChangeHandler<String>()
+        {
+            @Override
+            public void onValueChange(ValueChangeEvent<String> event)
+            {
+                fireUserSettingCreateOrUpdate(UiOptionKey.MaxSize, maxSize.getText());
+            }
+        });
+
+        maxSeconds.addValueChangeHandler(new ValueChangeHandler<String>()
+        {
+
+            @Override
+            public void onValueChange(ValueChangeEvent<String> event)
+            {
+                fireUserSettingCreateOrUpdate(UiOptionKey.MaxSeconds, maxSeconds.getText());
             }
         });
 

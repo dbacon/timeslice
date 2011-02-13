@@ -50,4 +50,10 @@ public class UserInfoDao implements IUserInfoDao
         connContext.doWorkWithinContext(userInfoWorks.deleteSetting(username, name, value));
     }
 
+    @Override
+    public void deleteSetting(String username, String name)
+    {
+        connContext.doWorkWithinContext(userInfoWorks.deleteSetting(username, name));
+    }
+
 }

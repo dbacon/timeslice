@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.web.task.client.ui.impl;
+package com.enokinomi.timeslice.web.settings.client.presenter.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport;
 import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport.IOnAuthenticated;
 import com.enokinomi.timeslice.web.session.client.core.ISessionSvcAsync;
 import com.enokinomi.timeslice.web.settings.client.core.ISettingsSvcAsync;
-import com.enokinomi.timeslice.web.task.client.ui.api.ISettingsPresenter;
+import com.enokinomi.timeslice.web.settings.client.presenter.api.ISettingsPresenter;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
@@ -79,6 +79,26 @@ public class SettingsPresenter implements ISettingsPresenter
     public void userSettingEditRequested(String name, String oldValue, String newValue)
     {
         settingsSvc.editSetting(loginSupport.getAuthToken(), name, oldValue, newValue, new AsyncCallback<Void>()
+                {
+                    @Override
+                    public void onSuccess(Void result)
+                    {
+                        fireUserSettingsChanged();
+                    }
+
+                    @Override
+                    public void onFailure(Throwable caught)
+                    {
+                        GWT.log("Editing item failed: " + caught.getMessage());
+                    }
+                });
+    }
+
+
+    @Override
+    public void userSettingCreateOrUpdateRequested(String name, String value)
+    {
+        settingsSvc.addOrEditSetting(loginSupport.getAuthToken(), name, value, new AsyncCallback<Void>()
                 {
                     @Override
                     public void onSuccess(Void result)

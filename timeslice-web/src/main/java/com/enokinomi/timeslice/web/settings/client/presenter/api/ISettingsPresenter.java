@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.web.task.client.ui.api;
+package com.enokinomi.timeslice.web.settings.client.presenter.api;
 
 import java.util.List;
 import java.util.Map;
@@ -19,6 +19,7 @@ public interface ISettingsPresenter
 
     void userSettingAddRequested(String name, String value);
     void userSettingEditRequested(String name, String oldValue, String newValue);
+    void userSettingCreateOrUpdateRequested(String name, String value);
     void userSettingDeleteRequested(String name, String value);
     void refreshRequested();
 }

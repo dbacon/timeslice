@@ -10,4 +10,5 @@ public interface IUserInfoDao
     void addSetting(String username, String name, String value);
     void editSetting(String username, String name, String oldValue, String newValue);
     void deleteSetting(String username, String name, String value);
+    void deleteSetting(String user, String name);
 }

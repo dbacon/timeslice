@@ -3,12 +3,18 @@ package com.enokinomi.timeslice.web.task.client.ui.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import com.enokinomi.timeslice.web.settings.client.presenter.api.ISettingsPresenter;
 import com.enokinomi.timeslice.web.task.client.ui.api.IParamChangedListener;
 import com.enokinomi.timeslice.web.task.client.ui.api.IParamPanel;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -75,15 +81,27 @@ public class ParamPanel extends Composite implements IParamPanel
     }
 
     @Override
-    public TextBox getIgnoreWords()
+    public String getIgnoreWords()
     {
-        return ignoreWords;
+        return ignoreWords.getText();
     }
 
     @Override
-    public TextBox getAllowWords()
+    public void setIgnoreWords(String ignoreWords, boolean fireEvents)
     {
-        return allowWords;
+        this.ignoreWords.setValue(ignoreWords, fireEvents);
+    }
+
+    @Override
+    public String getAllowWords()
+    {
+        return allowWords.getText();
+    }
+
+    @Override
+    public void setAllowWords(String allowWords, boolean fireEvents)
+    {
+        this.allowWords.setValue(allowWords, fireEvents);
     }
 
     private final ValueChangeHandler<Date> defaultChangeHandler = new ValueChangeHandler<Date>()
@@ -155,6 +173,79 @@ public class ParamPanel extends Composite implements IParamPanel
                         fireParamChanged();
                     }
                 });
+    }
+
+    @Override
+    public void restoreFromSettings(Map<String, List<String>> result)
+    {
+        if (result.containsKey("ui.params.allowwords"))
+        {
+            setAllowWords(result.get("ui.params.allowwords").get(0), false);
+        }
+
+        if (result.containsKey("ui.params.ignorewords"))
+        {
+            setIgnoreWords(result.get("ui.params.ignorewords").get(0), false);
+        }
+    }
+
+    @Override
+    public void bind(final IParamPanel paramPanel, final ISettingsPresenter settingsPresenter)
+    {
+        settingsPresenter.addListener(new ISettingsPresenter.Listener()
+        {
+            @Override
+            public void userSettingsDone(Map<String, List<String>> result)
+            {
+                paramPanel.restoreFromSettings(result);
+            }
+
+            @Override
+            public void userSessionDataDone(Map<String, String> result)
+            {
+            }
+
+            @Override
+            public void settingsChanged()
+            {
+            }
+        });
+
+
+        // TODO: below ones should fire events! and be handled. not direct ties.
+        //          and then this bind() method made static or moved.
+
+        allowWords.addKeyPressHandler(new KeyPressHandler()
+        {
+            @Override
+            public void onKeyPress(KeyPressEvent event)
+            {
+                Scheduler.get().scheduleDeferred(new ScheduledCommand()
+                {
+                    @Override
+                    public void execute()
+                    {
+                        settingsPresenter.userSettingCreateOrUpdateRequested("ui.params.allowwords", allowWords.getText());
+                    }
+                });
+            }
+        });
+
+        ignoreWords.addKeyPressHandler(new KeyPressHandler()
+        {
+            @Override
+            public void onKeyPress(KeyPressEvent event)
+            {
+                Scheduler.get().scheduleDeferred(new ScheduledCommand()
+                {
+                    @Override
+                    public void execute()
+                    {
+                        settingsPresenter.userSettingCreateOrUpdateRequested("ui.params.ignorewords", ignoreWords.getText());
+                    }
+                });
+            }
+        });
     }
 
 }

@@ -11,5 +11,6 @@ public interface IUserInfoWorks
     IConnectionWork<Void> addSetting(String user, String name, String value);
     IConnectionWork<Void> editSetting(String user, String name, String oldValue, String newValue);
     IConnectionWork<Void> deleteSetting(String user, String name, String value);
+    IConnectionWork<Void> deleteSetting(String username, String name);
 
 }

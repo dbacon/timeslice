@@ -14,5 +14,6 @@
   <source path="client">
     <exclude name="**/*Test.java"/>
   </source>
+  <inherits name="com.enokinomi.timeslice.web.task.Task"/>
 
 </module>

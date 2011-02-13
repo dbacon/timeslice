@@ -199,4 +199,31 @@ public class UserInfoWorks implements IUserInfoWorks
             }
         };
     }
+
+    @Override
+    public IConnectionWork<Void> deleteSetting(final String user, final String name)
+    {
+        return new IConnectionWork<Void>()
+        {
+            @Override
+            public Void performWithConnection(Connection conn)
+            {
+                if (baseStore.versionIsAtLeast(conn, RequiredVersion))
+                {
+                    baseStore.doSomeSql(
+                            conn,
+                            "delete from ts_conf where username = ? and name = ?",
+                            new Object[]
+                            {
+                                    user,
+                                    name
+                            },
+                            null,
+                            null); // we can't distinguish
+                }
+
+                return null; // Void
+            }
+        };
+    }
 }

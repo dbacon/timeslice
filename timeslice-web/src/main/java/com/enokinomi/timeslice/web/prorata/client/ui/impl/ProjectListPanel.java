@@ -9,6 +9,7 @@ import com.enokinomi.timeslice.web.prorata.client.ui.api.IProjectProrataTreePane
 import com.enokinomi.timeslice.web.prorata.client.ui.api.IProjectReportPanel;
 import com.enokinomi.timeslice.web.prorata.client.ui.api.IProrataManagerPanel;
 import com.enokinomi.timeslice.web.prorata.client.ui.impl.ProjectProrataTreePanel.Row;
+import com.enokinomi.timeslice.web.settings.client.presenter.api.ISettingsPresenter;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -32,9 +33,9 @@ public class ProjectListPanel extends Composite implements IProjectListPanel
     }
 
     @Override
-    public void bind(IProrataManagerPresenter prorataManagerPresenter)
+    public void bind(IProrataManagerPresenter prorataManagerPresenter, ISettingsPresenter settingsPresenter)
     {
-        ProjectReportPanel.bind(projectReportPanel, prorataManagerPresenter);
+        ProjectReportPanel.bind(projectReportPanel, prorataManagerPresenter, settingsPresenter);
         ProrataManagerPanel.bind(prorataManagePanel, prorataManagerPresenter);
         ProjectProrataTreePanel.bind(projectProrataTreePanel, prorataManagerPresenter);
     }

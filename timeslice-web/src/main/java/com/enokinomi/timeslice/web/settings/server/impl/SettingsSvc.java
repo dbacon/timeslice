@@ -48,4 +48,12 @@ class SettingsSvc implements ISettingsSvc
         SessionData sd = tracker.checkToken(authToken);
         return userInfoDao.loadUserSettings(sd.getUser(), prefix).getMap();
     }
+
+    @Override
+    public void addOrEditSetting(String authToken, String name, String value)
+    {
+        SessionData sd = tracker.checkToken(authToken);
+        userInfoDao.deleteSetting(sd.getUser(), name);
+        userInfoDao.addSetting(sd.getUser(), name, value);
+    }
 }

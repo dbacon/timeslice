@@ -9,6 +9,7 @@ import com.enokinomi.timeslice.web.assign.client.ui.api.ITabularResultsAssignedV
 import com.enokinomi.timeslice.web.assign.client.ui.api.ITabularResultsAssignedViewListener;
 import com.enokinomi.timeslice.web.prorata.client.presenter.api.IProrataManagerPresenter;
 import com.enokinomi.timeslice.web.prorata.client.ui.api.IProjectListPanel;
+import com.enokinomi.timeslice.web.settings.client.presenter.api.ISettingsPresenter;
 import com.enokinomi.timeslice.web.task.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.task.client.ui.api.IParamChangedListener;
 import com.enokinomi.timeslice.web.task.client.ui.api.IParamPanel;
@@ -63,9 +64,15 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
     }
 
     @Override
-    public void bindProrataBits(IProrataManagerPresenter prorataPresenter)
+    public void bindProrataBits(IProrataManagerPresenter prorataPresenter, ISettingsPresenter settingsPresenter)
     {
-        projectListPanel.bind(prorataPresenter);
+        projectListPanel.bind(prorataPresenter, settingsPresenter);
+    }
+
+    @Override
+    public void bind(ISettingsPresenter settingsPresenter)
+    {
+        params.bind(params, settingsPresenter); // will be static/moved
     }
 
     @UiHandler("refreshButton")
@@ -74,8 +81,8 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
         fireRefreshRequested(
                 params.getStartingTimeRendered(),
                 params.getEndingTimeRendered(),
-                Arrays.asList(params.getAllowWords().getText().split(",")),
-                Arrays.asList(params.getIgnoreWords().getText().split(",")));
+                Arrays.asList(params.getAllowWords().split(",")),
+                Arrays.asList(params.getIgnoreWords().split(",")));
     }
 
     @Inject
@@ -90,8 +97,8 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
                 fireRefreshRequested(
                     params.getStartingTimeRendered(),
                     params.getEndingTimeRendered(),
-                    Arrays.asList(params.getAllowWords().getText().split(",")),
-                    Arrays.asList(params.getIgnoreWords().getText().split(",")));
+                    Arrays.asList(params.getAllowWords().split(",")),
+                    Arrays.asList(params.getIgnoreWords().split(",")));
                 //reselectData();
             }
         });
