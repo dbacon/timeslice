@@ -19,7 +19,7 @@
 
             <g:HorizontalPanel verticalAlignment="ALIGN_MIDDLE">
                 <g:CheckBox ui:field="scaleCheckBox"><ui:msg>Include scaling</ui:msg></g:CheckBox>
-                <g:TextBox ui:field="scaleToTextBox" ui:styleName="numberEntry">8</g:TextBox>
+                <g:DoubleBox ui:field="scaleToTextBox" ui:styleName="numberEntry">8.0</g:DoubleBox>
             </g:HorizontalPanel>
 
             <g:FlexTable ui:styleName="tsMathTable" ui:field="projectTable" />

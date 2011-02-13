@@ -24,12 +24,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
@@ -43,7 +43,8 @@ public class ProjectReportPanel extends Composite implements IProjectReportPanel
 
     @UiField protected FlexTable projectTable;
 
-    @UiField protected TextBox scaleToTextBox;
+    @UiField protected DoubleBox scaleToTextBox;
+
     @UiField protected CheckBox scaleCheckBox;
 
     private final List<Listener> listeners = new ArrayList<ProjectReportPanel.Listener>();
@@ -173,9 +174,7 @@ public class ProjectReportPanel extends Composite implements IProjectReportPanel
             @Override
             public void onChange(ChangeEvent event)
             {
-                drawLastProjects();
-
-                fireScaleToValueChanged(Double.parseDouble(scaleToTextBox.getText()));
+                fireScaleToValueChanged(scaleToTextBox.getValue());
             }
         });
 
@@ -298,7 +297,7 @@ public class ProjectReportPanel extends Composite implements IProjectReportPanel
 
             if (scaleCheckBox.getValue())
             {
-                Double target = Double.valueOf(scaleToTextBox.getText());
+                Double target = scaleToTextBox.getValue();
                 double scaled = p.getValue() / total * target;
                 scaledTotal += scaled;
                 projectTable.setWidget(rowi, coli, new Label(messages.grandTotalScaled(scaled)));
@@ -328,12 +327,14 @@ public class ProjectReportPanel extends Composite implements IProjectReportPanel
     {
         scaleCheckBox.setValue(enabled, false);
         consistentize();
+        drawLastProjects();
     }
 
     @Override
     public void setScalingValue(Double value, boolean fireEvents)
     {
-        scaleToTextBox.setValue(value.toString(), fireEvents);
+        scaleToTextBox.setValue(value, fireEvents);
+        drawLastProjects();
     }
 
 }
