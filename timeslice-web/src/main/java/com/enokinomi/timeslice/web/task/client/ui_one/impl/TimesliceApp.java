@@ -100,7 +100,6 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
         fireServerInfoRequested();
         fireBrandingRequested();
         fireBilleesRequested(); // TODO: is this really ours? if so, a bunch more should be too.
-        fireRefreshRequested();
     }
 
     public static interface AppListener
@@ -122,11 +121,6 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
     public void addAppListener(AppListener l)
     {
         if (l != null) listeners.add(l);
-    }
-
-    protected void fireRefreshRequested()
-    {
-        for (AppListener l: listeners) l.refreshRequested();
     }
 
     // TODO: is this really ours?
@@ -271,8 +265,7 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
             @Override
             public void newSessionStarted()
             {
-                fireRefreshRequested(); // TODO: could be more specific
-//                refreshTotals();
+                reportPanel.update();
             }
         });
 
@@ -317,8 +310,7 @@ public class TimesliceApp extends ResizeComposite implements ITimesliceApp
                     }
                     else
                     {
-                        fireRefreshRequested(); // TODO: could be more specific..
-//                        refreshTotals();
+                        reportPanel.update();
                     }
                 }
 

@@ -18,4 +18,5 @@ public interface IReportPanel extends IsWidget
     void clear();
     void bindProrataBits(IProrataManagerPresenter prorataPresenter, ISettingsPresenter presenter);
     void bind(ISettingsPresenter settingsPresenter);
+    void update();
 }

@@ -78,6 +78,12 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
     @UiHandler("refreshButton")
     protected void refreshClicked(ClickEvent e)
     {
+        update();
+    }
+
+    @Override
+    public void update()
+    {
         fireRefreshRequested(
                 params.getStartingTimeRendered(),
                 params.getEndingTimeRendered(),
