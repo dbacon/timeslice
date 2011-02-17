@@ -340,7 +340,7 @@ public class InputPanel extends ResizeComposite implements IsWidget
     }
 
     // used only internally and to service, so tz doesnt matter.
-    public static final DateTimeFormat MachineFormat = DateTimeFormat.getFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    public static final DateTimeFormat MachineFormat = DateTimeFormat.getFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZZ");
 
     private void scheduleRefresh()
     {
