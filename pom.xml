@@ -5,7 +5,7 @@
     <groupId>com.enokinomi.timeslice</groupId>
     <artifactId>timeslice-project</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.10.1</version>
+    <version>1.0.10.2-SNAPSHOT</version>
 
     <name>timeslice-project</name>
 
