@@ -5,12 +5,12 @@
     <parent>
         <groupId>com.enokinomi.timeslice</groupId>
         <artifactId>timeslice-parent</artifactId>
-        <version>1.0.11-SNAPSHOT</version>
+        <version>1.0.11-beta-1</version>
     </parent>
 
 	<groupId>com.enokinomi.timeslice</groupId>
 	<artifactId>timeslice-lib</artifactId>
-        <version>1.0.11-SNAPSHOT</version>
+        <version>1.0.11-beta-1</version>
 	<packaging>jar</packaging>
 
 	<name>timeslice-lib</name>
@@ -32,12 +32,12 @@
         <dependency>
             <groupId>com.enokinomi.timeslice</groupId>
             <artifactId>timeslice-util</artifactId>
-            <version>1.0.11-SNAPSHOT</version>
+            <version>1.0.11-beta-1</version>
         </dependency>
         <dependency>
             <groupId>com.enokinomi.timeslice</groupId>
             <artifactId>timeslice-commondatautil</artifactId>
-            <version>1.0.11-SNAPSHOT</version>
+            <version>1.0.11-beta-1</version>
         </dependency>
 		<dependency>
 			<groupId>junit</groupId>
