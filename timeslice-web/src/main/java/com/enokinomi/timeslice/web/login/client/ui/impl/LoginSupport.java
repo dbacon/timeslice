@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.enokinomi.timeslice.web.core.client.ui.ErrorBox;
+import com.enokinomi.timeslice.web.core.client.ui.GenericRegistration;
+import com.enokinomi.timeslice.web.core.client.ui.NullRegistration;
 import com.enokinomi.timeslice.web.core.client.ui.PrefHelper;
+import com.enokinomi.timeslice.web.core.client.ui.Registration;
 import com.enokinomi.timeslice.web.core.client.util.NeedsSetupException;
 import com.enokinomi.timeslice.web.core.client.util.NotAuthenticException;
 import com.enokinomi.timeslice.web.login.client.core.ILoginSvcAsync;
@@ -31,12 +34,15 @@ public class LoginSupport implements ILoginSupport
 
     private final List<LoginListener> listeners = new ArrayList<LoginSupport.LoginListener>();
 
-    public void addLoginListener(LoginListener listener)
+    @Override
+    public Registration addLoginListener(LoginListener listener)
     {
         if (listener != null)
         {
             listeners.add(listener);
+            return GenericRegistration.wrap(listeners, listener);
         }
+        return NullRegistration.Instance;
     }
 
     protected void fireNewSessionStarted()

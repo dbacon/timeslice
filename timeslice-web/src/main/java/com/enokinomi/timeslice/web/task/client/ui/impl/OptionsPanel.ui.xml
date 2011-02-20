@@ -1,6 +1,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
     xmlns:g="urn:import:com.google.gwt.user.client.ui"
+    xmlns:tscore="urn:import:com.enokinomi.timeslice.web.core.client.ui"
     xmlns:task="urn:import:com.enokinomi.timeslice.web.task.client.ui.impl"
     >
 
@@ -9,6 +10,10 @@
     </ui:style>
 
     <g:DockLayoutPanel unit="EM">
+
+        <g:north size="3">
+            <tscore:NavPanel ui:field="navPanel" />
+        </g:north>
 
         <g:north size="15">
             <g:HTMLPanel>
@@ -34,12 +39,14 @@
 
         <g:center>
             <g:VerticalPanel spacing="5">
-                <g:DecoratorPanel>
-                    <g:FlexTable ui:field="sessionDataTable" />
-                </g:DecoratorPanel>
+                <g:FlexTable ui:field="sessionDataTable" />
                 <task:SettingsEditorPanel ui:field="settingsEditor" />
             </g:VerticalPanel>
         </g:center>
+
+        <g:south size="2">
+            <tscore:FooterPanel ui:field="footerPanel" />
+        </g:south>
 
     </g:DockLayoutPanel>
 

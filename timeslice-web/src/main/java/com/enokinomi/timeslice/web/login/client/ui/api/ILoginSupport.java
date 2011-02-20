@@ -1,5 +1,6 @@
 package com.enokinomi.timeslice.web.login.client.ui.api;
 
+import com.enokinomi.timeslice.web.core.client.ui.Registration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface ILoginSupport
@@ -24,5 +25,5 @@ public interface ILoginSupport
 
     String getAuthToken();
     void logout();
-    void addLoginListener(LoginListener listener);
+    Registration addLoginListener(LoginListener listener);
 }

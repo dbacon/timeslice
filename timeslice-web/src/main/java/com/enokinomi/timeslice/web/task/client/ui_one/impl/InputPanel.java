@@ -6,10 +6,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.enokinomi.timeslice.web.appjob.client.core.AppJobCompletion;
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
+import com.enokinomi.timeslice.web.core.client.ui.FooterPanel;
+import com.enokinomi.timeslice.web.core.client.ui.GenericRegistration;
+import com.enokinomi.timeslice.web.core.client.ui.IClearable;
+import com.enokinomi.timeslice.web.core.client.ui.Initializable;
+import com.enokinomi.timeslice.web.core.client.ui.NavPanel;
+import com.enokinomi.timeslice.web.core.client.ui.NullRegistration;
+import com.enokinomi.timeslice.web.core.client.ui.Registration;
 import com.enokinomi.timeslice.web.core.client.util.AsyncResult;
+import com.enokinomi.timeslice.web.core.client.util.Checks;
 import com.enokinomi.timeslice.web.core.client.util.ITransform;
 import com.enokinomi.timeslice.web.task.client.controller.api.IController;
 import com.enokinomi.timeslice.web.task.client.controller.api.IControllerListener;
@@ -20,7 +29,9 @@ import com.enokinomi.timeslice.web.task.client.ui.api.IHistoryPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IHistoryPanelListener;
 import com.enokinomi.timeslice.web.task.client.ui.api.IHotlistPanel;
 import com.enokinomi.timeslice.web.task.client.ui.api.IHotlistPanelListener;
+import com.enokinomi.timeslice.web.task.client.ui.api.IOptionsPanel;
 import com.enokinomi.timeslice.web.task.client.ui.impl.DateControlBox;
+import com.enokinomi.timeslice.web.task.client.ui.impl.OptionsPanel.UiOptionKey;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -33,7 +44,9 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -44,12 +57,15 @@ import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
-public class InputPanel extends ResizeComposite implements IsWidget
+public class InputPanel extends ResizeComposite implements IsWidget, IClearable, Initializable
 {
     private static InputPanelUiBinder uiBinder = GWT.create(InputPanelUiBinder.class);
     interface InputPanelUiBinder extends UiBinder<Widget, InputPanel> { }
 
+    @UiField(provided=true) protected NavPanel navPanel;
+    @UiField protected FooterPanel footerPanel;
     @UiField protected Anchor updateLink;
     @UiField protected Anchor addHotlink;
     @UiField protected Anchor enterLink;
@@ -65,15 +81,34 @@ public class InputPanel extends ResizeComposite implements IsWidget
 
     private final MultiWordSuggestOracle suggestSource = new MultiWordSuggestOracle();
 
-    private static class Options
+    private Options options = new Options();
+
+    public static class Options
     {
-        public boolean isControlSpaceSends() { return false; }
-        public int getMaxSize() { return 40; }
-        public int getMaxSeconds() { return 60*60*24; }
+        public int maxSize = 0;
+        public int maxSeconds = 0;
+        public boolean controlSpaceSends = false;
+        public boolean taskInTitlebar = false;
+        public String titlebarTemplate = "[TS] " + IOptionsPanel.CURRENTTASK;
     }
 
-    private final Options options = new Options();
+    public String originalWindowTitle = "";
+    private final TzSupport tzSupport;
 
+    public void setOptions(Options options)
+    {
+        this.options = options;
+    }
+
+    public Options getOptions()
+    {
+        return options;
+    }
+
+    public FooterPanel getFooterPanel()
+    {
+        return footerPanel;
+    }
 
     public static void bind(final InputPanel ui, final IController controller)
     {
@@ -100,24 +135,21 @@ public class InputPanel extends ResizeComposite implements IsWidget
             @Override
             public void refreshRequested(int maxItems, String starting, String ending)
             {
-                controller.startRefreshItems(maxItems, starting, ending);
             }
 
             @Override
             public void editTagRequested(StartTag editedStartTag)
             {
-                controller.startEditDescription(editedStartTag);
             }
 
             @Override
             public void addTagRequested(String instantString, String description)
             {
-                controller.startAddItem(instantString, description);
             }
 
         });
 
-        controller.addControllerListener(new IControllerListener()
+        controller.addControllerListener("input-panel.bind() (ASSERT NOT USED)", new IControllerListener()
         {
             @Override
             public void serverInfoRecieved(String info)
@@ -191,16 +223,18 @@ public class InputPanel extends ResizeComposite implements IsWidget
     }
 
 
+    @UiConstructor
     @Inject
-    InputPanel()
+    public InputPanel(@Named("populated") NavPanel navPanel, TzSupport tzSupport)
     {
+        this.navPanel = navPanel;
+        this.tzSupport = tzSupport;
         taskDescriptionEntry = new SuggestBox(suggestSource);
 
         initWidget(uiBinder.createAndBindUi(this));
 
 //        modeRadioSpecify = new RadioButton("MODE", constants.specifyDate());
 //        modeRadioNormal = new RadioButton("MODE", constants.current());
-
 
         initContents();
     }
@@ -258,17 +292,16 @@ public class InputPanel extends ResizeComposite implements IsWidget
 
             public void hotlistChanged()
             {
-                scheduleHotlistValidation();
+                consistentizeHotlist();
             }
         });
 
-        specifiedDateBox.setValue(new Date());
         specifiedDateBox.addValueChangeHandler(new ValueChangeHandler<Date>()
                 {
                     @Override
                     public void onValueChange(ValueChangeEvent<Date> event)
                     {
-                        scheduleRefresh();
+                        scheduleRefresh("due to specified-date value-change");
                     }
                 });
 
@@ -279,9 +312,12 @@ public class InputPanel extends ResizeComposite implements IsWidget
                     @Override
                     public void onValueChange(ValueChangeEvent<Boolean> event)
                     {
-                        fixSpecifiedDateBox(event.getValue());
-                        setEntryVisible(!event.getValue());
-                        scheduleRefresh();
+                        if (event.getValue())
+                        {
+                            fixSpecifiedDateBox(event.getValue());
+                            setEntryVisible(!event.getValue());
+                            scheduleRefresh("due to 'specify' radio value-change");
+                        }
                     }
                 });
 
@@ -290,12 +326,14 @@ public class InputPanel extends ResizeComposite implements IsWidget
                     @Override
                     public void onValueChange(ValueChangeEvent<Boolean> event)
                     {
-                        fixSpecifiedDateBox(!event.getValue());
-                        setEntryVisible(event.getValue());
-                        scheduleRefresh();
+                        if (event.getValue())
+                        {
+                            fixSpecifiedDateBox(!event.getValue());
+                            setEntryVisible(event.getValue());
+                            scheduleRefresh("due to 'normal' radio value-change");
+                        }
                     }
                 });
-        modeRadioNormal.setValue(true, true);
 
 //        HorizontalPanel modePanel = new HorizontalPanel();
 //        modePanel.setSpacing(5);
@@ -311,10 +349,11 @@ public class InputPanel extends ResizeComposite implements IsWidget
             @Override
             public void onClick(ClickEvent event)
             {
-                scheduleRefresh();
+                scheduleRefresh("due to update-link click-event");
             }
         });
 
+        enterLink.setHref("#");
         enterLink.addClickHandler(new ClickHandler()
         {
             @Override
@@ -324,6 +363,7 @@ public class InputPanel extends ResizeComposite implements IsWidget
             }
         });
 
+        addHotlink.setHref("#");
         addHotlink.addClickHandler(new ClickHandler()
         {
             @Override
@@ -333,8 +373,8 @@ public class InputPanel extends ResizeComposite implements IsWidget
                 {
                     hotlistPanel.addAsHotlistItem(taskDescriptionEntry.getText(), taskDescriptionEntry.getText());
                     taskDescriptionEntry.setText("");
-                    scheduleHotlistValidation();
-                    scheduleHotlinkValidation();
+                    consistentizeHotlinks();
+                    consistentizeHotlist();
                 }
             }
         });
@@ -353,7 +393,14 @@ public class InputPanel extends ResizeComposite implements IsWidget
             @Override
             public void onKeyDown(KeyDownEvent event)
             {
-                scheduleHotlinkValidation();
+                Scheduler.get().scheduleDeferred(new ScheduledCommand()
+                {
+                    @Override
+                    public void execute()
+                    {
+                        consistentizeHotlinks();
+                    }
+                });
 
                 if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE)
                 {
@@ -363,7 +410,7 @@ public class InputPanel extends ResizeComposite implements IsWidget
                 {
                     enterNewStartTag(taskDescriptionEntry.getText());
                 }
-                else if (options.isControlSpaceSends() &&
+                else if (options.controlSpaceSends &&
                         event.getNativeEvent().getCtrlKey() && (event.getNativeKeyCode() == ' '))
                 {
                     enterNewStartTag(taskDescriptionEntry.getText());
@@ -387,8 +434,6 @@ public class InputPanel extends ResizeComposite implements IsWidget
 //
 ////        initWidget(mainEntryPanel);
 
-        scheduleHotlistValidation();
-        scheduleHotlinkValidation();
     }
 
     private void setEntryVisible(boolean visible)
@@ -397,31 +442,23 @@ public class InputPanel extends ResizeComposite implements IsWidget
         entryPanel.setVisible(visible);
     }
 
-    private void scheduleHotlinkValidation()
+    public void setHistoryMode(boolean history, boolean fireEvents)
     {
-        Scheduler.get().scheduleDeferred(new ScheduledCommand()
-        {
-            @Override
-            public void execute()
-            {
-                boolean descriptionIsEmpty = taskDescriptionEntry.getText().trim().isEmpty();
-                actionPanel.setVisible(!descriptionIsEmpty);
-                idleActionPanel.setVisible(descriptionIsEmpty);
-            }
-        });
+        modeRadioNormal.setValue(!history, fireEvents);
+        modeRadioSpecify.setValue(history, fireEvents);
     }
 
-    private void scheduleHotlistValidation()
+    public void setHistoricDate(Date when, boolean fireEvents)
     {
-        Scheduler.get().scheduleDeferred(new ScheduledCommand()
-        {
+        if (when == null) when = new Date();
+        specifiedDateBox.setValue(when, fireEvents);
+    }
 
-            @Override
-            public void execute()
-            {
-                hotlistPanel.asWidget().setVisible(0 < hotlistPanel.getHotlistItemCount());
-            }
-        });
+    private void consistentizeHotlinks()
+    {
+        boolean descriptionIsEmpty = taskDescriptionEntry.getText().trim().isEmpty();
+        actionPanel.setVisible(!descriptionIsEmpty);
+        idleActionPanel.setVisible(descriptionIsEmpty);
     }
 
     private void fixSpecifiedDateBox(boolean value)
@@ -432,13 +469,30 @@ public class InputPanel extends ResizeComposite implements IsWidget
     // used only internally and to service, so tz doesnt matter.
     public static final DateTimeFormat MachineFormat = DateTimeFormat.getFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZZ");
 
-    private void scheduleRefresh()
+
+    @Override
+    public void initialize(String callerPurpose)
     {
-        String starting = MachineFormat.format(new Date(new Date().getTime() - options.getMaxSeconds() * 1000));
+        consistentizeHotlist();
+        consistentizeHotlinks();
+
+        scheduleRefresh("due to call to input-panel.initialize, " + callerPurpose);
+        getFooterPanel().initialize("due to call to input-panel.initialize, " + callerPurpose);
+    }
+
+    private void consistentizeHotlist()
+    {
+        hotlistPanel.asWidget().setVisible(0 < hotlistPanel.getHotlistItemCount());
+    }
+
+    private void scheduleRefresh(String callerPurpose)
+    {
+        String starting = MachineFormat.format(new Date(new Date().getTime() - options.maxSeconds * 1000));
         String ending = null;
 
         if (modeRadioSpecify.getValue() && null != specifiedDateBox.getValue())
         {
+            GWT.log("doing historic refresh (" + callerPurpose + ")");
             Date specifiedDate = specifiedDateBox.getValue();
             Date beginningOfSpecifiedDay = floorDate(specifiedDate);
             Date untilEndOfSpecifiedDay = new Date(beginningOfSpecifiedDay.getTime() + 1000*3600*24);
@@ -446,8 +500,12 @@ public class InputPanel extends ResizeComposite implements IsWidget
             starting = MachineFormat.format(beginningOfSpecifiedDay);
             ending = MachineFormat.format(untilEndOfSpecifiedDay);
         }
+        else
+        {
+            GWT.log("doing current refresh (" + callerPurpose + ")");
+        }
 
-        fireRefreshRequested(options.getMaxSize(), starting, ending);
+        fireRefreshRequested(options.maxSize, starting, ending);
     }
 
     /**
@@ -475,9 +533,14 @@ public class InputPanel extends ResizeComposite implements IsWidget
 
     private List<InputListener> listeners = new ArrayList<InputPanel.InputListener>();
 
-    public void addListener(InputListener listener)
+    public Registration addListener(final InputListener listener)
     {
-        if (listener != null) listeners.add(listener);
+        if (listener != null)
+        {
+            listeners.add(listener);
+            return GenericRegistration.wrap(listeners, listener);
+        }
+        return NullRegistration.Instance;
     }
 
     protected void fireEditTagRequested(StartTag editedStartTag)
@@ -507,7 +570,7 @@ public class InputPanel extends ResizeComposite implements IsWidget
     {
         if (description.trim().isEmpty())
         {
-            scheduleRefresh();
+            scheduleRefresh("due to enter empty tag");
         }
         else
         {
@@ -539,6 +602,44 @@ public class InputPanel extends ResizeComposite implements IsWidget
 
         updateSuggestSource(descriptions);
         historyPanel.setSuggestWords(descriptions);
+
+        calculateWindowTitle(items);
+    }
+
+    private static final StartTag UnknownTag = new StartTag(null, null, null, "-unknown-", false);
+
+    private StartTag findCurrentStartTag(List<StartTag> items)
+    {
+        // Since we are searching for 'now'
+        // among the rendered items in history,
+        // we must also use the same TZ which they
+        // were rendered in, to make the lexicographical
+        // comparison valid.
+
+        String now = tzSupport.renderForClientMachine(new Date());
+
+        for (int i = 0; i < items.size(); ++i)
+        {
+            if (now.compareTo(items.get(i).getInstantString()) >= 0)
+            {
+                return items.get(i);
+            }
+        }
+
+        return null;
+    }
+
+    public String renderTitlebar(String currentTaskDescription)
+    {
+        return options.titlebarTemplate.replaceAll(IOptionsPanel.CURRENTTASK, currentTaskDescription);
+    }
+
+    private void calculateWindowTitle(List<StartTag> result)
+    {
+        if (options.taskInTitlebar)
+        {
+            Window.setTitle(renderTitlebar(Checks.mapNullTo(findCurrentStartTag(result), UnknownTag).getDescription()));
+        }
     }
 
     private void updateSuggestSource(List<String> items)
@@ -550,8 +651,36 @@ public class InputPanel extends ResizeComposite implements IsWidget
     public void itemAdded()
     {
         taskDescriptionEntry.setText("");
-        scheduleRefresh();
-        scheduleHotlinkValidation();
+        scheduleRefresh("due to item added");
+        consistentizeHotlinks();
     }
 
+    public void handleUserSettings(Map<String, List<String>> result)
+    {
+        if (result.containsKey(UiOptionKey.ControlSpaceSendsEnabled))
+        {
+            options.controlSpaceSends = "true".equals(result.get(UiOptionKey.ControlSpaceSendsEnabled).get(0));
+        }
+
+        if (result.containsKey(UiOptionKey.MaxSeconds))
+        {
+            options.maxSeconds = (int) Double.parseDouble(result.get(UiOptionKey.MaxSeconds).get(0));
+        }
+
+        if (result.containsKey(UiOptionKey.MaxSize))
+        {
+            options.maxSize = Integer.parseInt(result.get(UiOptionKey.MaxSize).get(0));
+        }
+
+        if (result.containsKey(UiOptionKey.TaskInTitleBarEnabled))
+        {
+            options.taskInTitlebar = Boolean.parseBoolean(result.get(UiOptionKey.TaskInTitleBarEnabled).get(0));
+        }
+
+        if (result.containsKey(UiOptionKey.TaskInTitleBarTemplate))
+        {
+            options.titlebarTemplate = result.get(UiOptionKey.TaskInTitleBarTemplate).get(0);
+        }
+
+    }
 }

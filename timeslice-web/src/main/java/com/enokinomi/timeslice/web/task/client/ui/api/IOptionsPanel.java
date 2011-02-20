@@ -3,10 +3,14 @@ package com.enokinomi.timeslice.web.task.client.ui.api;
 import java.util.List;
 import java.util.Map;
 
+import com.enokinomi.timeslice.web.core.client.ui.FooterPanel;
+import com.enokinomi.timeslice.web.core.client.ui.IClearable;
+import com.enokinomi.timeslice.web.core.client.ui.Initializable;
+import com.enokinomi.timeslice.web.core.client.ui.Registration;
 import com.google.gwt.user.client.ui.IsWidget;
 
 
-public interface IOptionsPanel extends IsWidget
+public interface IOptionsPanel extends IsWidget, IClearable, Initializable
 {
     public static final String CURRENTTASK = "@current.task@";
 
@@ -19,6 +23,7 @@ public interface IOptionsPanel extends IsWidget
         void refreshRequested();
     }
 
+    FooterPanel getFooterPanel();
 
     int getMaxSize();
 
@@ -33,12 +38,8 @@ public interface IOptionsPanel extends IsWidget
     void setUserSettings(Map<String, List<String>> settings);
     void setSessionData(Map<String, String> sessionSettings);
 
-    void handleUserSettingDone(Map<String, List<String>> result);
-    void handleSettingsChanged();
-    void handleUserSessionDataDone(Map<String, String> result);
-    void handleSessionEnded();
-    void handleSessionStarted();
+    Registration addListener(Listener listener);
 
-    void addListener(Listener listener);
+    void update();
 
 }

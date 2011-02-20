@@ -132,6 +132,8 @@ public class SettingsEditorPanel extends Composite implements ISettingsEditorPan
     protected void onTableClicked(ClickEvent event)
     {
         Cell cell = table.getCellForEvent(event);
+        if (cell.getRowIndex() < 1) return; // we don't care about the header row.
+
         Row item = rows.get(cell.getRowIndex() - 1);
         int column = cell.getCellIndex();
 

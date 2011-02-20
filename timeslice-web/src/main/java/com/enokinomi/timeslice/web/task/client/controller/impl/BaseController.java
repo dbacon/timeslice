@@ -5,6 +5,9 @@ import java.util.List;
 
 import com.enokinomi.timeslice.web.appjob.client.core.AppJobCompletion;
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
+import com.enokinomi.timeslice.web.core.client.ui.GenericRegistration;
+import com.enokinomi.timeslice.web.core.client.ui.NullRegistration;
+import com.enokinomi.timeslice.web.core.client.ui.Registration;
 import com.enokinomi.timeslice.web.core.client.util.AsyncResult;
 import com.enokinomi.timeslice.web.task.client.controller.api.IController;
 import com.enokinomi.timeslice.web.task.client.controller.api.IControllerListener;
@@ -25,20 +28,19 @@ abstract class BaseController implements IController
     {
     }
 
-    public void addControllerListener(IControllerListener listener)
+    public Registration addControllerListener(String ownerPurpose, IControllerListener listener)
     {
         if (listener != null)
         {
             listeners.add(listener);
+            return GenericRegistration.wrap(listeners, listener);
         }
+        return NullRegistration.Instance;
     }
 
-    public void removeControllerListener(IControllerListener listener)
+    public void removeControllerListener(String listenerId)
     {
-        if (listener != null)
-        {
-            listeners.remove(listener);
-        }
+        listeners.remove(listenerId);
     }
 
     protected void fireServerInfoRecieved(String info)

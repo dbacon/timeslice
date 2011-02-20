@@ -5,21 +5,25 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.enokinomi.timeslice.web.settings.client.presenter.api.ISettingsPresenter;
+import com.enokinomi.timeslice.web.core.client.ui.GenericRegistration;
+import com.enokinomi.timeslice.web.core.client.ui.NullRegistration;
+import com.enokinomi.timeslice.web.core.client.ui.Registration;
 import com.enokinomi.timeslice.web.task.client.ui.api.IParamChangedListener;
 import com.enokinomi.timeslice.web.task.client.ui.api.IParamPanel;
+import com.enokinomi.timeslice.web.task.client.ui_one.api.TopLevel.InputPlace;
+import com.enokinomi.timeslice.web.task.client.ui_one.api.UiOneGinjector;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.place.shared.PlaceHistoryMapper;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -32,6 +36,7 @@ public class ParamPanel extends Composite implements IParamPanel
     interface ParamPanelUiBinder extends UiBinder<Widget, ParamPanel> { }
 
     @UiField protected DateControlBox dateBox;
+    @UiField protected Anchor itemsForSelectedDateClickable;
     @UiField protected DateControlBox startingTime;
     @UiField protected DateControlBox endingTime;
     @UiField protected TextBox allowWords;
@@ -42,13 +47,21 @@ public class ParamPanel extends Composite implements IParamPanel
 
     private final List<IParamChangedListener> listeners = new ArrayList<IParamChangedListener>();
 
+    @UiHandler("itemsForSelectedDateClickable")
+    protected void itemsForSelectedDateClicked(ClickEvent e)
+    {
+//        fireHistoryRequested(dateBox.getValue());
+    }
+
     @Override
-    public void addParamChangedListener(IParamChangedListener listener)
+    public Registration addParamChangedListener(IParamChangedListener listener)
     {
         if (null != listener)
         {
             listeners.add(listener);
+            return GenericRegistration.wrap(listeners, listener);
         }
+        return NullRegistration.Instance;
     }
 
     @Override
@@ -59,10 +72,22 @@ public class ParamPanel extends Composite implements IParamPanel
 
     protected void fireParamChanged()
     {
-        for (IParamChangedListener listener: listeners)
-        {
-            listener.paramChanged(this);
-        }
+        for (IParamChangedListener listener: listeners) listener.paramChanged(this);
+    }
+
+    protected void fireHistoryRequested(Date when)
+    {
+        for (IParamChangedListener listener: listeners) listener.historyRequested(when);
+    }
+
+    protected void fireAllowWordsChanged(String allowWords)
+    {
+        for (IParamChangedListener l: listeners) l.allowWordsChanged(allowWords);
+    }
+
+    protected void fireIgnoreWordsChanged(String ignoreWords)
+    {
+        for (IParamChangedListener l: listeners) l.ignoreWordsChanged(ignoreWords);
     }
 
     // used only internally and to service, so tz doesn't matter.
@@ -121,6 +146,7 @@ public class ParamPanel extends Composite implements IParamPanel
             fireParamChanged();
         }
     };
+    private final PlaceHistoryMapper placeHistoryMapper;
 
     @SuppressWarnings("deprecation")
     private Date dateChopTime(Date date)
@@ -141,15 +167,44 @@ public class ParamPanel extends Composite implements IParamPanel
         return dateBox.getText();
     }
 
+    @Override
+    public void setFullDaySelected(Date when, boolean fireEvents)
+    {
+        if (when == null) when = new Date();
+
+        dateBox.setValue(when, fireEvents);
+
+        writeStartingEndingInTermsOfSelectedDay(when, fireEvents);
+    }
+
+    private void writeStartingEndingInTermsOfSelectedDay(Date when, boolean fireEvents)
+    {
+        Date d = when;
+        Date d1 = dateChopTime(d);
+        Date d2 = new Date(d1.getTime() + 1000 * 60 * 60 *24);
+
+        startingTime.setValue(d1, false);
+        endingTime.setValue(d2, false);
+
+        if (fireEvents)
+        {
+            fireParamChanged();
+        }
+    }
+
     @Inject
     ParamPanel()
     {
+        UiOneGinjector injector = GWT.create(UiOneGinjector.class);
+        this.placeHistoryMapper = injector.getPlaceHistoryMapper();
+
         initWidget(uiBinder.createAndBindUi(this));
         configure();
     }
 
     public void configure()
     {
+        itemsForSelectedDateClickable.setHref("#");
         dateBox.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getFormat("yyyy-MM-dd")));
         startingTime.addValueChangeHandler(defaultChangeHandler);
         startingTime.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getFormat("yyyy-MM-dd H:m:s.S Z")));
@@ -159,20 +214,44 @@ public class ParamPanel extends Composite implements IParamPanel
         allowWords.addChangeHandler(commonChangeHandler);
 
         dateBox.addValueChangeHandler(new ValueChangeHandler<Date>()
+            {
+                @Override
+                public void onValueChange(ValueChangeEvent<Date> event)
                 {
-                    @Override
-                    public void onValueChange(ValueChangeEvent<Date> event)
-                    {
-                        Date d = event.getValue();
-                        Date d1 = dateChopTime(d);
-                        Date d2 = new Date(d1.getTime() + 1000 * 60 * 60 *24);
+                    writeStartingEndingInTermsOfSelectedDay(event.getValue(), true);
 
-                        startingTime.setValue(d1, false);
-                        endingTime.setValue(d2, false);
+                    updateItemsLink(event.getValue());
+                }
+            });
 
-                        fireParamChanged();
-                    }
-                });
+        allowWords.addValueChangeHandler(new ValueChangeHandler<String>()
+            {
+                @Override
+                public void onValueChange(ValueChangeEvent<String> event)
+                {
+                    fireAllowWordsChanged(event.getValue());
+                }
+            });
+
+        ignoreWords.addValueChangeHandler(new ValueChangeHandler<String>()
+            {
+                @Override
+                public void onValueChange(ValueChangeEvent<String> event)
+                {
+                    fireIgnoreWordsChanged(event.getValue());
+                }
+            });
+
+    }
+
+    private void updateItemsLink(Date when)
+    {
+        // hackish, but works  - as opposed to raising an event
+        //  and letting place-controller.goTo(...) - which doesn't work.
+
+            itemsForSelectedDateClickable.setHref(
+                "#" + placeHistoryMapper.getToken(
+                        new InputPlace("report-panel", false, when)));
     }
 
     @Override
@@ -187,65 +266,7 @@ public class ParamPanel extends Composite implements IParamPanel
         {
             setIgnoreWords(result.get("ui.params.ignorewords").get(0), false);
         }
+
+        fireParamChanged();
     }
-
-    @Override
-    public void bind(final IParamPanel paramPanel, final ISettingsPresenter settingsPresenter)
-    {
-        settingsPresenter.addListener(new ISettingsPresenter.Listener()
-        {
-            @Override
-            public void userSettingsDone(Map<String, List<String>> result)
-            {
-                paramPanel.restoreFromSettings(result);
-            }
-
-            @Override
-            public void userSessionDataDone(Map<String, String> result)
-            {
-            }
-
-            @Override
-            public void settingsChanged()
-            {
-            }
-        });
-
-
-        // TODO: below ones should fire events! and be handled. not direct ties.
-        //          and then this bind() method made static or moved.
-
-        allowWords.addKeyPressHandler(new KeyPressHandler()
-        {
-            @Override
-            public void onKeyPress(KeyPressEvent event)
-            {
-                Scheduler.get().scheduleDeferred(new ScheduledCommand()
-                {
-                    @Override
-                    public void execute()
-                    {
-                        settingsPresenter.userSettingCreateOrUpdateRequested("ui.params.allowwords", allowWords.getText());
-                    }
-                });
-            }
-        });
-
-        ignoreWords.addKeyPressHandler(new KeyPressHandler()
-        {
-            @Override
-            public void onKeyPress(KeyPressEvent event)
-            {
-                Scheduler.get().scheduleDeferred(new ScheduledCommand()
-                {
-                    @Override
-                    public void execute()
-                    {
-                        settingsPresenter.userSettingCreateOrUpdateRequested("ui.params.ignorewords", ignoreWords.getText());
-                    }
-                });
-            }
-        });
-    }
-
 }

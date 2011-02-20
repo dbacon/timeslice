@@ -1,0 +1,49 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+    xmlns:g="urn:import:com.google.gwt.user.client.ui"
+    >
+
+    <ui:style>
+
+        .hello {
+            background: white;
+            height: 2em;
+            border-bottom: 1px solid #88a;
+        }
+
+        .hello a {
+            background: #eef;
+            display: block;
+        }
+
+        .fillPanel {
+            width: 100%;
+        }
+
+        .fillPanel a {
+            padding-left: 0.5em;
+            padding-right: 0.5em;
+            border: 1px solid #88f;
+            text-decoration: none;
+        }
+
+    </ui:style>
+
+    <g:HorizontalPanel styleName="{style.hello} {style.fillPanel}" horizontalAlignment="ALIGN_CENTER" >
+        <g:HorizontalPanel styleName="{style.fillPanel}" horizontalAlignment="ALIGN_LEFT">
+            <g:HorizontalPanel ui:field="panelLeft" spacing="5">
+                <g:Label>nav-panel-left</g:Label>
+                <g:Label>nav-panel-left</g:Label>
+                <g:Label>nav-panel-left</g:Label>
+            </g:HorizontalPanel>
+        </g:HorizontalPanel>
+        <g:HorizontalPanel styleName="{style.fillPanel}" horizontalAlignment="ALIGN_RIGHT">
+            <g:HorizontalPanel ui:field="panelRight" spacing="5">
+                <g:Label>nav-panel-right</g:Label>
+                <g:Label>nav-panel-right</g:Label>
+                <g:Label>nav-panel-right</g:Label>
+            </g:HorizontalPanel>
+        </g:HorizontalPanel>
+    </g:HorizontalPanel>
+
+</ui:UiBinder>

@@ -2,6 +2,7 @@ package com.enokinomi.timeslice.web.task.client.controller.api;
 
 import java.util.List;
 
+import com.enokinomi.timeslice.web.core.client.ui.Registration;
 import com.enokinomi.timeslice.web.core.client.ui.SortDir;
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
 
@@ -9,8 +10,8 @@ import com.enokinomi.timeslice.web.task.client.core.StartTag;
 public interface IController
 {
 
-    void addControllerListener(IControllerListener listener);
-    void removeControllerListener(IControllerListener listener);
+    Registration addControllerListener(String ownerPurpose, IControllerListener listener);
+    void removeControllerListener(String listenerId);
 
     void serverInfo();
     void startGetBranding();

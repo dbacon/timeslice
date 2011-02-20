@@ -1,0 +1,37 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder
+    xmlns:ui="urn:ui:com.google.gwt.uibinder"
+    xmlns:g="urn:import:com.google.gwt.user.client.ui"
+    >
+
+    <ui:style>
+
+        .hello {
+            background: white;
+            height: 2em;
+            border-top: 1px solid #88a;
+        }
+
+        .hello a {
+            background: #eef;
+            padding-left: 0.5em;
+            padding-right: 0.5em;
+            border: 1px solid #88f;
+            text-decoration: none;
+        }
+
+        .fillPanel {
+            width: 100%;
+        }
+
+    </ui:style>
+
+    <g:HorizontalPanel styleName="{style.hello} {style.fillPanel}" >
+        <g:HorizontalPanel  ui:field="panel" spacing="5">
+            <g:Anchor ui:field="supportAnchor">Report Issues</g:Anchor>
+            <g:Anchor ui:field="logoutAnchor">Logout</g:Anchor>
+            <g:Label ui:field="serverInfoLabel"></g:Label>
+        </g:HorizontalPanel>
+    </g:HorizontalPanel>
+
+</ui:UiBinder>

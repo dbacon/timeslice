@@ -9,9 +9,9 @@
     </ui:style>
 
     <g:HorizontalPanel verticalAlignment="ALIGN_MIDDLE">
-        <g:Button ui:field="prevButton">prev</g:Button>
+        <g:Button ui:field="prevButton">&#171;</g:Button>
         <g2:DateBox ui:field="dateBox"/>
-        <g:Button ui:field="nextButton">next</g:Button>
+        <g:Button ui:field="nextButton">&#187;</g:Button>
     </g:HorizontalPanel>
 
 </ui:UiBinder>

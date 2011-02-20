@@ -32,7 +32,6 @@ public class Issue149_DataSchemaUpgradeBadStateTest
     private static final String Upgrade12 = "Upgrade data schema at version 1 to 2";
     private static final String Upgrade23 = "Upgrade data schema at version 2 to 3";
     private static final String Upgrade34 = "Upgrade data schema at version 3 to 4";
-    private static final String Upgrade45 = "Upgrade data schema at version 4 to 5";
 
     private static final String[] jobs = {
             ListTables,
@@ -42,7 +41,6 @@ public class Issue149_DataSchemaUpgradeBadStateTest
             Upgrade12,
             Upgrade23,
             Upgrade34,
-            Upgrade45,
     };
 
     String[] version3Tables = {
@@ -67,7 +65,7 @@ public class Issue149_DataSchemaUpgradeBadStateTest
     @Test
     public void test_issue_149()
     {
-        FileUtils.deleteQuietly(new File("target/test-db/db-149"));
+        FileUtils.deleteQuietly(new File("target/test-dbs/iss-149"));
 
         Injector injector = Guice.createInjector(
                 new CommonDataModule("timeslice-3.ddl", "target/test-dbs/iss-149/db"),
@@ -93,7 +91,7 @@ public class Issue149_DataSchemaUpgradeBadStateTest
 
         List<String> availableJobIds = appJobProcessor.getAvailableJobIds();
         // this test only works by calling out known jobs - may need to be tweaked.
-        assertEquals(Arrays.asList(jobs), availableJobIds);
+        assertTrue("expected jobs are available", availableJobIds.containsAll(Arrays.asList(jobs)));
 
         AppJobCompletion result;
 

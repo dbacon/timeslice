@@ -62,6 +62,12 @@ public class ProrataManagerPanel extends Composite implements IProrataManagerPan
         return sb.toString();
     }
 
+    @Override
+    public void setGroupInfo(List<Group> result)
+    {
+        updateGroupInfoTable(result, groupsToString(result));
+    }
+
     public static void bind(final IProrataManagerPanel ui, final IProrataManagerPresenter presenter)
     {
         presenter.addListener(new ProrataManagerPresenter.Listener()
@@ -69,7 +75,7 @@ public class ProrataManagerPanel extends Composite implements IProrataManagerPan
             @Override
             public void allGroupInfoChanged(List<Group> result)
             {
-                ui.updateGroupInfoTable(result, groupsToString(result));
+                ui.setGroupInfo(result);
             }
 
             @Override
@@ -81,8 +87,7 @@ public class ProrataManagerPanel extends Composite implements IProrataManagerPan
             @Override
             public void removeComplete()
             {
-                List<Group> groupInfo = presenter.getGroupInfo();
-                ui.updateGroupInfoTable(groupInfo, groupsToString(groupInfo));
+                ui.setGroupInfo(presenter.getGroupInfo());
             }
 
             @Override

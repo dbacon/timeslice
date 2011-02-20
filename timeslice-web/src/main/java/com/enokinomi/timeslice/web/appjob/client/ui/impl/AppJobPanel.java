@@ -5,6 +5,11 @@ import java.util.List;
 
 import com.enokinomi.timeslice.web.appjob.client.ui.api.IAppJobPanel;
 import com.enokinomi.timeslice.web.appjob.client.ui.api.IAppJobPanelListener;
+import com.enokinomi.timeslice.web.core.client.ui.FooterPanel;
+import com.enokinomi.timeslice.web.core.client.ui.GenericRegistration;
+import com.enokinomi.timeslice.web.core.client.ui.NavPanel;
+import com.enokinomi.timeslice.web.core.client.ui.NullRegistration;
+import com.enokinomi.timeslice.web.core.client.ui.Registration;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -23,6 +28,7 @@ import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 public class AppJobPanel extends ResizeComposite implements IAppJobPanel
 {
@@ -31,6 +37,8 @@ public class AppJobPanel extends ResizeComposite implements IAppJobPanel
 
     private final AppJobPanelConstants constants = GWT.create(AppJobPanelConstants.class);
 
+    @UiField(provided=true) protected NavPanel navPanel;
+    @UiField protected FooterPanel footerPanel;
     @UiField protected FlexTable tab;
     @UiField protected FlexTable results;
     @UiField protected ScrollPanel resultsScroller;
@@ -38,24 +46,44 @@ public class AppJobPanel extends ResizeComposite implements IAppJobPanel
     private List<IAppJobPanelListener> listeners = new ArrayList<IAppJobPanelListener>();
 
     @Override
-    public Widget asWidget() { return this; }
+    public FooterPanel getFooterPanel()
+    {
+        return footerPanel;
+    }
 
     @UiHandler("refreshButton")
     protected void onClicked_refreshButton(ClickEvent e)
     {
+        initialize("appjob-panel.refresh-clicked");
+    }
+
+    @Override
+    public void initialize(String callerPurpose)
+    {
+        GWT.log("app-job-panel.initialize");
         fireJobListRefreshRequested();
+        getFooterPanel().initialize(callerPurpose);
     }
 
     @UiHandler("clearResultsButton")
     protected void onClicked_clearResultsButton(ClickEvent e)
     {
+        clear();
+    }
+
+    @Override
+    public void clear()
+    {
+        GWT.log("app-job-panel.clear");
         results.removeAllRows();
         addHeaders();
     }
 
     @Inject
-    AppJobPanel()
+    AppJobPanel(@Named("populated") NavPanel navPanel)
     {
+        this.navPanel = navPanel;
+
         initWidget(uiBinder.createAndBindUi(this));
 
         results.addStyleDependentName("tsMathTable");
@@ -84,12 +112,14 @@ public class AppJobPanel extends ResizeComposite implements IAppJobPanel
     }
 
     @Override
-    public void addListener(IAppJobPanelListener listener)
+    public Registration addListener(IAppJobPanelListener listener)
     {
         if (null != listener)
         {
             listeners.add(listener);
+            return GenericRegistration.wrap(listeners, listener);
         }
+        return NullRegistration.Instance;
     }
 
     protected void fireAppJobRequested(String jobId)
@@ -102,6 +132,7 @@ public class AppJobPanel extends ResizeComposite implements IAppJobPanel
 
     protected void fireJobListRefreshRequested()
     {
+        GWT.log("asking for job list");
         for (IAppJobPanelListener listener: listeners)
         {
             listener.appJobListRefreshRequested();
@@ -154,4 +185,5 @@ public class AppJobPanel extends ResizeComposite implements IAppJobPanel
             ++row;
         }
     }
+
 }

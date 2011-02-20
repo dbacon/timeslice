@@ -21,4 +21,5 @@ public interface IProrataManagerPanel extends IsWidget
     void updateGroupInfoTable(List<Group> result, String textRepr);
     void resetInput();
     void clear();
+    void setGroupInfo(List<Group> result);
 }

@@ -16,12 +16,17 @@
         <table>
             <tr>
                 <td><ui:msg>For full day</ui:msg></td>
-                <td><ts:DateControlBox ui:field="dateBox"/></td>
+                <td>
+                    <g:HorizontalPanel verticalAlignment="ALIGN_MIDDLE" spacing="5">
+                        <ts:DateControlBox ui:field="dateBox"/>
+                        <g:Anchor ui:field="itemsForSelectedDateClickable">View this date in Input History &#8593;</g:Anchor>
+                    </g:HorizontalPanel>
+                </td>
             </tr>
             <tr>
                 <td>Range</td>
                 <td>
-                    <g:HorizontalPanel verticalAlignment="ALIGN_MIDDLE">
+                    <g:HorizontalPanel verticalAlignment="ALIGN_MIDDLE" spacing="5">
                         <ts:DateControlBox ui:field="startingTime"/>
                         <g:Label><ui:msg>through</ui:msg></g:Label>
                         <ts:DateControlBox ui:field="endingTime"/>

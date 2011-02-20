@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.enokinomi.timeslice.web.core.client.ui.GenericRegistration;
+import com.enokinomi.timeslice.web.core.client.ui.NullRegistration;
+import com.enokinomi.timeslice.web.core.client.ui.Registration;
 import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport;
 import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport.IOnAuthenticated;
 import com.enokinomi.timeslice.web.session.client.core.ISessionSvcAsync;
@@ -36,9 +39,14 @@ public class SettingsPresenter implements ISettingsPresenter
     }
 
     @Override
-    public void addListener(ISettingsPresenter.Listener l)
+    public Registration addListener(ISettingsPresenter.Listener l)
     {
-        if (l != null) listeners.add(l);
+        if (l != null)
+        {
+            listeners.add(l);
+            return GenericRegistration.wrap(listeners, l);
+        }
+        return NullRegistration.Instance;
     }
 
     private void fireUserSettingsChanged()

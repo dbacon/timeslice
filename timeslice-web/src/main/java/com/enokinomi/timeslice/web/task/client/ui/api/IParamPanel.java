@@ -1,14 +1,15 @@
 package com.enokinomi.timeslice.web.task.client.ui.api;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.enokinomi.timeslice.web.settings.client.presenter.api.ISettingsPresenter;
+import com.enokinomi.timeslice.web.core.client.ui.Registration;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface IParamPanel extends IsWidget
 {
-    void addParamChangedListener(IParamChangedListener listener);
+    Registration addParamChangedListener(IParamChangedListener listener);
     void removeParamChangedListener(IParamChangedListener listener);
 
     String getStartingTimeRendered();
@@ -21,7 +22,9 @@ public interface IParamPanel extends IsWidget
     String getAllowWords();
     void setAllowWords(String allowWords, boolean fireEvents);
 
-    void bind(IParamPanel paramPanel, ISettingsPresenter settingsPresenter); // will be static/moved
     void restoreFromSettings(Map<String, List<String>> result);
+    void setFullDaySelected(Date when, boolean fireEvents);
+
+//    void bind(ISettingsPresenter settingsPresenter);
 
 }

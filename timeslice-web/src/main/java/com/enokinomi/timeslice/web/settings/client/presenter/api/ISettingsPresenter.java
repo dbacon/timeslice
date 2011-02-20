@@ -3,6 +3,7 @@ package com.enokinomi.timeslice.web.settings.client.presenter.api;
 import java.util.List;
 import java.util.Map;
 
+import com.enokinomi.timeslice.web.core.client.ui.Registration;
 import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport.LoginListener;
 
 public interface ISettingsPresenter
@@ -14,7 +15,7 @@ public interface ISettingsPresenter
         void userSessionDataDone(Map<String, String> result);
     }
 
-    void addListener(Listener l);
+    Registration addListener(Listener l);
     void addLoginListener(LoginListener loginListener);
 
     void userSettingAddRequested(String name, String value);

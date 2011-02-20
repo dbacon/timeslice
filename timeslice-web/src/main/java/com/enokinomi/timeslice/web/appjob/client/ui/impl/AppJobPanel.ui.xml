@@ -1,6 +1,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
     xmlns:g="urn:import:com.google.gwt.user.client.ui"
+    xmlns:tscore="urn:import:com.enokinomi.timeslice.web.core.client.ui"
     ui:generateFormat="com.google.gwt.i18n.rebind.format.PropertiesFormat"
     ui:generateKeys="com.google.gwt.i18n.rebind.keygen.MD5KeyGenerator"
     ui:generateLocales="default"
@@ -10,27 +11,41 @@
 
     </ui:style>
 
-    <g:SplitLayoutPanel>
+    <g:DockLayoutPanel unit="EM">
 
-        <g:north size="300">
-            <g:ScrollPanel>
-                <g:VerticalPanel>
-                    <g:HorizontalPanel>
-                        <g:Button ui:field="refreshButton">Refresh</g:Button>
-                        <g:Button ui:field="clearResultsButton">Clear Results</g:Button>
-                    </g:HorizontalPanel>
-                    <g:FlexTable ui:field="tab"/>
-                </g:VerticalPanel>
-            </g:ScrollPanel>
+        <g:north size="3">
+            <tscore:NavPanel ui:field="navPanel" />
         </g:north>
 
         <g:center>
-            <g:ScrollPanel ui:field="resultsScroller">
-                <g:FlexTable ui:field="results"/>
-            </g:ScrollPanel>
+            <g:SplitLayoutPanel>
+
+                <g:north size="300">
+                    <g:ScrollPanel>
+                        <g:VerticalPanel>
+                            <g:HorizontalPanel>
+                                <g:Button ui:field="refreshButton">Refresh</g:Button>
+                                <g:Button ui:field="clearResultsButton">Clear Results</g:Button>
+                            </g:HorizontalPanel>
+                            <g:FlexTable ui:field="tab"/>
+                        </g:VerticalPanel>
+                    </g:ScrollPanel>
+                </g:north>
+
+                <g:center>
+                    <g:ScrollPanel ui:field="resultsScroller">
+                        <g:FlexTable ui:field="results"/>
+                    </g:ScrollPanel>
+                </g:center>
+
+            </g:SplitLayoutPanel>
         </g:center>
 
-    </g:SplitLayoutPanel>
+        <g:south size="2">
+            <tscore:FooterPanel ui:field="footerPanel" />
+        </g:south>
+
+    </g:DockLayoutPanel>
 
 </ui:UiBinder>
 

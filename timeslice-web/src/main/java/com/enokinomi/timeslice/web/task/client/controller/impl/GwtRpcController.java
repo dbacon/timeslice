@@ -268,12 +268,14 @@ public class GwtRpcController extends BaseController
                             @Override
                             public void onSuccess(List<String> result)
                             {
+                                GWT.log("billees succeeded");
                                 fireAllBilleesDone(new AsyncResult<List<String>>(result, null));
                             }
 
                             @Override
                             public void onFailure(Throwable caught)
                             {
+                                GWT.log("billees failed");
                                 // TODO: handle this here instead of propagating
                                 fireAllBilleesDone(new AsyncResult<List<String>>(null, caught));
                             }
