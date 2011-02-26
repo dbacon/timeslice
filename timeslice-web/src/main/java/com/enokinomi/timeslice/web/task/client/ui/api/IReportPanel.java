@@ -4,9 +4,9 @@ import java.util.Date;
 import java.util.List;
 
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
-import com.enokinomi.timeslice.web.core.client.ui.FooterPanel;
 import com.enokinomi.timeslice.web.core.client.ui.IClearable;
 import com.enokinomi.timeslice.web.core.client.ui.Initializable;
+import com.enokinomi.timeslice.web.core.client.ui.NavPanel;
 import com.enokinomi.timeslice.web.core.client.ui.Registration;
 import com.enokinomi.timeslice.web.prorata.client.presenter.api.IProrataManagerPresenter;
 import com.enokinomi.timeslice.web.settings.client.presenter.api.ISettingsPresenter;
@@ -16,7 +16,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 public interface IReportPanel extends IsWidget, IClearable, Initializable
 {
     IParamPanel getParamsPanel();
-    FooterPanel getFooterPanel();
+    NavPanel getNavPanel();
     Registration addReportPanelListener(IReportPanelListener iReportPanelListener);
     void setResultsAssigned(List<AssignedTaskTotal> report);
     void setResults(List<TaskTotal> results);

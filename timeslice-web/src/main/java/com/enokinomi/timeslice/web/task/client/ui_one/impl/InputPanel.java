@@ -10,7 +10,6 @@ import java.util.Map;
 
 import com.enokinomi.timeslice.web.appjob.client.core.AppJobCompletion;
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
-import com.enokinomi.timeslice.web.core.client.ui.FooterPanel;
 import com.enokinomi.timeslice.web.core.client.ui.GenericRegistration;
 import com.enokinomi.timeslice.web.core.client.ui.IClearable;
 import com.enokinomi.timeslice.web.core.client.ui.Initializable;
@@ -65,7 +64,6 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
     interface InputPanelUiBinder extends UiBinder<Widget, InputPanel> { }
 
     @UiField(provided=true) protected NavPanel navPanel;
-    @UiField protected FooterPanel footerPanel;
     @UiField protected Anchor updateLink;
     @UiField protected Anchor addHotlink;
     @UiField protected Anchor enterLink;
@@ -105,9 +103,9 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
         return options;
     }
 
-    public FooterPanel getFooterPanel()
+    public NavPanel getNavPanel()
     {
-        return footerPanel;
+        return navPanel;
     }
 
     public static void bind(final InputPanel ui, final IController controller)
@@ -477,7 +475,7 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
         consistentizeHotlinks();
 
         scheduleRefresh("due to call to input-panel.initialize, " + callerPurpose);
-        getFooterPanel().initialize("due to call to input-panel.initialize, " + callerPurpose);
+        getNavPanel().initialize("due to call to input-panel.initialize, " + callerPurpose);
     }
 
     private void consistentizeHotlist()

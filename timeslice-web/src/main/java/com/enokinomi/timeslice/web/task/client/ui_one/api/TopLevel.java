@@ -9,10 +9,9 @@ import com.enokinomi.timeslice.web.appjob.client.core.AppJobCompletion;
 import com.enokinomi.timeslice.web.appjob.client.ui.api.IAppJobPanel;
 import com.enokinomi.timeslice.web.appjob.client.ui.api.IAppJobPanelListener;
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
-import com.enokinomi.timeslice.web.core.client.ui.FooterPanel;
-import com.enokinomi.timeslice.web.core.client.ui.FooterPanel.FooterListener;
 import com.enokinomi.timeslice.web.core.client.ui.IClearable;
 import com.enokinomi.timeslice.web.core.client.ui.Initializable;
+import com.enokinomi.timeslice.web.core.client.ui.NavPanel;
 import com.enokinomi.timeslice.web.core.client.ui.Registration;
 import com.enokinomi.timeslice.web.core.client.ui.SimpleLayoutPanel;
 import com.enokinomi.timeslice.web.core.client.ui.SortDir;
@@ -284,7 +283,7 @@ public class TopLevel implements EntryPoint
 
     }
 
-    public static class FooterListenerImplementation implements FooterListener
+    public static class FooterListenerImplementation implements NavPanel.Listener
     {
         private IController controller;
         private ILoginSupport loginSupport;
@@ -313,21 +312,27 @@ public class TopLevel implements EntryPoint
             // TODO: do something?
             GWT.log("support-link clicked");
         }
+
+        @Override
+        public void navigateLinkClicked(Place place)
+        {
+            // taken care of by provider in gwt module.
+        }
     }
 
     public static class ControllerListenerAdapterExtension extends ControllerListenerAdapter
     {
-        private final FooterPanel footerPanel;
+        private final NavPanel navPanel;
 
-        private ControllerListenerAdapterExtension(FooterPanel footerPanel)
+        private ControllerListenerAdapterExtension(NavPanel navPanel)
         {
-            this.footerPanel = footerPanel;
+            this.navPanel = navPanel;
         }
 
         @Override
         public void serverInfoRecieved(String info)
         {
-            footerPanel.setServerInfo(info);
+            navPanel.setServerInfo(info);
         }
     }
 
@@ -391,8 +396,8 @@ public class TopLevel implements EntryPoint
 
             // bind handlers
 
-            registrations.add(widget.getFooterPanel().addFooterListener(new FooterListenerImplementation(controller, loginSupport)));
-            registrations.add(controller.addControllerListener("input-panel/footer binding", new ControllerListenerAdapterExtension(widget.getFooterPanel())));
+            registrations.add(widget.getNavPanel().addListener(new FooterListenerImplementation(controller, loginSupport)));
+            registrations.add(controller.addControllerListener("input-panel/footer binding", new ControllerListenerAdapterExtension(widget.getNavPanel())));
             registrations.add(loginSupport.addLoginListener(new LoginListenerImplementation(widget, widget)));
 
             registrations.add(widget.addListener(new InputListener()
@@ -598,8 +603,8 @@ public class TopLevel implements EntryPoint
 
             // bind handlers in 2-way communication
 
-            registrations.add(widget.getFooterPanel().addFooterListener(new FooterListenerImplementation(controller, loginSupport)));
-            registrations.add(controller.addControllerListener("report-panel/footer binding", new ControllerListenerAdapterExtension(widget.getFooterPanel())));
+            registrations.add(widget.getNavPanel().addListener(new FooterListenerImplementation(controller, loginSupport)));
+            registrations.add(controller.addControllerListener("report-panel/footer binding", new ControllerListenerAdapterExtension(widget.getNavPanel())));
             registrations.add(loginSupport.addLoginListener(new LoginListenerImplementation(widget, widget)));
 
             // TODO: unwind this bit and put it here.
@@ -816,8 +821,8 @@ public class TopLevel implements EntryPoint
         {
             final IOptionsPanel widget = widgetProvider.get();
 
-            registrations.add(widget.getFooterPanel().addFooterListener(new FooterListenerImplementation(controller, loginSupport)));
-            registrations.add(controller.addControllerListener("options-panel/footer binding", new ControllerListenerAdapterExtension(widget.getFooterPanel())));
+            registrations.add(widget.getNavPanel().addListener(new FooterListenerImplementation(controller, loginSupport)));
+            registrations.add(controller.addControllerListener("options-panel/footer binding", new ControllerListenerAdapterExtension(widget.getNavPanel())));
             registrations.add(loginSupport.addLoginListener(new LoginListenerImplementation(widget, widget)));
 
             registrations.add(widget.addListener(new IOptionsPanel.Listener()
@@ -941,8 +946,8 @@ public class TopLevel implements EntryPoint
         {
             final IAppJobPanel widget = widgetProvider.get();
 
-            registrations.add(widget.getFooterPanel().addFooterListener(new FooterListenerImplementation(controller, loginSupport)));
-            registrations.add(controller.addControllerListener("appjob-panel/footer binding", new ControllerListenerAdapterExtension(widget.getFooterPanel())));
+            registrations.add(widget.getNavPanel().addListener(new FooterListenerImplementation(controller, loginSupport)));
+            registrations.add(controller.addControllerListener("appjob-panel/footer binding", new ControllerListenerAdapterExtension(widget.getNavPanel())));
             registrations.add(loginSupport.addLoginListener(new LoginListenerImplementation(widget, widget)));
 
             registrations.add(widget.addListener(new IAppJobPanelListener()

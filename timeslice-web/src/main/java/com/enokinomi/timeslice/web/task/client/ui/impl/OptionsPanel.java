@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.enokinomi.timeslice.web.core.client.ui.FooterPanel;
 import com.enokinomi.timeslice.web.core.client.ui.GenericRegistration;
 import com.enokinomi.timeslice.web.core.client.ui.NavPanel;
 import com.enokinomi.timeslice.web.core.client.ui.NullRegistration;
@@ -50,7 +49,6 @@ public class OptionsPanel extends Composite implements IOptionsPanel
     private static final String DefaultTitlebarTemplate = "[TS] " + CURRENTTASK;
 
     @UiField(provided=true) protected NavPanel navPanel;
-    @UiField protected FooterPanel footerPanel;
     @UiField protected ISettingsEditorPanel settingsEditor;
     @UiField protected FlexTable sessionDataTable;
     @UiField protected TextBox titleBarTemplate;
@@ -61,9 +59,9 @@ public class OptionsPanel extends Composite implements IOptionsPanel
 
 
     @Override
-    public FooterPanel getFooterPanel()
+    public NavPanel getNavPanel()
     {
-        return footerPanel;
+        return navPanel;
     };
 
 //    public static void bind(final IOptionsPanel ui, final ISettingsPresenter presenter)
@@ -432,7 +430,7 @@ public class OptionsPanel extends Composite implements IOptionsPanel
     public void initialize(String callerPurpose)
     {
         update();
-        getFooterPanel().initialize(callerPurpose);
+        getNavPanel().initialize(callerPurpose);
     }
 
 }

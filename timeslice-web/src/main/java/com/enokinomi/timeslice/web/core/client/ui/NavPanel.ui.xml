@@ -38,7 +38,10 @@
             </g:HorizontalPanel>
         </g:HorizontalPanel>
         <g:HorizontalPanel styleName="{style.fillPanel}" horizontalAlignment="ALIGN_RIGHT">
-            <g:HorizontalPanel ui:field="panelRight" spacing="5">
+            <g:HorizontalPanel ui:field="panelRight" spacing="5" verticalAlignment="ALIGN_MIDDLE">
+                <g:Anchor ui:field="supportAnchor">Report Issues</g:Anchor>
+                <g:Anchor ui:field="logoutAnchor">Logout</g:Anchor>
+                <g:Label ui:field="serverInfoLabel"></g:Label>
                 <g:Label>nav-panel-right</g:Label>
                 <g:Label>nav-panel-right</g:Label>
                 <g:Label>nav-panel-right</g:Label>

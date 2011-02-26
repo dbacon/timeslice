@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.enokinomi.timeslice.web.appjob.client.ui.api.IAppJobPanel;
 import com.enokinomi.timeslice.web.appjob.client.ui.api.IAppJobPanelListener;
-import com.enokinomi.timeslice.web.core.client.ui.FooterPanel;
 import com.enokinomi.timeslice.web.core.client.ui.GenericRegistration;
 import com.enokinomi.timeslice.web.core.client.ui.NavPanel;
 import com.enokinomi.timeslice.web.core.client.ui.NullRegistration;
@@ -38,7 +37,6 @@ public class AppJobPanel extends ResizeComposite implements IAppJobPanel
     private final AppJobPanelConstants constants = GWT.create(AppJobPanelConstants.class);
 
     @UiField(provided=true) protected NavPanel navPanel;
-    @UiField protected FooterPanel footerPanel;
     @UiField protected FlexTable tab;
     @UiField protected FlexTable results;
     @UiField protected ScrollPanel resultsScroller;
@@ -46,9 +44,9 @@ public class AppJobPanel extends ResizeComposite implements IAppJobPanel
     private List<IAppJobPanelListener> listeners = new ArrayList<IAppJobPanelListener>();
 
     @Override
-    public FooterPanel getFooterPanel()
+    public NavPanel getNavPanel()
     {
-        return footerPanel;
+        return navPanel;
     }
 
     @UiHandler("refreshButton")
@@ -62,7 +60,7 @@ public class AppJobPanel extends ResizeComposite implements IAppJobPanel
     {
         GWT.log("app-job-panel.initialize");
         fireJobListRefreshRequested();
-        getFooterPanel().initialize(callerPurpose);
+        getNavPanel().initialize(callerPurpose);
     }
 
     @UiHandler("clearResultsButton")

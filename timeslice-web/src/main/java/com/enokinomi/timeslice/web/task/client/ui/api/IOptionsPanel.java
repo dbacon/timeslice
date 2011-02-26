@@ -3,9 +3,9 @@ package com.enokinomi.timeslice.web.task.client.ui.api;
 import java.util.List;
 import java.util.Map;
 
-import com.enokinomi.timeslice.web.core.client.ui.FooterPanel;
 import com.enokinomi.timeslice.web.core.client.ui.IClearable;
 import com.enokinomi.timeslice.web.core.client.ui.Initializable;
+import com.enokinomi.timeslice.web.core.client.ui.NavPanel;
 import com.enokinomi.timeslice.web.core.client.ui.Registration;
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -23,7 +23,7 @@ public interface IOptionsPanel extends IsWidget, IClearable, Initializable
         void refreshRequested();
     }
 
-    FooterPanel getFooterPanel();
+    NavPanel getNavPanel();
 
     int getMaxSize();
 

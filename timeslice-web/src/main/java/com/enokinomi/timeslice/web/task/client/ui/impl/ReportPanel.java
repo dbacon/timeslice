@@ -8,7 +8,6 @@ import java.util.List;
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.assign.client.ui.api.ITabularResultsAssignedView;
 import com.enokinomi.timeslice.web.assign.client.ui.api.ITabularResultsAssignedViewListener;
-import com.enokinomi.timeslice.web.core.client.ui.FooterPanel;
 import com.enokinomi.timeslice.web.core.client.ui.GenericRegistration;
 import com.enokinomi.timeslice.web.core.client.ui.NavPanel;
 import com.enokinomi.timeslice.web.core.client.ui.NullRegistration;
@@ -38,7 +37,6 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
     interface ReportPanelUiBinder extends UiBinder<Widget, ReportPanel> { }
 
     @UiField(provided=true) protected NavPanel navPanel;
-    @UiField protected FooterPanel footerPanel;
     @UiField protected TabLayoutPanel resultsTabPanel;
     @UiField protected TreeTableResultsView resultsTreeView;
     @UiField protected ITabularResultsAssignedView resultsAssignedView;
@@ -75,9 +73,9 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
     }
 
     @Override
-    public FooterPanel getFooterPanel()
+    public NavPanel getNavPanel()
     {
-        return footerPanel;
+        return navPanel;
     }
 
     @Override
@@ -183,6 +181,6 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
     public void initialize(String callerPurpose)
     {
         update();
-        getFooterPanel().initialize(callerPurpose);
+        getNavPanel().initialize(callerPurpose);
     }
 }

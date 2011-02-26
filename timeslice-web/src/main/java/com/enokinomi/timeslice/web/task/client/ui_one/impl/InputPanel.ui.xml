@@ -31,10 +31,6 @@
             <task:HistoryPanel ui:field="historyPanel" />
         </g:center>
 
-        <g:south size="2">
-            <tscore:FooterPanel ui:field="footerPanel" />
-        </g:south>
-
         <g:south size="3">
             <task:HotlistPanel ui:field="hotlistPanel" />
         </g:south>

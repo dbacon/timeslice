@@ -74,6 +74,21 @@ public class UiOneClientModule extends AbstractGinModule
             {
                 placeController.goTo(place);
             }
+
+            @Override
+            public void logoutRequested()
+            {
+            }
+
+            @Override
+            public void serverInfoRequested()
+            {
+            }
+
+            @Override
+            public void supportLinkRequested()
+            {
+            }
         });
 
         return navPanel;

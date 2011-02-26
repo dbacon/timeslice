@@ -9,12 +9,14 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.place.shared.Place;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
-public class NavPanel extends Composite
+public class NavPanel extends Composite implements Initializable
 {
     private static NavPanelUiBinder uiBinder = GWT.create(NavPanelUiBinder.class);
     interface NavPanelUiBinder extends UiBinder<Widget, NavPanel> { }
@@ -22,26 +24,89 @@ public class NavPanel extends Composite
     @UiField protected CellPanel panelLeft;
     @UiField protected CellPanel panelRight;
 
+    @UiField protected Anchor logoutAnchor;
+    @UiField protected Anchor supportAnchor;
+    @UiField protected Label serverInfoLabel;
+
+    protected void fireLogoutClicked()
+    {
+        for (Listener l: listeners) l.logoutRequested();
+    }
+
+    protected void fireServerInfoClicked()
+    {
+        for (Listener l: listeners) l.serverInfoRequested();
+    }
+
+    protected void fireSupportClicked()
+    {
+        for (Listener l: listeners) l.supportLinkRequested();
+    }
+
+    @UiHandler("logoutAnchor")
+    protected void logoutClicked(ClickEvent e)
+    {
+        fireLogoutClicked();
+    }
+    @UiHandler("supportAnchor")
+    protected void supportClicked(ClickEvent e)
+    {
+        fireSupportClicked();
+    }
+
+    @UiHandler("serverInfoLabel")
+    protected void serverInfoClicked(ClickEvent e)
+    {
+        fireServerInfoClicked();
+    }
+
+
+
+
+
     public NavPanel()
     {
         initWidget(uiBinder.createAndBindUi(this));
+
+        logoutAnchor.setHref("#");
+        supportAnchor.setHref("#");
     }
 
     public static interface Listener
     {
+        void logoutRequested();
+        void serverInfoRequested();
+        void supportLinkRequested();
+
         void navigateLinkClicked(Place place);
     }
 
     private List<Listener> listeners = new ArrayList<NavPanel.Listener>();
 
-    public void addListener(Listener listener)
+    public Registration addListener(Listener listener)
     {
-        if (listener != null) listeners.add(listener);
+        if (listener != null)
+        {
+            listeners.add(listener);
+            return GenericRegistration.wrap(listeners, listener);
+        }
+        return NullRegistration.Instance;
     }
 
     protected void fireLinkClicked(Place place)
     {
         for (Listener l: listeners) l.navigateLinkClicked(place);
+    }
+
+    @Override
+    public void initialize(String callerPurpose)
+    {
+        fireServerInfoClicked();
+    }
+
+    public void setServerInfo(String info)
+    {
+        serverInfoLabel.setText(info);
     }
 
     public void populateLeft(List<Place> places)
@@ -57,6 +122,7 @@ public class NavPanel extends Composite
     private void populateOne(CellPanel panel, List<Place> places)
     {
         panel.clear();
+        panel.add(serverInfoLabel);
 
         for (final Place place: places)
         {
@@ -71,6 +137,9 @@ public class NavPanel extends Composite
             });
             panel.add(anchor);
         }
+
+        panel.add(supportAnchor);
+        panel.add(logoutAnchor);
     }
 
 }

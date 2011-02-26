@@ -17,45 +17,37 @@
             <tscore:NavPanel ui:field="navPanel" />
         </g:north>
 
+        <g:north size="13">
+            <g:VerticalPanel>
+                <task:ParamPanel ui:field="params" />
+                <g:HorizontalPanel>
+                    <g:Button ui:field="refreshButton"><ui:msg>Refresh</ui:msg></g:Button>
+                </g:HorizontalPanel>
+            </g:VerticalPanel>
+        </g:north>
+
         <g:center>
-            <g:SplitLayoutPanel>
 
-                <g:north size="180">
-                    <g:VerticalPanel>
-                        <task:ParamPanel ui:field="params" />
-                        <g:HorizontalPanel>
-                            <g:Button ui:field="refreshButton"><ui:msg>Refresh</ui:msg></g:Button>
-                        </g:HorizontalPanel>
-                    </g:VerticalPanel>
-                </g:north>
+            <g:TabLayoutPanel barHeight="40" ui:field="resultsTabPanel" >
 
-                <g:center>
-                    <g:TabLayoutPanel barHeight="40" ui:field="resultsTabPanel" >
+                <g:tab>
+                    <g:header><ui:msg>Totaling</ui:msg></g:header>
+                    <task:TreeTableResultsView ui:field="resultsTreeView"/>
+                </g:tab>
 
-                        <g:tab>
-                            <g:header><ui:msg>Totaling</ui:msg></g:header>
-                            <task:TreeTableResultsView ui:field="resultsTreeView"/>
-                        </g:tab>
+                <g:tab>
+                    <g:header><ui:msg>Assigned</ui:msg></g:header>
+                    <assign:TabularResultsAssignedView ui:field="resultsAssignedView" />
+                </g:tab>
 
-                        <g:tab>
-                            <g:header><ui:msg>Assigned</ui:msg></g:header>
-                            <assign:TabularResultsAssignedView ui:field="resultsAssignedView" />
-                        </g:tab>
+                <g:tab>
+                    <g:header><ui:msg>Project List</ui:msg></g:header>
+                    <prorata:ProjectListPanel ui:field="projectListPanel" />
+                </g:tab>
 
-                        <g:tab>
-                            <g:header><ui:msg>Project List</ui:msg></g:header>
-                            <prorata:ProjectListPanel ui:field="projectListPanel" />
-                        </g:tab>
+            </g:TabLayoutPanel>
 
-                    </g:TabLayoutPanel>
-                </g:center>
-
-            </g:SplitLayoutPanel>
         </g:center>
-
-        <g:south size="2">
-            <tscore:FooterPanel ui:field="footerPanel" />
-        </g:south>
 
     </g:DockLayoutPanel>
 
