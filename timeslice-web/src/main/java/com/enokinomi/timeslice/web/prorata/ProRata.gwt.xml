@@ -10,4 +10,8 @@
   <inherits name="com.enokinomi.timeslice.web.assign.Assign"/>
   <inherits name="com.enokinomi.timeslice.web.login.Login"/>
 
+  <source path="client">
+    <exclude name="**/*Test.java"/>
+  </source>
+
 </module>

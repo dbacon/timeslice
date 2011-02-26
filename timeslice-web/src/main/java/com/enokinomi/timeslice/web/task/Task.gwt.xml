@@ -14,4 +14,8 @@
 
   <stylesheet src="controls.css" />
 
+  <source path="client">
+    <exclude name="**/*Test.java"/>
+  </source>
+
 </module>

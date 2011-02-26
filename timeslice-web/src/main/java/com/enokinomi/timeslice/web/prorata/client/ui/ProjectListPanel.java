@@ -26,6 +26,8 @@ import com.enokinomi.timeslice.web.prorata.client.tree.LeafOnlyTotalingVisitor;
 import com.enokinomi.timeslice.web.prorata.client.tree.MapRuleSource;
 import com.enokinomi.timeslice.web.prorata.client.tree.Tree;
 import com.enokinomi.timeslice.web.prorata.client.ui.ProRataManagerPanel.Listener;
+import com.enokinomi.timeslice.web.prorata.client.ui.ProjectListPanel.RowMaker.RowListener;
+import com.enokinomi.timeslice.web.prorata.client.ui.ProjectListPanel.TreeSupport.Segment;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -47,7 +49,6 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -473,8 +474,6 @@ public class ProjectListPanel extends Composite
                 leafTotals.putAll(newResults);
 
                 onLeafTotalsOrdered();
-
-                GWT.log("ordered.");
             }
 
             @Override
@@ -485,21 +484,28 @@ public class ProjectListPanel extends Composite
         });
     }
 
-    class RowMaker implements IVisitor<RowMaker>
+    static class RowMaker implements IVisitor<RowMaker>
     {
         private final double total;
         private int rowIndex;
+        private final RowListener rowListener;
 
-        public RowMaker(double total, int rowIndex)
+        public RowMaker(double total, int rowIndex, RowListener rowListener)
         {
             this.total = total;
             this.rowIndex = rowIndex;
+            this.rowListener = rowListener;
+        }
+
+        public static interface RowListener
+        {
+            void treeToRow(double total, int rowIndex, Tree t, Branch parent, int currentDepth, int[] siblingCounts, int[] siblingIndexs);
         }
 
         @Override
         public RowMaker visit(Tree t, Branch parent, int currentDepth, int[] siblingCounts, int[] siblingIndexs)
         {
-            treeToRow(total, rowIndex, t, parent, currentDepth, siblingCounts, siblingIndexs);
+            rowListener.treeToRow(total, rowIndex, t, parent, currentDepth, siblingCounts, siblingIndexs);
             rowIndex++;
             return this;
         }
@@ -512,7 +518,15 @@ public class ProjectListPanel extends Composite
     {
         clearAndInstallHeaders();
 
-        RowMaker rowMaker = new RowMaker(grandTotal, 1);
+        RowMaker rowMaker = new RowMaker(grandTotal, 1, new RowListener()
+        {
+            @Override
+            public void treeToRow(double total, int rowIndex, Tree t, Branch parent, int currentDepth, int[] siblingCounts, int[] siblingIndexs)
+            {
+                ProjectListPanel.this.treeToRow(total, rowIndex, t, parent, currentDepth, siblingCounts, siblingIndexs);
+            }
+        });
+
         for (Tree row: results.values())
         {
             row.accept(rowMaker);
@@ -651,49 +665,72 @@ public class ProjectListPanel extends Composite
 
     }
 
-    private Panel drawPrefix(int[] siblingCounts, int[] siblingIndexes)
+
+    public static class TreeSupport
     {
-        HorizontalPanel p = new HorizontalPanel();
-
-        int depth = siblingCounts.length;
-
-        for (int i = 0; i < depth - 1; ++i)
+        public static enum Segment
         {
-            int cnt = siblingCounts[i];
-            int ind = siblingIndexes[i];
-
-            boolean isLast = (ind + 1) == cnt;
-
-            Image space = new Image();
-            space.setStylePrimaryName("treeLine");
-            Label bar = new Label("│");
-            bar.setStylePrimaryName("treeLine");
-            p.add(isLast ? space : bar);
+            Spc, Bar, End, Mid,
         }
 
-        if (depth > 1)
+        static List<Segment> drawPrefix(int[] siblingCounts, int[] siblingIndexes)
         {
-            int cnt = siblingCounts[depth - 1];
-            int ind = siblingIndexes[depth - 1];
+            List<Segment> p = new ArrayList<Segment>();
+            int depth = siblingCounts.length;
 
-            boolean isLast = (ind + 1) == cnt;
+            for (int i = 0; i < depth - 1; ++i)
+            {
+                int cnt = siblingCounts[i];
+                int ind = siblingIndexes[i];
 
-            Label mid = new Label("├");
-            mid.setStylePrimaryName("treeLine");
-            Label end = new Label("└");
-            end.setStylePrimaryName("treeLine");
+                boolean isLast = (ind + 1) == cnt;
 
-            p.add(isLast ? end : mid);
+                p.add(isLast ? Segment.Spc : Segment.Bar);
+            }
+
+            if (depth > 1)
+            {
+                int cnt = siblingCounts[depth - 1];
+                int ind = siblingIndexes[depth - 1];
+
+                boolean isLast = (ind + 1) == cnt;
+
+                p.add(isLast ? Segment.End : Segment.Mid);
+            }
+
+            return p;
+        }
+    }
+
+    private static Panel makePrefixPanel(List<Segment> segments)
+    {
+        HorizontalPanel p = new HorizontalPanel();
+        for (Segment segment: segments)
+        {
+            switch (segment)
+            {
+            case Bar: p.add(createTreelineSegment("│")); break;
+            case End: p.add(createTreelineSegment("└")); break;
+            case Mid: p.add(createTreelineSegment("├")); break;
+            case Spc: p.add(createTreelineSegment(" ")); break;
+            }
         }
 
         return p;
+    }
+
+    private static Label createTreelineSegment(String s)
+    {
+        Label label = new Label(s);
+        label.setStylePrimaryName("treeLine");
+        return label;
     }
 
     private void treeToRow(double total, int rowIndex, final Tree row, final Branch parent, int currentDepth, int[] siblingCounts, int[] siblingIndexes)
     {
         table.getRowFormatter().addStyleName(rowIndex, (rowIndex % 2) == 0 ? "evenRow" : "oddRow");
 
-        Panel prefix = drawPrefix(siblingCounts, siblingIndexes);
+        Panel prefix = makePrefixPanel(TreeSupport.drawPrefix(siblingCounts, siblingIndexes));
 
         Label w = new Label(row.getName());
 
