@@ -19,7 +19,6 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
@@ -199,7 +198,7 @@ public class ProjectProrataTreePanel extends Composite implements IProjectProrat
 
             boolean isLast = (ind + 1) == cnt;
 
-            Image space = new Image();
+            Label space = new Label();
             space.setStylePrimaryName("treeLine");
             Label bar = new Label("│");
             bar.setStylePrimaryName("treeLine");
