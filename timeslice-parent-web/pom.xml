@@ -1,0 +1,56 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.enokinomi.timeslice</groupId>
+        <artifactId>timeslice-parent</artifactId>
+        <version>1.0.11-beta-2-SNAPSHOT</version>
+    </parent>
+
+    <groupId>com.enokinomi.timeslice</groupId>
+    <artifactId>timeslice-parent-web</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.11-beta-2-SNAPSHOT</version>
+
+    <name>timeslice-parent-web</name>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.java</include>
+                    <include>**/*.gwt.xml</include>
+                    <include>**/*.ui.xml</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+
+    <profiles>
+    <!--
+        <profile>
+            <id>gwt-build</id>
+            <activation>
+                <property><name>performRelease</name></property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>gwt-maven-plugin</artifactId>
+                        <version>2.1.0-1</version>
+                        <executions>
+                            <execution>
+                                <goals><goal>resources</goal></goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+     -->
+    </profiles>
+
+</project>

@@ -19,6 +19,14 @@
         <module>timeslice-stockjobs</module>
         <module>timeslice-util</module>
         <module>timeslice-web</module>
+        <module>timeslice-web-appjob</module>
+        <module>timeslice-web-branding</module>
+        <module>timeslice-web-core</module>
+        <module>timeslice-web-login</module>
+        <module>timeslice-web-reports</module>
+        <module>timeslice-web-session</module>
+        <module>timeslice-web-settings</module>
+        <module>timeslice-web-task</module>
     </modules>
 
     <scm>

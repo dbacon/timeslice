@@ -11,10 +11,10 @@ import com.enokinomi.timeslice.web.core.client.util.Pair;
 import com.enokinomi.timeslice.web.core.client.util.Split;
 import com.enokinomi.timeslice.web.core.client.util.TransformUtils;
 import com.enokinomi.timeslice.web.core.client.util.Tx;
-import com.enokinomi.timeslice.web.task.client.ui_tree.ItemsToTree;
-import com.enokinomi.timeslice.web.task.client.ui_tree.NodeIntegrator;
-import com.enokinomi.timeslice.web.task.client.ui_tree.NodeTraverser;
-import com.enokinomi.timeslice.web.task.client.ui_tree.PathRenderer;
+import com.enokinomi.timeslice.web.report.client.presenter.ItemsToTree;
+import com.enokinomi.timeslice.web.report.client.presenter.NodeIntegrator;
+import com.enokinomi.timeslice.web.report.client.presenter.NodeTraverser;
+import com.enokinomi.timeslice.web.report.client.presenter.PathRenderer;
 
 
 public class StringsToTreeTest

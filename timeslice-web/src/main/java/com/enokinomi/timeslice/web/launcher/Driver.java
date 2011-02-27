@@ -27,7 +27,7 @@ import com.enokinomi.timeslice.lib.commondatautil.impl.CommonDataModule;
 import com.enokinomi.timeslice.lib.userinfo.impl.UserInfoModule;
 import com.enokinomi.timeslice.web.appjob.server.impl.AppJobServerModule;
 import com.enokinomi.timeslice.web.assign.server.impl.AssignServerModule;
-import com.enokinomi.timeslice.web.branding.impl.DefaultBrandingModule;
+import com.enokinomi.timeslice.web.branding.server.impl.DefaultBrandingModule;
 import com.enokinomi.timeslice.web.guice.GuiceRpcModule;
 import com.enokinomi.timeslice.web.login.server.impl.LoginServerModule;
 import com.enokinomi.timeslice.web.ordering.server.impl.OrderingServerModule;

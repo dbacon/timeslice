@@ -5,14 +5,13 @@
     <inherits name="com.google.gwt.inject.Inject"/>
     <inherits name="com.google.gwt.user.theme.standard.Standard" />
 
-    <inherits name="com.enokinomi.timeslice.web.task.Task" />
-    <inherits name="com.enokinomi.timeslice.web.assign.Assign" />
-    <inherits name="com.enokinomi.timeslice.web.prorata.ProRata" />
-    <inherits name="com.enokinomi.timeslice.web.ordering.Ordering" />
-    <inherits name="com.enokinomi.timeslice.web.session.Session" />
+    <inherits name="com.enokinomi.timeslice.web.top.Top" />
 
+    <entry-point class="com.enokinomi.timeslice.web.top.client.ui.TopLevel" />
 
-	<entry-point class="com.enokinomi.timeslice.web.task.client.ui_one.api.TopLevel" />
+    <stylesheet src="ts-default.css" />
+
+    <source path="client" />
 
 
 	<!-- for testing, reduce GWT compile time, e.g. 202 seconds down to 57 seconds -->
@@ -25,8 +24,6 @@
      -->
     <extend-property name="locale" values="en"/>
     <extend-property name="locale" values="ja"/>
-
-    <stylesheet src="ts-default.css" />
 
 </module>
 

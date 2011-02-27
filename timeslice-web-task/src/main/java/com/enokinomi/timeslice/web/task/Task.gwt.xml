@@ -1,0 +1,27 @@
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 1.6.4//EN" "http://google-web-toolkit.googlecode.com/svn/tags/2.0.3/distro-source/core/src/gwt-module.dtd">
+
+<module>
+
+  <inherits name="com.google.gwt.user.User" />
+  <inherits name="com.google.gwt.user.theme.standard.Standard" />
+  <inherits name="com.google.gwt.place.Place"/>
+  <inherits name="com.google.gwt.activity.Activity"/>
+
+  <inherits name="com.enokinomi.timeslice.web.core.Core" />
+  <inherits name="com.enokinomi.timeslice.web.settings.Settings"/>
+  <inherits name="com.enokinomi.timeslice.web.session.Session"/>
+  <inherits name="com.enokinomi.timeslice.web.login.Login"/>
+  <!--
+  <inherits name="com.enokinomi.timeslice.web.appjob.AppJob" />
+  <inherits name="com.enokinomi.timeslice.web.assign.Assign"/>
+  <inherits name="com.enokinomi.timeslice.web.prorata.Prorata"/>
+   -->
+
+  <stylesheet src="controls.css" />
+
+  <!-- http://code.google.com/p/google-web-toolkit/issues/detail?id=4454 -->
+  <source path="client">
+    <exclude name="**/*Test.java"/>
+  </source>
+
+</module>

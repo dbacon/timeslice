@@ -1,0 +1,85 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+    xmlns:g="urn:import:com.google.gwt.user.client.ui">
+
+    <ui:style type="com.enokinomi.timeslice.web.settings.client.ui.impl.SettingsEditorPanel.ThisStyle">
+
+        .settingeditor {
+            border: 1px solid #888;
+            margin: 2em;
+            background: #eee;
+           }
+
+        .live {
+            background: #ffe;
+        }
+
+
+        .scrollpanel {
+            height: 12em;
+            width: 40em;
+           }
+    </ui:style>
+
+    <g:VerticalPanel>
+
+        <g:HorizontalPanel verticalAlignment="ALIGN_MIDDLE" spacing="5">
+            <g:Label>Settings</g:Label>
+            <g:Button ui:field="refreshButton">Refresh</g:Button>
+        </g:HorizontalPanel>
+
+        <g:HorizontalPanel>
+
+            <g:FlexTable ui:field="table" />
+
+            <g:FlowPanel styleName="{style.settingeditor}" ui:field="settingEditorPanel">
+
+                <g:HTMLPanel>
+                    <table>
+                        <tr><td>Setting Name</td><td><g:TextBox ui:field="newNameTextBox"></g:TextBox></td></tr>
+                        <tr><td>Current Value</td><td><g:TextBox ui:field="currentValueTextBox" enabled="false">New Value:</g:TextBox></td></tr>
+                        <tr>
+                            <td>New Value</td><td><g:TextBox ui:field="newValueTextBox"></g:TextBox></td>
+                            <td>
+                            </td>
+                        </tr>
+                    </table>
+                </g:HTMLPanel>
+
+                <g:HorizontalPanel>
+                    <g:Button ui:field="saveButton">Save</g:Button>
+                    <g:Button ui:field="cancelButton">Cancel</g:Button>
+                </g:HorizontalPanel>
+
+            </g:FlowPanel>
+
+
+        </g:HorizontalPanel>
+
+
+
+<!--
+        <g:HorizontalPanel>
+
+
+        </g:HorizontalPanel>
+ -->
+        <!--
+        <g:ScrollPanel styleName="{style.scrollpanel}">
+        </g:ScrollPanel>
+         -->
+        <!--
+        <g:HorizontalPanel>
+            <g:TextBox ui:field="newNameTextBox"></g:TextBox>
+            <g:TextBox ui:field="currentValueTextBox" enabled="false">New Value:</g:TextBox>
+            <g:TextBox ui:field="newValueTextBox"></g:TextBox>
+            <g:Button ui:field="saveButton">Save</g:Button>
+            <g:Button ui:field="cancelButton">Cancel</g:Button>
+        </g:HorizontalPanel>
+         -->
+
+    </g:VerticalPanel>
+
+</ui:UiBinder>
+
