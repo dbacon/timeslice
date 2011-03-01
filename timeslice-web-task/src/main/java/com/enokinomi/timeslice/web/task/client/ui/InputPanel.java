@@ -69,9 +69,7 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
 
     private final MultiWordSuggestOracle suggestSource = new MultiWordSuggestOracle();
 
-    private Options options = new Options();
-
-    public static class Options
+    private static class Options
     {
         public int maxSize = 0;
         public int maxSeconds = 0;
@@ -80,18 +78,10 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
         public String titlebarTemplate = "[TS] " + IOptionsPanel.CURRENTTASK;
     }
 
+    private Options options = new Options();
+
     public String originalWindowTitle = "";
     private final TzSupport tzSupport;
-
-    public void setOptions(Options options)
-    {
-        this.options = options;
-    }
-
-    public Options getOptions()
-    {
-        return options;
-    }
 
     public NavPanel getNavPanel()
     {
@@ -218,7 +208,6 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
 //        modePanel.add(specifiedDateBox);
 
         updateLink.setAccessKey('u');
-        updateLink.setHref("#");
         updateLink.addClickHandler(new ClickHandler()
         {
             @Override
@@ -228,7 +217,6 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
             }
         });
 
-        enterLink.setHref("#");
         enterLink.addClickHandler(new ClickHandler()
         {
             @Override
@@ -238,7 +226,6 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
             }
         });
 
-        addHotlink.setHref("#");
         addHotlink.addClickHandler(new ClickHandler()
         {
             @Override

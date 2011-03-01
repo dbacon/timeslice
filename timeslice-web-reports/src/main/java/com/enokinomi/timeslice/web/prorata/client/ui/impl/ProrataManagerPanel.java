@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.enokinomi.timeslice.web.core.client.util.ListenerManager;
+import com.enokinomi.timeslice.web.core.client.util.Registration;
 import com.enokinomi.timeslice.web.prorata.client.core.Group;
 import com.enokinomi.timeslice.web.prorata.client.core.GroupComponent;
 import com.enokinomi.timeslice.web.prorata.client.presenter.api.IProrataManagerPresenter;
@@ -44,7 +46,7 @@ public class ProrataManagerPanel extends Composite implements IProrataManagerPan
 
     private final ProrataManagerPanelConstants constants = GWT.create(ProrataManagerPanelConstants.class);
 
-    private final List<Listener> listeners = new ArrayList<Listener>();
+    private final ListenerManager<Listener> listenerMgr = new ListenerManager<Listener>();
 
     private static String groupsToString(List<Group> result)
     {
@@ -68,9 +70,11 @@ public class ProrataManagerPanel extends Composite implements IProrataManagerPan
         updateGroupInfoTable(result, groupsToString(result));
     }
 
-    public static void bind(final IProrataManagerPanel ui, final IProrataManagerPresenter presenter)
+    public static List<Registration> bind(final IProrataManagerPanel ui, final IProrataManagerPresenter presenter)
     {
-        presenter.addListener(new ProrataManagerPresenter.Listener()
+        List<Registration> result = new ArrayList<Registration>();
+
+        result.add(presenter.addListener(new ProrataManagerPresenter.Listener()
         {
             @Override
             public void allGroupInfoChanged(List<Group> result)
@@ -94,9 +98,9 @@ public class ProrataManagerPanel extends Composite implements IProrataManagerPan
             public void tasksUpdated()
             {
             }
-        });
+        }));
 
-        ui.addListener(new IProrataManagerPanel.Listener()
+        result.add(ui.addListener(new IProrataManagerPanel.Listener()
         {
             @Override
             public void addGroupRequested(String name, String target, Double weight)
@@ -121,30 +125,17 @@ public class ProrataManagerPanel extends Composite implements IProrataManagerPan
             {
                 presenter.removeGroupComponent(groupName, name);
             }
-        });
+        }));
+
+        return result;
     }
 
     @Override
-    public void addListener(Listener l)
-    {
-        if (null != l)
-        {
-            listeners.add(l);
-        }
-    }
-
-    @Override
-    public void removeListener(Listener l)
-    {
-        if (null != l)
-        {
-            listeners.remove(l);
-        }
-    }
+    public Registration addListener(Listener l) { return listenerMgr.addListener(l); }
 
     protected void fireAddButtonClicked(String name, String target, Double weight)
     {
-        for (Listener l: listeners)
+        for (Listener l: listenerMgr.getListeners())
         {
             l.addGroupRequested(name, target, weight);
         }
@@ -152,7 +143,7 @@ public class ProrataManagerPanel extends Composite implements IProrataManagerPan
 
     protected void fireRulesLoadRequested(String text)
     {
-        for (Listener l: listeners)
+        for (Listener l: listenerMgr.getListeners())
         {
             l.rulesLoadRequested(text);
         }
@@ -160,7 +151,7 @@ public class ProrataManagerPanel extends Composite implements IProrataManagerPan
 
     protected void fireRemoveParseRulesRequested(String text)
     {
-        for (Listener listener: listeners)
+        for (Listener listener: listenerMgr.getListeners())
         {
             listener.removeParsedRulesRequested(text);
         }
@@ -312,7 +303,7 @@ public class ProrataManagerPanel extends Composite implements IProrataManagerPan
 
     protected void fireRemoveGroupRequested(String groupName, String name)
     {
-        for (Listener l: listeners)
+        for (Listener l: listenerMgr.getListeners())
         {
             l.removeGroupRequested(groupName, name);
         }

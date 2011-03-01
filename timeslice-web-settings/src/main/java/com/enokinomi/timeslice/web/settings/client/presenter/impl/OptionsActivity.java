@@ -3,11 +3,13 @@ package com.enokinomi.timeslice.web.settings.client.presenter.impl;
 import java.util.List;
 import java.util.Map;
 
+import com.enokinomi.timeslice.web.core.client.ui.NavPanel;
 import com.enokinomi.timeslice.web.core.client.util.RegistrationManager;
 import com.enokinomi.timeslice.web.settings.client.presenter.api.ISettingsPresenter;
 import com.enokinomi.timeslice.web.settings.client.ui.api.IOptionsPanel;
 import com.google.gwt.activity.shared.AbstractActivity;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.place.shared.Place;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -40,6 +42,17 @@ public class OptionsActivity extends AbstractActivity
 //            registrations.add(widget.getNavPanel().addListener(new NavPanelListenerImplementation(controller, loginSupport)));
 //            registrations.add(controller.addControllerListener("options-panel/footer binding", new ControllerListenerAdapterExtension(widget.getNavPanel())));
 //            registrations.add(loginSupport.addLoginListener(new LoginListenerImplementation(widget, widget)));
+
+            registrations.add(widget.getNavPanel().addListener(new NavPanel.Listener()
+            {
+                @Override public void supportLinkRequested() {}
+                @Override public void serverInfoRequested() {}
+                @Override public void navigateLinkClicked(Place place) {}
+                @Override public void logoutRequested()
+                {
+                    widget.clear();
+                }
+            }));
 
             registrations.add(widget.addListener(new IOptionsPanel.Listener()
             {

@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.enokinomi.timeslice.web.core.client.util.ListenerManager;
+import com.enokinomi.timeslice.web.core.client.util.Registration;
 import com.enokinomi.timeslice.web.prorata.client.core.Group;
 import com.enokinomi.timeslice.web.prorata.client.presenter.api.IProrataManagerPresenter;
 import com.enokinomi.timeslice.web.prorata.client.presenter.impl.ProrataManagerPresenter;
@@ -47,11 +49,13 @@ public class ProjectReportPanel extends Composite implements IProjectReportPanel
 
     @UiField protected CheckBox scaleCheckBox;
 
-    private final List<Listener> listeners = new ArrayList<ProjectReportPanel.Listener>();
+    private final ListenerManager<Listener> listenerMgr = new ListenerManager<IProjectReportPanel.Listener>();
 
-    public static void bind(final IProjectReportPanel ui, final IProrataManagerPresenter presenter, final ISettingsPresenter settingsPresenter)
+    public static List<Registration> bind(final IProjectReportPanel ui, final IProrataManagerPresenter presenter, final ISettingsPresenter settingsPresenter)
     {
-        presenter.addListener(new ProrataManagerPresenter.Listener()
+        List<Registration> registrations = new ArrayList<Registration>();
+
+        registrations.add(presenter.addListener(new ProrataManagerPresenter.Listener()
         {
             @Override
             public void allGroupInfoChanged(List<Group> result)
@@ -73,7 +77,7 @@ public class ProjectReportPanel extends Composite implements IProjectReportPanel
             {
                 ui.setProjects(presenter.getGrandTotal(), presenter.getLeafTotals());
             }
-        });
+        }));
 
         ui.addListener(new ProjectReportPanel.Listener()
         {
@@ -122,30 +126,24 @@ public class ProjectReportPanel extends Composite implements IProjectReportPanel
             }
         });
 
+        return registrations;
     }
 
-    @Override
-    public void addListener(Listener listener)
-    {
-        if (listener != null)
-        {
-            listeners.add(listener);
-        }
-    }
+    @Override public Registration addListener(Listener listener) { return listenerMgr.addListener(listener); }
 
     protected void fireScaleToChanged(boolean isEnabled)
     {
-        for (Listener listener: listeners) listener.scaleToChanged(isEnabled);
+        for (Listener listener: listenerMgr.getListeners()) listener.scaleToChanged(isEnabled);
     }
 
     protected void fireScaleToValueChanged(double scaleToValue)
     {
-        for (Listener listener: listeners) listener.scaleToValueChanged(scaleToValue);
+        for (Listener listener: listenerMgr.getListeners()) listener.scaleToValueChanged(scaleToValue);
     }
 
     protected void fireAssignPartialOrderingRequested(Map<String, Double> projectMap, int i, int j)
     {
-        for (Listener listener: listeners)
+        for (Listener listener: listenerMgr.getListeners())
         {
             listener.assignPartialOrderingRequested(projectMap, i, j);
         }

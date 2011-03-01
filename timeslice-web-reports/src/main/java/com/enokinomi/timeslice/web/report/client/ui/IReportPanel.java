@@ -4,12 +4,12 @@ import java.util.Date;
 import java.util.List;
 
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
+import com.enokinomi.timeslice.web.assign.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.core.client.ui.IClearable;
 import com.enokinomi.timeslice.web.core.client.ui.Initializable;
 import com.enokinomi.timeslice.web.core.client.ui.NavPanel;
 import com.enokinomi.timeslice.web.core.client.util.Registration;
 import com.enokinomi.timeslice.web.prorata.client.presenter.api.IProrataManagerPresenter;
-import com.enokinomi.timeslice.web.report.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.settings.client.presenter.api.ISettingsPresenter;
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -23,6 +23,8 @@ public interface IReportPanel extends IsWidget, IClearable, Initializable
     }
 
     Registration addReportPanelListener(IReportPanelListener iReportPanelListener);
+    List<Registration> bindProrataBits(IProrataManagerPresenter prorataPresenter, ISettingsPresenter settingsPresenter);
+    List<Registration> bindSubListeners();
 
     IParamPanel getParamsPanel();
     NavPanel getNavPanel();
@@ -33,7 +35,4 @@ public interface IReportPanel extends IsWidget, IClearable, Initializable
     void update();
     void setFullDaySelected(Date when, boolean fireEvents);
     void selectTab(String name, boolean fireEvents);
-    void bindProrataBits(IProrataManagerPresenter prorataPresenter, ISettingsPresenter settingsPresenter);
-
-//    void bind(ISettingsPresenter settingsPresenter);
 }

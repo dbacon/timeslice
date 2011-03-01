@@ -9,7 +9,7 @@ public class AppJobClientModule extends AbstractGinModule
     @Override
     protected void configure()
     {
-        bind(IAppJobPanel.class).to(AppJobPanel.class);
+        bind(IAppJobPanel.class).to(AppJobPanel.class).in(Singleton.class);
 
         bind(IAppJobPresenter.class).to(AppJobPresenter.class).in(Singleton.class);
     }

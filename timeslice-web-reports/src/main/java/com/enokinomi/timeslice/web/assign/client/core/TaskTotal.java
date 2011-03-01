@@ -1,4 +1,4 @@
-package com.enokinomi.timeslice.web.report.client.core;
+package com.enokinomi.timeslice.web.assign.client.core;
 
 import java.io.Serializable;
 

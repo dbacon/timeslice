@@ -6,9 +6,11 @@ import com.enokinomi.timeslice.web.appjob.client.core.AppJobCompletion;
 import com.enokinomi.timeslice.web.appjob.client.ui.api.IAppJobPanel;
 import com.enokinomi.timeslice.web.appjob.client.ui.api.IAppJobPanel.IAppJobPanelListener;
 import com.enokinomi.timeslice.web.appjob.client.ui.impl.IAppJobPresenter.IAppJobPresenterListener;
+import com.enokinomi.timeslice.web.core.client.ui.NavPanel;
 import com.enokinomi.timeslice.web.core.client.util.RegistrationManager;
 import com.google.gwt.activity.shared.AbstractActivity;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.place.shared.Place;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -43,6 +45,17 @@ public class AppJobActivity extends AbstractActivity
 //        registrations.add(widget.getNavPanel().addListener(new FooterListenerImplementation(controller, loginSupport)));
 //        registrations.add(controller.addControllerListener("appjob-panel/footer binding", new ControllerListenerAdapterExtension(widget.getNavPanel())));
 //        registrations.add(loginSupport.addLoginListener(new LoginListenerImplementation(widget, widget)));
+
+        registrations.add(widget.getNavPanel().addListener(new NavPanel.Listener()
+        {
+            @Override public void supportLinkRequested() {}
+            @Override public void serverInfoRequested() {}
+            @Override public void navigateLinkClicked(Place place) {}
+            @Override public void logoutRequested()
+            {
+                widget.clear();
+            }
+        }));
 
         registrations.add(widget.addListener(new IAppJobPanelListener()
         {

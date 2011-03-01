@@ -10,6 +10,8 @@ import java.util.TreeMap;
 
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.core.client.util.Checks;
+import com.enokinomi.timeslice.web.core.client.util.ListenerManager;
+import com.enokinomi.timeslice.web.core.client.util.Registration;
 import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport;
 import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport.IOnAuthenticated;
 import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport.LoginListener;
@@ -40,8 +42,6 @@ public class ProrataManagerPresenter implements IProrataManagerPresenter
     private final ILoginSupport loginSupport;
     private final IProrataSvcAsync prorataSvc;
     private final IOrderingSvcAsync orderingSvc;
-
-    private final ArrayList<Listener> listeners = new ArrayList<Listener>();
 
     private final List<AssignedTaskTotal> itemsCache = new ArrayList<AssignedTaskTotal>();
     private double grandTotal = 0.;
@@ -100,11 +100,9 @@ public class ProrataManagerPresenter implements IProrataManagerPresenter
         return rows;
     }
 
-    @Override
-    public void addListener(Listener listener)
-    {
-        if (listener != null) listeners.add(listener);
-    }
+    private final ListenerManager<Listener> listenerMgr = new ListenerManager<Listener>();
+
+    @Override public Registration addListener(Listener listener) { return listenerMgr.addListener(listener); }
 
     @Override
     public void addGroupComponent(final String groupName, final String target, final Double weight)
@@ -136,7 +134,7 @@ public class ProrataManagerPresenter implements IProrataManagerPresenter
 
     protected void fireTasksUpdated()
     {
-        for (Listener listener: listeners)
+        for (Listener listener: listenerMgr.getListeners())
         {
             listener.tasksUpdated();
         }
@@ -355,7 +353,7 @@ public class ProrataManagerPresenter implements IProrataManagerPresenter
 
     protected void fireAllGroupInfoChanged(List<Group> result)
     {
-        for (Listener listener: listeners)
+        for (Listener listener: listenerMgr.getListeners())
         {
             listener.allGroupInfoChanged(result);
         }
@@ -363,7 +361,7 @@ public class ProrataManagerPresenter implements IProrataManagerPresenter
 
     protected void fireAddComplete()
     {
-        for(Listener listener: listeners)
+        for(Listener listener: listenerMgr.getListeners())
         {
             listener.addComplete();
         }
@@ -371,7 +369,7 @@ public class ProrataManagerPresenter implements IProrataManagerPresenter
 
     protected void fireRemoveComplete()
     {
-        for(Listener listener: listeners)
+        for(Listener listener: listenerMgr.getListeners())
         {
             listener.removeComplete();
         }

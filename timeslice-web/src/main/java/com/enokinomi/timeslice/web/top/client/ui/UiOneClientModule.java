@@ -4,8 +4,13 @@ import java.util.Arrays;
 
 import com.enokinomi.timeslice.web.appjob.client.ui.impl.AppJobClientModule;
 import com.enokinomi.timeslice.web.appjob.client.ui.impl.AppJobPlace;
+import com.enokinomi.timeslice.web.branding.client.core.BrandInfo;
 import com.enokinomi.timeslice.web.branding.client.presenter.BrandingClientModule;
+import com.enokinomi.timeslice.web.branding.client.presenter.IBrandingPresenter;
+import com.enokinomi.timeslice.web.branding.client.presenter.IBrandingPresenter.IBrandingPresenterListener;
 import com.enokinomi.timeslice.web.core.client.ui.NavPanel;
+import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport;
+import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport.LoginListener;
 import com.enokinomi.timeslice.web.login.client.ui.impl.LoginClientModule;
 import com.enokinomi.timeslice.web.report.client.presenter.ReportClientModule;
 import com.enokinomi.timeslice.web.report.client.presenter.ReportPlace;
@@ -53,16 +58,34 @@ public class UiOneClientModule extends AbstractGinModule
         return new PlaceHistoryHandler(historyMapper);
     }
 
-    @Provides @Named("populated") NavPanel createNavPanel(NavPanel navPanel, final PlaceController placeController)
+    @Provides @Named("populated") NavPanel createNavPanel(
+            final NavPanel navPanel,
+            final PlaceController placeController,
+            final ILoginSupport loginSupport,
+            final IBrandingPresenter brandingPresenter)
     {
         navPanel.populateLeft(Arrays.asList(
                 new InputPlace("nav-panel", true, null),
                 new ReportPlace(null, null)
                 ));
+
         navPanel.populateRight(Arrays.asList(
                 new OptionsPlace(),
                 new AppJobPlace()
                 ));
+
+        loginSupport.addLoginListener(new LoginListener()
+        {
+            @Override
+            public void sessionEnded(boolean retry)
+            {
+            }
+
+            @Override
+            public void newSessionStarted()
+            {
+            }
+        });
 
         navPanel.addListener(new NavPanel.Listener()
         {
@@ -75,16 +98,35 @@ public class UiOneClientModule extends AbstractGinModule
             @Override
             public void logoutRequested()
             {
+                loginSupport.logout();
             }
 
             @Override
             public void serverInfoRequested()
             {
+                navPanel.setServerInfo("Requesting server info ...");
+                brandingPresenter.serverInfo();
             }
 
             @Override
             public void supportLinkRequested()
             {
+            }
+        });
+
+        brandingPresenter.addListener(new IBrandingPresenterListener()
+        {
+            @Override
+            public void serverInfoRecieved(String info)
+            {
+                navPanel.setServerInfo(info);
+            }
+
+            @Override
+            public void branded(BrandInfo brandInfo)
+            {
+                // TODO: hook support link up.
+//                navPanel.setSupportLink(brandInfo.getIssueHref());
             }
         });
 

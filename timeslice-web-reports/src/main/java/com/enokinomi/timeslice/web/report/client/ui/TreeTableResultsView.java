@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.enokinomi.timeslice.web.report.client.core.TaskTotal;
+import com.enokinomi.timeslice.web.assign.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.report.client.presenter.ItemsToTree;
 import com.enokinomi.timeslice.web.report.client.presenter.Mutable;
 import com.enokinomi.timeslice.web.report.client.presenter.NodeTraverser;

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
+import com.enokinomi.timeslice.web.core.client.util.Registration;
 import com.enokinomi.timeslice.web.prorata.client.core.Group;
 import com.enokinomi.timeslice.web.prorata.client.presenter.impl.ProrataManagerPresenter.Listener;
 import com.enokinomi.timeslice.web.prorata.client.ui.impl.ProjectProrataTreePanel.Row;
@@ -14,7 +15,7 @@ public interface IProrataManagerPresenter
     // TODO: this is going away - for now allow another service to tell us some data.
     void setStuff(List<AssignedTaskTotal> report);
 
-    void addListener(Listener listener);
+    Registration addListener(Listener listener);
 
     double getGrandTotal();
 

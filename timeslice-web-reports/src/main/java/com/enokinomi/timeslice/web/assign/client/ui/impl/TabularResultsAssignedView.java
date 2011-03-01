@@ -1,6 +1,5 @@
 package com.enokinomi.timeslice.web.assign.client.ui.impl;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,6 +8,8 @@ import java.util.List;
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.assign.client.ui.api.ITabularResultsAssignedView;
 import com.enokinomi.timeslice.web.core.client.ui.EditableLabel;
+import com.enokinomi.timeslice.web.core.client.util.ListenerManager;
+import com.enokinomi.timeslice.web.core.client.util.Registration;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -40,40 +41,11 @@ public class TabularResultsAssignedView extends ResizeComposite implements ITabu
         initWidget(uiBinder.createAndBindUi(this));
     }
 
-    private final ArrayList<ITabularResultsAssignedViewListener> listeners = new ArrayList<ITabularResultsAssignedViewListener>();
+    private final ListenerManager<ITabularResultsAssignedViewListener> listenerMgr = new ListenerManager<ITabularResultsAssignedView.ITabularResultsAssignedViewListener>();
 
-    @Override
-    public void addListener(ITabularResultsAssignedViewListener listener)
-    {
-        if (null != listener)
-        {
-            listeners.add(listener);
-        }
-    }
+    @Override public Registration addListener(ITabularResultsAssignedViewListener listener) { return listenerMgr.addListener(listener); }
 
-    @Override
-    public void removeListener(ITabularResultsAssignedViewListener listener)
-    {
-        if (null != listener)
-        {
-            listeners.remove(listener);
-        }
-    }
-
-    protected void fireBilleeUpdate(String description, String newBillee)
-    {
-        for (ITabularResultsAssignedViewListener listener: listeners)
-        {
-            try
-            {
-                listener.billeeUpdate(description, newBillee);
-            }
-            catch (Exception e)
-            {
-                GWT.log("Updating listener failed: " + e.getMessage());
-            }
-        }
-    }
+    protected void fireBilleeUpdate(String description, String newBillee) { for (ITabularResultsAssignedViewListener listener: listenerMgr.getListeners()) { listener.billeeUpdate(description, newBillee); } }
 
     @Override
     public void clear()

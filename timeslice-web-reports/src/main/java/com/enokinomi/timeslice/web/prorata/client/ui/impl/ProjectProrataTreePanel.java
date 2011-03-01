@@ -3,6 +3,8 @@ package com.enokinomi.timeslice.web.prorata.client.ui.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.enokinomi.timeslice.web.core.client.util.ListenerManager;
+import com.enokinomi.timeslice.web.core.client.util.Registration;
 import com.enokinomi.timeslice.web.prorata.client.core.Group;
 import com.enokinomi.timeslice.web.prorata.client.presenter.api.IProrataManagerPresenter;
 import com.enokinomi.timeslice.web.prorata.client.presenter.impl.ProrataManagerPresenter;
@@ -33,11 +35,13 @@ public class ProjectProrataTreePanel extends Composite implements IProjectProrat
 
     @UiField protected FlexTable table;
 
-    private final List<Listener> listeners = new ArrayList<Listener>();
+    private final ListenerManager<Listener> listenerMgr = new ListenerManager<Listener>();
 
-    public static void bind(final IProjectProrataTreePanel ui, final IProrataManagerPresenter presenter)
+    public static List<Registration> bind(final IProjectProrataTreePanel ui, final IProrataManagerPresenter presenter)
     {
-        presenter.addListener(new ProrataManagerPresenter.Listener()
+        List<Registration> result = new ArrayList<Registration>();
+
+        result.add(presenter.addListener(new ProrataManagerPresenter.Listener()
         {
             @Override
             public void allGroupInfoChanged(List<Group> result)
@@ -59,9 +63,9 @@ public class ProjectProrataTreePanel extends Composite implements IProjectProrat
             {
                 ui.resetRows(presenter.getRows());
             }
-        });
+        }));
 
-        ui.addListener(new IProjectProrataTreePanel.Listener()
+        result.add(ui.addListener(new IProjectProrataTreePanel.Listener()
         {
             @Override
             public void splitRequested(String project, String splitTo, Double weight)
@@ -74,12 +78,14 @@ public class ProjectProrataTreePanel extends Composite implements IProjectProrat
             {
                 presenter.removeGroupComponent(parentName, what);
             }
-        });
+        }));
+
+        return result;
     }
 
     protected void fireSplitRequested(String project, String splitTo, Double weight)
     {
-        for (Listener listener: listeners)
+        for (Listener listener: listenerMgr.getListeners())
         {
             listener.splitRequested(project, splitTo, weight);
         }
@@ -87,20 +93,13 @@ public class ProjectProrataTreePanel extends Composite implements IProjectProrat
 
     protected void fireDeleteRequested(String parentName, String what)
     {
-        for(Listener listener: listeners)
+        for(Listener listener: listenerMgr.getListeners())
         {
             listener.deleteRequested(parentName, what);
         }
     }
 
-    @Override
-    public void addListener(Listener listener)
-    {
-        if (null != listener)
-        {
-            listeners.add(listener);
-        }
-    }
+    @Override public Registration addListener(Listener listener) { return listenerMgr.addListener(listener); }
 
     ProjectProrataTreePanel()
     {

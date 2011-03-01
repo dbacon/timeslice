@@ -5,6 +5,12 @@
 
     <ui:style>
 
+        /* we use this instead of setting href */
+        .shouldbelink {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
         .hello {
             background: white;
             height: 2em;
@@ -39,8 +45,8 @@
         </g:HorizontalPanel>
         <g:HorizontalPanel styleName="{style.fillPanel}" horizontalAlignment="ALIGN_RIGHT">
             <g:HorizontalPanel ui:field="panelRight" spacing="5" verticalAlignment="ALIGN_MIDDLE">
-                <g:Anchor ui:field="supportAnchor">Report Issues</g:Anchor>
-                <g:Anchor ui:field="logoutAnchor">Logout</g:Anchor>
+                <g:Anchor ui:field="supportAnchor" styleName="{style.shouldbelink}">Report Issues</g:Anchor>
+                <g:Anchor ui:field="logoutAnchor" styleName="{style.shouldbelink}">Logout</g:Anchor>
                 <g:Label ui:field="serverInfoLabel"></g:Label>
                 <g:Label>nav-panel-right</g:Label>
                 <g:Label>nav-panel-right</g:Label>

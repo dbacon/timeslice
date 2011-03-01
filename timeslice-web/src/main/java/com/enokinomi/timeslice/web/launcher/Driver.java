@@ -27,11 +27,13 @@ import com.enokinomi.timeslice.lib.commondatautil.impl.CommonDataModule;
 import com.enokinomi.timeslice.lib.userinfo.impl.UserInfoModule;
 import com.enokinomi.timeslice.web.appjob.server.impl.AppJobServerModule;
 import com.enokinomi.timeslice.web.assign.server.impl.AssignServerModule;
+import com.enokinomi.timeslice.web.branding.server.impl.BrandingServerModule;
 import com.enokinomi.timeslice.web.branding.server.impl.DefaultBrandingModule;
 import com.enokinomi.timeslice.web.guice.GuiceRpcModule;
 import com.enokinomi.timeslice.web.login.server.impl.LoginServerModule;
 import com.enokinomi.timeslice.web.ordering.server.impl.OrderingServerModule;
 import com.enokinomi.timeslice.web.prorata.server.impl.ProrataServerModule;
+import com.enokinomi.timeslice.web.report.server.impl.ReportsServerModule;
 import com.enokinomi.timeslice.web.session.server.impl.SessionServerModule;
 import com.enokinomi.timeslice.web.settings.server.impl.SettingsServerModule;
 import com.enokinomi.timeslice.web.task.server.impl.TaskServerModule;
@@ -134,11 +136,13 @@ public class Driver
                 new CommonDataModule(schemaCreationResource, db),
                 new UserInfoModule(),
                     new LoginServerModule(),
+                    new BrandingServerModule(),
                     new SettingsServerModule(),
                     new SessionServerModule(acl),
                     new AppJobServerModule(),
                     new ProrataServerModule(),
                     new TaskServerModule(),
+                    new ReportsServerModule(),
                     new AssignServerModule(),
                     new OrderingServerModule(),
                 new TsWebLaunchModule(),

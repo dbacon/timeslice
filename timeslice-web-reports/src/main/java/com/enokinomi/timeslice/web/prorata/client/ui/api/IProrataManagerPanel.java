@@ -2,6 +2,7 @@ package com.enokinomi.timeslice.web.prorata.client.ui.api;
 
 import java.util.List;
 
+import com.enokinomi.timeslice.web.core.client.util.Registration;
 import com.enokinomi.timeslice.web.prorata.client.core.Group;
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -15,8 +16,7 @@ public interface IProrataManagerPanel extends IsWidget
         void removeGroupRequested(String groupName, String name);
     }
 
-    void addListener(Listener listener);
-    void removeListener(Listener listener);
+    Registration addListener(Listener listener);
 
     void updateGroupInfoTable(List<Group> result, String textRepr);
     void resetInput();

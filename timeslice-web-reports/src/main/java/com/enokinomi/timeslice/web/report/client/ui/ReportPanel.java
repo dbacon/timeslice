@@ -1,10 +1,12 @@
 package com.enokinomi.timeslice.web.report.client.ui;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
+import com.enokinomi.timeslice.web.assign.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.assign.client.ui.api.ITabularResultsAssignedView;
 import com.enokinomi.timeslice.web.assign.client.ui.api.ITabularResultsAssignedView.ITabularResultsAssignedViewListener;
 import com.enokinomi.timeslice.web.core.client.ui.NavPanel;
@@ -12,7 +14,6 @@ import com.enokinomi.timeslice.web.core.client.util.ListenerManager;
 import com.enokinomi.timeslice.web.core.client.util.Registration;
 import com.enokinomi.timeslice.web.prorata.client.presenter.api.IProrataManagerPresenter;
 import com.enokinomi.timeslice.web.prorata.client.ui.api.IProjectListPanel;
-import com.enokinomi.timeslice.web.report.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.settings.client.presenter.api.ISettingsPresenter;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -66,9 +67,9 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
     }
 
     @Override
-    public void bindProrataBits(IProrataManagerPresenter prorataPresenter, ISettingsPresenter settingsPresenter)
+    public List<Registration> bindProrataBits(IProrataManagerPresenter prorataPresenter, ISettingsPresenter settingsPresenter)
     {
-        projectListPanel.bind(prorataPresenter, settingsPresenter);
+        return projectListPanel.bind(prorataPresenter, settingsPresenter);
     }
 
     @UiHandler("refreshButton")
@@ -120,16 +121,24 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
 
         refreshButton.setAccessKey('t');
 
-        resultsAssignedView.addListener(new ITabularResultsAssignedViewListener()
+        clear();
+    }
+
+    @Override
+    public List<Registration> bindSubListeners()
+    {
+        List<Registration> results = new ArrayList<Registration>();
+
+        results.add(resultsAssignedView.addListener(new ITabularResultsAssignedViewListener()
         {
             @Override
             public void billeeUpdate(String description, String newBillee)
             {
                 fireBilleeUpdateRequested(description, newBillee);
             }
-        });
+        }));
 
-        clear();
+        return results;
     }
 
     @Override

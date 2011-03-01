@@ -10,6 +10,11 @@
 
     <ui:style>
 
+        .shouldbelink {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
     </ui:style>
 
     <g:DockLayoutPanel unit="EM">
@@ -37,15 +42,15 @@
 
         <g:south size="4">
             <g:HorizontalPanel ui:field="entryPanel" spacing="5" verticalAlignment="MIDDLE">
-                <g:Anchor ui:field="updateLink">Update</g:Anchor>
+                <g:Anchor ui:field="updateLink" styleName="{style.shouldbelink}">Update</g:Anchor>
 
                 <g:HTML>Task:</g:HTML>
 
                 <g:SuggestBox ui:field="taskDescriptionEntry"/>
 
                 <g:VerticalPanel ui:field="actionPanel">
-                    <g:Anchor ui:field="enterLink">Enter</g:Anchor>
-                    <g:Anchor ui:field="addHotlink">Add to hotlist</g:Anchor>
+                    <g:Anchor ui:field="enterLink" styleName="{style.shouldbelink}">Enter</g:Anchor>
+                    <g:Anchor ui:field="addHotlink" styleName="{style.shouldbelink}">Add to hotlist</g:Anchor>
                 </g:VerticalPanel>
 
                 <g:VerticalPanel ui:field="idleActionPanel" ui:styleName="ts-idlePanel">

@@ -11,11 +11,6 @@
   <inherits name="com.enokinomi.timeslice.web.settings.Settings"/>
   <inherits name="com.enokinomi.timeslice.web.session.Session"/>
   <inherits name="com.enokinomi.timeslice.web.login.Login"/>
-  <!--
-  <inherits name="com.enokinomi.timeslice.web.appjob.AppJob" />
-  <inherits name="com.enokinomi.timeslice.web.assign.Assign"/>
-  <inherits name="com.enokinomi.timeslice.web.prorata.Prorata"/>
-   -->
 
   <stylesheet src="controls.css" />
 

@@ -1,8 +1,11 @@
 package com.enokinomi.timeslice.web.prorata.client.ui.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 
+import com.enokinomi.timeslice.web.core.client.util.Registration;
 import com.enokinomi.timeslice.web.prorata.client.presenter.api.IProrataManagerPresenter;
 import com.enokinomi.timeslice.web.prorata.client.ui.api.IProjectListPanel;
 import com.enokinomi.timeslice.web.prorata.client.ui.api.IProjectProrataTreePanel;
@@ -33,11 +36,13 @@ public class ProjectListPanel extends Composite implements IProjectListPanel
     }
 
     @Override
-    public void bind(IProrataManagerPresenter prorataManagerPresenter, ISettingsPresenter settingsPresenter)
+    public List<Registration> bind(IProrataManagerPresenter prorataManagerPresenter, ISettingsPresenter settingsPresenter)
     {
-        ProjectReportPanel.bind(projectReportPanel, prorataManagerPresenter, settingsPresenter);
-        ProrataManagerPanel.bind(prorataManagePanel, prorataManagerPresenter);
-        ProjectProrataTreePanel.bind(projectProrataTreePanel, prorataManagerPresenter);
+        List<Registration> results = new ArrayList<Registration>();
+        results.addAll(ProjectReportPanel.bind(projectReportPanel, prorataManagerPresenter, settingsPresenter));
+        results.addAll(ProrataManagerPanel.bind(prorataManagePanel, prorataManagerPresenter));
+        results.addAll(ProjectProrataTreePanel.bind(projectProrataTreePanel, prorataManagerPresenter));
+        return results;
     }
 
     public void clear()

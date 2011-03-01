@@ -29,6 +29,21 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>gwt-mac</id>
+            <activation><os><family>mac</family></os></activation>
+            <properties><gwt.variant>mac</gwt.variant></properties>
+        </profile>
+        <profile>
+            <id>gwt-linux</id>
+            <activation><os><family>unix</family></os></activation>
+            <properties><gwt.variant>linux</gwt.variant></properties>
+        </profile>
+        <profile>
+            <id>gwt-windows</id>
+            <activation><os><family>windows</family></os></activation>
+            <properties><gwt.variant>windows</gwt.variant></properties>
+        </profile>
     <!--
         <profile>
             <id>gwt-build</id>

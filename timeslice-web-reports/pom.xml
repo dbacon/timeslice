@@ -17,6 +17,7 @@
 	<name>timeslice-web-reports</name>
 
 	<dependencies>
+
         <dependency>
             <groupId>com.enokinomi.timeslice</groupId>
             <artifactId>timeslice-web-core</artifactId>
@@ -40,6 +41,13 @@
             <artifactId>timeslice-web-settings</artifactId>
             <version>${project.version}</version>
         </dependency>
-    </dependencies>
+
+        <dependency>
+            <groupId>com.enokinomi.timeslice</groupId>
+            <artifactId>timeslice-web-task</artifactId>
+            <version>1.0.11-beta-2-SNAPSHOT</version>
+        </dependency>
+
+	</dependencies>
 
 </project>

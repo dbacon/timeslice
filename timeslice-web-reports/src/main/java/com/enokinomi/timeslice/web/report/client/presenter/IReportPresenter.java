@@ -3,9 +3,9 @@ package com.enokinomi.timeslice.web.report.client.presenter;
 import java.util.List;
 
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
+import com.enokinomi.timeslice.web.assign.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.core.client.util.Registration;
 import com.enokinomi.timeslice.web.core.client.util.SortDir;
-import com.enokinomi.timeslice.web.report.client.core.TaskTotal;
 
 public interface IReportPresenter
 {
@@ -22,4 +22,6 @@ public interface IReportPresenter
     void startRefreshTotalsAssigned(int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords);
     void startGetAllBillees();
     void startAssignBillee(String description, String newBillee);
+
+    void startRefreshTotals(int maxSize, SortDir sortDir, String startingInstant, String endingInstant, List<String> allowWords, List<String> ignoreWords);
 }

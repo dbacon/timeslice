@@ -2,7 +2,7 @@ package com.enokinomi.timeslice.web.report.server.impl;
 
 import com.enokinomi.timeslice.lib.task.api.TaskTotalMember;
 import com.enokinomi.timeslice.lib.util.ITransform;
-import com.enokinomi.timeslice.web.report.client.core.TaskTotal;
+import com.enokinomi.timeslice.web.assign.client.core.TaskTotal;
 
 
 public class ServerToClient

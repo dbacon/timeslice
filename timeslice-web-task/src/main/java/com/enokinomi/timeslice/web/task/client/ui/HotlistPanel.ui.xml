@@ -4,11 +4,14 @@
     >
 
     <ui:style>
-
+        .shouldbelink {
+            text-decoration: underline;
+            cursor: pointer;
+        }
     </ui:style>
 
     <g:FlowPanel ui:field="vp">
-        <g:Anchor ui:field="mode">Hotlist</g:Anchor>
+        <g:Anchor ui:field="mode" styleName="{style.shouldbelink}">Hotlist</g:Anchor>
     </g:FlowPanel>
 
 </ui:UiBinder>

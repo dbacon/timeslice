@@ -60,9 +60,6 @@ public class NavPanel extends Composite implements Initializable
     public NavPanel()
     {
         initWidget(uiBinder.createAndBindUi(this));
-
-        logoutAnchor.setHref("#");
-        supportAnchor.setHref("#");
     }
 
     public static interface Listener
@@ -104,6 +101,7 @@ public class NavPanel extends Composite implements Initializable
         for (final Place place: places)
         {
             Anchor anchor = new Anchor(place.toString());
+
             anchor.addClickHandler(new ClickHandler()
             {
                 @Override
