@@ -11,6 +11,7 @@
 
     <modules>
         <module>timeslice-parent</module>
+        <module>timeslice-parent-web</module>
         <module>timeslice-appjob</module>
         <module>timeslice-brand-api</module>
         <module>timeslice-brand-default</module>
