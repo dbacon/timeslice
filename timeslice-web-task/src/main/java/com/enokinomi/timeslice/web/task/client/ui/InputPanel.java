@@ -33,7 +33,6 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
@@ -60,7 +59,7 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
     @UiField protected RadioButton modeRadioSpecify;
     @UiField protected RadioButton modeRadioNormal;
     @UiField protected DateControlBox specifiedDateBox;
-    @UiField protected IHistoryPanel historyPanel;
+    @UiField(provided=true) protected IHistoryPanel historyPanel;
     @UiField(provided=true) protected SuggestBox taskDescriptionEntry;
     @UiField protected HorizontalPanel entryPanel;
     @UiField protected IHotlistPanel hotlistPanel;
@@ -81,17 +80,18 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
     private Options options = new Options();
 
     public String originalWindowTitle = "";
-    private final TzSupport tzSupport;
+
+    @UiField(provided=true) final TzSupport tzSupport;
 
     public NavPanel getNavPanel()
     {
         return navPanel;
     }
 
-    @UiConstructor
     @Inject
-    InputPanel(@Named("populated") NavPanel navPanel, TzSupport tzSupport)
+    InputPanel(@Named("populated") NavPanel navPanel, TzSupport tzSupport, IHistoryPanel historyPanel)
     {
+        this.historyPanel = historyPanel;
         this.navPanel = navPanel;
         this.tzSupport = tzSupport;
         taskDescriptionEntry = new SuggestBox(suggestSource);

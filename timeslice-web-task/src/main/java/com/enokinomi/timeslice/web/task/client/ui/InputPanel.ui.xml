@@ -17,6 +17,8 @@
 
     </ui:style>
 
+    <ui:with type="com.enokinomi.timeslice.web.task.client.presenter.TzSupport" field="tzSupport" />
+
     <g:DockLayoutPanel unit="EM">
 
         <g:north size="3">
@@ -33,7 +35,7 @@
         </g:north>
 
         <g:center>
-            <task:HistoryPanel ui:field="historyPanel" />
+            <task:IHistoryPanel ui:field="historyPanel" />
         </g:center>
 
         <g:south size="3">

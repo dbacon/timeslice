@@ -4,15 +4,18 @@ import static com.enokinomi.timeslice.web.task.client.presenter.HumanReadableTim
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import com.enokinomi.timeslice.web.core.client.ui.EditableLabel;
 import com.enokinomi.timeslice.web.core.client.util.ListenerManager;
 import com.enokinomi.timeslice.web.task.client.core.StartTag;
+import com.enokinomi.timeslice.web.task.client.presenter.TzSupport;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -40,9 +43,6 @@ public class HistoryPanel extends ResizeComposite implements IHistoryPanel
     private final List<StartTag> items = new ArrayList<StartTag>();
 
     private final MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
-
-    @Override
-    public Widget asWidget() { return this; }
 
     private ListenerManager<Listener> listenerMgr = new ListenerManager<IHistoryPanel.Listener>();
     @Override public void addListener(Listener listener) { listenerMgr.addListener(listener); }
@@ -101,9 +101,12 @@ public class HistoryPanel extends ResizeComposite implements IHistoryPanel
         }
     }
 
+    @UiConstructor
     @Inject
-    HistoryPanel()
+    HistoryPanel(TzSupport tzSupport)
     {
+        this.tzSupport = tzSupport;
+
         initWidget(uiBinder.createAndBindUi(this));
 
         // no way to do this in the ui-binder?
@@ -146,6 +149,8 @@ public class HistoryPanel extends ResizeComposite implements IHistoryPanel
         oracle.addAll(words);
     }
 
+    @UiField(provided=true) final TzSupport tzSupport;
+
     private void update()
     {
         Collections.reverse(items);
@@ -154,9 +159,18 @@ public class HistoryPanel extends ResizeComposite implements IHistoryPanel
 
         int row = 0;
 
+        int rowOfNow = 0;
+        String now = tzSupport.renderForClientMachine(new Date());
+
         for (final StartTag item: items)
         {
             int col = 0;
+
+            // need the max, but not beyond 'now'.
+            if (now.compareTo(item.getInstantString()) >= 0)
+            {
+                rowOfNow = row;
+            }
 
             Anchor resumeLink = new Anchor(constants.resumeTextIcon());
             resumeLink.setTitle(constants.resumeHint());
@@ -170,6 +184,11 @@ public class HistoryPanel extends ResizeComposite implements IHistoryPanel
                     fireInterestingThing(item.getDescription());
                 }
             });
+
+            if (!item.getPast())
+            {
+                table.getRowFormatter().addStyleName(row, "ts-task-future");
+            }
 
             SuggestBox suggestBox = new SuggestBox(oracle);
             suggestBox.setAutoSelectEnabled(false);
@@ -251,6 +270,8 @@ public class HistoryPanel extends ResizeComposite implements IHistoryPanel
 
             ++row;
         }
+
+        table.getRowFormatter().addStyleName(rowOfNow, "ts-task-current");
 
         scroller.scrollToBottom();
         scroller.scrollToRight();

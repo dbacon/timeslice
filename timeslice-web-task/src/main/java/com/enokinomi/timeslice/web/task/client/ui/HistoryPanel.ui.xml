@@ -7,6 +7,8 @@
 
     </ui:style>
 
+    <ui:with type="com.enokinomi.timeslice.web.task.client.presenter.TzSupport" field="tzSupport" />
+
     <g:ScrollPanel ui:field="scroller">
         <g:FlexTable ui:field="table" />
     </g:ScrollPanel>

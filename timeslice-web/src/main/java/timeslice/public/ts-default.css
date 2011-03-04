@@ -21,6 +21,13 @@
 {
 }
 
+.ts-task-current
+{
+	font-weight: bold;
+	text-transform: capitalize;
+	background: #ffe;
+}
+
 .ts-task-future
 {
 	color: gray;
