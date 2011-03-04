@@ -88,6 +88,7 @@ public class ReportActivity extends AbstractActivity
                     public void userSettingsDone(Map<String, List<String>> result)
                     {
                         widget.getParamsPanel().restoreFromSettings(result);
+                        widget.getTreeTable().understandSettings(result);
                     }
 
                     @Override

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import com.enokinomi.timeslice.web.assign.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.report.client.presenter.ItemsToTree;
@@ -24,7 +25,7 @@ import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
-class TreeTableResultsView extends ResizeComposite
+public class TreeTableResultsView extends ResizeComposite
 {
     private static TreeTableResultsViewUiBinder uiBinder = GWT.create(TreeTableResultsViewUiBinder.class);
     interface TreeTableResultsViewUiBinder extends UiBinder<Widget, TreeTableResultsView> { }
@@ -33,12 +34,38 @@ class TreeTableResultsView extends ResizeComposite
 
     @UiField protected FlexTable resultsTable;
 
-    private final TaskTotalIntegrator integrator = new TaskTotalIntegrator("/"); // TODO: allow setting/injection
+    private String separator = "/";
+
+    public String getSeparator()
+    {
+        return separator;
+    }
+
+    public void setSeparator(String separator)
+    {
+        this.separator = separator;
+    }
 
     @Inject
     TreeTableResultsView()
     {
         initWidget(uiBinder.createAndBindUi(this));
+    }
+
+    public void understandSettings(Map<String, List<String>> settings)
+    {
+        if (settings.containsKey("ui.reports.tree.pathseparator.regex"))
+        {
+            List<String> vector = settings.get("ui.reports.tree.pathseparator.regex");
+            if (vector.size() > 0)
+            {
+                String value = vector.get(0);
+                if (value.length() > 0)
+                {
+                    setSeparator(value);
+                }
+            }
+        }
     }
 
     void clear()
@@ -136,7 +163,7 @@ class TreeTableResultsView extends ResizeComposite
 
                 row.setValue(row.getValue() + 1);
             }
-        }.visit(ItemsToTree.create(integrator).rowsToTree(report, new TaskTotal()));
+        }.visit(ItemsToTree.create(new TaskTotalIntegrator(getSeparator())).rowsToTree(report, new TaskTotal()));
     }
 
 }

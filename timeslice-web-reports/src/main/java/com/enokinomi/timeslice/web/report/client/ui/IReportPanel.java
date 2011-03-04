@@ -28,6 +28,8 @@ public interface IReportPanel extends IsWidget, IClearable, Initializable
 
     IParamPanel getParamsPanel();
     NavPanel getNavPanel();
+    TreeTableResultsView getTreeTable();
+
     void setResultsAssigned(List<AssignedTaskTotal> report);
     void setResults(List<TaskTotal> results);
     void setBillees(List<String> billees);

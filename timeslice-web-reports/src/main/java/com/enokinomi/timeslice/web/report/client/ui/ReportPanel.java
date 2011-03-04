@@ -42,6 +42,8 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
 
     private final ListenerManager<IReportPanelListener> listenerMgr = new ListenerManager<IReportPanelListener>();
 
+    @Override public TreeTableResultsView getTreeTable() { return resultsTreeView; }
+
     @Override
     public Registration addReportPanelListener(IReportPanelListener listener) { return listenerMgr.addListener(listener); }
 
