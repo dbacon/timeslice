@@ -12,6 +12,8 @@
 
     </ui:style>
 
+    <ui:with type="com.google.gwt.place.shared.PlaceHistoryMapper" field="placeHistoryMapper" />
+
     <g:HTMLPanel>
         <table>
             <tr>

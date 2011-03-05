@@ -7,9 +7,12 @@ import java.util.Map;
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.assign.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.core.client.ui.NavPanel;
+import com.enokinomi.timeslice.web.core.client.ui.NotificationPanel;
+import com.enokinomi.timeslice.web.core.client.ui.NotificationPanel.NotificationType;
 import com.enokinomi.timeslice.web.core.client.util.RegistrationManager;
 import com.enokinomi.timeslice.web.core.client.util.SortDir;
 import com.enokinomi.timeslice.web.login.client.ui.api.ILoginSupport;
+import com.enokinomi.timeslice.web.prorata.client.core.Group;
 import com.enokinomi.timeslice.web.prorata.client.presenter.api.IProrataManagerPresenter;
 import com.enokinomi.timeslice.web.report.client.presenter.IReportPresenter.IReportsPresenterListener;
 import com.enokinomi.timeslice.web.report.client.ui.IParamPanel;
@@ -76,11 +79,43 @@ public class ReportActivity extends AbstractActivity
             }
         }));
 
+        final NotificationPanel notif = widget.getNotificationPanel();
 
         registrations
 
             // TODO: unwind this bit and put it here ?
             .addAll(widget.bindProrataBits(prorataPresenter, settingsPresenter))
+
+            .add(prorataPresenter.addListener(new IProrataManagerPresenter.Listener()
+                {
+                    @Override
+                    public void tasksUpdated()
+                    {
+                    }
+
+                    @Override
+                    public void removeComplete(String group, String name)
+                    {
+                        notif.addInfoMsg(NotificationType.info, "Removed component '" + name + "' from '" + group + "'.");
+                    }
+
+                    @Override
+                    public void allGroupInfoChanged(List<Group> result)
+                    {
+                    }
+
+                    @Override
+                    public void addFailed(String msg)
+                    {
+                        notif.addInfoMsg(NotificationType.warning, msg);
+                    }
+
+                    @Override
+                    public void addComplete(String group, String name)
+                    {
+                        notif.addInfoMsg(NotificationType.info, "Added component '" + name + "' to '" + group + "'.");
+                    }
+                }))
 
             .add(settingsPresenter.addListener(new Listener()
                 {

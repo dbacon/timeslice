@@ -5,9 +5,11 @@ import static com.enokinomi.timeslice.lib.util.Transforms.tr;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import com.enokinomi.timeslice.lib.prorata.api.IProrataStore;
 import com.enokinomi.timeslice.lib.util.ITransform;
+import com.enokinomi.timeslice.web.core.server.util.Catcher;
 import com.enokinomi.timeslice.web.prorata.client.core.Group;
 import com.enokinomi.timeslice.web.prorata.client.core.GroupComponent;
 import com.enokinomi.timeslice.web.prorata.client.core.IProrataSvc;
@@ -36,10 +38,19 @@ class ProrataSvc implements IProrataSvc
     }
 
     @Override
-    public void addGroupComponent(String authToken, String groupName, String componentName, Double weight)
+    public void addGroupComponent(String authToken, final String groupName, final String componentName, final Double weight)
     {
         sessionTracker.checkToken(authToken);
-        store.addComponent(groupName, componentName, new BigDecimal(weight));
+
+        new Catcher().catchAndWrap("service-call add-group-component", new Callable<Void>()
+        {
+            @Override
+            public Void call() throws Exception
+            {
+                store.addComponent(groupName, componentName, new BigDecimal(weight));
+                return null; // Void
+            }
+        });
     }
 
     @Override

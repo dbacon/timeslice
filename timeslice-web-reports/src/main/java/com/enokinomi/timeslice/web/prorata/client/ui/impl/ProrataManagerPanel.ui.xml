@@ -7,9 +7,6 @@
     >
 
     <ui:style>
-        .monkey {
-            background: red;
-        }
     </ui:style>
 
     <g:VerticalPanel>

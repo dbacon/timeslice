@@ -8,6 +8,7 @@ import com.enokinomi.timeslice.web.assign.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.core.client.ui.IClearable;
 import com.enokinomi.timeslice.web.core.client.ui.Initializable;
 import com.enokinomi.timeslice.web.core.client.ui.NavPanel;
+import com.enokinomi.timeslice.web.core.client.ui.NotificationPanel;
 import com.enokinomi.timeslice.web.core.client.util.Registration;
 import com.enokinomi.timeslice.web.prorata.client.presenter.api.IProrataManagerPresenter;
 import com.enokinomi.timeslice.web.settings.client.presenter.api.ISettingsPresenter;
@@ -26,6 +27,7 @@ public interface IReportPanel extends IsWidget, IClearable, Initializable
     List<Registration> bindProrataBits(IProrataManagerPresenter prorataPresenter, ISettingsPresenter settingsPresenter);
     List<Registration> bindSubListeners();
 
+    NotificationPanel getNotificationPanel();
     IParamPanel getParamsPanel();
     NavPanel getNavPanel();
     TreeTableResultsView getTreeTable();

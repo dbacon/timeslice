@@ -33,7 +33,6 @@ public class ProrataManagerPanel extends Composite implements IProrataManagerPan
     private static ProrataManagerPanelUiBinder uiBinder = GWT.create(ProrataManagerPanelUiBinder.class);
     interface ProrataManagerPanelUiBinder extends UiBinder<Widget, ProrataManagerPanel> { }
 
-
     @UiField protected FlexTable groupInfoTable;
     @UiField protected TextArea rulesTextArea;
     @UiField protected Button rulesLoadButton;
@@ -83,19 +82,24 @@ public class ProrataManagerPanel extends Composite implements IProrataManagerPan
             }
 
             @Override
-            public void addComplete()
+            public void addComplete(String group, String name)
             {
                 ui.resetInput();
             }
 
             @Override
-            public void removeComplete()
+            public void removeComplete(String group, String name)
             {
                 ui.setGroupInfo(presenter.getGroupInfo());
             }
 
             @Override
             public void tasksUpdated()
+            {
+            }
+
+            @Override
+            public void addFailed(String msg)
             {
             }
         }));

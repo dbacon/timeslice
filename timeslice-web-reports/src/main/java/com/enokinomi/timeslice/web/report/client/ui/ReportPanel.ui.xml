@@ -17,9 +17,12 @@
             <tscore:NavPanel ui:field="navPanel" />
         </g:north>
 
-        <g:north size="13">
+        <g:north size="15">
             <g:VerticalPanel>
-                <task:ParamPanel ui:field="params" />
+                <g:HorizontalPanel>
+                    <task:IParamPanel ui:field="params" />
+                    <tscore:NotificationPanel ui:field="notificationPanel" />
+                </g:HorizontalPanel>
                 <g:HorizontalPanel>
                     <g:Button ui:field="refreshButton"><ui:msg>Refresh</ui:msg></g:Button>
                 </g:HorizontalPanel>

@@ -58,6 +58,17 @@
 	padding-left: 0.5em;
 }
 
+.ts-notificationPanel
+{
+    display: none;
+    padding: 0.2em;
+}
+
+.ts-notificationPanel-nonEmpty
+{
+    display: block;
+}
+
 .tsTaskResumeLink
 {
 	color: gray;

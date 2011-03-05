@@ -63,12 +63,12 @@ public class ProjectReportPanel extends Composite implements IProjectReportPanel
             }
 
             @Override
-            public void addComplete()
+            public void addComplete(String group, String name)
             {
             }
 
             @Override
-            public void removeComplete()
+            public void removeComplete(String group, String name)
             {
             }
 
@@ -76,6 +76,13 @@ public class ProjectReportPanel extends Composite implements IProjectReportPanel
             public void tasksUpdated()
             {
                 ui.setProjects(presenter.getGrandTotal(), presenter.getLeafTotals());
+            }
+
+            @Override
+            public void addFailed(String msg)
+            {
+                // TODO Auto-generated method stub
+
             }
         }));
 

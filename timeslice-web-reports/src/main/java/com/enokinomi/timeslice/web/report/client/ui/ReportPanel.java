@@ -10,6 +10,7 @@ import com.enokinomi.timeslice.web.assign.client.core.TaskTotal;
 import com.enokinomi.timeslice.web.assign.client.ui.api.ITabularResultsAssignedView;
 import com.enokinomi.timeslice.web.assign.client.ui.api.ITabularResultsAssignedView.ITabularResultsAssignedViewListener;
 import com.enokinomi.timeslice.web.core.client.ui.NavPanel;
+import com.enokinomi.timeslice.web.core.client.ui.NotificationPanel;
 import com.enokinomi.timeslice.web.core.client.util.ListenerManager;
 import com.enokinomi.timeslice.web.core.client.util.Registration;
 import com.enokinomi.timeslice.web.prorata.client.presenter.api.IProrataManagerPresenter;
@@ -33,16 +34,18 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
     interface ReportPanelUiBinder extends UiBinder<Widget, ReportPanel> { }
 
     @UiField(provided=true) protected NavPanel navPanel;
+    @UiField protected NotificationPanel notificationPanel;
     @UiField protected TabLayoutPanel resultsTabPanel;
     @UiField protected TreeTableResultsView resultsTreeView;
     @UiField protected ITabularResultsAssignedView resultsAssignedView;
     @UiField protected IProjectListPanel projectListPanel;
-    @UiField protected IParamPanel params;
+    @UiField(provided=true) protected IParamPanel params;
     @UiField protected Button refreshButton;
 
     private final ListenerManager<IReportPanelListener> listenerMgr = new ListenerManager<IReportPanelListener>();
 
     @Override public TreeTableResultsView getTreeTable() { return resultsTreeView; }
+    @Override public NotificationPanel getNotificationPanel() { return notificationPanel; }
 
     @Override
     public Registration addReportPanelListener(IReportPanelListener listener) { return listenerMgr.addListener(listener); }
@@ -115,9 +118,10 @@ public class ReportPanel extends ResizeComposite implements IReportPanel
     }
 
     @Inject
-    ReportPanel(@Named("populated") NavPanel navPanel)
+    ReportPanel(@Named("populated") NavPanel navPanel, IParamPanel params)
     {
         this.navPanel = navPanel;
+        this.params = params;
 
         initWidget(uiBinder.createAndBindUi(this));
 

@@ -49,12 +49,12 @@ public class ProjectProrataTreePanel extends Composite implements IProjectProrat
             }
 
             @Override
-            public void addComplete()
+            public void addComplete(String group, String name)
             {
             }
 
             @Override
-            public void removeComplete()
+            public void removeComplete(String group, String name)
             {
             }
 
@@ -62,6 +62,11 @@ public class ProjectProrataTreePanel extends Composite implements IProjectProrat
             public void tasksUpdated()
             {
                 ui.resetRows(presenter.getRows());
+            }
+
+            @Override
+            public void addFailed(String msg)
+            {
             }
         }));
 

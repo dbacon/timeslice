@@ -4,11 +4,10 @@
 #
 
 find . \
-    -name pom.xml \
-    -o -name \*.java \
-    -o -name \*.css \
-    -o -name \*.gwt.xml \
-    -o -name \*.ui.xml \
-    -o -name \*.ddl \
-        -exec ./strip-whitespace.sh {} \;
+    -name pom.xml          -exec ./strip-whitespace.sh {} \; \
+    -o -name \*.java       -exec ./strip-whitespace.sh {} \; \
+    -o -name \*.css        -exec ./strip-whitespace.sh {} \; \
+    -o -name \*.gwt.xml    -exec ./strip-whitespace.sh {} \; \
+    -o -name \*.ui.xml     -exec ./strip-whitespace.sh {} \; \
+    -o -name \*.ddl        -exec ./strip-whitespace.sh {} \; \
 

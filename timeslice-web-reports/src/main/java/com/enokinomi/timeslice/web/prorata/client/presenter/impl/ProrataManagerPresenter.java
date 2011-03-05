@@ -50,18 +50,6 @@ public class ProrataManagerPresenter implements IProrataManagerPresenter
     private final Map<String, Double> leafTotals = new LinkedHashMap<String, Double>();
     private List<String> ordering = new ArrayList<String>();
 
-
-    public static interface Listener
-    {
-        void allGroupInfoChanged(List<Group> result);
-
-        void removeComplete();
-
-        void addComplete();
-
-        void tasksUpdated();
-    }
-
     private static class ParsedRule
     {
         public String parent;
@@ -119,13 +107,14 @@ public class ProrataManagerPresenter implements IProrataManagerPresenter
                             @Override
                             public void onFailure(Throwable caught)
                             {
+                                fireAddFailed(caught.getMessage());
                                 GWT.log("Failure adding new group: " + caught.getMessage());
                             }
 
                             @Override
                             public void onSuccess(Void result)
                             {
-                                onAddComplete();
+                                onAddComplete(groupName, target);
                             }
                         }));
             }
@@ -351,6 +340,7 @@ public class ProrataManagerPresenter implements IProrataManagerPresenter
         refreshGroupInfo();
     }
 
+    protected void fireAddFailed(String msg) { for (Listener l: listenerMgr.getListeners()) l.addFailed(msg); }
     protected void fireAllGroupInfoChanged(List<Group> result)
     {
         for (Listener listener: listenerMgr.getListeners())
@@ -359,19 +349,19 @@ public class ProrataManagerPresenter implements IProrataManagerPresenter
         }
     }
 
-    protected void fireAddComplete()
+    protected void fireAddComplete(String group, String name)
     {
         for(Listener listener: listenerMgr.getListeners())
         {
-            listener.addComplete();
+            listener.addComplete(group, name);
         }
     }
 
-    protected void fireRemoveComplete()
+    protected void fireRemoveComplete(String group, String name)
     {
         for(Listener listener: listenerMgr.getListeners())
         {
-            listener.removeComplete();
+            listener.removeComplete(group, name);
         }
     }
 
@@ -385,28 +375,28 @@ public class ProrataManagerPresenter implements IProrataManagerPresenter
         fireAllGroupInfoChanged(result);
     }
 
-    protected void onAddComplete()
+    protected void onAddComplete(String group, String name)
     {
         onGroupsChanged();
-        fireAddComplete();
+        fireAddComplete(group, name);
     }
 
     protected void onLoadAllGroupsComplete()
     {
         onGroupsChanged();
-        fireAddComplete();
+        fireAddComplete("(all)", "(all)");
     }
 
     protected void onRemoveAllComplete()
     {
         onGroupsChanged();
-        fireRemoveComplete();
+        fireRemoveComplete("(all)", "(all)");
     }
 
-    protected void onRemoveGroupComponentComplete()
+    protected void onRemoveGroupComponentComplete(String group, String name)
     {
         onGroupsChanged();
-        fireRemoveComplete();
+        fireRemoveComplete(group, name);
     }
 
     @Override
@@ -463,7 +453,9 @@ public class ProrataManagerPresenter implements IProrataManagerPresenter
                             @Override
                             public void onFailure(Throwable caught)
                             {
-                                GWT.log("Failed adding rule (s" + rule.parent + " -> " + rule.child + "): " + caught.getMessage());
+                                String msg = "Failed adding rule (s" + rule.parent + " -> " + rule.child + "): " + caught.getMessage();
+                                fireAddFailed(msg);
+                                GWT.log(msg);
                             }
 
                             @Override
@@ -553,7 +545,7 @@ public class ProrataManagerPresenter implements IProrataManagerPresenter
                             @Override
                             public void onSuccess(Void result)
                             {
-                                onRemoveGroupComponentComplete();
+                                onRemoveGroupComponentComplete(group, name);
                             }
                         }));
             }

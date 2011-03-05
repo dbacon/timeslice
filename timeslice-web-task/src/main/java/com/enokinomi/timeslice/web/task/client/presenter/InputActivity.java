@@ -49,8 +49,8 @@ public class InputActivity extends AbstractActivity
         final InputPanel widget = widgetProvider.get();
 
         // set initial state
-        widget.setHistoryMode(!place.isCurrent(), false);
-        widget.setHistoricDate(place.getWhen(), false);
+        widget.setHistoryMode(!place.isCurrent(), true);
+        widget.setHistoricDate(place.getWhen(), true);
 
         // bind handlers
 

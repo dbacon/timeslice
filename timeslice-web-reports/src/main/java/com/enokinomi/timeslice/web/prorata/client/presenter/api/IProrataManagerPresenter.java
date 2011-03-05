@@ -6,11 +6,22 @@ import java.util.Map;
 import com.enokinomi.timeslice.web.assign.client.core.AssignedTaskTotal;
 import com.enokinomi.timeslice.web.core.client.util.Registration;
 import com.enokinomi.timeslice.web.prorata.client.core.Group;
-import com.enokinomi.timeslice.web.prorata.client.presenter.impl.ProrataManagerPresenter.Listener;
 import com.enokinomi.timeslice.web.prorata.client.ui.impl.ProjectProrataTreePanel.Row;
 
 public interface IProrataManagerPresenter
 {
+    public static interface Listener
+    {
+        void allGroupInfoChanged(List<Group> result);
+
+        void removeComplete(String group, String name);
+
+        void addComplete(String group, String name);
+        void addFailed(String msg);
+
+        void tasksUpdated();
+    }
+
 
     // TODO: this is going away - for now allow another service to tell us some data.
     void setStuff(List<AssignedTaskTotal> report);

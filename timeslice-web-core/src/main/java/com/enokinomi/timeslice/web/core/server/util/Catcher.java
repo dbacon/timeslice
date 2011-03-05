@@ -10,7 +10,7 @@ public class Catcher
     {
     }
 
-    public <T> T catchAndWrap(String msg, Callable<T> code) throws ServiceException
+    public <T> T catchAndWrap(String wrapperDescriptionOnFailure, Callable<T> code) throws ServiceException
     {
         try
         {
@@ -24,7 +24,7 @@ public class Catcher
             }
             else
             {
-                throw new ServiceException(msg + ": call failed: " + e.getMessage(), e);
+                throw new ServiceException(wrapperDescriptionOnFailure + ": call failed: " + e.getMessage(), e);
             }
         }
     }

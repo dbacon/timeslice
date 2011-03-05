@@ -7,16 +7,17 @@ import java.util.Map;
 import com.enokinomi.timeslice.web.core.client.ui.DateControlBox;
 import com.enokinomi.timeslice.web.core.client.util.ListenerManager;
 import com.enokinomi.timeslice.web.core.client.util.Registration;
+import com.enokinomi.timeslice.web.task.client.presenter.InputPlace;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.place.shared.PlaceHistoryMapper;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.TextBox;
@@ -46,12 +47,6 @@ public class ParamPanel extends Composite implements IParamPanel
     protected void fireHistoryRequested(Date when) { for (IParamChangedListener listener: listenerMgr.getListeners()) listener.historyRequested(when); }
     protected void fireAllowWordsChanged(String allowWords) { for (IParamChangedListener l: listenerMgr.getListeners()) l.allowWordsChanged(allowWords); }
     protected void fireIgnoreWordsChanged(String ignoreWords) { for (IParamChangedListener l: listenerMgr.getListeners()) l.ignoreWordsChanged(ignoreWords); }
-
-    @UiHandler("itemsForSelectedDateClickable")
-    protected void itemsForSelectedDateClicked(ClickEvent e)
-    {
-//        fireHistoryRequested(dateBox.getValue());
-    }
 
     // used only internally and to service, so tz doesn't matter.
     private static final DateTimeFormat MachineFormat = DateTimeFormat.getFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZZ");
@@ -110,6 +105,9 @@ public class ParamPanel extends Composite implements IParamPanel
         }
     };
 
+    @UiField(provided=true)
+    protected final PlaceHistoryMapper placeHistoryMapper;
+
     @SuppressWarnings("deprecation")
     private Date dateChopTime(Date date)
     {
@@ -154,9 +152,12 @@ public class ParamPanel extends Composite implements IParamPanel
         }
     }
 
+    @UiConstructor
     @Inject
-    ParamPanel()
+    ParamPanel(PlaceHistoryMapper placeHistoryMapper)
     {
+        this.placeHistoryMapper = placeHistoryMapper;
+
         initWidget(uiBinder.createAndBindUi(this));
         configure();
     }
@@ -171,6 +172,8 @@ public class ParamPanel extends Composite implements IParamPanel
         endingTime.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getFormat("yyyy-MM-dd H:m:s.S Z")));
         ignoreWords.addChangeHandler(commonChangeHandler);
         allowWords.addChangeHandler(commonChangeHandler);
+
+        updateItemsLink(dateBox.getValue());
 
         dateBox.addValueChangeHandler(new ValueChangeHandler<Date>()
             {
@@ -205,14 +208,9 @@ public class ParamPanel extends Composite implements IParamPanel
 
     private void updateItemsLink(Date when)
     {
-        // hackish, but works  - as opposed to raising an event
-        //  and letting place-controller.goTo(...) - which doesn't work.
-
-//            itemsForSelectedDateClickable.setHref(
-//                "#" + placeHistoryMapper.getToken(
-//                        new InputPlace("report-panel", false, when)));
-
-        fireHistoryRequested(when);
+        itemsForSelectedDateClickable.setHref(
+            "#" + placeHistoryMapper.getToken(
+                    new InputPlace("report-panel", false, when)));
     }
 
     @Override

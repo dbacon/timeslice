@@ -106,6 +106,8 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
 
     private void initContents()
     {
+        // TODO: capture and return registrations, to be canceled so they don't accumulate
+
         // TODO: switch to settings listener.
 //        options.addOptionsListener(new IOptionsListener()
 //        {
@@ -295,6 +297,9 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
 //        mainEntryPanel.add(historyPanel.asWidget());
 //
 ////        initWidget(mainEntryPanel);
+
+        modeRadioSpecify.setValue(false, true);
+        modeRadioNormal.setValue(true, true);
 
     }
 
