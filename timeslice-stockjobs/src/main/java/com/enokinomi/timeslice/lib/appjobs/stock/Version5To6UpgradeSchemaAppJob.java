@@ -30,6 +30,9 @@ public class Version5To6UpgradeSchemaAppJob extends BaseUpgradeSchemaAppJob
                 " create unique index ind_ts_user_01 on ts_user (username); " +
                 " " +
                 " " +
+                " create unique index ind_ts_prorata_01 on ts_prorata (name, component_name); " +
+                " " +
+                " " +
                 " create table ts_version_6_done ( nothing char(1)); " +
                 " ",
                 versionInvalidator
