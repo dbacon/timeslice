@@ -47,7 +47,7 @@ public class AppJobPanel extends ResizeComposite implements IAppJobPanel
     @UiHandler("refreshButton")
     protected void onClicked_refreshButton(ClickEvent e)
     {
-        initialize("appjob-panel.refresh-clicked");
+        fireJobListRefreshRequested();
     }
 
     @Override
