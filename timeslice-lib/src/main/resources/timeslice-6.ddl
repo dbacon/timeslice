@@ -23,8 +23,6 @@ create table ts_prorata
     weight double
 );
 
-create unique index ind_ts_prorata_01 on ts_prorata (name, component_name);
-
 create table ts_ordering
 (
     name varchar(128),
@@ -41,6 +39,8 @@ create table ts_conf
 );
 
 create unique index ind_ts_conf_01 on ts_conf (username, name, type, value);
+
+create unique index ind_ts_prorata_01 on ts_prorata (name, component_name);
 
 create table ts_user
 (
