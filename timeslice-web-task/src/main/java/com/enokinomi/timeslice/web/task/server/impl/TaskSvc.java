@@ -5,6 +5,7 @@ import java.util.concurrent.Callable;
 
 import com.enokinomi.timeslice.lib.userinfo.api.IUserInfoDao;
 import com.enokinomi.timeslice.lib.userinfo.api.TsSettings;
+import com.enokinomi.timeslice.web.core.client.util.ServiceException;
 import com.enokinomi.timeslice.web.core.client.util.SortDir;
 import com.enokinomi.timeslice.web.core.server.util.Catcher;
 import com.enokinomi.timeslice.web.session.server.api.ISessionTracker;
@@ -36,7 +37,7 @@ class TaskSvc implements ITaskSvc
             public List<StartTag> call()
             {
                 SessionData sd = sessionTracker.checkToken(authToken);
-                TsSettings settings = userInfoDao.loadUserSettings(sd.getUser(), "");
+                TsSettings settings = userInfoDao.loadUserSettings(sd.getUser(), "usersession.tzoffsetmin");
                 return taskSvcWrapped.refreshItems(sd.getUser(), maxSize, sortDir, startingInstant, endingInstant, settings.getTzOffsetMinutes());
             }
         });
@@ -82,6 +83,36 @@ class TaskSvc implements ITaskSvc
             {
                 SessionData sd = sessionTracker.checkToken(authToken);
                 taskSvcWrapped.update(sd.getUser(), editedStartTag);
+                return null; // Void
+            }
+        });
+    }
+
+    @Override
+    public void mergeBack(final String authToken, final StartTag startTag, final boolean multi) throws ServiceException
+    {
+        new Catcher().catchAndWrap("Collapsing task", new Callable<Void>()
+        {
+            @Override
+            public Void call() throws Exception
+            {
+                SessionData sd = sessionTracker.checkToken(authToken);
+                taskSvcWrapped.mergeBack(sd.getUser(), startTag, multi);
+                return null; // Void
+            }
+        });
+    }
+
+    @Override
+    public void removeItem(final String authToken, final StartTag startTag) throws ServiceException
+    {
+        new Catcher().catchAndWrap("remove item", new Callable<Void>()
+        {
+            @Override
+            public Void call() throws Exception
+            {
+                SessionData sd = sessionTracker.checkToken(authToken);
+                taskSvcWrapped.removeItem(sd.getUser(), startTag);
                 return null; // Void
             }
         });

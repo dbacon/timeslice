@@ -22,5 +22,6 @@ public interface ISettingsPresenter
     void userSettingEditRequested(String name, String oldValue, String newValue);
     void userSettingCreateOrUpdateRequested(String name, String value);
     void userSettingDeleteRequested(String name, String value);
-    void refreshRequested();
+    void refreshUserSettings();
+    void refreshSessionData();
 }

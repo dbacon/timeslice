@@ -12,5 +12,7 @@ public interface ITaskSvcAsync
     void addItem(String authToken, String instantString, String taskDescription, AsyncCallback<Void> callback);
     void addItems(String authToken, List<StartTag> items, AsyncCallback<Void> callback);
     void update(String authToken, StartTag editedStartTag, AsyncCallback<Void> callback);
+    void mergeBack(String authToken, StartTag startTag, boolean multi, AsyncCallback<Void> callback);
+    void removeItem(String authToken, StartTag startTag, AsyncCallback<Void> withRetry);
 
 }

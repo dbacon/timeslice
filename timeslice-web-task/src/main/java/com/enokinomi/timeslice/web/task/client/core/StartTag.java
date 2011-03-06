@@ -11,19 +11,21 @@ public class StartTag implements Serializable
     private Double durationMillis;
     private String description;
     private Boolean past;
+    private Boolean continues;
 
     public StartTag()
     {
-        this(null, null, null, null, null);
+        this(null, null, null, null, null, false);
     }
 
-    public StartTag(String instantString, String untilString, Double durationMillis, String description, Boolean past)
+    public StartTag(String instantString, String untilString, Double durationMillis, String description, Boolean past, boolean continues)
     {
         this.instantString = instantString;
         this.untilString = untilString;
         this.durationMillis = durationMillis;
         this.description = description;
         this.past = past;
+        this.continues = continues;
     }
 
     public String getInstantString()
@@ -74,6 +76,16 @@ public class StartTag implements Serializable
     public void setPast(Boolean past)
     {
         this.past = past;
+    }
+
+    public Boolean getContinues()
+    {
+        return continues;
+    }
+
+    public void setContinues(Boolean continues)
+    {
+        this.continues = continues;
     }
 
 }

@@ -27,7 +27,8 @@ public class ServerToClient
                         r.getUntil() == null ? null : r.getUntil().toDateTime(tzOffsetMs).toString(),
                         r.getUntil() == null ? null : new Double(new Duration(r.getWhen(), r.getUntil()).toDuration().getMillis()),
                         r.getWhat(),
-                        r.getWhen().isBeforeNow()
+                        r.getWhen().isBeforeNow(),
+                        r.isContinues()
                         );
             }
         };

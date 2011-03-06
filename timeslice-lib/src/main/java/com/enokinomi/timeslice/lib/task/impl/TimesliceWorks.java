@@ -62,14 +62,14 @@ public class TimesliceWorks implements ITimesliceWorks
 
                 return baseHsqldbOps.doSomeSql(
                         conn,
-                        "select limit ? ? whenstamp, who, what from ts_tag where who = ? and whenstamp < ? and whenstamp > ? order by whenstamp desc",
+                        "select limit ? ? whenstamp, who, what from ts_tag where who = ? and ? < whenstamp and whenstamp < ? order by whenstamp desc",
                         new Object[]
                         {
                                 pageIndex*pageSize,
                                 pageSize,
                                 owner,
-                                ending.toString(),
                                 starting.toString(),
+                                ending.toString(),
                         },
                         new ITransformThrowable<ResultSet, StartTag, SQLException>()
                         {
@@ -80,7 +80,7 @@ public class TimesliceWorks implements ITimesliceWorks
                                 String who = r.getString(2);
                                 String what = r.getString(3);
 
-                                return new StartTag(who, whenStr, what, null);
+                                return new StartTag(who, whenStr, what, null, false);
                             }
                         },
                         null);
@@ -100,8 +100,8 @@ public class TimesliceWorks implements ITimesliceWorks
 
                 baseHsqldbOps.doSomeSql(
                         conn,
-                        "delete from ts_tag where whenstamp = ?",
-                        new Object[] { tag.getWhen().toString() },
+                        "delete from ts_tag where who = ? and whenstamp = ?",
+                        new Object[] { tag.getWho(), tag.getWhen().toString() },
                         null,
                         1);
 

@@ -53,6 +53,8 @@ public class HistoryPanel extends ResizeComposite implements IHistoryPanel
         listenerMgr.getListeners().remove(listener);
     }
 
+    protected void fireDeleteRequestedStartTag(StartTag startTag) { for (Listener l: listenerMgr.getListeners()) { l.deleteRequested(startTag); } }
+
     protected void fireEditModeEntered()
     {
         for (Listener listener: listenerMgr.getListeners())
@@ -89,7 +91,7 @@ public class HistoryPanel extends ResizeComposite implements IHistoryPanel
     {
         for (Listener listener: listenerMgr.getListeners())
         {
-            listener.fireEdited(startTag);
+            listener.edited(startTag);
         }
     }
 
@@ -97,7 +99,7 @@ public class HistoryPanel extends ResizeComposite implements IHistoryPanel
     {
         for (Listener listener: listenerMgr.getListeners())
         {
-            listener.fireTimeEdited(startTag);
+            listener.timeEdited(startTag);
         }
     }
 
@@ -185,6 +187,7 @@ public class HistoryPanel extends ResizeComposite implements IHistoryPanel
                 }
             });
 
+            table.getRowFormatter().addStyleName(row, "ts-task");
             if (!item.getPast())
             {
                 table.getRowFormatter().addStyleName(row, "ts-task-future");
@@ -215,12 +218,13 @@ public class HistoryPanel extends ResizeComposite implements IHistoryPanel
                                 item.getUntilString(),
                                 item.getDurationMillis(),
                                 newValue,
-                                null
-                                ));
+                                null,
+                                false));
                 }
             });
 
             final EditableLabel timeLabel = new EditableLabel(formatDuration(item.getDurationMillis().longValue()));
+            timeLabel.setTitle(item.getInstantString());
             timeLabel.getEditor().setWidth("20em");
             timeLabel.addListener(new EditableLabel.Listener()
             {
@@ -244,8 +248,8 @@ public class HistoryPanel extends ResizeComposite implements IHistoryPanel
                                     null,
                                     null,
                                     item.getDescription(),
-                                    null
-                                    ));
+                                    null,
+                                    false));
                 }
             });
 
@@ -253,6 +257,20 @@ public class HistoryPanel extends ResizeComposite implements IHistoryPanel
             hp.setStylePrimaryName("tsTaskRow");
             hp.add(resumeLink);
             hp.add(itemLabel);
+            if (item.getContinues())
+            {
+                Anchor deleteAnchor = new Anchor("[x]");
+                deleteAnchor.setStylePrimaryName("tsTaskDelete");
+                deleteAnchor.addClickHandler(new ClickHandler()
+                {
+                    @Override
+                    public void onClick(ClickEvent event)
+                    {
+                        fireDeleteRequestedStartTag(item);
+                    }
+                });
+                hp.add(deleteAnchor);
+            }
 
             table.setWidget(row, col, hp);
             table.getCellFormatter().setAlignment(row, col, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP);

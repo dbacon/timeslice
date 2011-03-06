@@ -21,10 +21,25 @@
 {
 }
 
+.tsTaskDelete
+{
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+.ts-task:HOVER .tsTaskDelete
+{
+	display: block;
+}
+
+.ts-task .tsTaskDelete
+{
+	display: none;
+}
+
 .ts-task-current
 {
 	font-weight: bold;
-	text-transform: capitalize;
 	background: #ffe;
 }
 
@@ -67,6 +82,12 @@
 .ts-notificationPanel-nonEmpty
 {
     display: block;
+}
+
+.tsTaskRow td
+{
+    padding-left: 0.5em;
+    padding-right: 0.5em;
 }
 
 .tsTaskResumeLink

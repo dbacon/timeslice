@@ -15,5 +15,7 @@ public interface ITimesliceSvc
     void addItem(String instantString, String taskDescription, String user);
     void addItems(String user, List<StartTag> items);
     void update(String user, StartTag editedStartTag);
+    void mergeBack(com.enokinomi.timeslice.lib.task.api.StartTag startTag, boolean multi);
+    void removeItem(com.enokinomi.timeslice.lib.task.api.StartTag startTag);
 
 }

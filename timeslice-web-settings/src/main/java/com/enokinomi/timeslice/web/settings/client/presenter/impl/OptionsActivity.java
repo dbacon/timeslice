@@ -83,7 +83,7 @@ public class OptionsActivity extends AbstractActivity
                 @Override
                 public void refreshRequested()
                 {
-                    settingsPresenter.refreshRequested();
+                    settingsPresenter.refreshUserSettings();
                 }
             }));
 

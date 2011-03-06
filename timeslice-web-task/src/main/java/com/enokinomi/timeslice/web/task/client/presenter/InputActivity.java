@@ -14,7 +14,6 @@ import com.google.gwt.activity.shared.AbstractActivity;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.place.shared.Place;
-import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -24,20 +23,15 @@ public class InputActivity extends AbstractActivity
     private final Provider<InputPanel> widgetProvider;
     private final InputPlace place;
     private final ITaskPresenter presenter;
-//    private final ILoginSupport loginSupport;
-    @SuppressWarnings("unused") private final PlaceController placeController;
-    private final String creator;
     private final ISettingsPresenter settingsPresenter;
 
     private final RegistrationManager registrations = new RegistrationManager();
 
     @Inject
-    InputActivity(String creator, Provider<InputPanel> widgetProvider, InputPlace place,  PlaceController placeController, ITaskPresenter presenter, ISettingsPresenter settingsPresenter)
+    InputActivity(Provider<InputPanel> widgetProvider, InputPlace place, ITaskPresenter presenter, ISettingsPresenter settingsPresenter)
     {
-        this.creator = creator;
         this.widgetProvider = widgetProvider;
         this.place = place;
-        this.placeController = placeController;
         this.presenter = presenter;
         this.settingsPresenter = settingsPresenter;
     }
@@ -45,7 +39,6 @@ public class InputActivity extends AbstractActivity
     @Override
     public void start(AcceptsOneWidget panel, EventBus eventBus)
     {
-        GWT.log("starting input-activity - creator: " + creator);
         final InputPanel widget = widgetProvider.get();
 
         // set initial state
@@ -88,6 +81,12 @@ public class InputActivity extends AbstractActivity
             {
                 presenter.startRefreshItems(maxItems, starting, ending);
             }
+
+            @Override
+            public void deleteTagRequested(StartTag startTag)
+            {
+                presenter.startDeleteTask(startTag);
+            }
         }));
 
         registrations.add(presenter.addListener(new ITaskPresenterListener()
@@ -102,6 +101,18 @@ public class InputActivity extends AbstractActivity
             public void onAddItemDone()
             {
                 widget.itemAdded();
+            }
+
+            @Override
+            public void genericFail(String msg)
+            {
+                GWT.log("task-presenter generic failure: " + msg);
+            }
+
+            @Override
+            public void onDeleteDone()
+            {
+                widget.itemAdded(); // TODO: separate signals if needed - just causes refresh for now.
             }
         }));
 
@@ -119,7 +130,7 @@ public class InputActivity extends AbstractActivity
 
         }));
 
-        settingsPresenter.refreshRequested();
+        settingsPresenter.refreshUserSettings();
 
         // display it.
         panel.setWidget(widget.asWidget());

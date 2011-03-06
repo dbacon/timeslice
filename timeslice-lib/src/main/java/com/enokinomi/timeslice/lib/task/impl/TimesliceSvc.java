@@ -53,7 +53,7 @@ public class TimesliceSvc implements ITimesliceSvc
                     ? new Instant(0)
                     : ISODateTimeFormat.dateTime().parseDateTime(startingInstant).toInstant(),
                 endingInstant == null
-                    ? new Instant(Long.MAX_VALUE)
+                    ? new Instant(1000L * 3600L * 24L * 365L * 5000L)
                     : ISODateTimeFormat.dateTime().parseDateTime(endingInstant).toInstant(),
                 maxSize,
                 0);
@@ -152,7 +152,7 @@ public class TimesliceSvc implements ITimesliceSvc
     @Override
     public void addItem(String instantString, String taskDescription, String user)
     {
-        store.add(new StartTag(user, instantString, taskDescription, null));
+        store.add(new StartTag(user, instantString, taskDescription, null, false));
     }
 
     @Override
@@ -168,5 +168,17 @@ public class TimesliceSvc implements ITimesliceSvc
     public void update(String user, StartTag editedStartTag)
     {
         store.updateText(editedStartTag);
+    }
+
+    @Override
+    public void mergeBack(StartTag apply, boolean multi)
+    {
+        throw new RuntimeException("Not implemented, just using 'delete' for now.");
+    }
+
+    @Override
+    public void removeItem(StartTag startTag)
+    {
+        store.remove(startTag);
     }
 }

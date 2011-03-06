@@ -15,6 +15,6 @@ class ClientToServer implements ITransform<StartTag, com.enokinomi.timeslice.lib
     @Override
     public com.enokinomi.timeslice.lib.task.api.StartTag apply(StartTag r)
     {
-        return new com.enokinomi.timeslice.lib.task.api.StartTag(user, r.getInstantString(), r.getDescription(), null);
+        return new com.enokinomi.timeslice.lib.task.api.StartTag(user, r.getInstantString(), r.getDescription(), null, false);
     }
 }

@@ -124,12 +124,12 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
                 enterNewStartTag(p);
             }
 
-            public void fireEdited(StartTag editedStartTag)
+            public void edited(StartTag editedStartTag)
             {
                 updateStartTag(editedStartTag);
             }
 
-            public void fireTimeEdited(StartTag startTag)
+            public void timeEdited(StartTag startTag)
             {
                 enterNewStartTag(startTag.getInstantString(), startTag.getDescription());
             }
@@ -147,6 +147,12 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
             @Override
             public void editModeLeft()
             {
+            }
+
+            @Override
+            public void deleteRequested(StartTag startTag)
+            {
+                fireDeleteTagRequested(startTag);
             }
         });
 
@@ -168,7 +174,7 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
                     @Override
                     public void onValueChange(ValueChangeEvent<Date> event)
                     {
-                        scheduleRefresh("due to specified-date value-change");
+                        scheduleRefresh();
                     }
                 });
 
@@ -183,7 +189,7 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
                         {
                             fixSpecifiedDateBox(event.getValue());
                             setEntryVisible(!event.getValue());
-                            scheduleRefresh("due to 'specify' radio value-change");
+                            scheduleRefresh();
                         }
                     }
                 });
@@ -197,7 +203,7 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
                         {
                             fixSpecifiedDateBox(!event.getValue());
                             setEntryVisible(event.getValue());
-                            scheduleRefresh("due to 'normal' radio value-change");
+                            scheduleRefresh();
                         }
                     }
                 });
@@ -215,7 +221,7 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
             @Override
             public void onClick(ClickEvent event)
             {
-                scheduleRefresh("due to update-link click-event");
+                scheduleRefresh();
             }
         });
 
@@ -343,7 +349,7 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
         consistentizeHotlist();
         consistentizeHotlinks();
 
-        scheduleRefresh("due to call to input-panel.initialize, " + callerPurpose);
+        scheduleRefresh();
         getNavPanel().initialize("due to call to input-panel.initialize, " + callerPurpose);
     }
 
@@ -352,24 +358,19 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
         hotlistPanel.asWidget().setVisible(0 < hotlistPanel.getHotlistItemCount());
     }
 
-    private void scheduleRefresh(String callerPurpose)
+    private void scheduleRefresh()
     {
         String starting = MachineFormat.format(new Date(new Date().getTime() - options.maxSeconds * 1000));
         String ending = null;
 
         if (modeRadioSpecify.getValue() && null != specifiedDateBox.getValue())
         {
-            GWT.log("doing historic refresh (" + callerPurpose + ")");
             Date specifiedDate = specifiedDateBox.getValue();
             Date beginningOfSpecifiedDay = floorDate(specifiedDate);
             Date untilEndOfSpecifiedDay = new Date(beginningOfSpecifiedDay.getTime() + 1000*3600*24);
 
             starting = MachineFormat.format(beginningOfSpecifiedDay);
             ending = MachineFormat.format(untilEndOfSpecifiedDay);
-        }
-        else
-        {
-            GWT.log("doing current refresh (" + callerPurpose + ")");
         }
 
         fireRefreshRequested(options.maxSize, starting, ending);
@@ -395,6 +396,7 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
     {
         void editTagRequested(StartTag editedStartTag); // TODO: change to data, not StartTag
         void addTagRequested(String instantString, String description);
+        void deleteTagRequested(StartTag startTag);
         void refreshRequested(int maxItems, String starting, String ending);
     }
 
@@ -404,6 +406,7 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
     protected void fireEditTagRequested(StartTag editedStartTag) { for (InputListener l: listenerMgr.getListeners()) l.editTagRequested(editedStartTag); }
     protected void fireAddTagRequested(String instantString, String description) { for (InputListener l: listenerMgr.getListeners()) l.addTagRequested(instantString, description); }
     protected void fireRefreshRequested(int maxItems, String starting, String ending) { for (InputListener l: listenerMgr.getListeners()) l.refreshRequested(maxItems, starting, ending); }
+    protected void fireDeleteTagRequested(StartTag startTag) { for (InputListener l: listenerMgr.getListeners()) l.deleteTagRequested(startTag); }
 
     private void updateStartTag(StartTag editedStartTag)
     {
@@ -419,7 +422,7 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
     {
         if (description.trim().isEmpty())
         {
-            scheduleRefresh("due to enter empty tag");
+            scheduleRefresh();
         }
         else
         {
@@ -455,7 +458,7 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
         calculateWindowTitle(items);
     }
 
-    private static final StartTag UnknownTag = new StartTag(null, null, null, "-unknown-", false);
+    private static final StartTag UnknownTag = new StartTag(null, null, null, "-unknown-", false, false);
 
     private StartTag findCurrentStartTag(List<StartTag> items)
     {
@@ -500,7 +503,7 @@ public class InputPanel extends ResizeComposite implements IsWidget, IClearable,
     public void itemAdded()
     {
         taskDescriptionEntry.setText("");
-        scheduleRefresh("due to item added");
+        scheduleRefresh();
         consistentizeHotlinks();
     }
 

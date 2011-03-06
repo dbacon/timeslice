@@ -49,4 +49,14 @@ class TimesliceSvcWebWrapper
     {
         timesliceSvc.update(user, new ClientToServer(user).apply(editedStartTag));
     }
+
+    public void mergeBack(String user, StartTag startTag, boolean multi)
+    {
+        timesliceSvc.mergeBack(new ClientToServer(user).apply(startTag), multi);
+    }
+
+    public void removeItem(String user, StartTag startTag)
+    {
+        timesliceSvc.removeItem(new ClientToServer(user).apply(startTag));
+    }
 }

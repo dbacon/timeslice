@@ -229,8 +229,7 @@ public class ReportActivity extends AbstractActivity
 
         widget.initialize("report-activity-starting");
 
-        settingsPresenter.refreshRequested();
-        presenter.startGetAllBillees();
+        settingsPresenter.refreshUserSettings();
 
         // display it.
 

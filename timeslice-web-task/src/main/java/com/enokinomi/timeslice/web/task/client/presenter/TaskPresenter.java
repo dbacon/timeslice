@@ -20,7 +20,9 @@ public class TaskPresenter implements ITaskPresenter
     private final ListenerManager<ITaskPresenterListener> listenerMgr = new ListenerManager<ITaskPresenterListener>();
     @Override public Registration addListener(ITaskPresenterListener l) { return listenerMgr.addListener(l); }
     protected void fireAddItemDone() { for (ITaskPresenterListener l: listenerMgr.getListeners()) { l.onAddItemDone(); } }
+    protected void fireDeleteDone() { for (ITaskPresenterListener l: listenerMgr.getListeners()) { l.onDeleteDone(); } }
     protected void fireRefreshItemsDone(List<StartTag> result) { for (ITaskPresenterListener l: listenerMgr.getListeners()) { l.onRefreshItemsDone(result); } }
+    protected void fireGenericFail(String msg) { for (ITaskPresenterListener l: listenerMgr.getListeners()) { l.genericFail(msg); } }
 
     @Inject
     public TaskPresenter(ITaskSvcAsync svc, ILoginSupport loginSupport)
@@ -50,6 +52,7 @@ public class TaskPresenter implements ITaskPresenter
                             @Override
                             public void onFailure(Throwable caught)
                             {
+                                fireGenericFail("Service-call add-item failed: " + caught.getMessage());
                             }
                         }));
             }
@@ -71,6 +74,7 @@ public class TaskPresenter implements ITaskPresenter
                             @Override
                             public void onFailure(Throwable caught)
                             {
+                                fireGenericFail("Service-call add-items failed: " + caught.getMessage());
                             }
 
                             @Override
@@ -98,6 +102,7 @@ public class TaskPresenter implements ITaskPresenter
                             @Override
                             public void onFailure(Throwable caught)
                             {
+                                fireGenericFail("Service-call update-description failed: " + caught.getMessage());
                             }
 
                             @Override
@@ -132,8 +137,37 @@ public class TaskPresenter implements ITaskPresenter
                             @Override
                             public void onFailure(Throwable caught)
                             {
+                                fireGenericFail("Service-call refresh-items failed: " + caught.getMessage());
                             }
                         }));
+            }
+        }.runAsync();
+    }
+
+    @Override
+    public void startDeleteTask(final StartTag startTag)
+    {
+        new IOnAuthenticated()
+        {
+            @Override
+            public void runAsync()
+            {
+                svc.removeItem(loginSupport.getAuthToken(),
+                        startTag,
+                        loginSupport.withRetry(this, new AsyncCallback<Void>()
+                                {
+                                    @Override
+                                    public void onSuccess(Void result)
+                                    {
+                                        fireDeleteDone();
+                                    }
+
+                                    @Override
+                                    public void onFailure(Throwable caught)
+                                    {
+                                        fireGenericFail("Service-call delete-item failed: " + caught.getMessage());
+                                    }
+                                }));
             }
         }.runAsync();
     }

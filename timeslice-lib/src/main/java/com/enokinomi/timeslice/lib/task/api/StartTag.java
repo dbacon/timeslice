@@ -13,6 +13,7 @@ public class StartTag implements IHasWhen
     private final Instant when;
     private final String what;
     private final Instant until;
+    private final boolean continues;
 
     /**
      * Parameter {@code when} defaults to now if passed as {@code null}.
@@ -22,28 +23,29 @@ public class StartTag implements IHasWhen
      * @param what
      * @param until
      */
-    public StartTag(String who, String when, String what, String until)
+    public StartTag(String who, String when, String what, String until, boolean continues)
     {
         this(
                 Transforms.mapNullTo(who, "unknown"),
                 null == when ? new Instant() : ISODateTimeFormat.dateTime().parseDateTime(when).toInstant(),
                 Transforms.mapNullTo(what, "unknown"),
-                null == until ? null : ISODateTimeFormat.dateTime().parseDateTime(until).toInstant()
-                );
+                null == until ? null : ISODateTimeFormat.dateTime().parseDateTime(until).toInstant(),
+                continues);
     }
 
-    public StartTag(String who, Instant when, String what, Instant until)
+    public StartTag(String who, Instant when, String what, Instant until, boolean continues)
     {
         this.who = who;
         this.when = when;
         this.what = what;
         this.until = until;
+        this.continues = continues;
     }
 
     @Override
     public String toString()
     {
-        return String.format("[%s, %s, %s, %s]", getWho(), getWhen(), getUntil(), getWhat());
+        return String.format("[%s, %s, %s, %s, %s]", getWho(), getWhen(), getUntil(), getWhat(), isContinues());
     }
 
     public String getWho()
@@ -64,5 +66,10 @@ public class StartTag implements IHasWhen
     public Instant getUntil()
     {
         return until;
+    }
+
+    public boolean isContinues()
+    {
+        return continues;
     }
 }

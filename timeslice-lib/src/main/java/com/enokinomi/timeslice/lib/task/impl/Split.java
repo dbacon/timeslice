@@ -43,25 +43,28 @@ public class Split
 
         List<StartTag> result = new LinkedList<StartTag>();
 
-        Map<String, StartTag> lastStartTagForUser = new LinkedHashMap<String, StartTag>();
+        StartTag lastStartTag = null;
+        boolean lastStartTagMatchedItsPrevious = false;
 
         for (StartTag tag: localTags)
         {
-            StartTag lastStartTag = lastStartTagForUser.get(tag.getWho());
-
             if (null != lastStartTag)
             {
-                StartTag enrichedLastStartTag = new StartTag(lastStartTag.getWho(), lastStartTag.getWhen(), lastStartTag.getWhat(), tag.getWhen());
-
-                result.add(enrichedLastStartTag);
+                result.add(new StartTag(lastStartTag.getWho(), lastStartTag.getWhen(), lastStartTag.getWhat(), tag.getWhen(), lastStartTagMatchedItsPrevious));
+                lastStartTagMatchedItsPrevious = lastStartTag.getWhat().equals(tag.getWhat());
             }
 
-            lastStartTagForUser.put(tag.getWho(), tag);
+            lastStartTag = tag;
         }
 
-        for (StartTag tag: lastStartTagForUser.values())
+        if (lastStartTag != null)
         {
-            result.add(new StartTag(tag.getWho(), tag.getWhen(), tag.getWhat(), max(tag.getWhen(), endInstantOfLastTasks)));
+            // unconditionally provide an end-point for the last task.
+            result.add(new StartTag(
+                    lastStartTag.getWho(),
+                    lastStartTag.getWhen(),
+                    lastStartTag.getWhat(),
+                    max(lastStartTag.getWhen(), endInstantOfLastTasks), lastStartTagMatchedItsPrevious));
         }
 
         // we want to return items in the same order as the input.

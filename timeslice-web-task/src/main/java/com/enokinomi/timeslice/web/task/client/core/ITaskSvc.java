@@ -15,5 +15,6 @@ public interface ITaskSvc extends RemoteService
     void addItem(String authToken, String instantString, String taskDescription) throws ServiceException;
     void addItems(String authToken, List<StartTag> items) throws ServiceException;
     void update(String authToken, StartTag editedStartTag) throws ServiceException;
-
+    void mergeBack(String authToken, StartTag startTag, boolean multi) throws ServiceException;
+    void removeItem(String authToken, StartTag startTag) throws ServiceException;
 }

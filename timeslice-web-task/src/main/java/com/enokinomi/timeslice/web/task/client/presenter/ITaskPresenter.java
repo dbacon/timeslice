@@ -11,6 +11,8 @@ public interface ITaskPresenter
     {
         void onRefreshItemsDone(List<StartTag> result);
         void onAddItemDone();
+        void genericFail(String msg);
+        void onDeleteDone();
     }
 
     Registration addListener(ITaskPresenterListener listener);
@@ -19,4 +21,5 @@ public interface ITaskPresenter
     void startRefreshItems(int maxSize, String startingInstant, String endingInstant);
     void startEditDescription(StartTag editedStartTag);
     void startAddItems(List<StartTag> items);
+    void startDeleteTask(StartTag startTag);
 }

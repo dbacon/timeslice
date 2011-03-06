@@ -10,8 +10,9 @@ public interface IHistoryPanel extends IsWidget
     public interface Listener
     {
         void interestingThing(String p);
-        void fireEdited(StartTag startTag);
-        void fireTimeEdited(StartTag startTag);
+        void edited(StartTag startTag);
+        void timeEdited(StartTag startTag);
+        void deleteRequested(StartTag startTag);
         void hotlisted(String name, String description);
         void editModeEntered();
         void editModeLeft();

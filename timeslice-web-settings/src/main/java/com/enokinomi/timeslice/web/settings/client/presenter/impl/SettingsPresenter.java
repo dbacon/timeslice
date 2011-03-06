@@ -139,6 +139,18 @@ public class SettingsPresenter implements ISettingsPresenter
                 });
     }
 
+    @Override
+    public void refreshUserSettings()
+    {
+        startRefreshUserSettings();
+    }
+
+    @Override
+    public void refreshSessionData()
+    {
+        startRefreshSessionData();
+    }
+
     private void startRefreshUserSettings()
     {
         new IOnAuthenticated()
@@ -193,10 +205,4 @@ public class SettingsPresenter implements ISettingsPresenter
         }.runAsync();
     }
 
-    @Override
-    public void refreshRequested()
-    {
-        startRefreshUserSettings();
-        startRefreshSessionData();
-    }
 }
