@@ -92,6 +92,7 @@ public class BaseHsqldbOps implements IBaseHsqldbOps
 
         try
         {
+            log.debug("statement: " + sql);
             statement = conn.prepareStatement(sql);
 
             int i = 1;
@@ -99,19 +100,23 @@ public class BaseHsqldbOps implements IBaseHsqldbOps
             {
                 if (null == param)
                 {
+                    log.debug("  param: NULL");
                     statement.setNull(i, Types.NULL);
                     ++i;
                 }
                 else if (param instanceof SetParam)
                 {
+                    log.debug("  set-param:");
                     for (Object setparam: ((SetParam) param).getValues())
                     {
                         if (null == setparam)
                         {
+                            log.debug("    NULL");
                             statement.setNull(i, Types.NULL);
                         }
                         else
                         {
+                            log.debug("    " + setparam.toString());
                             statement.setObject(i, setparam);
                         }
                         ++i;
@@ -119,6 +124,7 @@ public class BaseHsqldbOps implements IBaseHsqldbOps
                 }
                 else
                 {
+                    log.debug("  " + param.toString());
                     statement.setObject(i, param);
                     ++i;
                 }
@@ -129,6 +135,8 @@ public class BaseHsqldbOps implements IBaseHsqldbOps
             if (null == rowConverter)
             {
                 int rows = statement.executeUpdate();
+
+                log.debug("rows affected: " + rows);
 
                 if (null != expectedAffectedRowCount)
                 {
@@ -143,10 +151,14 @@ public class BaseHsqldbOps implements IBaseHsqldbOps
                 rs = statement.executeQuery();
 
                 result = new ArrayList<T>();
+                int readCount = 0;
                 while (rs.next())
                 {
+                    ++readCount;
                     result.add(rowConverter.apply(rs));
                 }
+
+                log.debug("read and converted: " + readCount);
             }
 
             return result;

@@ -47,6 +47,8 @@ public class ConnectionContext implements IConnectionContext
 
             try
             {
+                log.debug("Transaction beginning.");
+
                 R result = work.performWithConnection(currentConnection);
 
                 if (readOnly)
