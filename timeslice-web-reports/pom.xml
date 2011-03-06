@@ -5,13 +5,13 @@
     <parent>
         <groupId>com.enokinomi.timeslice</groupId>
         <artifactId>timeslice-parent-web</artifactId>
-        <version>1.0.11-beta-3-SNAPSHOT</version>
+        <version>1.0.11-beta-3</version>
         <relativePath>../timeslice-parent-web</relativePath>
     </parent>
 
 	<groupId>com.enokinomi.timeslice</groupId>
 	<artifactId>timeslice-web-reports</artifactId>
-	<version>1.0.11-beta-3-SNAPSHOT</version>
+	<version>1.0.11-beta-3</version>
 	<packaging>jar</packaging>
 
 	<name>timeslice-web-reports</name>
@@ -45,7 +45,7 @@
         <dependency>
             <groupId>com.enokinomi.timeslice</groupId>
             <artifactId>timeslice-web-task</artifactId>
-            <version>1.0.11-beta-3-SNAPSHOT</version>
+            <version>1.0.11-beta-3</version>
         </dependency>
 
 	</dependencies>

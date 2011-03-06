@@ -5,13 +5,13 @@
     <parent>
         <groupId>com.enokinomi.timeslice</groupId>
         <artifactId>timeslice-parent</artifactId>
-        <version>1.0.11-beta-3-SNAPSHOT</version>
+        <version>1.0.11-beta-3</version>
     </parent>
 
     <groupId>com.enokinomi.timeslice</groupId>
     <artifactId>timeslice-parent-web</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.11-beta-3-SNAPSHOT</version>
+    <version>1.0.11-beta-3</version>
 
     <name>timeslice-parent-web</name>
 
